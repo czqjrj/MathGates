@@ -96,6 +96,12 @@ func _build_body() -> void:
 	# ---- 进阶 · 等级与称号 ----
 	vb.add_child(_advance_card())
 
+	# ---- 知识掌握 · 萌宠进化 ----
+	vb.add_child(_mastery_card())
+
+	# ---- 记忆档案 · 馆灵碑文 ----
+	vb.add_child(_lore_card())
+
 	# ---- 成就 · 勋章墙 ----
 	vb.add_child(_section("成就 · 勋章墙  %d / %d" % [GameData.medal_count(), GameData.MEDALS.size()], Color("#a878ff")))
 	var gcenter := CenterContainer.new()
@@ -192,6 +198,109 @@ func _advance_card() -> Control:
 	rkbox.add_child(UI.mono_label(rt, 12, UI.COL_TEXT_DIM))
 	return card
 
+## 知识掌握卡片：各领域掌握度进度条 + 当前萌宠形态
+func _mastery_card() -> Control:
+	var card := UI.card(true, UI.COL_ACCENT, UI.COL_GLASS, Color(UI.COL_ACCENT, 0.3), 14, 22, Color(UI.COL_ACCENT, 0.18))
+	card.custom_minimum_size = Vector2(920, 0)
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 12)
+	card.add_child(box)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 12)
+	box.add_child(head)
+	head.add_child(UI.make_label("知识掌握 · 萌宠进化", 20, UI.COL_TEXT))
+	var hsp := Control.new()
+	hsp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(hsp)
+	head.add_child(UI.mono_label("形态 · %s  (%d/%d)" % [GameData.pet_form_name(), GameData.pet_part_count(), GameData.DOMAINS.size()], 14, UI.COL_ACCENT))
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 26)
+	grid.add_theme_constant_override("v_separation", 12)
+	box.add_child(grid)
+	for d in GameData.domain_entries():
+		grid.add_child(_domain_row(d))
+	return card
+
+func _domain_row(d: Dictionary) -> Control:
+	var id := str(d["id"])
+	var m := GameData.domain_mastery(id)
+	var unlocked := GameData.pet_part_unlocked(id)
+	var col := Color(str(d["color"]))
+	var row := VBoxContainer.new()
+	row.custom_minimum_size = Vector2(414, 0)
+	row.add_theme_constant_override("separation", 4)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 8)
+	row.add_child(head)
+	var dot := ColorRect.new()
+	dot.color = col if unlocked else Color(1, 1, 1, 0.12)
+	dot.custom_minimum_size = Vector2(10, 10)
+	dot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	head.add_child(dot)
+	head.add_child(UI.make_label(str(d["title"]), 15, UI.COL_TEXT if unlocked else UI.COL_TEXT_DIM))
+	var sp := Control.new()
+	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(sp)
+	var tag := "已解锁"
+	if not unlocked:
+		tag = "%d%%" % int(round(m * 100.0))
+	elif m < GameData.MASTERY_STALE:
+		tag = "已解锁 · 生疏"
+	head.add_child(UI.mono_label(tag, 13, col if unlocked else UI.COL_TEXT_DIM))
+	var bar := ProgressLine.new()
+	bar.col = col
+	bar.glow = unlocked
+	bar.custom_minimum_size = Vector2(414, 6)
+	bar.set_ratio(m, false)
+	row.add_child(bar)
+	return row
+
+## 馆灵记忆档案：寻回的碑文与尚未寻回的裂隙
+func _lore_card() -> Control:
+	var card := UI.card(true, UI.COL_ACCENT, UI.COL_GLASS, Color("#5ee6ff", 0.3), 14, 22, Color("#5ee6ff", 0.16))
+	card.custom_minimum_size = Vector2(920, 0)
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 10)
+	card.add_child(box)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 12)
+	box.add_child(head)
+	head.add_child(UI.make_label("馆灵记忆 · 失序碑文", 20, UI.COL_TEXT))
+	var hsp := Control.new()
+	hsp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(hsp)
+	head.add_child(UI.mono_label("记忆恢复 %d%%" % int(round(GameData.memory_ratio() * 100.0)), 14, UI.COL_ACCENT))
+	box.add_child(UI.make_label("解析失序，碑文四散。每掌握一个领域，馆灵便替你拾回一段记忆。", 13, UI.COL_TEXT_DIM))
+	for l in GameData.lore_entries():
+		box.add_child(_lore_row(l))
+	return card
+
+func _lore_row(l: Dictionary) -> Control:
+	var id := str(l["id"])
+	var got := GameData.lore_unlocked(id)
+	var dom := GameData.domain_def(id)
+	var col := Color(str(dom.get("color", "#5ee6ff")))
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	var mark := ColorRect.new()
+	mark.color = col if got else Color(1, 1, 1, 0.10)
+	mark.custom_minimum_size = Vector2(4, 34)
+	mark.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(mark)
+	var col_box := VBoxContainer.new()
+	col_box.add_theme_constant_override("separation", 1)
+	col_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(col_box)
+	col_box.add_child(UI.make_label(str(l["title"]), 15, UI.COL_TEXT if got else UI.COL_TEXT_DIM))
+	var text := str(l["text"])
+	if not got:
+		text = "『 尚未寻回 · 掌握「%s」领域后显现 』" % str(dom.get("title", ""))
+	col_box.add_child(UI.make_label(text, 13, UI.COL_TEXT if got else Color(UI.COL_TEXT_DIM, 0.7)))
+	return row
+
 ## 单枚勋章格：徽章 + 名称(未解锁灰色)
 func _medal_cell(m: Dictionary) -> Control:
 	var unlocked := GameData.is_medal_unlocked(str(m["id"]))
@@ -227,6 +336,12 @@ func _wrong_row(rec: Dictionary) -> Control:
 	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	line1.add_child(sp)
 	line1.add_child(UI.mono_label("错 %d 次" % int(rec["count"]), 14, Color("#ffd479")))
+	var nav := GameData.quest_target({ "level_id": str(rec["level_id"]), "qi": int(rec.get("qi", 0)) })
+	if not nav.is_empty():
+		line1.add_child(UI.ghost_button("去复习", func() -> void:
+			GameData.start_level(int(nav["ci"]), int(nav["li"]))
+			Scene.goto(str(nav["scene"]))
+		, 13))
 	var line2 := UI.make_label("%s · %s     上次选 %s，正确 %s" % [str(info.get("chapter", "")), str(info.get("name", "")), _letter(int(rec.get("last_chose", -1))), _letter(int(rec.get("correct", -1)))], 13, UI.COL_TEXT_DIM)
 	vb.add_child(line2)
 	return p

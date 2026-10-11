@@ -109,6 +109,8 @@ var _stat_t := 0.0         # 状态卡显示计时(悬停/互动后短暂显示)
 var _trick_cd := 3.0       # 自主小动作冷却
 var _medal_ready := false  # 限制勋章反应延迟(避免登录回填时齐声庆祝)
 var _aura := 0.0           # 光环脉动相位
+var _quest: Dictionary = {}  # 当前提议的错题复习任务(点击萌宠前往)
+var _quest_t := 0.0          # 任务窗口剩余时间
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -124,6 +126,8 @@ func _ready() -> void:
 	_target = position
 	_walk_wait = randf_range(0.8, 2.0)
 	GameData.medal_unlocked.connect(_on_medal)
+	GameData.pet_evolved.connect(_on_evolve)
+	GameData.wrong_cleared.connect(_on_wrong_cleared)
 	get_tree().create_timer(0.6).timeout.connect(func() -> void: _medal_ready = true)
 	set_process(true)
 
@@ -237,11 +241,16 @@ func _process(delta: float) -> void:
 		_auto_t = 0.0
 		if GameData.pet_hungry():
 			say(HUNGRY_LINES[randi() % HUNGRY_LINES.size()], 3.2)
+		elif _quest.is_empty() and randf() < 0.6:
+			_offer_quest()
 		else:
 			say(TIPS[randi() % TIPS.size()], 3.0)
-	# 状态卡 / 光环
+	# 状态卡 / 光环 / 复习任务窗口
 	_stat_t = maxf(_stat_t - delta, 0.0)
 	_aura += delta
+	_quest_t = maxf(_quest_t - delta, 0.0)
+	if _quest_t <= 0.0 and not _quest.is_empty():
+		_quest = {}
 	# 气泡
 	if _bubble > 0.0:
 		_bubble = maxf(_bubble - delta, 0.0)
@@ -287,6 +296,9 @@ func say(text: String, dur: float = 3.0, speak: bool = false) -> void:
 		UI.tts_say(text, true, true)
 
 func _pop() -> void:
+	if not _quest.is_empty():
+		_goto_quest()
+		return
 	_happy(1.2)
 	GameData.pet_touch()
 	GameData.pet_mood = clampf(GameData.pet_mood + 0.03, 0.2, 1.0)
@@ -326,6 +338,71 @@ func _on_medal(m: Dictionary) -> void:
 	say(MEDAL_LINES[randi() % MEDAL_LINES.size()] % nm, 3.4, true)
 	Sound.play("star")
 
+## 知识进化反应：掌握新领域时炫彩庆祝 + 台词(登录回填不触发，因 GameData 静默解锁)
+func _on_evolve(stage: int, domain: Dictionary) -> void:
+	if not visible:
+		return
+	_celebration_dur = 2.3
+	_celebration = 2.3
+	_celebration_big = true
+	_spark_cd = 0.0
+	_love(2.3)
+	_spawn_ring()
+	var nm := str(domain.get("title", ""))
+	var lore := GameData.lore_for(str(domain.get("id", "")))
+	var line := "掌握「%s」啦！我进化成「%s」～" % [nm, GameData.pet_form_name()]
+	if not lore.is_empty():
+		line += "\n我想起一段碑文「%s」：%s" % [str(lore["title"]), str(lore["text"])]
+	say(line, 7.0, true)
+	Sound.play("star")
+
+## 错题复习结清：萌宠替你高兴一下(任务由外部/自动提议)
+func _on_wrong_cleared(_level_id: String, _qi: int) -> void:
+	if not visible:
+		return
+	if not _quest.is_empty():
+		_quest = {}
+		_quest_t = 0.0
+	_love(1.3)
+	say("这道错题清掉啦！真棒～", 2.8, true)
+
+## 提议一条复习任务(来自错题，越多越靠前)；已提议则不打断
+func offer_quest(force: bool = false) -> bool:
+	if not visible or GameData.pet_hungry():
+		return false
+	if not _quest.is_empty():
+		return not _quest.is_empty()
+	var qs := GameData.pet_quests()
+	if qs.is_empty():
+		return false
+	if not force and randf() > 0.7:
+		return false
+	var q: Dictionary = qs[randi() % qs.size()]
+	_quest = q
+	_quest_t = 8.0
+	var ch := str(q.get("chapter", ""))
+	var lv := str(q.get("level_name", ""))
+	say("「%s · %s」这题我以前算错过，点我去复习好不好～" % [ch, lv], 6.0)
+	_curious(1.4)
+	return true
+
+func _offer_quest() -> void:
+	offer_quest()
+
+## 前往任务关卡(由点击萌宠触发)
+func _goto_quest() -> void:
+	var q := _quest
+	_quest = {}
+	_quest_t = 0.0
+	var tgt := GameData.quest_target(q)
+	if tgt.is_empty():
+		return
+	_dance(1.0)
+	say("走！这次一定拿下～", 2.4)
+	Sound.play("begin")
+	GameData.start_level(int(tgt["ci"]), int(tgt["li"]))
+	Scene.goto(str(tgt["scene"]))
+
 ## 升级反应：接在外部 celebrate 之后补一句台词与舞蹈
 func on_level_up(level: int) -> void:
 	if not visible:
@@ -348,10 +425,15 @@ func try_autogreet() -> bool:
 		return true
 	return false
 
-## 自主小动作：饿了讨食 / 跳舞 / 好奇歪头
+## 自主小动作：饿了讨食 / 生疏提醒 / 跳舞 / 好奇歪头
 func _do_trick() -> void:
 	if GameData.pet_hungry():
 		say(HUNGRY_LINES[randi() % HUNGRY_LINES.size()], 3.0)
+		return
+	var stale := GameData.pet_stale_domains()
+	if not stale.is_empty() and randf() < 0.45:
+		_curious(1.8)
+		say("「%s」有点生疏了，一起复习嘛～" % str(stale[0].get("title", "")), 3.6)
 		return
 	if randf() < 0.5:
 		_dance(1.5)
@@ -541,6 +623,8 @@ func _draw() -> void:
 	draw_circle(center + Vector2(0, -R - 20), 9.0, Color(COL_ANT, 0.18))
 	draw_circle(center + Vector2(0, -R - 20), 5.0, COL_ANT)
 	draw_circle(center + Vector2(-1.6, -R - 21.6), 1.6, Color(1, 1, 1, 0.9))
+	# 知识部件(背景层：向量之翼 / 数列之尾)
+	_draw_parts_back(center, R)
 	# 身体(两层：深色描边 + 主体 + 高光)
 	draw_circle(center, R, COL_BODY_DK)
 	draw_circle(center, R - 2.0, COL_BODY)
@@ -565,6 +649,8 @@ func _draw() -> void:
 	draw_circle(center + Vector2(R * 0.58, R * 0.22), 5.5, Color(COL_CHEEK, 0.65))
 	# 眼睛 / 嘴
 	_draw_face(center, R)
+	# 知识部件(前景层：曲线光环 / 向量角 / 形体护甲 / 直线镜 / 代数核心)
+	_draw_parts_front(center, R)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	# 喂食：饼干落下
 	if _state == State.EAT:
@@ -596,6 +682,14 @@ func _draw() -> void:
 		var ap := center + Vector2(R + 2.0, -R - 6.0)
 		draw_line(ap + Vector2(-5, -5), ap + Vector2(5, 5), Color("#ff6b6b"), 2.4)
 		draw_line(ap + Vector2(5, -5), ap + Vector2(-5, 5), Color("#ff6b6b"), 2.4)
+	# 复习任务提示徽章(点击萌宠前往)
+	if not _quest.is_empty():
+		var qp := center + Vector2(-R * 0.55, -R - 30.0)
+		var qpulse := 0.5 + 0.5 * sin(_aura * 3.0)
+		draw_circle(qp, 12.0 + qpulse * 2.5, Color("#5ee6ff", 0.16))
+		draw_circle(qp, 11.0, Color("#0b2a33"))
+		draw_arc(qp, 11.0, 0.0, TAU, 28, Color(UI.COL_ACCENT, 0.9), 2.0, true)
+		draw_string(UI.font(), qp + Vector2(-4.0, 6.0), "?", HORIZONTAL_ALIGNMENT_LEFT, -1, 18, UI.COL_ACCENT)
 	# 睡觉 Z + 做梦小云朵
 	if _state == State.SLEEP:
 		var f := UI.font()
@@ -710,10 +804,102 @@ func _draw_note(pos: Vector2, a: float) -> void:
 	draw_line(pos + Vector2(0, -11.0), pos + Vector2(5.0, -9.0), col, 2.0)
 	draw_circle(pos + Vector2(-2.0, 0), 3.4, col)
 
-## 养成状态卡(好感度 / 饱食度 / 心情)，悬停或互动后短暂显示
+# ---------------------------------------------------------------- 知识部件(纯代码，随掌握度解锁)
+## 背景层：空间之翼 / 数列之尾
+func _draw_parts_back(center: Vector2, R: float) -> void:
+	if GameData.pet_part_unlocked("space"):
+		_draw_wings(center, R)
+	if GameData.pet_part_unlocked("seq"):
+		_draw_seq_tail(center, R)
+
+## 前景层：曲线光环 / 向量角 / 形体护甲 / 直线镜 / 代数核心
+func _draw_parts_front(center: Vector2, R: float) -> void:
+	if GameData.pet_part_unlocked("conic"):
+		_draw_halo(center, R)
+	if GameData.pet_part_unlocked("vector"):
+		_draw_horns(center, R)
+	if GameData.pet_part_unlocked("solid"):
+		_draw_armor(center, R)
+	if GameData.pet_part_unlocked("line"):
+		_draw_lens(center, R)
+	if GameData.pet_part_unlocked("algebra"):
+		_draw_core(center, R)
+
+## 空间之翼：随呼吸轻扇的半透明羽翼
+func _draw_wings(center: Vector2, R: float) -> void:
+	var flap := sin(_t * 2.2) * 0.12
+	for s in [-1.0, 1.0]:
+		var shoulder := center + Vector2(s * R * 0.7, -R * 0.08)
+		for i in 3:
+			var b := 0.38 + 0.30 * float(i) + flap
+			var dir := Vector2(s * sin(b), -cos(b))
+			var ln := R * (1.55 - 0.16 * float(i))
+			var tip := shoulder + dir * ln
+			var perp := dir.rotated(PI * 0.5) * (R * 0.17)
+			var col := Color("#8ef0d8", 0.52 - 0.09 * float(i))
+			draw_colored_polygon(PackedVector2Array([
+				shoulder + perp * 0.3, tip + perp, tip - perp, shoulder - perp * 0.3]), col)
+
+## 数列之尾：粉色卷曲尾 + 尾尖宝珠
+func _draw_seq_tail(center: Vector2, R: float) -> void:
+	var base := center + Vector2(R * 0.85, R * 0.30)
+	draw_arc(base, R * 0.55, -PI * 0.75, PI * 0.55, 22, Color("#ff99c3", 0.9), 4.0, true)
+	draw_circle(base + Vector2(R * 0.5, R * 0.38), 4.5, Color("#ffd1e6"))
+	draw_circle(base + Vector2(R * 0.5, R * 0.38), 2.0, Color.WHITE)
+
+## 曲线光环：头顶缓转的圆环 + 环绕光点
+func _draw_halo(center: Vector2, R: float) -> void:
+	var col := Color("#5ad8a6")
+	var hp := center + Vector2(0, -R - 40.0 + sin(_t * 1.6) * 2.0)
+	draw_arc(hp, 15.0, 0.0, TAU, 40, Color(col, 0.85), 3.0, true)
+	draw_arc(hp, 15.0, -PI * 0.5 + _t * 1.4, -PI * 0.5 + _t * 1.4 + PI, 24, Color(1, 1, 1, 0.85), 2.0, true)
+	for i in 2:
+		var a := _t * 1.8 + PI * float(i)
+		draw_circle(hp + Vector2(cos(a), sin(a)) * 15.0, 2.4, Color.WHITE)
+
+## 方向之角：头顶一对小尖角
+func _draw_horns(center: Vector2, R: float) -> void:
+	var col := Color("#c9b3ff")
+	for s in [-1.0, 1.0]:
+		var base := center + Vector2(s * R * 0.42, -R * 0.70)
+		var tip := base + Vector2(s * R * 0.30, -R * 0.58)
+		draw_colored_polygon(PackedVector2Array([
+			base + Vector2(-s * 6.0, -1.0), base + Vector2(s * 6.0, 3.0), tip]), col)
+		draw_circle(tip, 2.4, Color(1, 1, 1, 0.95))
+
+## 形体护甲：腹部六边护心镜
+func _draw_armor(center: Vector2, R: float) -> void:
+	var col := Color("#45c7e5")
+	var pc := center + Vector2(0, R * 0.40)
+	var pts := PackedVector2Array()
+	for i in 6:
+		var a := -PI * 0.5 + TAU * float(i) / 6.0
+		pts.append(pc + Vector2(cos(a), sin(a)) * (R * 0.34))
+	draw_colored_polygon(pts, Color(col, 0.30))
+	var outline := pts.duplicate()
+	outline.append(pts[0])
+	draw_polyline(outline, Color(col, 0.9), 2.0, true)
+
+## 轨迹之镜：双眼外的科技细环
+func _draw_lens(center: Vector2, R: float) -> void:
+	var col := Color("#a878ff")
+	for s in [-1.0, 1.0]:
+		var ec := center + Vector2(s * R * 0.40, -R * 0.12)
+		draw_arc(ec, 12.5, 0.0, TAU, 28, Color(col, 0.55), 1.6, true)
+
+## 代数核心：胸口脉动宝珠
+func _draw_core(center: Vector2, R: float) -> void:
+	var col := Color("#5ee6ff")
+	var gp := center + Vector2(0, R * 0.02)
+	var pulse := 0.5 + 0.5 * sin(_t * 3.0)
+	draw_circle(gp, 7.0 + pulse * 2.0, Color(col, 0.22))
+	draw_circle(gp, 4.6, Color(col, 0.95))
+	draw_circle(gp, 2.0, Color.WHITE)
+
+## 养成状态卡(形态 / 好感度 / 饱食度 / 心情)，悬停或互动后短暂显示
 func _draw_status_card(pos: Vector2) -> void:
 	var w := 156.0
-	var h := 66.0
+	var h := 84.0
 	var rect := Rect2(pos - Vector2(w * 0.5 + 8.0, h + 12.0), Vector2(w + 16.0, h + 12.0))
 	var vp := get_viewport_rect()
 	var gp := global_position + rect.position
@@ -725,22 +911,25 @@ func _draw_status_card(pos: Vector2) -> void:
 	var f := UI.font()
 	var fsz := UI.fs(12)
 	var pad := rect.position + Vector2(12.0, 8.0)
+	# 形态(随知识掌握进化)
+	draw_string(f, pad, "形态", HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, UI.COL_TEXT_DIM)
+	draw_string(f, pad + Vector2(46.0, 0.0), GameData.pet_form_name(), HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, UI.COL_ACCENT)
 	# 好感度(♥ 随喂养等级增加)
-	draw_string(f, pad, "好感", HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, UI.COL_TEXT_DIM)
+	draw_string(f, pad + Vector2(0, 24.0), "好感", HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, UI.COL_TEXT_DIM)
 	var tier := affection_tier()
 	for i in 3:
-		_draw_heart(pad + Vector2(46.0 + i * 15.0, 6.0), 7.5, 1.0 if i <= tier else 0.22)
+		_draw_heart(pad + Vector2(46.0 + i * 15.0, 30.0), 7.5, 1.0 if i <= tier else 0.22)
 	# 饱食度
 	var sat: float = GameData.pet_satiety
-	draw_string(f, pad + Vector2(0, 25.0), "饱食", HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, UI.COL_TEXT_DIM)
-	draw_rect(Rect2(pad + Vector2(46.0, 17.0), Vector2(92.0, 7.0)), Color(1, 1, 1, 0.12), true)
-	draw_rect(Rect2(pad + Vector2(46.0, 17.0), Vector2(92.0 * clampf(sat, 0.0, 1.0), 7.0)), Color("#ffd479"), true)
+	draw_string(f, pad + Vector2(0, 45.0), "饱食", HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, UI.COL_TEXT_DIM)
+	draw_rect(Rect2(pad + Vector2(46.0, 37.0), Vector2(92.0, 7.0)), Color(1, 1, 1, 0.12), true)
+	draw_rect(Rect2(pad + Vector2(46.0, 37.0), Vector2(92.0 * clampf(sat, 0.0, 1.0), 7.0)), Color("#ffd479"), true)
 	# 心情
 	var mood: float = GameData.pet_mood
 	var mood_col: Color = UI.COL_SUCCESS if mood >= 0.75 else (UI.COL_ACCENT if mood >= 0.45 else Color("#ff9a6b"))
-	draw_string(f, pad + Vector2(0, 46.0), "心情", HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, UI.COL_TEXT_DIM)
-	draw_rect(Rect2(pad + Vector2(46.0, 38.0), Vector2(92.0, 7.0)), Color(1, 1, 1, 0.12), true)
-	draw_rect(Rect2(pad + Vector2(46.0, 38.0), Vector2(92.0 * clampf(mood, 0.0, 1.0), 7.0)), Color(mood_col), true)
+	draw_string(f, pad + Vector2(0, 66.0), "心情", HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, UI.COL_TEXT_DIM)
+	draw_rect(Rect2(pad + Vector2(46.0, 58.0), Vector2(92.0, 7.0)), Color(1, 1, 1, 0.12), true)
+	draw_rect(Rect2(pad + Vector2(46.0, 58.0), Vector2(92.0 * clampf(mood, 0.0, 1.0), 7.0)), Color(mood_col), true)
 
 func _draw_bubble(pos: Vector2) -> void:
 	var f := UI.font()

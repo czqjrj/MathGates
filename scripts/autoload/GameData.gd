@@ -4,6 +4,10 @@ extends Node
 signal progress_changed
 ## 达成新勋章时发出(供 UI 反应；Toast/音效通知已在 GameData 内统一处理)
 signal medal_unlocked(medal: Dictionary)
+## 萌宠掌握新知识领域、形态进化时发出(stage=进化后形态等级，domain=新掌握领域定义)
+signal pet_evolved(stage: int, domain: Dictionary)
+## 某道错题被答对、彻底结清时发出(复习清债；coin 为奖励金币)
+signal wrong_cleared(level_id: String, qi: int)
 
 const CURRICULUM_PATH := "res://data/curriculum.json"
 const QUESTIONS_PATH := "res://data/questions.json"
@@ -53,7 +57,45 @@ const MEDALS := [
 	{ "id": "boss_first",    "name": "破阵者",   "desc": "通关任意隐藏 Boss",            "symbol": "破", "color": "#fb7185" },
 	{ "id": "boss_all",      "name": "无冕之王", "desc": "通关全部隐藏 Boss",            "symbol": "王", "color": "#fb7185" },
 	{ "id": "pet_3",         "name": "亲密伙伴", "desc": "投喂萌宠 3 次",                "symbol": "友", "color": "#4dd6a8" },
-	{ "id": "pet_10",        "name": "形影不离", "desc": "投喂萌宠 10 次",               "symbol": "伴", "color": "#4dd6a8" },
+	{ "id": "pet_10",         "name": "形影不离", "desc": "投喂萌宠 10 次",               "symbol": "伴", "color": "#4dd6a8" },
+]
+
+## 知识领域：把课程章节归入 7 个领域，用于「掌握度」聚合与萌宠知识进化。
+## chapters 为该领域涵盖的章节 id；掌握度由领域内关卡的星级 / 清关质量 / 错题聚合而来。
+const DOMAINS := [
+	{ "id": "seq",     "title": "数列·律动",     "color": "#ff99c3",
+		"chapters": ["recurrence_methods", "sequences"] },
+	{ "id": "solid",   "title": "立体几何·形体", "color": "#45c7e5",
+		"chapters": ["solid"] },
+	{ "id": "conic",   "title": "圆锥曲线·曲线", "color": "#5ad8a6",
+		"chapters": ["conic", "conics", "ellipse"] },
+	{ "id": "line",    "title": "直线方程·轨迹", "color": "#a878ff",
+		"chapters": ["line_eq"] },
+	{ "id": "space",   "title": "空间向量·维度", "color": "#45c7e5",
+		"chapters": ["space"] },
+	{ "id": "vector",  "title": "平面向量·方向", "color": "#9270ca",
+		"chapters": ["vector", "vectors"] },
+	{ "id": "algebra", "title": "代数综合·根基", "color": "#5ee6ff",
+		"chapters": ["set_logic", "inequalities", "functions", "trig", "probability",
+			"derivative", "complex", "counting", "thinking"] },
+]
+
+## 领域掌握度达标即解锁对应萌宠部件(只增不减)
+const MASTERY_UNLOCK := 0.5
+## 已解锁领域掌握度低于此值视为「生疏」(仅影响萌宠表现，不回收形态)
+const MASTERY_STALE := 0.35
+## 萌宠形态名(下标 = 已解锁部件数)
+const PET_FORMS := ["初芽", "萌芽", "启智", "明理", "通达", "博识", "睿智", "衍数·完形"]
+
+## 馆灵记忆碑文：每掌握一个领域，寻回一段失落的档案(与 DOMAINS 的 id 对应)。
+const LORE := [
+	{ "id": "seq",     "title": "碑文·归序", "text": "万物流转皆有其序，离散之间，自见通项。" },
+	{ "id": "solid",   "title": "碑文·筑形", "text": "平面不足立物，便向上升起一维，形体自会闭合。" },
+	{ "id": "conic",   "title": "碑文·弧光", "text": "一束光斜切圆锥，弧线便得有了名字。" },
+	{ "id": "line",    "title": "碑文·直轨", "text": "两点定其向，一点与斜率定其形。" },
+	{ "id": "space",   "title": "碑文·维度", "text": "给每个方向一个坐标，空间便不再幽深难测。" },
+	{ "id": "vector",  "title": "碑文·方向", "text": "有向的线段，藏着长度与夹角两种真相。" },
+	{ "id": "algebra", "title": "碑文·根基", "text": "一切推演，皆从数与式的根基生长。" },
 ]
 
 var chapters: Array = []
@@ -61,6 +103,10 @@ var stars: Dictionary = {}      # level_id -> int(0..3)
 var player_exp: int = 0
 var coins: int = 0
 var medals: Dictionary = {}     # medal_id -> 解锁时间戳
+var pet_parts: Dictionary = {}  # domain_id -> 解锁时间戳(知识进化部件，只增不减)
+var pet_stage: int = 0          # 已解锁部件数(萌宠形态等级)
+var _level_mastery: Dictionary = {}   # 缓存：level_id -> 0..1
+var _domain_mastery: Dictionary = {}  # 缓存：domain_id -> 0..1
 
 # ---- 用户系统(多用户) ----
 var users: Dictionary = {}              # 用户名 -> 存档 dict
@@ -412,6 +458,7 @@ func _eval_medals(notify: bool = true) -> void:
 func grant_stars(level_id: String, n: int) -> void:
 	stars[level_id] = maxi(int(stars.get(level_id, 0)), n)
 	player_exp += 10 * n
+	_eval_mastery()
 	_eval_medals()
 	_save()
 	progress_changed.emit()
@@ -430,6 +477,10 @@ func reset_progress() -> void:
 	pet_satiety = 1.0
 	pet_mood = 0.8
 	pet_last_seen = 0
+	pet_parts.clear()
+	pet_stage = 0
+	_level_mastery.clear()
+	_domain_mastery.clear()
 	_save()
 	progress_changed.emit()
 
@@ -493,6 +544,114 @@ func pet_decay() -> void:
 func pet_touch() -> void:
 	pet_last_seen = int(Time.get_unix_time_from_system())
 
+# ---------------------------------------------------------------- 知识掌握 / 萌宠进化
+## 单关掌握度 0..1(缓存)：星级 + 清关质量 - 错题惩罚；未通关不判掌握。
+func level_mastery(level_id: String) -> float:
+	return float(_level_mastery.get(level_id, 0.0))
+
+## 领域掌握度 0..1(缓存)：领域内关卡掌握度的平均。
+func domain_mastery(domain_id: String) -> float:
+	return float(_domain_mastery.get(domain_id, 0.0))
+
+func domain_entries() -> Array:
+	return DOMAINS
+
+func domain_def(domain_id: String) -> Dictionary:
+	for d in DOMAINS:
+		if str(d["id"]) == domain_id:
+			return d
+	return {}
+
+## 该领域是否已解锁萌宠部件
+func pet_part_unlocked(domain_id: String) -> bool:
+	return pet_parts.has(domain_id)
+
+func pet_part_count() -> int:
+	return pet_parts.size()
+
+func pet_form_name() -> String:
+	return PET_FORMS[clampi(pet_stage, 0, PET_FORMS.size() - 1)]
+
+# ------------------------------------------------ 叙事：馆灵记忆碑文
+func lore_for(domain_id: String) -> Dictionary:
+	for l in LORE:
+		if str(l["id"]) == domain_id:
+			return l
+	return {}
+
+func lore_entries() -> Array:
+	return LORE
+
+## 该领域碑文是否已寻回(与萌宠部件解锁同步)
+func lore_unlocked(domain_id: String) -> bool:
+	return pet_parts.has(domain_id)
+
+func lore_restored_count() -> int:
+	return pet_parts.size()
+
+## 记忆恢复度 0..1
+func memory_ratio() -> float:
+	return float(pet_parts.size()) / float(maxi(1, DOMAINS.size()))
+
+## 已解锁但当前掌握度偏低的领域(生疏，仅影响萌宠表现)
+func pet_stale_domains() -> Array:
+	var arr: Array = []
+	for d in DOMAINS:
+		var id := str(d["id"])
+		if pet_parts.has(id) and domain_mastery(id) < MASTERY_STALE:
+			arr.append(d)
+	return arr
+
+## 重算掌握度缓存(关卡 → 领域)。仅在进度变化时调用，避免每帧遍历。
+func _recompute_mastery() -> void:
+	var wsum: Dictionary = {}
+	for k in wrong_log.keys():
+		var w: Dictionary = wrong_log[k]
+		var lid := str(w.get("level_id", ""))
+		wsum[lid] = float(wsum.get(lid, 0.0)) + minf(0.5, float(int(w.get("count", 0))) * 0.1)
+	_level_mastery.clear()
+	for ch in chapters:
+		for lv in ch.get("levels", []):
+			var id := str(lv["id"])
+			var st := float(int(stars.get(id, 0))) / 3.0
+			var m := 0.0
+			if st > 0.0:
+				var rec: Dictionary = level_records.get(id, {})
+				var clean := 0.0
+				if not rec.is_empty():
+					clean = float(int(rec.get("last_clean", 0))) / float(maxi(1, int(rec.get("last_total", 0))))
+				m = clampf(st * 0.65 + clean * 0.25 - minf(float(wsum.get(id, 0.0)), 0.4), 0.0, 1.0)
+			_level_mastery[id] = m
+	_domain_mastery.clear()
+	for d in DOMAINS:
+		var sum := 0.0
+		var cnt := 0
+		for ch in chapters:
+			if not (str(ch.get("id", "")) in d["chapters"]):
+				continue
+			for lv in ch.get("levels", []):
+				sum += level_mastery(str(lv["id"]))
+				cnt += 1
+		_domain_mastery[str(d["id"])] = (sum / float(cnt)) if cnt > 0 else 0.0
+
+## 结算掌握度：重算缓存并解锁新达标的萌宠部件。notify=false 用于登录回填(静默)。
+func _eval_mastery(notify: bool = true) -> void:
+	_recompute_mastery()
+	var newly: Array = []
+	for d in DOMAINS:
+		var id := str(d["id"])
+		if pet_parts.has(id):
+			continue
+		if domain_mastery(id) >= MASTERY_UNLOCK:
+			pet_parts[id] = Time.get_datetime_string_from_system(false, true)
+			newly.append(d)
+	pet_stage = pet_parts.size()
+	if notify and not newly.is_empty():
+		for d in newly:
+			pet_evolved.emit(pet_stage, d)
+		Sound.play("unlock")
+		Toast.show_toast("萌宠进化 · 掌握「%s」" % str(newly[0]["title"]))
+
 func unlocked_region_count() -> int:
 	var c := 0
 	for i in chapters.size():
@@ -515,6 +674,18 @@ func record_answer(level_id: String, qi: int, qname: String, correct: bool, chos
 	total_questions += 1
 	if correct:
 		total_correct += 1
+		# 答对即偿还该题历史错账：逐次递减，结清时清出并奖励
+		var key := "%s#%d" % [level_id, qi]
+		if wrong_log.has(key):
+			var w: Dictionary = wrong_log[key]
+			var c := int(w.get("count", 1)) - 1
+			if c <= 0:
+				wrong_log.erase(key)
+				coins += 5
+				wrong_cleared.emit(level_id, qi)
+			else:
+				w["count"] = c
+				wrong_log[key] = w
 	else:
 		var key := "%s#%d" % [level_id, qi]
 		var rec: Dictionary = wrong_log.get(key, {})
@@ -524,6 +695,7 @@ func record_answer(level_id: String, qi: int, qname: String, correct: bool, chos
 			"last_chose": chose, "correct": ans,
 		}
 	pet_mood = clampf(pet_mood + (0.04 if correct else -0.05), 0.2, 1.0)
+	_eval_mastery()
 	_eval_medals()
 	_save()
 	progress_changed.emit()
@@ -537,6 +709,7 @@ func record_level_result(level_id: String, level_stars: int, clean: int, total: 
 	r["last_total"] = total
 	r["trap_missed"] = trap_missed
 	level_records[level_id] = r
+	_eval_mastery()
 	_eval_medals()
 	_save()
 	progress_changed.emit()
@@ -579,6 +752,66 @@ func level_info(level_id: String) -> Dictionary:
 				return { "chapter": str(ch.get("title", "")), "name": str(lv.get("name", "")) }
 	return { "chapter": "", "name": level_id }
 
+# ---------------------------------------------------------------- 萌宠复习任务(错题生成)
+## 该关卡所在知识领域(供任务标注)
+func _domain_of_level(level_id: String) -> Dictionary:
+	var cid := ""
+	for ch in chapters:
+		for lv in ch.get("levels", []):
+			if str(lv.get("id", "")) == level_id:
+				cid = str(ch.get("id", ""))
+				break
+		if cid != "":
+			break
+	for d in DOMAINS:
+		if cid in d["chapters"]:
+			return d
+	return {}
+
+## 关卡导航信息：{ci, li, scene}；不存在返回 {}
+func _level_nav(level_id: String) -> Dictionary:
+	for ci in chapters.size():
+		var levels: Array = chapters[ci].get("levels", [])
+		for li in levels.size():
+			if str(levels[li].get("id", "")) == level_id:
+				return {
+					"ci": ci, "li": li,
+					"scene": str(levels[li].get("scene", "res://scenes/Battle.tscn")),
+				}
+	return {}
+
+## 由错题生成复习任务(错得越多越靠前)，最多 limit 条。
+func pet_quests(limit: int = 3) -> Array:
+	var out: Array = []
+	for rec in wrong_list():
+		if out.size() >= limit:
+			break
+		var lid := str(rec.get("level_id", ""))
+		if _level_nav(lid).is_empty():
+			continue
+		var info := level_info(lid)
+		out.append({
+			"level_id": lid, "qi": int(rec.get("qi", 0)),
+			"name": str(rec.get("name", "")),
+			"module": str(rec.get("module", "")),
+			"count": int(rec.get("count", 0)),
+			"chapter": str(info.get("chapter", "")),
+			"level_name": str(info.get("name", "")),
+			"domain": _domain_of_level(lid),
+		})
+	return out
+
+## 任务的深链目标：{ci, li, scene, qi}
+func quest_target(q: Dictionary) -> Dictionary:
+	var nav := _level_nav(str(q.get("level_id", "")))
+	if nav.is_empty():
+		return {}
+	nav["qi"] = int(q.get("qi", 0))
+	return nav
+
+func has_wrong_entries() -> bool:
+	return not wrong_log.is_empty()
+
 # ---------------------------------------------------------------- 用户系统(多用户)
 func is_logged_in() -> bool:
 	return current_user != ""
@@ -594,6 +827,7 @@ func _blank_user() -> Dictionary:
 		"avatar": "player", "player_exp": 0, "coins": 0, "stars": {},
 		"total_questions": 0, "total_correct": 0, "wrong_log": {}, "level_records": {}, "pet_fed": 0, "regions_seen": 0,
 		"pet_satiety": 1.0, "pet_mood": 0.8, "pet_last_seen": 0,
+		"pet_parts": {}, "pet_stage": 0,
 		"medals": {},
 		"chapter_order": [],
 		"last_chapter": "",
@@ -607,6 +841,7 @@ func _snapshot() -> Dictionary:
 		"total_questions": total_questions, "total_correct": total_correct,
 		"wrong_log": wrong_log, "level_records": level_records, "pet_fed": pet_fed, "regions_seen": regions_seen,
 		"pet_satiety": pet_satiety, "pet_mood": pet_mood, "pet_last_seen": pet_last_seen,
+		"pet_parts": pet_parts, "pet_stage": pet_stage,
 		"medals": medals,
 		"chapter_order": chapter_order,
 		"last_chapter": last_chapter_id,
@@ -624,6 +859,9 @@ func _apply(d: Dictionary) -> void:
 	pet_satiety = clampf(float(d.get("pet_satiety", 1.0)), 0.15, 1.0)
 	pet_mood = clampf(float(d.get("pet_mood", 0.8)), 0.2, 1.0)
 	pet_last_seen = int(d.get("pet_last_seen", 0))
+	var pp = d.get("pet_parts", {})
+	pet_parts = pp if typeof(pp) == TYPE_DICTIONARY else {}
+	pet_stage = int(d.get("pet_stage", pet_parts.size()))
 	regions_seen = int(d.get("regions_seen", 0))
 	var co = d.get("chapter_order", [])
 	chapter_order = co.duplicate() if typeof(co) == TYPE_ARRAY else []
@@ -663,6 +901,7 @@ func create_user(nm: String, av: String) -> bool:
 	users[nm]["avatar"] = av
 	current_user = nm
 	_apply(users[nm])
+	_eval_mastery(false)
 	_eval_medals(false)
 	_save()
 	progress_changed.emit()
@@ -674,6 +913,7 @@ func login(nm: String) -> bool:
 	current_user = nm
 	_apply(users[nm])
 	pet_decay()
+	_eval_mastery(false)
 	_eval_medals(false)
 	_save()
 	progress_changed.emit()
