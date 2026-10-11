@@ -1,3 +1,5 @@
+# MathGates
+
 # 衍数阁(高中数学闯关游戏)
 
 Godot 4.7(Compatibility / GL)制作的数学闯关学习 App。UI 全程代码绘制(玻璃拟态),数据/题目走 JSON,单个模块带交互探索器。
