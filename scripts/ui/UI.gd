@@ -367,6 +367,48 @@ static func card_stagger_in(container: Node, step: float = 0.08, dur: float = 0.
 		tw.tween_property(ctl, "scale", Vector2.ONE, dur).set_delay(delay).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		i += 1
 
+## 发牌入场：卡片从底部牌堆依次飞入各自落点(带旋转、回弹、落桌轻响)。
+## 动画关闭时直接摆放；发牌音效 deal + 落定 click 由 Sound 自动加载。
+static func card_deal_in(container: Control, step: float = 0.085, dur: float = 0.55, drop_in: float = 46.0) -> void:
+	if container == null or not is_instance_valid(container):
+		return
+	var cards: Array[Control] = []
+	for c in container.get_children():
+		if c is Control and not (c as Control).is_queued_for_deletion():
+			cards.append(c)
+	if cards.is_empty():
+		return
+	if not animations:
+		for c in cards:
+			c.modulate.a = 1.0
+			c.scale = Vector2.ONE
+			c.rotation = 0.0
+		return
+	# 等布局稳定后落点坐标才固定
+	await (Engine.get_main_loop() as SceneTree).process_frame
+	await (Engine.get_main_loop() as SceneTree).process_frame
+	Sound.play("deal", -2.0)
+	var n := cards.size()
+	var base := Vector2(container.size.x * 0.5, container.size.y + drop_in)
+	var i := 0
+	for c in cards:
+		var sz := c.size
+		c.pivot_offset = sz * 0.5
+		var target := c.position
+		c.position = base - Vector2(sz.x * 0.5, sz.y * 0.5) \
+			+ Vector2((i - (n - 1) * 0.5) * 20.0, -absf(i - (n - 1) * 0.5) * 10.0)
+		c.modulate.a = 0.0
+		c.rotation = deg_to_rad(randf_range(-14.0, 14.0))
+		c.scale = Vector2(0.86, 0.86)
+		var tw := c.create_tween().set_parallel(true)
+		var delay := step * float(i)
+		tw.tween_property(c, "modulate:a", 1.0, dur * 0.6).set_delay(delay).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		tw.tween_property(c, "position", target, dur).set_delay(delay).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(c, "scale", Vector2.ONE, dur * 0.85).set_delay(delay).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		tw.tween_property(c, "rotation", 0.0, dur).set_delay(delay).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.finished.connect(func() -> void: Sound.play_varied("click", -9.0, 0.06))
+		i += 1
+
 static func _rotate_to(c: Control, r: float, dur: float) -> void:
 	if not is_instance_valid(c):
 		return
@@ -580,6 +622,31 @@ static func enable_touch_scroll(sc: ScrollContainer) -> void:
 	ts.name = "TouchScroll"
 	ts.target = sc
 	sc.add_child(ts)
+
+## 压低调厚重的默认滚动条：透明轨道 + 纤细半透明滑块(悬停/按下略亮)。
+static func style_scrollbar(sc: ScrollContainer, grab_a: float = 0.16, w: float = 4.0) -> void:
+	if sc == null:
+		return
+	var sb := sc.get_v_scroll_bar()
+	if sb == null or sb.has_meta("styled"):
+		return
+	sb.set_meta("styled", true)
+	var track := StyleBoxFlat.new()
+	track.bg_color = Color(1, 1, 1, 0.0)
+	track.content_margin_left = w * 0.5
+	track.content_margin_right = w * 0.5
+	sb.add_theme_stylebox_override("scroll", track)
+	sb.add_theme_stylebox_override("grabber", _sb_grabber(grab_a, w))
+	sb.add_theme_stylebox_override("grabber_highlight", _sb_grabber(grab_a + 0.06, w))
+	sb.add_theme_stylebox_override("grabber_pressed", _sb_grabber(grab_a + 0.12, w))
+
+static func _sb_grabber(a: float, w: float) -> StyleBoxFlat:
+	var s := StyleBoxFlat.new()
+	s.bg_color = Color(1, 1, 1, a)
+	s.set_corner_radius_all(int(w))
+	s.content_margin_left = w * 0.5
+	s.content_margin_right = w * 0.5
+	return s
 
 ## 弹层入场：淡入 + 轻微回弹缩放(需在布局完成后调用)
 static func popup_in(c: Control, dur: float = 0.2) -> void:

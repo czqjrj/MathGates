@@ -4,6 +4,8 @@ extends Control
 var _name_lbl: Label
 var _lv_lbl: Label
 var _star_lbl: Label
+var _prog_lbl: Label
+var _prog_line: ProgressLine
 
 func _ready() -> void:
 	theme = UI.make_theme()
@@ -25,6 +27,8 @@ func _add_pet() -> void:
 	var unlocked_new := cnt > GameData.regions_seen and GameData.regions_seen > 0
 	if cnt != GameData.regions_seen:
 		GameData.set_regions_seen(cnt)
+	if pet.try_autogreet():
+		return
 	if not GameData.pet_greeted_session:
 		GameData.pet_greeted_session = true
 		pet.clingy()
@@ -55,8 +59,6 @@ func _build_topbar() -> void:
 	hb.add_theme_constant_override("separation", 16)
 	bar.add_child(hb)
 
-	hb.add_child(UI.mono_label("// ARCHIVE", 15, UI.COL_ACCENT))
-	hb.add_child(_hairline(Vector2(1, 18)))
 	hb.add_child(UI.make_label("推演档案", 15, UI.COL_TEXT_DIM))
 
 	_name_lbl = UI.make_label("", 17)
@@ -109,6 +111,13 @@ func _refresh_status() -> void:
 	_name_lbl.text = GameData.rank_title()
 	_lv_lbl.text = "Lv.%d" % GameData.player_level()
 	_star_lbl.text = "★ %d / %d" % [GameData.total_stars(), GameData.total_max_stars()]
+	var rp := GameData.rank_progress()
+	if str(rp["next_title"]) == "":
+		_prog_line.set_ratio(1.0)
+		_prog_lbl.text = "称号进度 · 已臻顶阶"
+	else:
+		_prog_line.set_ratio(float(rp["ratio"]))
+		_prog_lbl.text = "称号进度 · 距「%s」还需 %d★" % [str(rp["next_title"]), int(rp["need"])]
 
 # ---------------------------------------------------------------- 中央
 func _build_center() -> void:
@@ -121,19 +130,42 @@ func _build_center() -> void:
 	vb.add_theme_constant_override("separation", 12)
 	center.add_child(vb)
 
+	var mark := BrandMark.new()
+	mark.custom_minimum_size = Vector2(118, 118)
+	mark.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	vb.add_child(mark)
+
 	var title := UI.make_label("衍 数 阁", 56, UI.COL_TEXT, HORIZONTAL_ALIGNMENT_CENTER)
 	title.add_theme_font_override("font", UI.title_font())
 	UI.outlined(title, 4, Color(0, 0, 0, 0.4))
 	vb.add_child(title)
 
-	var line := ColorRect.new()
-	line.color = UI.COL_ACCENT
-	line.custom_minimum_size = Vector2(132, 2)
+	var line := BrandMark.Underline.new()
+	line.custom_minimum_size = Vector2(150, 3)
 	line.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vb.add_child(line)
 
+	# 标题呼吸(纯气氛动效，可在设置中关闭)
+	if UI.animations:
+		title.pivot_offset = title.size * 0.5
+		title.resized.connect(func() -> void: title.pivot_offset = title.size * 0.5)
+		var btw := title.create_tween().set_loops()
+		btw.tween_property(title, "scale", Vector2(1.035, 1.035), 1.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		btw.tween_property(title, "scale", Vector2.ONE, 1.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
 	vb.add_child(UI.make_label("解析失序的公理 · 推演世界的唯一解", 17, UI.COL_TEXT_DIM, HORIZONTAL_ALIGNMENT_CENTER))
+
+	# 称号进度
+	var pbox := VBoxContainer.new()
+	pbox.add_theme_constant_override("separation", 6)
+	pbox.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	vb.add_child(pbox)
+	_prog_lbl = UI.mono_label("", 14, Color(UI.COL_TEXT_DIM, 0.9), HORIZONTAL_ALIGNMENT_CENTER)
+	pbox.add_child(_prog_lbl)
+	_prog_line = ProgressLine.new()
+	_prog_line.custom_minimum_size = Vector2(280, 5)
+	_prog_line.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	pbox.add_child(_prog_line)
 
 	var gap := Control.new()
 	gap.custom_minimum_size = Vector2(0, 22)
@@ -148,13 +180,8 @@ func _build_center() -> void:
 	row.add_child(_card("档案库", "用户档案与错题复盘", Color("#ffa64d"), "icon_book", _on_archive, false, true))
 	row.add_child(_card("错题笔记", "记录错题，回看再练", Color("#4dd6a8"), "icon_train", _soon, false))
 
-	var gap2 := Control.new()
-	gap2.custom_minimum_size = Vector2(0, 12)
-	vb.add_child(gap2)
-	vb.add_child(UI.make_label("// 提示：先完成立体几何「补形法」的推演，即可解锁后续档案", 14, UI.COL_TEXT_DIM, HORIZONTAL_ALIGNMENT_CENTER))
-
 	UI.fade_in(vb, 0.42)
-	UI.card_stagger_in(row, 0.09, 0.44)
+	UI.card_deal_in(row, 0.09, 0.55)
 
 # ---------------------------------------------------------------- 功能卡片
 func _card(title: String, desc: String, color: Color, icon_name: String, on_press: Callable, primary: bool, available: bool = false) -> Control:
@@ -226,14 +253,6 @@ func _card(title: String, desc: String, color: Color, icon_name: String, on_pres
 	return holder
 
 # ---------------------------------------------------------------- 工具
-func _hairline(min_size: Vector2) -> ColorRect:
-	var r := ColorRect.new()
-	r.color = UI.COL_LINE
-	r.custom_minimum_size = min_size
-	r.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	return r
-
 func _on_adventure() -> void:
 	Sound.play("begin")
 	Scene.goto("res://scenes/WorldMap.tscn")

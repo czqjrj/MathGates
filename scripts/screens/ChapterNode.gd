@@ -17,6 +17,7 @@ var max_stars: int = 3
 
 var _hover: bool = false
 var _t: float = 0.0
+var _pop: float = 0.0
 var _press := false
 var _press_pos := Vector2.ZERO
 var _press_scroll := 0.0
@@ -37,8 +38,15 @@ func _ready() -> void:
 	set_process(true)
 
 func _process(delta: float) -> void:
-	_t += delta
-	queue_redraw()
+	if UI.animations:
+		_t += delta
+		if _pop > 0.0:
+			_pop = maxf(_pop - delta, 0.0)
+		queue_redraw()
+		return
+	if _pop > 0.0:
+		_pop = maxf(_pop - delta, 0.0)
+		queue_redraw()
 
 func _gui_input(event: InputEvent) -> void:
 	# 抬起且未拖动/未滚屏时才选中,避免滑动地图时误开章节面板
@@ -54,6 +62,7 @@ func _gui_input(event: InputEvent) -> void:
 			_press = false
 			var moved: float = (mb.global_position - _press_pos).length()
 			if moved < 12.0 and absf(_scroll_v() - _press_scroll) < 4.0:
+				_pop = 0.45
 				selected.emit(chapter_index)
 
 func _scroll_v() -> float:
@@ -74,6 +83,11 @@ func _draw() -> void:
 	var base := color
 	if not unlocked:
 		base = Color("#4a4f63")
+
+	# 呼吸辉光（未解锁同样保留微弱呼吸，肉眼几乎无感）
+	if UI.animations:
+		var hp := 0.5 + 0.5 * sin(_t * 1.3 + chapter_index * 1.7)
+		draw_circle(c, 62.0 + hp * 9.0, Color(acc.r, acc.g, acc.b, 0.07 + 0.045 * hp))
 
 	# hover 光晕
 	if unlocked and _hover:
@@ -96,6 +110,12 @@ func _draw() -> void:
 	# hover 亮环
 	if unlocked and _hover:
 		draw_arc(c, 61.0, 0.0, TAU, 96, Color(acc, 0.55), 1.5, true)
+
+	# 选中涟漪：一圈快速扩散的光环
+	if _pop > 0.0:
+		var p := 1.0 - _pop / 0.45
+		var rr := 56.0 + 46.0 * (1.0 - pow(1.0 - p, 3.0))
+		draw_arc(c, rr, 0.0, TAU, 96, Color(acc.r, acc.g, acc.b, (1.0 - p) * 0.7), 3.0 * (1.0 - p) + 1.0, true)
 
 	# 等宽序号
 	var num := str(chapter_index + 1)

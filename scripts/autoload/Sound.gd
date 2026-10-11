@@ -3,13 +3,13 @@ extends Node
 ## 所有 Button 自动接线：按下 → click，悬停/聚焦 → hover。
 ## 特殊事件用 Sound.play("correct") 等手动触发。
 ##
-## 素材文件名：click / hover / select / correct / wrong / star / unlock / error / complete / begin
+## 素材文件名：click / hover / select / correct / wrong / star / unlock / error / complete / begin / deal
 ## 放 .wav / .ogg / .mp3 均可。
 
 const DIR := "res://audio/"
 const EXTS := [".wav", ".ogg", ".mp3"]
 const POOL_SIZE := 14
-const NAMES := ["click", "hover", "select", "correct", "wrong", "star", "unlock", "error", "complete", "begin"]
+const NAMES := ["click", "hover", "select", "correct", "wrong", "star", "unlock", "error", "complete", "begin", "deal"]
 
 var enabled: bool = true
 ## 音效音量系数(0..1)，由 Settings 注入；0 视为静音。

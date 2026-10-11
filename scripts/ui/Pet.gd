@@ -5,7 +5,7 @@ extends Control
 ## 有情绪状态(开心/低落/思考/犯困睡觉)、开心时冒星星；可拖动、可点击。
 ## 智能：可 learn() 记住当前知识点，respond() 时先"思考"再讲出要点。
 
-enum State { IDLE, HAPPY, SAD, SLEEP, THINK, EAT }
+enum State { IDLE, HAPPY, SAD, SLEEP, THINK, EAT, CURIOUS, LOVE, ANGRY, DANCE }
 
 const COL_BODY := Color("#6fe9ff")
 const COL_BODY_DK := Color("#2aa7c4")
@@ -17,6 +17,8 @@ const COL_EYE := Color("#12203a")
 const COL_CHEEK := Color("#ff8fb0")
 const COL_ANT := Color("#b48cff")
 const COL_SPARK := Color("#ffe27a")
+const COL_HEART := Color("#ff6f9c")
+const COL_NOTE := Color("#a8e6ff")
 
 const TIPS := [
 	"今天也一起把定理点亮吧！",
@@ -50,15 +52,12 @@ const CLINGY_TIERS := [
 		"想你想得冒泡泡了！快抱紧我～",
 	],
 ]
+const MEDAL_LINES := ["解锁勋章「%s」！好厉害～", "新勋章「%s」到手，快去看看～", "哇，拿到「%s」啦！"]
+const HUNGRY_LINES := ["肚子咕咕叫…右键喂我一下嘛～", "有点饿了，投喂我好不好～", "饿扁啦…右键点我喂食嘛！"]
 
 ## 好感度等级：由投喂次数决定(0 初识 / 1 熟悉 / 2 黏人)
 func affection_tier() -> int:
-	var fed := GameData.pet_fed
-	if fed >= 8:
-		return 2
-	if fed >= 3:
-		return 1
-	return 0
+	return GameData.pet_affection_tier()
 
 func _clingy_pool() -> Array:
 	return CLINGY_TIERS[affection_tier()]
@@ -103,6 +102,13 @@ var _celebration := 0.0
 var _celebration_dur := 1.9
 var _celebration_big := false
 var _spark_cd := 0.0
+# 智能与养成扩展
+var _combo := 0            # 连续答对数(跨题保持，答错清零)
+var _grumble := 0          # 连续答错数
+var _stat_t := 0.0         # 状态卡显示计时(悬停/互动后短暂显示)
+var _trick_cd := 3.0       # 自主小动作冷却
+var _medal_ready := false  # 限制勋章反应延迟(避免登录回填时齐声庆祝)
+var _aura := 0.0           # 光环脉动相位
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -111,11 +117,14 @@ func _ready() -> void:
 	_blink_t = randf_range(2.0, 4.0)
 	mouse_entered.connect(func() -> void:
 		_hover = true
+		_stat_t = 2.2
 		_wake()
 	)
 	mouse_exited.connect(func() -> void: _hover = false)
 	_target = position
 	_walk_wait = randf_range(0.8, 2.0)
+	GameData.medal_unlocked.connect(_on_medal)
+	get_tree().create_timer(0.6).timeout.connect(func() -> void: _medal_ready = true)
 	set_process(true)
 
 func _bounds_of() -> Vector2:
@@ -175,11 +184,18 @@ static func spawn(parent: Node, greet: String = "") -> Pet:
 	var vp := parent.get_viewport().get_visible_rect().size
 	pet.position = Vector2(vp.x - 150.0, vp.y - 172.0)
 	layer.add_child(pet)
+	# 出场弹入
+	pet.pivot_offset = pet.size * 0.5
+	if UI.animations:
+		pet.scale = Vector2(0.25, 0.25)
+		pet.create_tween().tween_property(pet, "scale", Vector2.ONE, 0.5) \
+			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	if not Settings.show_pet:
 		pet.visible = false
 		pet.set_process(false)
 	if greet != "":
 		pet.say(greet, 3.0)
+	pet.try_autogreet()
 	return pet
 
 func learn(d: Dictionary) -> void:
@@ -193,12 +209,14 @@ func _process(delta: float) -> void:
 		_blinking = not _blinking
 		_blink_t = 0.12 if _blinking else randf_range(2.2, 4.5)
 	# 情绪计时
-	if _state == State.HAPPY or _state == State.SAD or _state == State.THINK or _state == State.EAT:
+	if _state == State.HAPPY or _state == State.SAD or _state == State.THINK \
+		or _state == State.EAT or _state == State.LOVE or _state == State.CURIOUS \
+		or _state == State.ANGRY or _state == State.DANCE:
 		_state_t -= delta
 		if _state_t <= 0.0:
 			if _state == State.EAT:
 				say("好吃！再来一个～", 2.0)
-				_happy(0.9)
+				_love(0.9)
 			else:
 				_state = State.IDLE
 	# 待机 / 犯困
@@ -208,20 +226,40 @@ func _process(delta: float) -> void:
 			_state = State.SLEEP
 	else:
 		_idle = 0.0
+	# 自主小动作(饿了讨食 / 跳舞 / 好奇歪头)
+	_trick_cd -= delta
+	if _auto and _state == State.IDLE and _bubble <= 0.0 and not _drag and _trick_cd <= 0.0:
+		_trick_cd = randf_range(8.0, 16.0)
+		_do_trick()
 	# 智能提示
 	_auto_t += delta
 	if _auto and _state == State.IDLE and _auto_t > 30.0:
 		_auto_t = 0.0
-		say(TIPS[randi() % TIPS.size()], 3.0)
+		if GameData.pet_hungry():
+			say(HUNGRY_LINES[randi() % HUNGRY_LINES.size()], 3.2)
+		else:
+			say(TIPS[randi() % TIPS.size()], 3.0)
+	# 状态卡 / 光环
+	_stat_t = maxf(_stat_t - delta, 0.0)
+	_aura += delta
 	# 气泡
 	if _bubble > 0.0:
 		_bubble = maxf(_bubble - delta, 0.0)
-	# 星星
+	# 星星 / 爱心 / 音符 / 光环
 	var alive: Array = []
 	for s in _sparks:
 		s["life"] = float(s["life"]) - delta
-		s["pos"] = (s["pos"] as Vector2) + (s["vel"] as Vector2) * delta
-		s["vel"] = (s["vel"] as Vector2) + Vector2(0, 40.0) * delta
+		var kind := str(s.get("kind", "star"))
+		match kind:
+			"heart", "note":
+				s["pos"] = (s["pos"] as Vector2) + (s["vel"] as Vector2) * delta
+				s["vel"] = (s["vel"] as Vector2) + Vector2(0, -26.0) * delta
+				(s["pos"] as Vector2).x += sin((s["pos"] as Vector2).y * 0.1) * 6.0 * delta
+			"ring":
+				s["radius"] = float(s.get("radius", 12.0)) + 90.0 * delta
+			_:
+				s["pos"] = (s["pos"] as Vector2) + (s["vel"] as Vector2) * delta
+				s["vel"] = (s["vel"] as Vector2) + Vector2(0, 40.0) * delta
 		if float(s["life"]) > 0.0:
 			alive.append(s)
 	_sparks = alive
@@ -250,6 +288,9 @@ func say(text: String, dur: float = 3.0, speak: bool = false) -> void:
 
 func _pop() -> void:
 	_happy(1.2)
+	GameData.pet_touch()
+	GameData.pet_mood = clampf(GameData.pet_mood + 0.03, 0.2, 1.0)
+	_stat_t = 2.4
 	var chance := 0.2 + affection_tier() * 0.15
 	if randf() < chance:
 		var pool := _clingy_pool()
@@ -271,7 +312,99 @@ func _feed() -> void:
 	_state_t = 1.1
 	_wake()
 	GameData.add_pet_fed()
+	_spawn_hearts(5)
+	_stat_t = 2.4
 	Sound.play("select")
+
+# ---------------------------------------------------------------- 智能
+## 勋章解锁反应(GameData 广播；登录回填延迟后自动忽略避免齐声庆祝)
+func _on_medal(m: Dictionary) -> void:
+	if not _medal_ready or not visible:
+		return
+	var nm := str(m.get("name", ""))
+	_love(1.4)
+	say(MEDAL_LINES[randi() % MEDAL_LINES.size()] % nm, 3.4, true)
+	Sound.play("star")
+
+## 升级反应：接在外部 celebrate 之后补一句台词与舞蹈
+func on_level_up(level: int) -> void:
+	if not visible:
+		return
+	_dance(1.4)
+	say("升级啦！现在 Lv.%d，好厉害～" % level, 3.2)
+
+## 出场问候：优先"好久不见"，其次"饿了"。返回是否已自行问候(供主城跳过普通问候)
+func try_autogreet() -> bool:
+	if not visible:
+		return false
+	if GameData.pet_away_days >= 1.0:
+		_love(1.2)
+		say("好久不见啦，我好想你～", 3.6)
+		return true
+	if GameData.pet_hungry():
+		_state = State.ANGRY
+		_state_t = 1.4
+		say(HUNGRY_LINES[randi() % HUNGRY_LINES.size()], 3.4)
+		return true
+	return false
+
+## 自主小动作：饿了讨食 / 跳舞 / 好奇歪头
+func _do_trick() -> void:
+	if GameData.pet_hungry():
+		say(HUNGRY_LINES[randi() % HUNGRY_LINES.size()], 3.0)
+		return
+	if randf() < 0.5:
+		_dance(1.5)
+	else:
+		_curious(1.4)
+
+func _love(dur: float) -> void:
+	_state = State.LOVE
+	_state_t = dur
+	_wake()
+	_spawn_hearts(6)
+
+func _dance(dur: float) -> void:
+	_state = State.DANCE
+	_state_t = dur
+	_wake()
+	_spawn_notes(5)
+	Sound.play("select")
+
+func _curious(dur: float) -> void:
+	_state = State.CURIOUS
+	_state_t = dur
+	_wake()
+
+func _spawn_hearts(n: int) -> void:
+	for i in n:
+		_sparks.append({
+			"kind": "heart",
+			"pos": size * 0.5 + Vector2(randf_range(-22.0, 22.0), randf_range(-12.0, 6.0)),
+			"vel": Vector2(randf_range(-20.0, 20.0), randf_range(-46.0, -20.0)),
+			"life": randf_range(0.7, 1.1),
+			"size": randf_range(5.0, 8.5),
+		})
+
+func _spawn_notes(n: int) -> void:
+	for i in n:
+		_sparks.append({
+			"kind": "note",
+			"pos": size * 0.5 + Vector2(randf_range(-24.0, 24.0), randf_range(-6.0, 10.0)),
+			"vel": Vector2(randf_range(-24.0, 24.0), randf_range(-52.0, -24.0)),
+			"life": randf_range(0.7, 1.1),
+			"size": 1.0,
+		})
+
+func _spawn_ring() -> void:
+	_sparks.append({
+		"kind": "ring",
+		"pos": size * 0.5,
+		"vel": Vector2.ZERO,
+		"radius": 12.0,
+		"life": 0.6,
+		"size": 1.0,
+	})
 
 ## 每日问候语(按时段变化)
 static func daily_greeting(nm: String) -> String:
@@ -295,14 +428,39 @@ static func daily_greeting(nm: String) -> String:
 	]
 	return pool[randi() % pool.size()]
 
+## 答对鼓励：累积连击，里程碑时加大庆祝与专属台词。
 func cheer() -> void:
+	_combo += 1
+	_grumble = 0
 	_happy(1.2)
-	say(CHEER[randi() % CHEER.size()], 2.4)
+	GameData.pet_mood = clampf(GameData.pet_mood + 0.01, 0.2, 1.0)
+	var milestone := _combo == 3 or _combo == 5 or _combo == 8 or (_combo >= 8 and _combo % 4 == 0)
+	if milestone:
+		celebrate(1.1)
+	var line := ""
+	match _combo:
+		3: line = "三连击！手感正热～"
+		5: line = "五连击！太顺了，稳住～"
+		8: line = "八连击！！你太强了吧～"
+		_:
+			if _combo >= 8 and _combo % 4 == 0:
+				line = "连击 x%d！势不可挡～" % _combo
+	if line == "":
+		line = CHEER[randi() % CHEER.size()]
+	say(line, 2.6)
 
 func comfort() -> void:
-	_state = State.SAD
-	_state_t = 1.6
-	say(COMFORT[randi() % COMFORT.size()], 2.8)
+	_combo = 0
+	_grumble += 1
+	GameData.pet_mood = clampf(GameData.pet_mood - 0.02, 0.2, 1.0)
+	if _grumble >= 3 and randf() < 0.6:
+		_state = State.ANGRY
+		_state_t = 1.6
+		say("哼，认真点嘛！我陪你一起想～", 2.8)
+	else:
+		_state = State.SAD
+		_state_t = 1.6
+		say(COMFORT[randi() % COMFORT.size()], 2.8)
 
 ## 智能回答：先"思考一下"，再讲出要点(可配合 learn() 记住的知识点)
 func respond(text: String) -> void:
@@ -328,6 +486,7 @@ func celebrate(intensity: float = 1.0) -> void:
 	_celebration_big = intensity > 1.2
 	_spark_cd = 0.0
 	_happy(_celebration_dur)
+	_spawn_ring()
 	say("完美通关！太强啦！" if intensity > 1.2 else "通关啦！太厉害啦～", 3.2)
 	Sound.play("star")
 
@@ -355,6 +514,8 @@ func _draw() -> void:
 		hop = -absf(sin(cp * PI * 3.0)) * (30.0 if _celebration_big else 24.0)
 	if _state == State.SLEEP:
 		bob = sin(_t * 1.2) * 2.0
+	if _state == State.DANCE:
+		hop = -absf(sin(_t * 8.0)) * 9.0
 	var R := 36.0 * breath
 	var step := sin(_walk_phase) * (4.0 if _moving else 0.0)
 	var walk := absf(sin(_walk_phase)) * 2.5 if _moving else 0.0
@@ -363,6 +524,13 @@ func _draw() -> void:
 
 	# 影子
 	draw_circle(Vector2(c.x, size.y - 6.0), 24.0, Color(0, 0, 0, 0.20))
+	# 好感光环(高好感/庆祝/示好时脉动)
+	if affection_tier() > 0 or _celebration > 0.0 or _state == State.LOVE:
+		draw_circle(center, R + 15.0, Color(COL_BODY_HI, 0.10 + 0.07 * sin(_aura * 2.4)))
+	# 挤压缩放(跳起拉长、落地压扁)：以 center 为轴缩放身体部件
+	var sy := clampf(1.0 - hop / 260.0, 0.88, 1.20)
+	var sx := 1.0 / sy
+	draw_set_transform(Vector2((1.0 - sx) * center.x, (1.0 - sy) * center.y), 0.0, Vector2(sx, sy))
 	# 小尾巴(走路时摆动)
 	draw_circle(center + Vector2(R * 0.9, R * 0.35 + step * 0.5), 6.0, COL_BODY_DK)
 	# 小脚(交替迈步)
@@ -397,6 +565,7 @@ func _draw() -> void:
 	draw_circle(center + Vector2(R * 0.58, R * 0.22), 5.5, Color(COL_CHEEK, 0.65))
 	# 眼睛 / 嘴
 	_draw_face(center, R)
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	# 喂食：饼干落下
 	if _state == State.EAT:
 		var prog := clampf((1.1 - _state_t) / 1.1, 0.0, 1.0)
@@ -406,10 +575,28 @@ func _draw() -> void:
 		draw_circle(cp + Vector2(-2.0, -1.5), 1.5, Color("#5a3417"))
 		draw_circle(cp + Vector2(2.0, 1.0), 1.5, Color("#5a3417"))
 		draw_circle(cp + Vector2(0.5, -2.8), 1.2, Color("#5a3417"))
-	# 星星
+	# 星星 / 爱心 / 音符 / 光环
 	for s in _sparks:
-		_draw_spark(s["pos"], float(s["size"]), clampf(float(s["life"]) / 0.9, 0.0, 1.0))
-	# 睡觉 Z
+		var kind := str(s.get("kind", "star"))
+		var a := clampf(float(s["life"]) / 0.9, 0.0, 1.0)
+		match kind:
+			"heart": _draw_heart(s["pos"], float(s["size"]), a)
+			"note": _draw_note(s["pos"], a)
+			"ring": draw_arc(s["pos"], float(s.get("radius", 12.0)), 0.0, TAU, 32, Color(UI.COL_ACCENT, a * 0.8), 2.0, true)
+			_: _draw_spark(s["pos"], float(s["size"]), a)
+	# 状态标记：饿(感叹号) / 好奇(问号) / 生气(怒筋)
+	if GameData.pet_hungry() and _state != State.EAT and _bubble <= 0.0 and (_state == State.IDLE or _state == State.SLEEP):
+		var hp := center + Vector2(R * 0.55, -R - 28.0)
+		draw_circle(hp, 9.0, Color("#ffd479"))
+		draw_string(UI.font(), hp + Vector2(-6.0, 5.0), "!", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("#5a3a00"))
+	if _state == State.CURIOUS and _bubble <= 0.0:
+		var qp := center + Vector2(R * 0.30, -R - 30.0)
+		draw_string(UI.font(), qp + Vector2(-10.0, 0.0), "?", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color(UI.COL_ACCENT, 0.9))
+	if _state == State.ANGRY:
+		var ap := center + Vector2(R + 2.0, -R - 6.0)
+		draw_line(ap + Vector2(-5, -5), ap + Vector2(5, 5), Color("#ff6b6b"), 2.4)
+		draw_line(ap + Vector2(5, -5), ap + Vector2(-5, 5), Color("#ff6b6b"), 2.4)
+	# 睡觉 Z + 做梦小云朵
 	if _state == State.SLEEP:
 		var f := UI.font()
 		for i in 3:
@@ -417,34 +604,60 @@ func _draw() -> void:
 			var ph := fposmod(_t * 0.5 + i * 0.33, 1.0)
 			var pos := center + Vector2(R + 16.0 + i * 10.0, -R - 6.0 - ph * 22.0)
 			draw_string(f, pos, zz, HORIZONTAL_ALIGNMENT_LEFT, -1, 14 + i * 4, Color(1, 1, 1, 0.7 * (1.0 - ph)))
+		var dp := center + Vector2(-R * 0.3, -R - 88.0 + 6.0 * sin(_t * 3.0))
+		draw_circle(dp, 13.0, Color(1, 1, 1, 0.08))
+		draw_arc(dp, 13.0, 0.0, TAU, 24, Color(1, 1, 1, 0.30), 1.2, true)
+		_draw_spark(dp, 6.0, 0.9)
 	# 气泡
 	if _bubble > 0.0 and _bubble_text != "":
 		_draw_bubble(center + Vector2(0, -R - 32))
+	# 养成状态卡(悬停或互动后短暂显示)
+	if _stat_t > 0.0:
+		_draw_status_card(center + Vector2(0, -R - 40))
 
 func _draw_face(center: Vector2, R: float) -> void:
 	var ex := R * 0.40
 	var ey := -R * 0.12
-	if _state == State.EAT:
-		draw_arc(center + Vector2(-ex, ey), 7.5, PI + 0.5, TAU - 0.5, 16, COL_EYE, 3.0, true)
-		draw_arc(center + Vector2(ex, ey), 7.5, PI + 0.5, TAU - 0.5, 16, COL_EYE, 3.0, true)
-		_draw_mouth(center, R, 2.0)
-		return
-	if _state == State.SLEEP:
-		draw_arc(center + Vector2(-ex, ey), 7.0, PI, TAU, 16, COL_EYE, 2.6, true)
-		draw_arc(center + Vector2(ex, ey), 7.0, PI, TAU, 16, COL_EYE, 2.6, true)
-		_draw_mouth(center, R, 0.0)
-		return
-	if _state == State.HAPPY:
-		draw_arc(center + Vector2(-ex, ey), 7.5, PI + 0.5, TAU - 0.5, 16, COL_EYE, 3.0, true)
-		draw_arc(center + Vector2(ex, ey), 7.5, PI + 0.5, TAU - 0.5, 16, COL_EYE, 3.0, true)
-		_draw_mouth(center, R, 2.0)
-		return
-	# 普通/思考/低落：大眼 + 瞳孔跟随
-	var look := (get_local_mouse_position() - center)
-	if _state == State.THINK:
-		look = Vector2(-12.0, -10.0)
-	look = Vector2(clampf(look.x, -10.0, 10.0), clampf(look.y, -8.0, 8.0)) * 0.10
-	var eye_r := 9.0 if _hover else 8.0
+	match _state:
+		State.EAT:
+			draw_arc(center + Vector2(-ex, ey), 7.5, PI + 0.5, TAU - 0.5, 16, COL_EYE, 3.0, true)
+			draw_arc(center + Vector2(ex, ey), 7.5, PI + 0.5, TAU - 0.5, 16, COL_EYE, 3.0, true)
+			_draw_mouth(center, R, 2.0)
+		State.SLEEP:
+			draw_arc(center + Vector2(-ex, ey), 7.0, PI, TAU, 16, COL_EYE, 2.6, true)
+			draw_arc(center + Vector2(ex, ey), 7.0, PI, TAU, 16, COL_EYE, 2.6, true)
+			_draw_mouth(center, R, 0.0)
+		State.HAPPY, State.DANCE:
+			draw_arc(center + Vector2(-ex, ey), 7.5, PI + 0.5, TAU - 0.5, 16, COL_EYE, 3.0, true)
+			draw_arc(center + Vector2(ex, ey), 7.5, PI + 0.5, TAU - 0.5, 16, COL_EYE, 3.0, true)
+			_draw_mouth(center, R, 2.0)
+		State.LOVE:
+			_draw_eye_heart(center + Vector2(-ex, ey), 9.0)
+			_draw_eye_heart(center + Vector2(ex, ey), 9.0)
+			_draw_mouth(center, R, 2.0)
+		State.ANGRY:
+			_draw_eye(center, ex, ey, 8.0, Vector2.ZERO)
+			draw_line(center + Vector2(-ex - 6.0, ey - 12.0), center + Vector2(-ex + 5.0, ey - 7.0), COL_EYE, 2.6)
+			draw_line(center + Vector2(ex + 6.0, ey - 12.0), center + Vector2(ex - 5.0, ey - 7.0), COL_EYE, 2.6)
+			_draw_mouth(center, R, -1.0)
+		State.CURIOUS:
+			_draw_eye(center, ex, ey, 10.0, Vector2(0.0, -2.0))
+			draw_line(center + Vector2(-ex - 5.0, ey - 12.0), center + Vector2(-ex + 3.0, ey - 15.0), COL_EYE, 2.2)
+			draw_line(center + Vector2(ex - 3.0, ey - 15.0), center + Vector2(ex + 5.0, ey - 12.0), COL_EYE, 2.2)
+			_draw_mouth(center, R, 0.0)
+		_:
+			var look := (get_local_mouse_position() - center)
+			if _state == State.THINK:
+				look = Vector2(-12.0, -10.0)
+			look = Vector2(clampf(look.x, -10.0, 10.0), clampf(look.y, -8.0, 8.0)) * 0.10
+			_draw_eye(center, ex, ey, 9.0 if _hover else 8.0, look)
+			# 眉毛(低落时下垂)
+			if _state == State.SAD:
+				draw_line(center + Vector2(-ex - 5.0, ey - 11.0), center + Vector2(-ex + 4.0, ey - 8.0), COL_EYE, 2.0)
+				draw_line(center + Vector2(ex + 5.0, ey - 11.0), center + Vector2(ex - 4.0, ey - 8.0), COL_EYE, 2.0)
+			_draw_mouth(center, R, -1.0 if _state == State.SAD else 0.0)
+
+func _draw_eye(center: Vector2, ex: float, ey: float, eye_r: float, look: Vector2) -> void:
 	for sx in [-1.0, 1.0]:
 		var ec := center + Vector2(sx * ex, ey)
 		draw_circle(ec, eye_r, Color(1, 1, 1, 0.96))
@@ -453,11 +666,16 @@ func _draw_face(center: Vector2, R: float) -> void:
 		draw_circle(ec + look + Vector2(0, eye_r * 0.22), eye_r * 0.30, COL_IRIS2)
 		draw_circle(ec + look, eye_r * 0.34, COL_EYE)
 		draw_circle(ec + look + Vector2(-eye_r * 0.28, -eye_r * 0.30), eye_r * 0.22, Color(1, 1, 1, 0.95))
-	# 眉毛(低落时下垂)
-	if _state == State.SAD:
-		draw_line(center + Vector2(-ex - 5.0, ey - 11.0), center + Vector2(-ex + 4.0, ey - 8.0), COL_EYE, 2.0)
-		draw_line(center + Vector2(ex + 5.0, ey - 11.0), center + Vector2(ex - 4.0, ey - 8.0), COL_EYE, 2.0)
-	_draw_mouth(center, R, -1.0 if _state == State.SAD else 0.0)
+
+func _draw_eye_heart(pos: Vector2, sz: float) -> void:
+	var col := COL_HEART
+	draw_circle(pos + Vector2(-sz * 0.4, -sz * 0.28), sz * 0.5, col)
+	draw_circle(pos + Vector2(sz * 0.4, -sz * 0.28), sz * 0.5, col)
+	draw_colored_polygon(PackedVector2Array([
+		Vector2(pos.x - sz * 0.9, pos.y - sz * 0.25),
+		Vector2(pos.x + sz * 0.9, pos.y - sz * 0.25),
+		Vector2(pos.x, pos.y + sz * 0.95),
+	]), col)
 
 func _draw_mouth(center: Vector2, R: float, mood: float) -> void:
 	var my := center + Vector2(0, R * 0.26)
@@ -475,6 +693,54 @@ func _draw_spark(pos: Vector2, sz: float, a: float) -> void:
 	draw_line(pos + Vector2(0, -sz), pos + Vector2(0, sz), col, 1.8)
 	draw_line(pos + Vector2(-sz * 0.6, -sz * 0.6), pos + Vector2(sz * 0.6, sz * 0.6), col, 1.2)
 	draw_line(pos + Vector2(-sz * 0.6, sz * 0.6), pos + Vector2(sz * 0.6, -sz * 0.6), col, 1.2)
+
+func _draw_heart(pos: Vector2, sz: float, a: float) -> void:
+	var col := Color(COL_HEART, a)
+	draw_circle(pos + Vector2(-sz * 0.4, -sz * 0.28), sz * 0.5, col)
+	draw_circle(pos + Vector2(sz * 0.4, -sz * 0.28), sz * 0.5, col)
+	draw_colored_polygon(PackedVector2Array([
+		Vector2(pos.x - sz * 0.9, pos.y - sz * 0.25),
+		Vector2(pos.x + sz * 0.9, pos.y - sz * 0.25),
+		Vector2(pos.x, pos.y + sz * 0.95),
+	]), col)
+
+func _draw_note(pos: Vector2, a: float) -> void:
+	var col := Color(COL_NOTE, a)
+	draw_line(pos, pos + Vector2(0, -11.0), col, 2.0)
+	draw_line(pos + Vector2(0, -11.0), pos + Vector2(5.0, -9.0), col, 2.0)
+	draw_circle(pos + Vector2(-2.0, 0), 3.4, col)
+
+## 养成状态卡(好感度 / 饱食度 / 心情)，悬停或互动后短暂显示
+func _draw_status_card(pos: Vector2) -> void:
+	var w := 156.0
+	var h := 66.0
+	var rect := Rect2(pos - Vector2(w * 0.5 + 8.0, h + 12.0), Vector2(w + 16.0, h + 12.0))
+	var vp := get_viewport_rect()
+	var gp := global_position + rect.position
+	gp.x = clampf(gp.x, 6.0, maxf(vp.size.x - rect.size.x - 6.0, 6.0))
+	gp.y = clampf(gp.y, 6.0, maxf(vp.size.y - rect.size.y - 6.0, 6.0))
+	rect.position = gp - global_position
+	draw_rect(rect, Color(0.05, 0.07, 0.12, 0.92), true)
+	draw_rect(rect, Color(UI.COL_ACCENT, 0.5), false, 1.2)
+	var f := UI.font()
+	var fsz := UI.fs(12)
+	var pad := rect.position + Vector2(12.0, 8.0)
+	# 好感度(♥ 随喂养等级增加)
+	draw_string(f, pad, "好感", HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, UI.COL_TEXT_DIM)
+	var tier := affection_tier()
+	for i in 3:
+		_draw_heart(pad + Vector2(46.0 + i * 15.0, 6.0), 7.5, 1.0 if i <= tier else 0.22)
+	# 饱食度
+	var sat: float = GameData.pet_satiety
+	draw_string(f, pad + Vector2(0, 25.0), "饱食", HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, UI.COL_TEXT_DIM)
+	draw_rect(Rect2(pad + Vector2(46.0, 17.0), Vector2(92.0, 7.0)), Color(1, 1, 1, 0.12), true)
+	draw_rect(Rect2(pad + Vector2(46.0, 17.0), Vector2(92.0 * clampf(sat, 0.0, 1.0), 7.0)), Color("#ffd479"), true)
+	# 心情
+	var mood: float = GameData.pet_mood
+	var mood_col: Color = UI.COL_SUCCESS if mood >= 0.75 else (UI.COL_ACCENT if mood >= 0.45 else Color("#ff9a6b"))
+	draw_string(f, pad + Vector2(0, 46.0), "心情", HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, UI.COL_TEXT_DIM)
+	draw_rect(Rect2(pad + Vector2(46.0, 38.0), Vector2(92.0, 7.0)), Color(1, 1, 1, 0.12), true)
+	draw_rect(Rect2(pad + Vector2(46.0, 38.0), Vector2(92.0 * clampf(mood, 0.0, 1.0), 7.0)), Color(mood_col), true)
 
 func _draw_bubble(pos: Vector2) -> void:
 	var f := UI.font()

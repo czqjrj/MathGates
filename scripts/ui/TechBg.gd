@@ -131,6 +131,7 @@ class Fx extends Control:
 			owner_bg._paint(self)
 
 var _t: float = 0.0
+var _static := false
 var _shade_mat: ShaderMaterial
 var _fx: Fx
 var _stars: Array[Star] = []
@@ -217,6 +218,16 @@ func _ready() -> void:
 	set_process(true)
 
 func _process(delta: float) -> void:
+	if not UI.animations:
+		if _static:
+			return
+		_static = true
+		if _shade_mat != null:
+			_shade_mat.set_shader_parameter("time", 0.0)
+		if _fx != null:
+			_fx.queue_redraw()
+		return
+	_static = false
 	_t += delta
 	if _shade_mat != null:
 		_shade_mat.set_shader_parameter("time", _t)

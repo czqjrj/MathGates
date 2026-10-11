@@ -455,7 +455,7 @@ func _finish() -> void:
 			inten = maxf(inten, 1.5)
 		_pet.celebrate(inten)
 		if lv1 > lv0:
-			_pet.say("升级啦！现在 Lv.%d，恭喜～" % lv1, 3.2)
+			_pet.on_level_up(lv1)
 	_v_title.text = "实验通关" if passed else "实验失败 · 请复盘"
 	_v_title.add_theme_color_override("font_color", UI.COL_TEXT if passed else UI.COL_DANGER)
 	if st >= 3:

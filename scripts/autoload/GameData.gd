@@ -2,6 +2,8 @@ extends Node
 ## 全局数据：课程表、进度、存档
 
 signal progress_changed
+## 达成新勋章时发出(供 UI 反应；Toast/音效通知已在 GameData 内统一处理)
+signal medal_unlocked(medal: Dictionary)
 
 const CURRICULUM_PATH := "res://data/curriculum.json"
 const QUESTIONS_PATH := "res://data/questions.json"
@@ -20,10 +22,45 @@ const AVATARS := [
 	{ "id": "train", "icon": "icon_train", "color": "#4dd6a8" },
 ]
 
+## 称号阶梯：按「满星比例」达成，课程扩充时自动适配，无需改数值。
+const RANKS := [
+	{ "title": "窥数者",     "ratio": 0.00 },
+	{ "title": "演算者",     "ratio": 0.06 },
+	{ "title": "衍算师",     "ratio": 0.15 },
+	{ "title": "定理执笔人", "ratio": 0.30 },
+	{ "title": "公理谛听者", "ratio": 0.50 },
+	{ "title": "衍数尊者",   "ratio": 0.70 },
+	{ "title": "衍数阁主",   "ratio": 0.88 },
+]
+
+## 勋章/成就定义。symbol 为徽章中央字符；达成条件见 _medal_met()。
+const MEDALS := [
+	{ "id": "first_clear",   "name": "初露锋芒", "desc": "首次通关任意关卡",             "symbol": "初", "color": "#5ee6ff" },
+	{ "id": "clear_10",      "name": "小有心得", "desc": "通关 10 个关卡",               "symbol": "十", "color": "#5ee6ff" },
+	{ "id": "clear_30",      "name": "登堂入室", "desc": "通关 30 个关卡",               "symbol": "堂", "color": "#a878ff" },
+	{ "id": "clear_60",      "name": "融会贯通", "desc": "通关 60 个关卡",               "symbol": "贯", "color": "#a878ff" },
+	{ "id": "perfect_1",     "name": "一丝不苟", "desc": "首次满星通关",                 "symbol": "满", "color": "#ffd479" },
+	{ "id": "perfect_10",    "name": "完美主义", "desc": "满星关卡达到 10 个",           "symbol": "完", "color": "#ffd479" },
+	{ "id": "perfect_30",    "name": "精益求精", "desc": "满星关卡达到 30 个",           "symbol": "精", "color": "#f6bd16" },
+	{ "id": "chapter_master","name": "章节通解", "desc": "任意章节集满全部星星",         "symbol": "章", "color": "#45C7E5" },
+	{ "id": "stars_50",      "name": "星辉初绽", "desc": "累计获得 50 颗星",             "symbol": "星", "color": "#5ee6ff" },
+	{ "id": "stars_150",     "name": "星河璀璨", "desc": "累计获得 150 颗星",            "symbol": "河", "color": "#a878ff" },
+	{ "id": "stars_300",     "name": "满天星斗", "desc": "累计获得 300 颗星",            "symbol": "斗", "color": "#ffd479" },
+	{ "id": "answer_100",    "name": "勤学不辍", "desc": "累计作答 100 题",              "symbol": "勤", "color": "#34d399" },
+	{ "id": "answer_500",    "name": "博览群题", "desc": "累计作答 500 题",              "symbol": "博", "color": "#34d399" },
+	{ "id": "accuracy_80",   "name": "精准推演", "desc": "作答满 50 题且正确率 ≥ 80%",    "symbol": "准", "color": "#34d399" },
+	{ "id": "coins_1000",    "name": "富甲一方", "desc": "金币累计达到 1000",            "symbol": "金", "color": "#ffd479" },
+	{ "id": "boss_first",    "name": "破阵者",   "desc": "通关任意隐藏 Boss",            "symbol": "破", "color": "#fb7185" },
+	{ "id": "boss_all",      "name": "无冕之王", "desc": "通关全部隐藏 Boss",            "symbol": "王", "color": "#fb7185" },
+	{ "id": "pet_3",         "name": "亲密伙伴", "desc": "投喂萌宠 3 次",                "symbol": "友", "color": "#4dd6a8" },
+	{ "id": "pet_10",        "name": "形影不离", "desc": "投喂萌宠 10 次",               "symbol": "伴", "color": "#4dd6a8" },
+]
+
 var chapters: Array = []
 var stars: Dictionary = {}      # level_id -> int(0..3)
 var player_exp: int = 0
 var coins: int = 0
+var medals: Dictionary = {}     # medal_id -> 解锁时间戳
 
 # ---- 用户系统(多用户) ----
 var users: Dictionary = {}              # 用户名 -> 存档 dict
@@ -34,6 +71,10 @@ var total_correct: int = 0              # 累计答对数
 var wrong_log: Dictionary = {}          # "level_id#qi" -> {level_id, qi, name, module, count, last_chose, correct}
 var level_records: Dictionary = {}      # level_id -> {attempts, best_stars, last_clean, last_total, trap_missed}
 var pet_fed: int = 0                    # 萌宠投喂次数
+var pet_satiety: float = 1.0            # 饱食度 0..1(随时间下降，投喂回满)
+var pet_mood: float = 0.8               # 心情 0..1(答对/投喂上升，答错/久未互动下降)
+var pet_last_seen: int = 0              # 上次互动时间戳(秒)；用于跨会话衰减
+var pet_away_days: float = 0.0          # 本次登录距上次互动天数(不存档，供萌宠问候)
 var regions_seen: int = 0               # 已见过的解锁区域数(用于"解锁新区域"庆祝)
 var pet_greeted_session: bool = false   # 本次运行是否已让萌宠撒娇(不存档)
 var chapter_order: Array = []           # 知识体系首页章节卡片的自定义顺序(章节 id 列表)
@@ -233,22 +274,145 @@ func total_max_stars() -> int:
 func player_level() -> int:
 	return 1 + int(total_stars() / 8.0)
 
-func rank_title() -> String:
+## 等级进度(每 8 星升 1 级)：{level, cur, span, ratio}
+func level_progress() -> Dictionary:
 	var s := total_stars()
-	if s < 5:
-		return "见习推演者"
-	elif s < 15:
-		return "初级推演者"
-	elif s < 30:
-		return "中级推演者"
-	elif s < 50:
-		return "高级推演者"
-	return "首席推演官"
+	var into := s % 8
+	return { "level": 1 + int(s / 8.0), "cur": into, "span": 8, "ratio": float(into) / 8.0 }
+
+# ---------------------------------------------------------------- 称号阶梯
+## 当前称号在 RANKS 中的下标(按满星比例达成)
+func rank_index() -> int:
+	var s := total_stars()
+	var mx := maxi(1, total_max_stars())
+	var idx := 0
+	for i in RANKS.size():
+		if s >= int(ceil(float(RANKS[i]["ratio"]) * float(mx))):
+			idx = i
+	return idx
+
+func rank_title() -> String:
+	return str(RANKS[rank_index()]["title"])
+
+## 称号进度：{title, next_title, cur, span, need, ratio}(已满级 next_title 为空)
+func rank_progress() -> Dictionary:
+	var s := total_stars()
+	var mx := maxi(1, total_max_stars())
+	var idx := rank_index()
+	var prev := int(ceil(float(RANKS[idx]["ratio"]) * float(mx)))
+	var has_next := idx < RANKS.size() - 1
+	var target := mx if not has_next else int(ceil(float(RANKS[idx + 1]["ratio"]) * float(mx)))
+	var span := maxi(1, target - prev)
+	var into := clampi(s - prev, 0, span)
+	return {
+		"title": str(RANKS[idx]["title"]),
+		"next_title": str(RANKS[idx + 1]["title"]) if has_next else "",
+		"cur": into, "span": span,
+		"need": maxi(0, target - s),
+		"ratio": float(into) / float(span),
+	}
+
+# ---------------------------------------------------------------- 勋章 / 成就
+func medal_def(id: String) -> Dictionary:
+	for m in MEDALS:
+		if str(m["id"]) == id:
+			return m
+	return {}
+
+func is_medal_unlocked(id: String) -> bool:
+	return medals.has(id)
+
+func medal_count() -> int:
+	return medals.size()
+
+## 已解锁勋章(按 MEDALS 顺序)
+func unlocked_medals() -> Array:
+	var arr: Array = []
+	for m in MEDALS:
+		if medals.has(str(m["id"])):
+			arr.append(m)
+	return arr
+
+## 隐藏 Boss 关卡 id 列表(以 _boss 结尾)
+func _boss_level_ids() -> Array:
+	var arr: Array = []
+	for ch in chapters:
+		for lv in ch.get("levels", []):
+			if str(lv.get("id", "")).ends_with("_boss"):
+				arr.append(str(lv["id"]))
+	return arr
+
+func _cleared_level_count() -> int:
+	var n := 0
+	for ch in chapters:
+		for lv in ch.get("levels", []):
+			if int(stars.get(lv["id"], 0)) >= 1:
+				n += 1
+	return n
+
+func _full_star_level_count() -> int:
+	var n := 0
+	for ch in chapters:
+		for lv in ch.get("levels", []):
+			if int(stars.get(lv["id"], 0)) >= 3:
+				n += 1
+	return n
+
+func _boss_cleared_count() -> int:
+	var n := 0
+	for id in _boss_level_ids():
+		if int(stars.get(id, 0)) >= 1:
+			n += 1
+	return n
+
+## 单枚勋章的达成判定
+func _medal_met(id: String) -> bool:
+	match id:
+		"first_clear":    return _cleared_level_count() >= 1
+		"clear_10":       return _cleared_level_count() >= 10
+		"clear_30":       return _cleared_level_count() >= 30
+		"clear_60":       return _cleared_level_count() >= 60
+		"perfect_1":      return _full_star_level_count() >= 1
+		"perfect_10":     return _full_star_level_count() >= 10
+		"perfect_30":     return _full_star_level_count() >= 30
+		"chapter_master":
+			for ch in chapters:
+				if chapter_max_stars(ch) > 0 and chapter_stars(ch) >= chapter_max_stars(ch):
+					return true
+			return false
+		"stars_50":       return total_stars() >= 50
+		"stars_150":      return total_stars() >= 150
+		"stars_300":      return total_stars() >= 300
+		"answer_100":     return total_questions >= 100
+		"answer_500":     return total_questions >= 500
+		"accuracy_80":    return total_questions >= 50 and accuracy() >= 0.8
+		"coins_1000":     return coins >= 1000
+		"boss_first":     return _boss_cleared_count() >= 1
+		"boss_all":
+			var total := _boss_level_ids().size()
+			return total > 0 and _boss_cleared_count() >= total
+		"pet_3":          return pet_fed >= 3
+		"pet_10":         return pet_fed >= 10
+	return false
+
+## 结算勋章：解锁新达成的成就。notify=true 时弹提示音+飘字(登录回填时传 false)。
+func _eval_medals(notify: bool = true) -> void:
+	for m in MEDALS:
+		var id := str(m["id"])
+		if medals.has(id):
+			continue
+		if _medal_met(id):
+			medals[id] = Time.get_datetime_string_from_system(false, true)
+			medal_unlocked.emit(m)
+			if notify:
+				Sound.play("unlock")
+				Toast.show_toast("解锁勋章 · %s" % str(m["name"]))
 
 # ---------------------------------------------------------------- 修改
 func grant_stars(level_id: String, n: int) -> void:
 	stars[level_id] = maxi(int(stars.get(level_id, 0)), n)
 	player_exp += 10 * n
+	_eval_medals()
 	_save()
 	progress_changed.emit()
 
@@ -261,18 +425,73 @@ func reset_progress() -> void:
 	total_correct = 0
 	wrong_log.clear()
 	level_records.clear()
+	medals.clear()
 	pet_fed = 0
+	pet_satiety = 1.0
+	pet_mood = 0.8
+	pet_last_seen = 0
 	_save()
 	progress_changed.emit()
 
 func add_coins(n: int) -> void:
 	coins += n
+	_eval_medals()
 	_save()
 	progress_changed.emit()
 
 func add_pet_fed() -> void:
 	pet_fed += 1
+	pet_satiety = 1.0
+	pet_mood = minf(1.0, pet_mood + 0.12)
+	pet_last_seen = int(Time.get_unix_time_from_system())
+	_eval_medals()
 	_save()
+
+# ---------------------------------------------------------------- 萌宠养成
+const PET_DECAY_PER_DAY := 0.32   # 每天饱食度自然下降
+const PET_MOOD_BASE := 0.55       # 心情自然回落基准
+
+## 好感度等级：由投喂次数决定(0 初识 / 1 熟悉 / 2 黏人)
+func pet_affection_tier() -> int:
+	if pet_fed >= 8:
+		return 2
+	if pet_fed >= 3:
+		return 1
+	return 0
+
+func pet_hungry() -> bool:
+	return pet_satiety < 0.35
+
+func pet_mood_label() -> String:
+	if pet_mood >= 0.75:
+		return "开心"
+	if pet_mood >= 0.45:
+		return "一般"
+	return "低落"
+
+func pet_satiety_label() -> String:
+	if pet_satiety >= 0.7:
+		return "吃饱"
+	if pet_satiety >= 0.4:
+		return "半饱"
+	return "好饿"
+
+## 跨会话衰减：按距上次互动的天数降低饱食度、使心情回落；记录离开天数供问候
+func pet_decay() -> void:
+	var now := int(Time.get_unix_time_from_system())
+	if pet_last_seen <= 0:
+		pet_last_seen = now
+		pet_away_days = 0.0
+		return
+	pet_away_days = float(now - pet_last_seen) / 86400.0
+	if pet_away_days > 0.0:
+		pet_satiety = clampf(pet_satiety - PET_DECAY_PER_DAY * pet_away_days, 0.15, 1.0)
+		pet_mood = clampf(lerpf(pet_mood, PET_MOOD_BASE, clampf(pet_away_days, 0.0, 1.0)), 0.2, 1.0)
+	pet_last_seen = now
+
+## 互动打点：刷新"最近互动"时间(缩短下次的离开天数)
+func pet_touch() -> void:
+	pet_last_seen = int(Time.get_unix_time_from_system())
 
 func unlocked_region_count() -> int:
 	var c := 0
@@ -304,6 +523,8 @@ func record_answer(level_id: String, qi: int, qname: String, correct: bool, chos
 			"count": int(rec.get("count", 0)) + 1,
 			"last_chose": chose, "correct": ans,
 		}
+	pet_mood = clampf(pet_mood + (0.04 if correct else -0.05), 0.2, 1.0)
+	_eval_medals()
 	_save()
 	progress_changed.emit()
 
@@ -316,6 +537,7 @@ func record_level_result(level_id: String, level_stars: int, clean: int, total: 
 	r["last_total"] = total
 	r["trap_missed"] = trap_missed
 	level_records[level_id] = r
+	_eval_medals()
 	_save()
 	progress_changed.emit()
 
@@ -371,6 +593,8 @@ func _blank_user() -> Dictionary:
 	return {
 		"avatar": "player", "player_exp": 0, "coins": 0, "stars": {},
 		"total_questions": 0, "total_correct": 0, "wrong_log": {}, "level_records": {}, "pet_fed": 0, "regions_seen": 0,
+		"pet_satiety": 1.0, "pet_mood": 0.8, "pet_last_seen": 0,
+		"medals": {},
 		"chapter_order": [],
 		"last_chapter": "",
 		"created": Time.get_datetime_string_from_system(false, true),
@@ -382,6 +606,8 @@ func _snapshot() -> Dictionary:
 		"avatar": avatar, "player_exp": player_exp, "coins": coins, "stars": stars,
 		"total_questions": total_questions, "total_correct": total_correct,
 		"wrong_log": wrong_log, "level_records": level_records, "pet_fed": pet_fed, "regions_seen": regions_seen,
+		"pet_satiety": pet_satiety, "pet_mood": pet_mood, "pet_last_seen": pet_last_seen,
+		"medals": medals,
 		"chapter_order": chapter_order,
 		"last_chapter": last_chapter_id,
 		"created": users.get(current_user, {}).get("created", Time.get_datetime_string_from_system(false, true)),
@@ -395,6 +621,9 @@ func _apply(d: Dictionary) -> void:
 	total_questions = int(d.get("total_questions", 0))
 	total_correct = int(d.get("total_correct", 0))
 	pet_fed = int(d.get("pet_fed", 0))
+	pet_satiety = clampf(float(d.get("pet_satiety", 1.0)), 0.15, 1.0)
+	pet_mood = clampf(float(d.get("pet_mood", 0.8)), 0.2, 1.0)
+	pet_last_seen = int(d.get("pet_last_seen", 0))
 	regions_seen = int(d.get("regions_seen", 0))
 	var co = d.get("chapter_order", [])
 	chapter_order = co.duplicate() if typeof(co) == TYPE_ARRAY else []
@@ -403,6 +632,8 @@ func _apply(d: Dictionary) -> void:
 	wrong_log = wl if typeof(wl) == TYPE_DICTIONARY else {}
 	var lr = d.get("level_records", {})
 	level_records = lr if typeof(lr) == TYPE_DICTIONARY else {}
+	var md = d.get("medals", {})
+	medals = md if typeof(md) == TYPE_DICTIONARY else {}
 	for k in stars.keys():
 		stars[k] = 0
 	var sv = d.get("stars", {})
@@ -430,9 +661,10 @@ func create_user(nm: String, av: String) -> bool:
 		return false
 	users[nm] = _blank_user()
 	users[nm]["avatar"] = av
-	_apply(users[nm])
 	current_user = nm
-	_write_users()
+	_apply(users[nm])
+	_eval_medals(false)
+	_save()
 	progress_changed.emit()
 	return true
 
@@ -441,7 +673,9 @@ func login(nm: String) -> bool:
 		return false
 	current_user = nm
 	_apply(users[nm])
-	_write_users()
+	pet_decay()
+	_eval_medals(false)
+	_save()
 	progress_changed.emit()
 	return true
 

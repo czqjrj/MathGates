@@ -74,6 +74,8 @@ class MapNode extends Control:
 		return 0.0
 
 	func _process(delta: float) -> void:
+		if not UI.animations:
+			return
 		_t += delta
 		queue_redraw()
 
@@ -198,6 +200,8 @@ class TabCard extends Control:
 			_drag_begun = false
 
 	func _process(delta: float) -> void:
+		if not UI.animations:
+			return
 		_t += delta
 		if active:
 			queue_redraw()
@@ -337,6 +341,8 @@ func _on_progress() -> void:
 	_build_map(false)
 
 func _process(delta: float) -> void:
+	if not UI.animations:
+		return
 	if _path_pts.size() < 2 or _pulse == null or not is_instance_valid(_pulse):
 		return
 	_pulse_t = fposmod(_pulse_t + delta * 0.05, 1.0)
@@ -563,6 +569,7 @@ func _build_scroll() -> void:
 	_content.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_scroll.add_child(_content)
 	UI.enable_touch_scroll(_scroll)
+	UI.style_scrollbar(_scroll)
 
 # ---------------------------------------------------------------- 地图
 func _build_map(recenter_map: bool) -> void:
@@ -588,7 +595,7 @@ func _build_map(recenter_map: bool) -> void:
 	var content_h := TOP_MARGIN + maxf(0.0, float(rows - 1)) * ROW_H + BOTTOM_MARGIN
 	_content.custom_minimum_size = Vector2(content_w, content_h)
 
-	var tip := UI.mono_label("// 地图：沿单元路径逐点点亮知识点", 13, Color(UI.COL_TEXT_DIM, 0.8), HORIZONTAL_ALIGNMENT_CENTER)
+	var tip := UI.mono_label("地图：沿单元路径逐点点亮知识点", 13, Color(UI.COL_TEXT_DIM, 0.8), HORIZONTAL_ALIGNMENT_CENTER)
 	tip.position = Vector2(0, 76)
 	tip.size = Vector2(content_w, 20)
 	tip.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -631,6 +638,9 @@ func _build_map(recenter_map: bool) -> void:
 		var it0: Dictionary = info["it"]
 		_add_level_node(c0, it0, int(it0["li"]), bool(info["boss"]))
 
+	if UI.animations and recenter_map:
+		_stagger_entrance(_content)
+
 	_refresh_star()
 	if recenter_map:
 		_recenter()
@@ -644,6 +654,7 @@ func _unit_header(g: Dictionary, gi: int, content_w: float, y: float) -> Control
 	l.position = Vector2(0, y - NODE_H * 0.5 - 30.0)
 	l.size = Vector2(content_w, 22)
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	l.set_meta("unit_label", true)
 	return l
 
 func _add_level_node(c: Vector2, it: Dictionary, li: int, boss: bool) -> void:
@@ -666,6 +677,27 @@ func _add_level_node(c: Vector2, it: Dictionary, li: int, boss: bool) -> void:
 	n.position = c - Vector2(w * 0.5, h * 0.5)
 	n.activated.connect(func() -> void: _on_node_selected(li))
 	_content.add_child(n)
+
+## 知识点节点/单元标题逐个浮现（先轻微缩小淡入，再弹回原位）。
+## 若刷新前后节点数一致，尽量让同一节点的旧位置不动（新增节点错峰补入）。
+func _stagger_entrance(container: Control) -> void:
+	var i := 0
+	for c in container.get_children():
+		if not (c is Control):
+			continue
+		if not (c is MapNode or (c as Control).has_meta("unit_label")):
+			continue
+		var ctl := c as Control
+		if ctl.is_queued_for_deletion():
+			continue
+		ctl.pivot_offset = ctl.size * 0.5
+		ctl.modulate.a = 0.0
+		ctl.scale = Vector2(0.35, 0.35)
+		var delay := 0.05 * float(i)
+		var tw := ctl.create_tween().set_parallel(true)
+		tw.tween_property(ctl, "modulate:a", 1.0, 0.28).set_delay(delay).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		tw.tween_property(ctl, "scale", Vector2.ONE, 0.4).set_delay(delay).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		i += 1
 
 func _add_path(points: PackedVector2Array, width: float, color: Color) -> void:
 	var line := Line2D.new()

@@ -45,6 +45,8 @@ func _add_pet() -> void:
 	Pet.spawn(self, "选一个区域，逐层解析命题吧～")
 
 func _process(delta: float) -> void:
+	if not UI.animations:
+		return
 	if _path_pts.size() < 2 or _pulse == null or not is_instance_valid(_pulse):
 		return
 	_pulse_t = fposmod(_pulse_t + delta * 0.05, 1.0)
@@ -96,6 +98,7 @@ func _build_scroll() -> void:
 	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	add_child(_scroll)
 	UI.enable_touch_scroll(_scroll)
+	UI.style_scrollbar(_scroll)
 
 	_content = Control.new()
 	_content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -143,7 +146,7 @@ func _build_map() -> void:
 	if smooth.size() > 0:
 		_pulse.position = smooth[0] - Vector2(15, 15)
 
-	# 章节节点
+	# 章节节点（逐个从星点放大浮现，错峰入场）
 	for k in range(n):
 		var i := vis[k]
 		var ch: Dictionary = GameData.chapters[i]
@@ -159,6 +162,14 @@ func _build_map() -> void:
 		node.position = centers[k] - Vector2(NODE_W * 0.5, NODE_H * 0.5)
 		node.selected.connect(_on_chapter_selected)
 		_content.add_child(node)
+		if UI.animations:
+			node.modulate.a = 0.0
+			node.scale = Vector2(0.4, 0.4)
+			node.pivot_offset = node.size * 0.5
+			var delay := 0.16 * float(k)
+			var tw := node.create_tween().set_parallel(true)
+			tw.tween_property(node, "modulate:a", 1.0, 0.3).set_delay(delay).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+			tw.tween_property(node, "scale", Vector2.ONE, 0.42).set_delay(delay).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 	_refresh_topbar()
 	# 方法推演入口若没有可进入的章节,给出提示

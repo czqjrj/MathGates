@@ -30,10 +30,17 @@ func _build_topbar() -> void:
 	hb.add_child(UI.ghost_button("恢复默认", _on_reset, 14))
 
 func _build_body() -> void:
+	var scroll := ScrollContainer.new()
+	scroll.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	scroll.offset_top = 72
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	add_child(scroll)
+	UI.enable_touch_scroll(scroll)
+	UI.style_scrollbar(scroll)
+
 	var center := CenterContainer.new()
-	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	center.offset_top = 64
-	add_child(center)
+	center.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(center)
 
 	var panel := UI.card(true, UI.COL_ACCENT, UI.COL_GLASS, Color(UI.COL_ACCENT, 0.32), 16, 26, Color(UI.COL_ACCENT, 0.18))
 	panel.custom_minimum_size = Vector2(820, 0)
@@ -43,7 +50,7 @@ func _build_body() -> void:
 	vb.add_theme_constant_override("separation", 18)
 	panel.add_child(vb)
 
-	vb.add_child(UI.mono_label("// 可配置项", 13, Color(UI.COL_ACCENT, 0.8)))
+	vb.add_child(UI.mono_label("可配置项", 13, Color(UI.COL_ACCENT, 0.8)))
 	vb.add_child(_divider())
 	vb.add_child(_font_row())
 	vb.add_child(_divider())
@@ -56,6 +63,10 @@ func _build_body() -> void:
 	vb.add_child(_toggle_row("界面动效", "卡片入场、按钮回弹等过渡动画", Settings.animations, Settings.set_animations))
 	vb.add_child(_divider())
 	vb.add_child(UI.make_label("提示：调整字号后会自动重建当前页面以应用新的整体布局。", 13, UI.COL_TEXT_DIM))
+
+	var pad := Control.new()
+	pad.custom_minimum_size = Vector2(0, 20)
+	vb.add_child(pad)
 
 	UI.stagger_in(vb, 0.03, 0.24, 12)
 

@@ -22,6 +22,7 @@ var _top_fill: ColorRect
 var _prog: Label
 var _coins: Label
 var _panel: PanelContainer
+var _action_bar: PanelContainer
 var _title: Label
 var _q: RichTextLabel
 var _ans: VBoxContainer
@@ -57,6 +58,7 @@ var _trap_missed := false
 var _q_recorded := false
 var _last_picked := -1
 var _explore_done := false
+var _streak := 0
 
 func _ready() -> void:
 	_load()
@@ -65,6 +67,32 @@ func _ready() -> void:
 	_build_ui()
 	_add_pet()
 	_reset()
+	_enter_fx()
+
+## 关卡界面入场：题干面板从右侧滑入 + 底部操作条上浮回弹(下一步/提示/问萌宠)。
+func _enter_fx() -> void:
+	if not UI.animations or not is_instance_valid(_panel):
+		return
+	await get_tree().process_frame
+	if not is_instance_valid(_panel):
+		return
+	slide_from(_panel, false)
+	if is_instance_valid(_action_bar):
+		slide_from(_action_bar, true)
+
+## 让控件从预设锚点方向滑入(上下左右固定一侧)，回弹落位。
+static func slide_from(c: Control, from_bottom: bool, dur: float = 0.42) -> void:
+	var sz := c.size
+	if sz.x <= 0.0 or sz.y <= 0.0:
+		UI.popup_in(c)
+		return
+	c.pivot_offset = sz * 0.5
+	c.modulate.a = 0.0
+	var off := Vector2(sz.x * 0.32, sz.y * 0.5) if from_bottom else Vector2(sz.x * 0.5, 0.0)
+	c.position += off
+	var tw := c.create_tween().set_parallel(true)
+	tw.tween_property(c, "modulate:a", 1.0, dur * 0.6).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tw.tween_property(c, "position", c.position - off, dur).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 # ================================================================ 配置钩子(子类覆写)
 func _module() -> String: return ""
@@ -145,6 +173,7 @@ func _reset() -> void:
 	_solved = false
 	_done = false
 	_trap_missed = false
+	_streak = 0
 	_clean.clear()
 	for i in _stages.size():
 		_clean.append(0)
@@ -281,7 +310,25 @@ func _level_ok() -> void:
 		msg += "  " + str(s["explain"])
 	_show_feed(msg, UI.COL_SUCCESS)
 	_next.disabled = false
+	_streak += 1
+	_fx_correct(_last_picked)
 	_level_ok_fx()
+
+## 答对动效：选项处冲击爆发 + 漂浮文字(连击时金色、字更大)。
+func _fx_correct(k: int) -> void:
+	if _ui == null or not is_instance_valid(_ui):
+		return
+	var pos := _ui.size * 0.5
+	if k >= 0 and k < _opt_panels.size():
+		pos = Vfx.center_of(_opt_panels[k], pos)
+	Vfx.burst(_ui, pos, UI.COL_SUCCESS)
+	if _streak >= 2:
+		Vfx.float_text(_ui, pos, "连击 x%d" % _streak, Color("#ffd479"), 34)
+		if _streak % 3 == 0:
+			Vfx.star_burst(_ui, pos, 12, 0.9)
+	else:
+		Vfx.float_text(_ui, pos, "正确", UI.COL_SUCCESS, 28)
+	Vfx.screen_flash(_ui, UI.COL_SUCCESS, 0.10, 0.38)
 
 func _wrong(msg: String) -> void:
 	if _solved or _done:
@@ -298,6 +345,20 @@ func _wrong(msg: String) -> void:
 	if _current().has("explain"):
 		msg += "\n[复盘] " + str(_current()["explain"])
 	_show_feed(msg, UI.COL_DANGER)
+	_streak = 0
+	_fx_wrong()
+
+## 答错动效：所选项旋转摇头 + 红环扩散 + 画面红闪。
+func _fx_wrong() -> void:
+	if _ui == null or not is_instance_valid(_ui):
+		return
+	var pos := _ui.size * 0.5
+	if _last_picked >= 0 and _last_picked < _opt_panels.size():
+		Vfx.wobble(_opt_panels[_last_picked])
+		pos = Vfx.center_of(_opt_panels[_last_picked], pos)
+	Vfx.ring(_ui, pos, UI.COL_DANGER, 96.0, 0.55)
+	Vfx.float_text(_ui, pos, "再想想", UI.COL_DANGER, 24)
+	Vfx.screen_flash(_ui, UI.COL_DANGER, 0.14, 0.4)
 
 func _use_hint() -> void:
 	if _solved or _done or _hint_used or _stages.is_empty():
@@ -351,7 +412,7 @@ func _finish() -> void:
 			inten = maxf(inten, 1.5)
 		_pet.celebrate(inten)
 		if lv1 > lv0:
-			_pet.say("升级啦！现在 Lv.%d，恭喜～" % lv1, 3.2)
+			_pet.on_level_up(lv1)
 	_v_title.text = _victory_text(passed)
 	_v_title.add_theme_color_override("font_color", UI.COL_TEXT if passed else UI.COL_DANGER)
 	if st >= 3:
@@ -397,6 +458,11 @@ func _finish() -> void:
 		UI.popup_in(_victory)
 	var tc := create_tween()
 	tc.tween_interval(0.75)
+	tc.tween_callback(func() -> void:
+		if not is_instance_valid(_ui) or not is_instance_valid(_victory):
+			return
+		Vfx.celebrate(_ui, Vfx.center_of(_victory, _ui.size * 0.5), UI.COL_ACCENT)
+		Vfx.coin_fly(_ui, Vfx.center_of(_victory, _ui.size * 0.5), Vfx.center_of(_coins, Vector2(_ui.size.x - 120.0, 30.0)), 12))
 	tc.tween_method(func(v: float) -> void: _v_coins.text = "金币  +%d" % int(v), 0.0, float(reward), 0.9).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tc.tween_callback(func() -> void:
 		if is_instance_valid(_v_coins):
@@ -412,6 +478,15 @@ func _show_feed(msg: String, col: Color) -> void:
 		(_feed as Label).text = msg
 		(_feed as Label).add_theme_color_override("font_color", col)
 		UI.tts_say(msg)
+	_pop_feed()
+
+## 反馈行出现时轻微提亮闪烁，提示刚才的判定进来了。
+func _pop_feed() -> void:
+	if not UI.animations or not is_instance_valid(_feed):
+		return
+	_feed.modulate.a = 0.35
+	var tw := _feed.create_tween().set_parallel(true)
+	tw.tween_property(_feed, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
 ## 清空反馈区(供子类 _load_q 使用)。
 func _feed_clear() -> void:
@@ -571,6 +646,7 @@ func _build_ui() -> void:
 	bottom.add_theme_stylebox_override("panel", UI.glass_box(Color(0.03, 0.05, 0.09, 0.88), 12, Color(UI.COL_ACCENT, 0.25), 1, 12))
 	bottom.mouse_filter = Control.MOUSE_FILTER_STOP
 	_ui.add_child(bottom)
+	_action_bar = bottom
 	var bh := HBoxContainer.new()
 	bh.alignment = BoxContainer.ALIGNMENT_CENTER
 	bh.add_theme_constant_override("separation", 14)

@@ -42,16 +42,19 @@ func _build() -> void:
 	vb.add_theme_constant_override("separation", 14)
 	panel.add_child(vb)
 
+	var mark := BrandMark.new()
+	mark.custom_minimum_size = Vector2(104, 104)
+	mark.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	vb.add_child(mark)
+
 	var title := UI.make_label("衍 数 阁", 40, UI.COL_TEXT, HORIZONTAL_ALIGNMENT_CENTER)
 	title.add_theme_font_override("font", UI.title_font())
 	UI.outlined(title, 4, Color(0, 0, 0, 0.4))
 	vb.add_child(title)
 	vb.add_child(UI.make_label("选择档案进入 · 或新建推演者", 15, UI.COL_TEXT_DIM, HORIZONTAL_ALIGNMENT_CENTER))
-	var line := ColorRect.new()
-	line.color = UI.COL_ACCENT
-	line.custom_minimum_size = Vector2(120, 2)
+	var line := BrandMark.Underline.new()
+	line.custom_minimum_size = Vector2(120, 3)
 	line.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vb.add_child(line)
 	vb.add_child(_gap(6))
 

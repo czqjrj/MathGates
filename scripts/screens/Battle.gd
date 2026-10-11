@@ -416,17 +416,28 @@ func _on_answer(k: int) -> void:
 			elif _contents[i] is TextureRect:
 				(_contents[i] as TextureRect).modulate = Color(1, 1, 1, 0.3)
 
+	var pos: Vector2 = size * 0.5
+	if k >= 0 and k < _panels.size():
+		pos = Vfx.center_of(_panels[k], pos)
 	if k == correct:
 		_correct += 1
 		Sound.play("correct")
 		_explain_lbl.text = "推演正确！" + str(q.get("explain", ""))
 		_explain_panel.add_theme_stylebox_override("panel",
 			_bar_box(Color(UI.COL_SUCCESS, 0.10), UI.COL_SUCCESS))
+		Vfx.burst(self, pos, UI.COL_SUCCESS)
+		Vfx.float_text(self, pos, "推演正确", UI.COL_SUCCESS, 28)
+		Vfx.screen_flash(self, UI.COL_SUCCESS, 0.10, 0.38)
 	else:
 		Sound.play("wrong")
 		_explain_lbl.text = "推演偏差 · 正解为 %s。" % _letter(correct) + str(q.get("explain", ""))
 		_explain_panel.add_theme_stylebox_override("panel",
 			_bar_box(Color(UI.COL_DANGER, 0.10), UI.COL_DANGER))
+		if k < _panels.size():
+			Vfx.wobble(_panels[k])
+		Vfx.ring(self, pos, UI.COL_DANGER, 96.0, 0.55)
+		Vfx.float_text(self, pos, "偏差", UI.COL_DANGER, 24)
+		Vfx.screen_flash(self, UI.COL_DANGER, 0.14, 0.4)
 	_explain_panel.visible = true
 
 	if _hp != null:
@@ -568,9 +579,8 @@ func _build_empty() -> void:
 	var vb := VBoxContainer.new()
 	vb.add_theme_constant_override("separation", 14)
 	panel.add_child(vb)
-	vb.add_child(UI.mono_label("NO DATA", 13, UI.COL_ACCENT, HORIZONTAL_ALIGNMENT_CENTER))
-	vb.add_child(UI.make_label("该节点题面尚未录入", 24, UI.COL_TEXT, HORIZONTAL_ALIGNMENT_CENTER))
-	vb.add_child(UI.make_label("数据同步后即可推演", 16, UI.COL_TEXT_DIM, HORIZONTAL_ALIGNMENT_CENTER))
+	vb.add_child(UI.make_label("该节点题面尚未录入", 22, UI.COL_TEXT, HORIZONTAL_ALIGNMENT_CENTER))
+	vb.add_child(UI.make_label("可先返回体验其他区域", 15, UI.COL_TEXT_DIM, HORIZONTAL_ALIGNMENT_CENTER))
 	var row := CenterContainer.new()
 	vb.add_child(row)
 	row.add_child(UI.ghost_button("返回区域", func() -> void:
