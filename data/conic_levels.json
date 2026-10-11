@@ -2,7 +2,7 @@
   "C1": {
     "title": "圆锥曲线 · 第一定义",
     "method": "第一定义",
-    "topic": "res://scripts/conic/scenes/C1.gd",
+    "topic": "res://scripts/modules/conic/scenes/C1.gd",
     "summary": "到两焦点距离之和(差)为常数；抛物线的距离等于到准线的距离。",
     "levels": [
       { "name": "椭圆的第一定义", "mode": 1,
@@ -26,7 +26,7 @@
   "C2": {
     "title": "圆锥曲线 · 第二定义",
     "method": "第二定义",
-    "topic": "res://scripts/conic/scenes/C2.gd",
+    "topic": "res://scripts/modules/conic/scenes/C2.gd",
     "summary": "到焦点距离与到准线距离之比为常数 e:e<1 椭圆，e=1 抛物线，e>1 双曲线。",
     "levels": [
       { "name": "e < 1 · 椭圆", "mode": 1,
@@ -46,7 +46,7 @@
   "C3": {
     "title": "圆锥曲线 · 第三定义",
     "method": "第三定义",
-    "topic": "res://scripts/conic/scenes/C3.gd",
+    "topic": "res://scripts/modules/conic/scenes/C3.gd",
     "summary": "椭圆/双曲线上点 P 与两顶点连线的斜率之积为定值。",
     "levels": [
       { "name": "椭圆的斜率积", "mode": 1,

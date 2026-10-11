@@ -1,9 +1,0 @@
-[gd_scene format=3 uid="uid://bdevseq0000m1"]
-
-[ext_resource type="Script" path="res://dev_seq.gd" id="1"]
-
-[node name="DevSeq" type="Control"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-script = ExtResource("1")

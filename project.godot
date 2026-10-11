@@ -23,11 +23,11 @@ boot_splash/center=true
 
 [autoload]
 
-GameData="*res://scripts/GameData.gd"
-Toast="*res://scripts/Toast.gd"
-Sound="*res://scripts/Sound.gd"
-Scene="*res://scripts/Scene.gd"
-Settings="*res://scripts/Settings.gd"
+GameData="*res://scripts/autoload/GameData.gd"
+Toast="*res://scripts/autoload/Toast.gd"
+Sound="*res://scripts/autoload/Sound.gd"
+Scene="*res://scripts/autoload/Scene.gd"
+Settings="*res://scripts/autoload/Settings.gd"
 
 [display]
 

@@ -3,7 +3,7 @@
     "complement": {
       "title": "补形法 · 求三棱锥的外接球",
       "method": "补形法",
-      "topic": "res://scripts/solid/topics/complement.gd",
+      "topic": "res://scripts/modules/solid/topics/complement.gd",
       "summary": "三条棱两两垂直 → 补成长方体，体对角线的一半就是外接球半径。",
       "levels": [
         {
@@ -75,7 +75,7 @@
     "vector_sphere": {
       "title": "空间向量法 · 求三棱锥的外接球",
       "method": "坐标法",
-      "topic": "res://scripts/solid/topics/vector_sphere.gd",
+      "topic": "res://scripts/modules/solid/topics/vector_sphere.gd",
       "summary": "建系 → 设球心 → 由 OA=OB=OC=OP 列方程，两两相减消去二次项求解。",
       "levels": [
         {
@@ -157,7 +157,7 @@
     "geom_sphere": {
       "title": "垂线法 · 求三棱锥的外接球",
       "method": "几何法",
-      "topic": "res://scripts/solid/topics/geom_sphere.gd",
+      "topic": "res://scripts/modules/solid/topics/geom_sphere.gd",
       "zoom": 2.5,
       "summary": "底面外心 O′ → 过 O′ 作垂线 l → R² = r² + h²，由 OA=OP 解 h 求 R。",
       "levels": [
@@ -242,7 +242,7 @@
     "insphere": {
       "title": "等体积法 · 求三棱锥的内切球",
       "method": "等体积法",
-      "topic": "res://scripts/solid/topics/insphere.gd",
+      "topic": "res://scripts/modules/solid/topics/insphere.gd",
       "zoom": 1.75,
       "summary": "把棱锥分成以 r 为高的四个小锥体，V = (1/3)·S·r，反解 r。",
       "levels": [
@@ -324,7 +324,7 @@
     "inout": {
       "title": "正四面体 · 内切球与外接球",
       "method": "两球对比",
-      "topic": "res://scripts/solid/topics/inout.gd",
+      "topic": "res://scripts/modules/solid/topics/inout.gd",
       "summary": "正四面体的两球同心，恒有 R = 3r 且 R + r = h。",
       "levels": [
         {
@@ -407,7 +407,7 @@
     "anglepyramid": {
       "title": "二面角与线面角 · 正四棱锥",
       "method": "两类角",
-      "topic": "res://scripts/solid/topics/anglepyramid.gd",
+      "topic": "res://scripts/modules/solid/topics/anglepyramid.gd",
       "summary": "线面角找射影、二面角作平面角，最终都化为直角三角形求角。",
       "levels": [
         {

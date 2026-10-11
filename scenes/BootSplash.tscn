@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://scripts/BootSplash.gd" id="1_bootsplash"]
+[ext_resource type="Script" path="res://scripts/screens/BootSplash.gd" id="1_bootsplash"]
 
 [node name="BootSplash" type="Control"]
 anchor_right = 1.0

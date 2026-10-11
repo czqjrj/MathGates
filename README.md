@@ -8,20 +8,27 @@ Godot 4.7(Compatibility / GL)制作的数学闯关学习 App。UI 全程代码�
 
 ```
 scenes/          场景 .tscn(主体均由代码构建,tscn 只是空壳挂脚本)
-scripts/         总控与共享逻辑
-  UI.gd            设计系统:着色 token、字号系数 S(默认 1.4,由 Settings 注入)、fs() 换算、按钮/卡片/弹窗
-  Art.gd           美术资源自动加载(有图用图,无图退回代码绘制)
-  GameData.gd      全局数据 autoload:课程表/进度/多用户存档/错题统计
-  Settings.gd      全局设置 autoload:字号/音效/萌宠/全屏/动效,持久化到 user://settings.json
-  Sound.gd         音效 autoload(启动预载,按钮自动接线)
-  Toast.gd         飘字提示 autoload
-  Pet.gd           萌宠(自主漫游/气泡/庆祝,全代码绘制)
-  BootSplash.gd    场景级品牌启动屏(规避引擎启动屏缩放 bug)
-  MainHub.gd/Login.gd/WorldMap.gd/UserProfile.gd/SettingsMenu.gd/ChapterNode.gd/TechBg.gd
-  conic/ ellipse/ line/ space/ vector/ solid/   六大知识模块
+scripts/         总控与共享逻辑(按职责分目录)
+  autoload/        GameData.gd(课程表/进度/多用户存档/错题统计)、Settings.gd(字号/音效/萌宠/
+				   全屏/动效,持久化到 user://settings.json)、Sound.gd(音效,启动预载/按钮自动接线)、
+				   Toast.gd(飘字提示)、Scene.gd(场景跳转)
+  ui/              UI.gd(设计系统:着色 token、字号系数 S(默认 1.4,由 Settings 注入)、fs() 换算、
+				   按钮/卡片/弹窗)、Art.gd(美术资源自动加载,有图用图无图退回代码绘制)、
+				   Palette.gd(绘图统一配色)、Confetti.gd(通关彩带)、Pet.gd(萌宠,全代码绘制)、
+				   TechBg.gd(科技背景)、Tts.gd(语音朗读:TTS 子系统,UI.tts_* 为薄转发)、
+				   InlineMath.gd(内联公式:{f:名称} 与 data/inline_math.json,UI.inline*/strip_formulas 为薄转发)、
+				   TtsOnline.gd(在线语音)
+  save/            SaveIO.gd(存档原子读写:临时文件校验 + 备份 + 替换;GameData 存档 IO 委托于此)
+  screens/         BootSplash.gd(品牌启动屏,规避引擎启动屏缩放 bug)、Login.gd、MainHub.gd、
+				   WorldMap.gd、UserProfile.gd、SettingsMenu.gd、ChapterNode.gd、
+				   Battle.gd(通用战斗/占位关卡)、StageBase.gd(2D 闯关共享骨架:
+				   HUD/答题面板/选项/结算/上下关导航;line·ellipse·vector 三关继承)
+  modules/         六大知识模块:conic/ ellipse/ line/ sequence/ solid/ space/ vector/
 data/            课程表与题库 JSON(curriculum/questions + 各模块 *_levels.json)
 art/             美术 PNG/WebP + 公式小图 + Android 图标 + 标题字体(art/fonts/,放入行书 ttf 即自动启用)
 audio/           音效 wav
+tools/           开发/测试脚本:check_all.gd(脚本检查)、smoke_scene(全场景冒烟)、
+				 capture_scene(截图)、dev_seq(单关调试)
 docs/            设计文档 .docx
 build/           导出产物(APK,git 忽略)
 ```
@@ -57,4 +64,4 @@ build/           导出产物(APK,git 忽略)
 
 - 课程/章节/解锁关系:`data/curriculum.json`
 - 通用题库:`data/questions.json`;各模块关卡:`line_levels.json / conic_levels.json / ellipse_levels.json / space_levels.json / vector_levels.json`
-- 立体几何方法讲解:`data/solid_methods.json` + `scripts/solid/topics/*.gd`
+- 立体几何方法讲解:`data/solid_methods.json` + `scripts/modules/solid/topics/*.gd`
