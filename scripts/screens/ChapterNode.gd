@@ -21,6 +21,7 @@ var _pop: float = 0.0
 var _press := false
 var _press_pos := Vector2.ZERO
 var _press_scroll := 0.0
+var _title_bg: StyleBoxFlat
 
 func _ready() -> void:
 	custom_minimum_size = Vector2(NODE_W, NODE_H)
@@ -35,6 +36,9 @@ func _ready() -> void:
 		_hover = false
 		queue_redraw()
 	)
+	_title_bg = StyleBoxFlat.new()
+	_title_bg.bg_color = Color(0.03, 0.05, 0.09, 0.72)
+	_title_bg.set_corner_radius_all(8)
 	set_process(true)
 
 func _process(delta: float) -> void:
@@ -129,7 +133,11 @@ func _draw() -> void:
 	if not unlocked:
 		_draw_lock(c + Vector2(0, 30), Color(1, 1, 1, 0.45))
 
-	# 标题
+	# 标题(带底板，避免被路径线穿过)
+	var tpx := UI.fs(20)
+	var tw := f.get_string_size(chapter_title, HORIZONTAL_ALIGNMENT_LEFT, -1, tpx).x
+	if _title_bg != null:
+		draw_style_box(_title_bg, Rect2(NODE_W * 0.5 - tw * 0.5 - 8.0, 168.0 - tpx * 0.86, tw + 16.0, tpx * 1.2))
 	var title_col := UI.COL_TEXT if unlocked else Color(UI.COL_TEXT_DIM, 0.7)
 	_center_text(f, chapter_title, NODE_W * 0.5, 168.0, 20, title_col)
 

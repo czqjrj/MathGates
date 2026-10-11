@@ -221,8 +221,7 @@ class Marks extends Control:
 		draw_rect(Rect2(w - L, h - t, L, t), col)
 		draw_rect(Rect2(w - t, h - L, t, L), col)
 
-## 四角 L 形科技角标。parent 为 PanelContainer 时铺在内容区边缘，
-## 否则铺满父级并向内缩进 inset。
+## 四角 L 形科技角标(叠加在父控件上，向内缩进 inset)。用于覆盖在卡片上的热区容器。
 static func corner_marks(parent: Control, inset: float = 6.0, length: float = 12.0, thick: float = 2.0, col: Color = COL_ACCENT) -> Marks:
 	var m := Marks.new()
 	m.length = length
@@ -230,8 +229,6 @@ static func corner_marks(parent: Control, inset: float = 6.0, length: float = 12
 	m.col = col
 	m.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	parent.add_child(m)
-	if parent is PanelContainer:
-		return m
 	full_rect(m)
 	m.offset_left = inset
 	m.offset_top = inset
@@ -239,12 +236,44 @@ static func corner_marks(parent: Control, inset: float = 6.0, length: float = 12
 	m.offset_bottom = -inset
 	return m
 
-## 玻璃卡片(可选四角角标 / 外发光)
+## 玻璃面板：四角角标直接画在面板真实边角(而非内容区)，避免压住首行文字。
+class GlassPanel extends PanelContainer:
+	var marks: bool = false
+	var mark_len: float = 12.0
+	var mark_thick: float = 2.0
+	var mark_col: Color = Color("#5ee6ff")
+
+	func _ready() -> void:
+		resized.connect(queue_redraw)
+
+	func _draw() -> void:
+		if not marks:
+			return
+		var L := mark_len
+		var t := mark_thick
+		var i := 3.0
+		var w := size.x
+		var h := size.y
+		if w < L * 2.0 + i * 2.0 or h < L * 2.0 + i * 2.0:
+			return
+		var c := mark_col
+		draw_rect(Rect2(i, i, L, t), c)
+		draw_rect(Rect2(i, i, t, L), c)
+		draw_rect(Rect2(w - i - L, i, L, t), c)
+		draw_rect(Rect2(w - i - t, i, t, L), c)
+		draw_rect(Rect2(i, h - i - t, L, t), c)
+		draw_rect(Rect2(i, h - i - L, t, L), c)
+		draw_rect(Rect2(w - i - L, h - i - t, L, t), c)
+		draw_rect(Rect2(w - i - t, h - i - L, t, L), c)
+
+## 玻璃卡片(可选四角角标 / 外发光)。角标画在面板边角，不与内容重合。
 static func card(marks: bool = true, mark_col: Color = COL_ACCENT, fill: Color = COL_GLASS, border: Color = COL_PANEL_BRD, radius: int = 14, margin: int = 18, glow: Color = Color(0, 0, 0, 0)) -> PanelContainer:
-	var p := PanelContainer.new()
+	var p := GlassPanel.new()
 	p.add_theme_stylebox_override("panel", glass_box(fill, radius, border, 1, margin, glow, 18 if glow.a > 0.0 else 0))
 	if marks:
-		corner_marks(p, 0.0, clampf(margin * 0.6, 8.0, 14.0), 2.0, mark_col)
+		p.marks = true
+		p.mark_col = mark_col
+		p.mark_len = clampf(float(margin) - 8.0, 7.0, 13.0)
 	return p
 
 # ---------------------------------------------------------------- 按钮
@@ -369,7 +398,7 @@ static func card_stagger_in(container: Node, step: float = 0.08, dur: float = 0.
 
 ## 发牌入场：卡片从底部牌堆依次飞入各自落点(带旋转、回弹、落桌轻响)。
 ## 动画关闭时直接摆放；发牌音效 deal + 落定 click 由 Sound 自动加载。
-static func card_deal_in(container: Control, step: float = 0.085, dur: float = 0.55, drop_in: float = 46.0) -> void:
+static func card_deal_in(container: Control, step: float = 0.085, dur: float = 0.55, drop_in: float = 30.0) -> void:
 	if container == null or not is_instance_valid(container):
 		return
 	var cards: Array[Control] = []
@@ -396,9 +425,9 @@ static func card_deal_in(container: Control, step: float = 0.085, dur: float = 0
 		c.pivot_offset = sz * 0.5
 		var target := c.position
 		c.position = base - Vector2(sz.x * 0.5, sz.y * 0.5) \
-			+ Vector2((i - (n - 1) * 0.5) * 20.0, -absf(i - (n - 1) * 0.5) * 10.0)
+			+ Vector2((i - (n - 1) * 0.5) * 9.0, -absf(i - (n - 1) * 0.5) * 6.0)
 		c.modulate.a = 0.0
-		c.rotation = deg_to_rad(randf_range(-14.0, 14.0))
+		c.rotation = deg_to_rad(randf_range(-6.0, 6.0))
 		c.scale = Vector2(0.86, 0.86)
 		var tw := c.create_tween().set_parallel(true)
 		var delay := step * float(i)

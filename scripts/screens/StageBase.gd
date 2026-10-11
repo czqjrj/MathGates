@@ -59,15 +59,29 @@ var _q_recorded := false
 var _last_picked := -1
 var _explore_done := false
 var _streak := 0
+## 错题优先复习：显示下标→原始题号；记录作答时用 _q_index() 与错题账本对齐。
+var _qid: Array[int] = []
+var _review := false
 
 func _ready() -> void:
 	_load()
+	_apply_review()
 	add_child(TechBg.new())
 	_build_view()
 	_build_ui()
 	_add_pet()
 	_reset()
 	_enter_fx()
+
+## 若本关存在历史错题，则重排题序让错题优先，并记录原始题号映射。
+func _apply_review() -> void:
+	var r := GameData.review_order(GameData.current_level_id(), _stages)
+	_stages = r["stages"]
+	_qid = r["order"]
+	_review = r["review"]
+
+func _q_index() -> int:
+	return _qid[_idx] if _idx >= 0 and _idx < _qid.size() else _idx
 
 ## 关卡界面入场：题干面板从右侧滑入 + 底部操作条上浮回弹(下一步/提示/问萌宠)。
 func _enter_fx() -> void:
@@ -135,7 +149,10 @@ func _set_followup_question(s: Dictionary) -> void:
 
 # ================================================================ 萌宠
 func _add_pet() -> void:
-	_pet = Pet.spawn(self, _pet_message())
+	var msg := _pet_message()
+	if _review:
+		msg = "这关有你的历史错题，我先排到前面了～ " + msg
+	_pet = Pet.spawn(self, msg)
 	_pet.tap_provider = _pet_point
 
 func _pet_point() -> String:
@@ -298,7 +315,7 @@ func _level_ok() -> void:
 		_clean[_idx] = 1
 	if not _q_recorded:
 		_q_recorded = true
-		GameData.record_answer(GameData.current_level_id(), _idx, str(_current().get("name", "")), true, -1, -1, _module())
+		GameData.record_answer(GameData.current_level_id(), _q_index(), str(_current().get("name", "")), true, -1, -1, _module())
 	Sound.play("correct")
 	if _pet != null:
 		_pet.cheer()
@@ -338,7 +355,7 @@ func _wrong(msg: String) -> void:
 		_trap_missed = true
 	if not _q_recorded:
 		_q_recorded = true
-		GameData.record_answer(GameData.current_level_id(), _idx, str(_current().get("name", "")), false, _last_picked, int(_current().get("ans", -1)), _module())
+		GameData.record_answer(GameData.current_level_id(), _q_index(), str(_current().get("name", "")), false, _last_picked, int(_current().get("ans", -1)), _module())
 	Sound.play("wrong")
 	if _pet != null:
 		_pet.comfort()

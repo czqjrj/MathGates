@@ -77,6 +77,9 @@ var _questions: Array = []
 var _idx: int = 0
 var _correct: int = 0
 var _answered: bool = false
+## 错题优先复习：显示下标→原始题号(记录作答时与错题账本对齐)
+var _qid: Array[int] = []
+var _review := false
 
 var _top_fill: ColorRect
 var _prog_lbl: Label
@@ -106,6 +109,7 @@ func _ready() -> void:
 
 	_level = GameData.current_level
 	_questions = GameData.questions_for(GameData.current_level_id())
+	_apply_review()
 	_build_topbar()
 	_build_topline()
 	if _questions.is_empty():
@@ -113,6 +117,23 @@ func _ready() -> void:
 	else:
 		_build_ui()
 		_load_question()
+
+## 错题优先：本关存在历史错题时重排题序，并记录原始题号映射。
+func _apply_review() -> void:
+	var r := GameData.review_order(GameData.current_level_id(), _questions)
+	_questions = r["stages"]
+	_qid = r["order"]
+	_review = r["review"]
+
+func _q_index() -> int:
+	return _qid[_idx] if _idx >= 0 and _idx < _qid.size() else _idx
+
+## 供记录/统计用的模块名(取当前章节 id)
+func _module_id() -> String:
+	var ci := GameData.current_chapter_index
+	if ci >= 0 and ci < GameData.chapters.size():
+		return str(GameData.chapters[ci].get("id", ""))
+	return ""
 
 # ---------------------------------------------------------------- 顶部进度线
 func _build_topline() -> void:
@@ -325,7 +346,7 @@ func _option_row(k: int, text: String) -> Control:
 
 	var p := PanelContainer.new()
 	p.add_theme_stylebox_override("panel",
-		UI.glass_box(Color(1, 1, 1, 0.04), 12, Color(1, 1, 1, 0.13), 1, 12))
+		UI.glass_box(Color(1, 1, 1, 0.04), 12, Color(1, 1, 1, 0.13), 1, 18))
 	p.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	box.add_child(p)
 
@@ -392,6 +413,10 @@ func _on_answer(k: int) -> void:
 	_answered = true
 	var q: Dictionary = _questions[_idx]
 	var correct := int(q.get("ans", -1))
+	var qname := str(q.get("q", ""))
+	if qname.length() > 30:
+		qname = qname.substr(0, 30) + "…"
+	GameData.record_answer(GameData.current_level_id(), _q_index(), qname, k == correct, k, correct, _module_id())
 	for i in range(_btns.size()):
 		_btns[i].disabled = true
 		if i == correct:
@@ -486,6 +511,7 @@ func _finish() -> void:
 	elif ratio >= 0.4:
 		st = 1
 	GameData.grant_stars(GameData.current_level_id(), st)
+	GameData.record_level_result(GameData.current_level_id(), st, _correct, total, false)
 	Sound.play("begin" if st > 0 else "error")
 
 	var layer := CanvasLayer.new()

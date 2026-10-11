@@ -256,10 +256,10 @@ func _process(delta: float) -> void:
 	if _fx != null:
 		_fx.queue_redraw()
 
-## 中心区域自动减淡，保证前景可读
+## 中心区域自动减淡，保证前景可读(越靠中心越淡，避免与前景文字视觉重合)
 func _col(alpha: float, npos: Vector2) -> Color:
 	var d := (npos - Vector2(0.5, 0.5)).length() * 2.0
-	var atten := clampf(0.75 + 0.25 * d, 0.0, 1.0)
+	var atten := clampf(0.42 + 0.58 * d, 0.0, 1.0)
 	return Color(0.44, 0.86, 1.0, alpha * atten)
 
 ## 内容层绘制(ci 为 Fx 节点，在其 _draw() 内以它为目标画布)
@@ -279,14 +279,14 @@ func _draw_forms(ci: Control) -> void:
 	for m in _forms:
 		var env := 0.7 + 0.3 * sin(_t * m.fr + m.ph)
 		var edge := smoothstep(0.0, 0.10, m.pos.y) * (1.0 - smoothstep(0.90, 1.0, m.pos.y))
-		var c := _col(0.30 * env * edge, m.pos)
+		var c := _col(0.17 * env * edge, m.pos)
 		if c.a < 0.006:
 			continue
 		ci.draw_string(f, m.pos * ci.size, m.text, HORIZONTAL_ALIGNMENT_LEFT, -1, m.px, c)
 
 func _draw_fig(g: Fig, ci: Control) -> void:
 	var env := 0.7 + 0.3 * sin(_t * 0.45 + g.ph)
-	var base := 0.24 * env
+	var base := 0.15 * env
 	var c := g.pos * ci.size
 	match g.kind:
 		0: _fig_poly(c, g, base, ci)

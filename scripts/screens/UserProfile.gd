@@ -82,7 +82,7 @@ func _build_body() -> void:
 				done_levels += 1
 	var acc := int(round(GameData.accuracy() * 100.0))
 	var stats := HBoxContainer.new()
-	stats.add_theme_constant_override("separation", 30)
+	stats.add_theme_constant_override("separation", 18)
 	ovb.add_child(stats)
 	stats.add_child(_stat("已通关卡", "%d" % done_levels))
 	stats.add_child(_stat("累计作答", "%d" % GameData.total_questions))
@@ -95,6 +95,9 @@ func _build_body() -> void:
 
 	# ---- 进阶 · 等级与称号 ----
 	vb.add_child(_advance_card())
+
+	# ---- 学情诊断 · 萌宠分析 ----
+	vb.add_child(_diagnosis_card())
 
 	# ---- 知识掌握 · 萌宠进化 ----
 	vb.add_child(_mastery_card())
@@ -150,8 +153,9 @@ func _section(title: String, col: Color) -> Control:
 func _stat(label: String, value: String) -> Control:
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 2)
-	box.add_child(UI.mono_label(value, 24, UI.COL_ACCENT))
-	box.add_child(UI.make_label(label, 14, UI.COL_TEXT_DIM))
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	box.add_child(UI.mono_label(value, 22, UI.COL_ACCENT))
+	box.add_child(UI.make_label(label, 13, UI.COL_TEXT_DIM))
 	return box
 
 ## 进阶卡片：推演等级 + 称号进度(两条进度条)
@@ -255,6 +259,73 @@ func _domain_row(d: Dictionary) -> Control:
 	bar.custom_minimum_size = Vector2(414, 6)
 	bar.set_ratio(m, false)
 	row.add_child(bar)
+	return row
+
+## 学情诊断：薄弱领域排序 + 建议关卡一键直达 + 优势面
+func _diagnosis_card() -> Control:
+	var diag := GameData.diagnose()
+	var card := UI.card(true, UI.COL_ACCENT, UI.COL_GLASS, Color("#34d399", 0.3), 14, 22, Color("#34d399", 0.16))
+	card.custom_minimum_size = Vector2(920, 0)
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 10)
+	card.add_child(box)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 12)
+	box.add_child(head)
+	head.add_child(UI.make_label("学情诊断 · 萌宠分析", 20, UI.COL_TEXT))
+	var hsp := Control.new()
+	hsp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(hsp)
+	head.add_child(UI.mono_label(GameData.pet_form_name(), 14, UI.COL_ACCENT))
+	box.add_child(UI.make_label(GameData.diagnosis_line(), 14, UI.COL_TEXT_DIM))
+
+	var rec := GameData.recommended_level()
+	if not rec.is_empty():
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 10)
+		box.add_child(row)
+		row.add_child(UI.mono_label("建议先练", 13, UI.COL_ACCENT))
+		var chap := str((rec.get("domain", {}) as Dictionary).get("title", ""))
+		row.add_child(UI.make_label("%s · %s" % [chap, str(rec.get("level_name", ""))], 16, UI.COL_TEXT))
+		row.add_child(UI.ghost_button("去复习", func() -> void:
+			GameData.start_level(int(rec["ci"]), int(rec["li"]))
+			Scene.goto(str(rec["scene"]))
+		, 14))
+		var sp := Control.new()
+		sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(sp)
+
+	var weak: Array = diag["weak"]
+	if not diag["ready"]:
+		box.add_child(UI.make_label("尚未开始推演 —— 先挑一关试试，我会据此给出诊断。", 14, UI.COL_TEXT_DIM))
+	elif weak.is_empty():
+		box.add_child(UI.make_label("目前没有明显薄弱领域，保持这个状态！", 14, UI.COL_SUCCESS))
+	else:
+		for w in weak.slice(0, 3):
+			box.add_child(_diag_row(w))
+	var strong: Array = diag["strong"]
+	if not strong.is_empty():
+		var names := ""
+		for s in strong.slice(0, 4):
+			names += ("、" if names != "" else "") + str(s["domain"]["title"])
+		box.add_child(UI.make_label("优势领域：%s" % names, 13, UI.COL_SUCCESS))
+	return card
+
+func _diag_row(w: Dictionary) -> Control:
+	var d: Dictionary = w["domain"]
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	var dot := ColorRect.new()
+	dot.color = Color(str(d.get("color", "#5ee6ff")))
+	dot.custom_minimum_size = Vector2(10, 10)
+	dot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(dot)
+	row.add_child(UI.make_label(str(d["title"]), 15, UI.COL_TEXT))
+	var sp := Control.new()
+	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(sp)
+	row.add_child(UI.mono_label("掌握 %d%% · 错 %d" % [int(round(float(w["mastery"]) * 100.0)), int(w["wrong_count"])], 13, Color("#fb7185")))
 	return row
 
 ## 馆灵记忆档案：寻回的碑文与尚未寻回的裂隙

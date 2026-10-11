@@ -241,6 +241,8 @@ func _process(delta: float) -> void:
 		_auto_t = 0.0
 		if GameData.pet_hungry():
 			say(HUNGRY_LINES[randi() % HUNGRY_LINES.size()], 3.2)
+		elif _quest.is_empty() and GameData.has_wrong_entries() and randf() < 0.55:
+			diagnose_me()
 		elif _quest.is_empty() and randf() < 0.6:
 			_offer_quest()
 		else:
@@ -388,6 +390,25 @@ func offer_quest(force: bool = false) -> bool:
 
 func _offer_quest() -> void:
 	offer_quest()
+
+## 主动学情诊断：说出薄弱领域，并把「最该练的关卡」设为可点击任务。
+func diagnose_me() -> bool:
+	if not visible:
+		return false
+	var line := GameData.diagnosis_line()
+	var rec := GameData.recommended_level()
+	if not rec.is_empty():
+		_quest = {
+			"level_id": str(rec.get("level_id", "")), "qi": 0,
+			"name": str(rec.get("level_name", "")),
+			"level_name": str(rec.get("level_name", "")),
+			"chapter": str((rec.get("domain", {}) as Dictionary).get("title", "")),
+		}
+		_quest_t = 9.0
+		line += "\n（点我去练）"
+	_curious(1.6)
+	say(line, 7.0, true)
+	return true
 
 ## 前往任务关卡(由点击萌宠触发)
 func _goto_quest() -> void:

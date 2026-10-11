@@ -49,9 +49,13 @@ var _done := false
 var _trap_missed := false
 var _q_recorded := false
 var _last_picked := -1
+## 错题优先复习：显示下标→原始题号
+var _qid: Array[int] = []
+var _review := false
 
 func _ready() -> void:
 	_load()
+	_apply_review()
 	add_child(TechBg.new())
 	_build_view()
 	_build_ui()
@@ -59,7 +63,10 @@ func _ready() -> void:
 	_reset()
 
 func _add_pet() -> void:
-	_pet = Pet.spawn(self, "立体几何也别怕，先建系！")
+	var msg := "立体几何也别怕，先建系！"
+	if _review:
+		msg = "这关有你的历史错题，我先排到前面了～ " + msg
+	_pet = Pet.spawn(self, msg)
 	_pet.tap_provider = _pet_point
 
 func _pet_point() -> String:
@@ -111,6 +118,16 @@ func _current() -> Dictionary:
 	if _stages.is_empty():
 		return {}
 	return _stages[clampi(_idx, 0, _stages.size() - 1)]
+
+## 错题优先：本关存在历史错题时重排题序，并记录原始题号映射。
+func _apply_review() -> void:
+	var r := GameData.review_order(GameData.current_level_id(), _stages)
+	_stages = r["stages"]
+	_qid = r["order"]
+	_review = r["review"]
+
+func _q_index() -> int:
+	return _qid[_idx] if _idx >= 0 and _idx < _qid.size() else _idx
 
 # ---------------------------------------------------------------- 流程
 func _reset() -> void:
@@ -272,7 +289,7 @@ func _level_ok() -> void:
 		_clean[_idx] = 1
 	if not _q_recorded:
 		_q_recorded = true
-		GameData.record_answer(GameData.current_level_id(), _idx, str(_current().get("name", "")), true, -1, -1, "space")
+		GameData.record_answer(GameData.current_level_id(), _q_index(), str(_current().get("name", "")), true, -1, -1, "space")
 	Sound.play("correct")
 	if _pet != null:
 		_pet.cheer()
@@ -293,7 +310,7 @@ func _wrong(msg: String) -> void:
 		_trap_missed = true
 	if not _q_recorded:
 		_q_recorded = true
-		GameData.record_answer(GameData.current_level_id(), _idx, str(_current().get("name", "")), false, _last_picked, int(_current().get("ans", -1)), "space")
+		GameData.record_answer(GameData.current_level_id(), _q_index(), str(_current().get("name", "")), false, _last_picked, int(_current().get("ans", -1)), "space")
 	Sound.play("wrong")
 	if _pet != null:
 		_pet.comfort()

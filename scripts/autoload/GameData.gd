@@ -812,6 +812,172 @@ func quest_target(q: Dictionary) -> Dictionary:
 func has_wrong_entries() -> bool:
 	return not wrong_log.is_empty()
 
+## 某题的历史错误次数(键为 level_id#qi)
+func wrong_count_for(level_id: String, qi: int) -> int:
+	return int((wrong_log.get("%s#%d" % [level_id, qi], {}) as Dictionary).get("count", 0))
+
+# ---------------------------------------------------------------- 错题优先复习
+## 错题优先：把历史错过的题(错得越多越靠前)重排到关卡最前面，其余保持原序。
+## 返回 { stages: 重排后的题列表, order: Array[int](显示下标→原始下标), review: bool }。
+## 注意：order[i] 为该显示位置对应的原始题号，记录作答时须用它作为 qi，才能与错题账本对齐。
+func review_order(level_id: String, stages: Array) -> Dictionary:
+	var order: Array[int] = []
+	for i in stages.size():
+		order.append(i)
+	var any_wrong := false
+	for i in stages.size():
+		if wrong_count_for(level_id, i) > 0:
+			any_wrong = true
+			break
+	if not any_wrong or stages.size() < 2:
+		return { "stages": stages, "order": order, "review": false }
+	order.sort_custom(func(a: int, b: int) -> bool:
+		var wa := wrong_count_for(level_id, a)
+		var wb := wrong_count_for(level_id, b)
+		if wa != wb:
+			return wa > wb
+		return a < b)
+	var re: Array = []
+	for i in order:
+		re.append(stages[i])
+	return { "stages": re, "order": order, "review": true }
+
+# ---------------------------------------------------------------- 学情诊断
+## 各领域错题统计：{ domain_id: { count, levels: { level_id: count } } }
+func _domain_wrong_stats() -> Dictionary:
+	var out: Dictionary = {}
+	for k in wrong_log.keys():
+		var w: Dictionary = wrong_log[k]
+		var d := _domain_of_level(str(w.get("level_id", "")))
+		if d.is_empty():
+			continue
+		var id := str(d["id"])
+		if not out.has(id):
+			out[id] = { "count": 0, "levels": {} }
+		var it: Dictionary = out[id]
+		it["count"] = int(it["count"]) + int(w.get("count", 0))
+		var lid := str(w.get("level_id", ""))
+		it["levels"][lid] = int(it["levels"].get(lid, 0)) + int(w.get("count", 0))
+	return out
+
+## 学情诊断：按「掌握度低 + 错题集中」排序薄弱领域，并列出优势领域。
+## 返回 { weak: [{domain, mastery, wrong_count, score}], strong: [{domain, mastery}], ready: bool }
+func diagnose() -> Dictionary:
+	var ready := false
+	for d in chapters:
+		for lv in d.get("levels", []):
+			if int(stars.get(lv["id"], 0)) >= 1:
+				ready = true
+				break
+		if ready:
+			break
+	if not ready:
+		return { "weak": [], "strong": [], "ready": false }
+	var stats := _domain_wrong_stats()
+	var weak: Array = []
+	var strong: Array = []
+	for d in DOMAINS:
+		var id := str(d["id"])
+		var dm := domain_mastery(id)
+		var wc := int((stats.get(id, {}) as Dictionary).get("count", 0))
+		if dm >= 0.75:
+			strong.append({ "domain": d, "mastery": dm })
+			continue
+		var score := (1.0 - dm) + minf(float(wc), 8.0) * 0.06
+		weak.append({ "domain": d, "mastery": dm, "wrong_count": wc, "score": score })
+	weak.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return float(a["score"]) > float(b["score"]))
+	return { "weak": weak, "strong": strong, "ready": true }
+
+## 某领域内最该练的(已解锁)关卡：错多、掌握低、未满星者优先。
+func _weakest_level_in_domain(domain_id: String) -> Dictionary:
+	var d := domain_def(domain_id)
+	if d.is_empty():
+		return {}
+	var stats := _domain_wrong_stats()
+	var lv_wrong: Dictionary = (stats.get(domain_id, {}) as Dictionary).get("levels", {})
+	var best: Dictionary = {}
+	var best_key := INF
+	for ci in chapters.size():
+		if not (str(chapters[ci].get("id", "")) in d["chapters"]):
+			continue
+		var levels: Array = chapters[ci].get("levels", [])
+		for li in levels.size():
+			if not is_level_unlocked(ci, li):
+				continue
+			var lv: Dictionary = levels[li]
+			var lid := str(lv["id"])
+			var key := level_mastery(lid) * 2.0 - minf(float(int(lv_wrong.get(lid, 0))), 6.0) * 0.2
+			if int(stars.get(lid, 0)) >= 3:
+				key += 3.0
+			if key < best_key:
+				best_key = key
+				best = {
+					"level_id": lid, "level_name": str(lv.get("name", "")),
+					"ci": ci, "li": li,
+					"scene": str(lv.get("scene", "res://scenes/Battle.tscn")),
+				}
+	return best
+
+## 兜底推荐：首个已解锁且未满星的关卡。
+func _first_unmastered_level() -> Dictionary:
+	for ci in chapters.size():
+		if not is_chapter_unlocked(ci):
+			continue
+		var levels: Array = chapters[ci].get("levels", [])
+		for li in levels.size():
+			var lid := str(levels[li]["id"])
+			if is_level_unlocked(ci, li) and int(stars.get(lid, 0)) < 3:
+				return {
+					"level_id": lid, "level_name": str(levels[li].get("name", "")),
+					"ci": ci, "li": li,
+					"scene": str(levels[li].get("scene", "res://scenes/Battle.tscn")),
+					"reason": "继续巩固",
+				}
+	return {}
+
+## 诊断建议：优先补最弱领域里的薄弱关卡；全都很强则推下一个未满星关卡。
+## 返回 { level_id, level_name, ci, li, scene, reason, domain }
+func recommended_level() -> Dictionary:
+	var diag := diagnose()
+	if not diag["ready"]:
+		return {}
+	var weak: Array = diag["weak"]
+	for w in weak:
+		var d: Dictionary = w["domain"]
+		var pick := _weakest_level_in_domain(str(d["id"]))
+		if pick.is_empty():
+			continue
+		pick["domain"] = d
+		pick["reason"] = "「%s」掌握 %d%% · 错题 %d 处" % [str(d["title"]), int(round(float(w["mastery"]) * 100.0)), int(w["wrong_count"])]
+		return pick
+	var fb := _first_unmastered_level()
+	if not fb.is_empty():
+		var dd := _domain_of_level(str(fb["level_id"]))
+		if not dd.is_empty():
+			fb["domain"] = dd
+		return fb
+	return {}
+
+## 一句学情诊断台词(供萌宠口播)
+func diagnosis_line() -> String:
+	var diag := diagnose()
+	if not diag["ready"]:
+		return "我们还没开始呢，先随便挑一关试试吧～"
+	var weak: Array = diag["weak"]
+	var strong: Array = diag["strong"]
+	if weak.is_empty():
+		if strong.is_empty():
+			return "状态不错！继续把每个知识点都点亮吧～"
+		return "你的强项是「%s」，要不要试试更难的？" % str(strong[0]["domain"]["title"])
+	var w: Dictionary = weak[0]
+	var d: Dictionary = w["domain"]
+	var rec := recommended_level()
+	var tail := ""
+	if not rec.is_empty():
+		tail = "建议先练「%s」。" % str(rec.get("level_name", ""))
+	return "我发现你在「%s」比较薄弱（掌握 %d%%，错 %d 处）。%s" % [
+		str(d["title"]), int(round(float(w["mastery"]) * 100.0)), int(w["wrong_count"]), tail]
+
 # ---------------------------------------------------------------- 用户系统(多用户)
 func is_logged_in() -> bool:
 	return current_user != ""
