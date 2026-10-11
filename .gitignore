@@ -1,0 +1,18 @@
+# Godot 4 导入缓存
+.godot/
+
+# 构建产物（由导出自动生成）
+build/
+android/
+*.apk
+*.idsig
+
+# 导出二进制
+*.exe
+*.pck
+*.dmg
+*.app
+
+# 系统
+.DS_Store
+Thumbs.db

@@ -1,0 +1,474 @@
+{
+  "space_1_1": {
+    "title": "第一关 · 空间向量 · 01",
+    "method": "空间向量概念与线性运算",
+    "color": "#45C7E5",
+    "summary": "空间向量是自由向量，可平移，只看大小与方向；加减用三角形/平行四边形法则。",
+    "levels": [
+      { "name": "空间向量的概念",
+        "q": "下列关于空间向量的说法，正确的是？",
+        "opts": ["空间向量可自由平移，只由大小和方向决定", "空间向量必须固定起点", "两向量相等必须起点相同", "零向量的模为 1"], "ans": 0,
+        "hint": "空间向量与位置无关，是自由向量。",
+        "scene": { "axes": true, "range": 3, "vectors": [ { "from": [0,0,0], "to": [2,1,1], "label": "a", "color": "#45C7E5" } ] } },
+
+      { "name": "线性运算法则",
+        "q": "空间向量加、减法遵循的法则有？",
+        "opts": ["三角形法则与平行四边形法则(空间通用)", "只有三角形法则", "只有平行四边形法则", "空间向量不能相加减"], "ans": 0,
+        "hint": "平面内的法则在空间依然成立。",
+        "scene": { "axes": true, "range": 3, "vectors": [ { "from": [0,0,0], "to": [2,0,0], "label": "a" }, { "from": [2,0,0], "to": [2,1,1], "label": "b" }, { "from": [0,0,0], "to": [2,1,1], "label": "a+b", "color": "#5ee6ff" } ] } },
+
+      { "name": "运算律的禁忌(陷阱)",
+        "q": "关于向量的运算，下列说法错误的是？",
+        "opts": ["数量积满足结合律：(a·b)·c = a·(b·c)", "数量积满足交换律 a·b = b·a", "数乘满足分配律", "加法满足交换律"], "ans": 0, "trap": true,
+        "hint": "数量积的结果是数，再与向量数乘，结合方式不同。",
+        "explain": "数量积没有结合律，(a·b)·c 与 a·(b·c) 一般不等，且后者无意义。" }
+    ]
+  },
+
+  "space_1_2": {
+    "title": "第一关 · 空间向量 · 02",
+    "method": "共线、共面与空间基底",
+    "color": "#45C7E5",
+    "summary": "三点共线：AB=λAC；四点共面：AD=xAB+yAC；不共面的三向量才构成空间基底。",
+    "levels": [
+      { "name": "三点共线判定",
+        "q": "A、B、C 三点共线的充要条件是(A、C 不重合)?",
+        "opts": ["存在实数 λ 使 AB = λ AC", "res://art/space/formulas/sp12q1_2.png", "res://art/space/formulas/sp12q1_3.png", "AB 与 AC 垂直"], "ans": 0,
+        "hint": "共线即两向量成比例。",
+        "scene": { "axes": true, "range": 3, "points": [ { "p": [0,0,0], "label": "A" }, { "p": [1,1,0], "label": "B" }, { "p": [2,2,0], "label": "C" } ] } },
+
+      { "name": "四点共面判定",
+        "q": "A、B、C、D 四点共面(AB、AC 不共线)的充要条件是？",
+        "opts": ["存在 x、y 使 AD = x AB + y AC", "res://art/space/formulas/sp12q2_2.png", "三个向量两两垂直", "四点在一条直线上"], "ans": 0,
+        "hint": "AD 能用平面内两个不共线向量线性表示。",
+        "scene": { "axes": true, "range": 3, "planes": [ { "origin": [0,0,0], "u": [2,0,0], "v": [0,2,0], "color": "#45C7E5", "label": "α" } ], "points": [ { "p": [0,0,0], "label": "A" }, { "p": [2,0,0], "label": "B" }, { "p": [0,2,0], "label": "C" }, { "p": [1,1,0], "label": "D" } ] } },
+
+      { "name": "空间基底(陷阱)",
+        "q": "三个向量 a、b、c 能构成空间基底的条件是？",
+        "opts": ["a、b、c 不共面", "a、b、c 不共线", "a、b、c 两两垂直", "a、b、c 模长相等"], "ans": 0, "trap": true,
+        "hint": "注意区分「不共线」与「不共面」。",
+        "explain": "必须三向量不共面；只不共线仍可能共面，不能作为基底。" }
+    ]
+  },
+
+  "space_1_3": {
+    "title": "第一关 · 空间向量 · 03",
+    "method": "数量积与坐标运算",
+    "color": "#45C7E5",
+    "summary": "a·b=x1x2+y1y2+z1z2;|a|=√(x²+y²+z²)；夹角公式；垂直 ⇔ a·b=0。",
+    "levels": [
+      { "name": "坐标数量积",
+        "q": "已知 a=(1,2,2),b=(2,−1,0)，则 a·b = ?",
+        "opts": ["0", "4", "−2", "6"], "ans": 0,
+        "hint": "对应坐标相乘再相加：1×2+2×(−1)+2×0。",
+        "scene": { "axes": true, "range": 3, "vectors": [ { "from": [0,0,0], "to": [1,2,2], "label": "a", "color": "#45C7E5" }, { "from": [0,0,0], "to": [2,-1,0], "label": "b", "color": "#ffd479" } ] } },
+
+      { "name": "向量模长",
+        "q": "已知 a=(1,2,2)，则 |a| = ?",
+        "opts": ["3", "res://art/space/formulas/sp13q2_2.png", "9", "5"], "ans": 0,
+        "hint": "|a|=√(1²+2²+2²)。" },
+
+      { "name": "垂直判定",
+        "q": "空间向量 a⊥b 的充要条件是？",
+        "opts": ["res://art/space/formulas/sp13q3_1.png", "res://art/space/formulas/sp13q3_2.png", "res://art/space/formulas/sp13q3_3.png", "res://art/space/formulas/sp13q3_4.png"], "ans": 0,
+        "hint": "垂直 ⇔ 数量积为 0。" }
+    ]
+  },
+
+  "space_2_1": {
+    "title": "第二关 · 建系核心 · 01",
+    "method": "方向向量与法向量",
+    "color": "#45C7E5",
+    "summary": "直线方向向量∥直线；平面法向量⊥平面，与平面内所有向量都垂直。",
+    "levels": [
+      { "name": "方向向量",
+        "q": "直线 l 的方向向量应满足？",
+        "opts": ["与直线平行(共线)的非零向量", "与直线垂直的非零向量", "与直线相交的向量", "任意向量"], "ans": 0,
+        "hint": "方向向量表征直线的走向。",
+        "scene": { "axes": true, "range": 3, "segments": [ { "p1": [0,0,0], "p2": [2,1,1], "color": "#45C7E5", "label": "l" } ], "vectors": [ { "from": [0,0,0], "to": [2,1,1], "color": "#ffd479", "label": "u" } ] } },
+
+      { "name": "求法向量",
+        "q": "求平面 α 的法向量，正确做法是？",
+        "opts": ["取平面内两个不共线向量 u、v，解 n·u=0 且 n·v=0，取一组非零解", "取平面内两个向量相加", "取三点连线中点", "任取一个垂直平面的点"], "ans": 0,
+        "hint": "法向量与平面内任意向量垂直。",
+        "scene": { "axes": true, "range": 3, "planes": [ { "origin": [0,0,0], "u": [2,0,0], "v": [0,2,0], "color": "#45C7E5", "label": "α" } ], "vectors": [ { "from": [0,0,0], "to": [0,0,2], "color": "#ffd479", "label": "n" } ] } },
+
+      { "name": "叉乘口算法向量",
+        "q": "已知 a=(1,0,0),b=(0,1,0)，则与 a、b 都垂直的一个向量是？",
+        "opts": ["res://art/space/formulas/sp21q3_1.png", "res://art/space/formulas/sp21q3_2.png", "res://art/space/formulas/sp21q3_3.png", "res://art/space/formulas/sp21q3_4.png"], "ans": 0,
+        "hint": "a×b 同时垂直 a、b。",
+        "explain": "a×b=(0·0−0·1, 0·0−1·0, 1·1−0·0)=(0,0,1)。" }
+    ]
+  },
+
+  "space_2_2": {
+    "title": "第二关 · 建系核心 · 02",
+    "method": "空间位置关系判定",
+    "color": "#45C7E5",
+    "summary": "线线平行：方向向量共线且不重合；线面平行：u·n=0 且线不在面内；面面垂直：n1·n2=0。",
+    "levels": [
+      { "name": "线线平行",
+        "q": "直线 l1 方向向量 u1、l2 方向向量 u2，则 l1∥l2 的条件是？",
+        "opts": ["u1∥u2(存在 λ 使 u1=λu2)且两直线不重合", "res://art/space/formulas/sp22q1_2.png", "res://art/space/formulas/sp22q1_3.png", "u1 = u2 且过同一点"], "ans": 0,
+        "hint": "方向向量共线还要排除重合。" },
+
+      { "name": "线面平行",
+        "q": "直线 l 方向向量 u、平面 α 法向量 n，则 l∥α 的条件是？",
+        "opts": ["u·n = 0 且直线不在平面内", "res://art/space/formulas/sp22q2_2.png", "res://art/space/formulas/sp22q2_3.png", "res://art/space/formulas/sp22q2_4.png"], "ans": 0,
+        "hint": "方向向量与法向量垂直，还要说明线不在面内。" },
+
+      { "name": "面面垂直",
+        "q": "平面 α 法向量 n1、平面 β 法向量 n2，则 α⊥β 的条件是？",
+        "opts": ["res://art/space/formulas/sp22q3_1.png", "res://art/space/formulas/sp22q3_2.png", "res://art/space/formulas/sp22q3_3.png", "res://art/space/formulas/sp22q3_4.png"], "ans": 0,
+        "hint": "面面垂直 ⇔ 法向量互相垂直。" }
+    ]
+  },
+
+  "space_2_3": {
+    "title": "第二关 · 建系核心 · 03",
+    "method": "建系避坑与平面方程",
+    "color": "#45C7E5",
+    "summary": "没有两两垂直的棱时用基底法；平面 Ax+By+Cz+D=0 的法向量为 (A,B,C)。",
+    "levels": [
+      { "name": "建系避坑(陷阱)",
+        "q": "关于空间建系，下列说法正确的是？",
+        "opts": ["没有两两垂直的棱时，应改用基底法，不能强行建直角坐标系", "任何几何体都能建直角坐标系", "只要有三条棱就能建系", "建系与是否垂直无关"], "ans": 0, "trap": true,
+        "hint": "直角坐标系要求三条轴两两垂直。",
+        "explain": "强行对不规则几何体建直角坐标系会导致坐标全错，应改用基底法。" },
+
+      { "name": "平面方程的法向量",
+        "q": "空间平面方程 Ax+By+Cz+D=0 的一个法向量是？",
+        "opts": ["res://art/space/formulas/sp23q2_1.png", "res://art/space/formulas/sp23q2_2.png", "res://art/space/formulas/sp23q2_3.png", "res://art/space/formulas/sp23q2_4.png"], "ans": 0,
+        "hint": "一般式中 x、y、z 的系数就是法向量。" },
+
+      { "name": "线面垂直",
+        "q": "直线 l 方向向量 u、平面 α 法向量 n，则 l⊥α 的条件是？",
+        "opts": ["res://art/space/formulas/sp23q3_1.png", "res://art/space/formulas/sp23q3_2.png", "u 与 n 相交", "res://art/space/formulas/sp23q3_4.png"], "ans": 0,
+        "hint": "直线垂直平面 ⇔ 方向向量与法向量平行。" }
+    ]
+  },
+
+  "space_3_1": {
+    "title": "第三关 · 空间三大角 · 01",
+    "method": "异面直线夹角",
+    "color": "#45C7E5",
+    "summary": "异面直线夹角范围 (0°，90°];cosθ = |u·v| / (|u||v|)，必加绝对值。",
+    "levels": [
+      { "name": "取值范围",
+        "q": "两条异面直线所成角的取值范围是？",
+        "opts": ["res://art/space/formulas/sp31q1_1.png", "res://art/space/formulas/sp31q1_2.png", "res://art/space/formulas/sp31q1_3.png", "res://art/space/formulas/sp31q1_4.png"], "ans": 0,
+        "hint": "两直线夹角取锐角或直角。",
+        "explain": "异面直线夹角属于两直线夹角，范围 (0°，90°]，不大于 90°。" },
+
+      { "name": "由余弦求角(陷阱)",
+        "q": "两直线方向向量夹角的余弦为 −1/2，则两直线的夹角是？",
+        "opts": ["res://art/space/formulas/sp31q2_1.png", "res://art/space/formulas/sp31q2_2.png", "res://art/space/formulas/sp31q2_3.png", "res://art/space/formulas/sp31q2_4.png"], "ans": 0, "trap": true,
+        "hint": "求直线夹角要加绝对值：cosθ=|−1/2|=1/2。",
+        "explain": "直线夹角 θ∈(0°，90°],cosθ=|cos<u,v>|=1/2,θ=60°；120° 是向量夹角。" },
+
+      { "name": "夹角公式",
+        "q": "求异面直线夹角的常用公式是？",
+        "opts": ["res://art/space/formulas/sp31q3_1.png", "res://art/space/formulas/sp31q3_2.png", "res://art/space/formulas/sp31q3_3.png", "res://art/space/formulas/sp31q3_4.png"], "ans": 0,
+        "hint": "分子要加绝对值，保证角度不超过 90°。" }
+    ]
+  },
+
+  "space_3_2": {
+    "title": "第三关 · 空间三大角 · 02",
+    "method": "直线与平面所成角",
+    "color": "#45C7E5",
+    "summary": "线面角范围 [0°，90°];sinθ = |u·n| / (|u||n|)；是最小角。",
+    "levels": [
+      { "name": "取值范围",
+        "q": "直线与平面所成角的取值范围是？",
+        "opts": ["res://art/space/formulas/sp32q1_1.png", "res://art/space/formulas/sp32q1_2.png", "res://art/space/formulas/sp32q1_3.png", "res://art/space/formulas/sp32q1_4.png"], "ans": 0,
+        "hint": "直线可与平面平行(0°)，也可垂直(90°)。" },
+
+      { "name": "线面角公式(陷阱)",
+        "q": "直线方向向量 u 与平面法向量 n，设线面角为 θ，则？",
+        "opts": ["res://art/space/formulas/sp32q2_1.png", "res://art/space/formulas/sp32q2_2.png", "res://art/space/formulas/sp32q2_3.png", "res://art/space/formulas/sp32q2_4.png"], "ans": 0, "trap": true,
+        "hint": "线面角与「方向向量、法向量夹角」互余，用 sin 不用 cos。",
+        "explain": "线面角 θ 与 <u,n> 互余，故 sinθ=|cos<u,n>|=|u·n|/(|u||n|)。" },
+
+      { "name": "最小角定理",
+        "q": "最小角定理指出：斜线与平面所成的角是？",
+        "opts": ["该斜线与平面内所有直线所成角的最小值", "最大值", "恒定值", "与平面内直线无关"], "ans": 0,
+        "hint": "斜线与平面内所有直线所成角中，线面角最小。" }
+    ]
+  },
+
+  "space_3_3": {
+    "title": "第三关 · 空间三大角 · 03",
+    "method": "二面角",
+    "color": "#45C7E5",
+    "summary": "二面角范围 [0°，180°]；法向量夹角与原角可能相等或互补，必须看图判断。",
+    "levels": [
+      { "name": "取值范围",
+        "q": "二面角的取值范围是？",
+        "opts": ["res://art/space/formulas/sp33q1_1.png", "res://art/space/formulas/sp33q1_2.png", "res://art/space/formulas/sp33q1_3.png", "res://art/space/formulas/sp33q1_4.png"], "ans": 0,
+        "hint": "二面角可以取到钝角。" },
+
+      { "name": "法向量夹角的取舍(陷阱)",
+        "q": "用两半平面的法向量 n1、n2 求二面角时，需要注意？",
+        "opts": ["法向量夹角可能与二面角相等或互补，必须结合图形判断", "直接等于法向量夹角", "总是互补", "总是相等"], "ans": 0, "trap": true,
+        "hint": "两法向量同向/反向决定取原角还是补角。",
+        "explain": "不能直接照搬法向量夹角，要看两法向量方向，判断取 θ 还是 180°−θ。" },
+
+      { "name": "平面角的作法",
+        "q": "二面角的平面角如何作出？",
+        "opts": ["在棱上取一点，分别在两个半平面内作棱的垂线，所成角即平面角", "取棱的中点连两端", "取两半平面内任意两条直线的夹角", "连接两平面的法向量"], "ans": 0,
+        "hint": "两垂线都垂直于棱，所成角才代表二面角。" }
+    ]
+  },
+
+  "space_4_1": {
+    "title": "第四关 · 空间距离 · 01",
+    "method": "两点间距离",
+    "color": "#45C7E5",
+    "summary": "|AB| = √((x2−x1)² + (y2−y1)² + (z2−z1)²)。",
+    "levels": [
+      { "name": "基础计算",
+        "q": "A(1, 0, 0)、B(0, 1, 0)，则 |AB| = ?",
+        "opts": ["res://art/space/formulas/sp41q1_1.png", "2", "1", "res://art/space/formulas/sp41q1_4.png"], "ans": 0,
+        "hint": "Δx=−1,Δy=1,Δz=0。",
+        "scene": { "axes": true, "range": 3, "points": [ { "p": [1,0,0], "label": "A" }, { "p": [0,1,0], "label": "B" } ], "segments": [ { "p1": [1,0,0], "p2": [0,1,0], "color": "#ffd479", "label": "|AB|" } ] } },
+
+      { "name": "三维距离",
+        "q": "A(0, 0, 0)、B(1, 2, 2)，则 |AB| = ?",
+        "opts": ["3", "5", "res://art/space/formulas/sp41q2_3.png", "9"], "ans": 0,
+        "hint": "√(1+4+4)=3。",
+        "scene": { "axes": true, "range": 3, "points": [ { "p": [0,0,0], "label": "A" }, { "p": [1,2,2], "label": "B" } ], "segments": [ { "p1": [0,0,0], "p2": [1,2,2], "color": "#ffd479" } ] } },
+
+      { "name": "距离公式",
+        "q": "A(x1,y1,z1)、B(x2,y2,z2)，则 |AB| = ?",
+        "opts": ["res://art/space/formulas/sp41q3_1.png", "res://art/space/formulas/sp41q3_2.png", "res://art/space/formulas/sp41q3_3.png", "res://art/space/formulas/sp41q3_4.png"], "ans": 0,
+        "hint": "三个坐标差的平方和再开方。" }
+    ]
+  },
+
+  "space_4_2": {
+    "title": "第四关 · 空间距离 · 02",
+    "method": "点到直线的距离",
+    "color": "#45C7E5",
+    "summary": "向量法：d = |AP × u| / |u|(u 为直线方向向量)；几何意义是平行四边形面积除以底。",
+    "levels": [
+      { "name": "点线距离公式",
+        "q": "点 P 到直线 l 的距离，向量法公式是(A 为 l 上一点，u 为方向向量)?",
+        "opts": ["res://art/space/formulas/sp42q1_1.png", "res://art/space/formulas/sp42q1_2.png", "res://art/space/formulas/sp42q1_3.png", "res://art/space/formulas/sp42q1_4.png"], "ans": 0,
+        "hint": "叉乘模长是以 AP、u 为邻边的平行四边形面积，再除以底 |u|。",
+        "scene": { "axes": true, "range": 3, "segments": [ { "p1": [0,0,0], "p2": [3,0,0], "color": "#45C7E5", "label": "l" } ], "points": [ { "p": [1,2,0], "label": "P" }, { "p": [1,0,0], "label": "H" } ], "segments2": [] } },
+
+      { "name": "几何意义",
+        "q": "P 到直线 l 距离的几何含义是？",
+        "opts": ["以 AP、u 为邻边的平行四边形面积除以底 |u|", "AP 的长度", "AP 在 u 上的投影", "AP 与 u 的夹角"], "ans": 0,
+        "hint": "底×高=面积，高即点线距离。" },
+
+      { "name": "叉乘的几何意义",
+        "q": "|a × b| 的几何意义是？",
+        "opts": ["以 a、b 为邻边的平行四边形面积", "a、b 的数量积", "a、b 的夹角", "a 与 b 的长度和"], "ans": 0,
+        "hint": "叉乘模长=两边构成的平行四边形面积。" }
+    ]
+  },
+
+  "space_4_3": {
+    "title": "第四关 · 空间距离 · 03",
+    "method": "点到平面的距离",
+    "color": "#45C7E5",
+    "summary": "d = |AP·n| / |n|(n 为平面法向量)；线面、面面距离均可化为点面距离。",
+    "levels": [
+      { "name": "点面距离公式",
+        "q": "点 P 到平面 α(法向量 n,A 为平面内一点)的距离是？",
+        "opts": ["res://art/space/formulas/sp43q1_1.png", "res://art/space/formulas/sp43q1_2.png", "res://art/space/formulas/sp43q1_3.png", "res://art/space/formulas/sp43q1_4.png"], "ans": 0,
+        "hint": "AP 在法向量方向上的投影长度。",
+        "scene": { "axes": true, "range": 3, "planes": [ { "origin": [0,0,0], "u": [3,0,0], "v": [0,3,0], "color": "#45C7E5", "label": "α" } ], "points": [ { "p": [0,0,2], "label": "P" }, { "p": [0,0,0], "label": "A" } ] } },
+
+      { "name": "线面距离",
+        "q": "直线 l∥平面 α，则直线上任一点到平面的距离？",
+        "opts": ["都相等(即线面距离)", "随点变化", "为 0", "无法确定"], "ans": 0,
+        "hint": "平行时线上各点到平面的距离相同。" },
+
+      { "name": "绝对值陷阱(陷阱)",
+        "q": "点面距离公式中若漏掉绝对值，会怎样？",
+        "opts": ["可能算出负值，而距离必须非负", "没有影响", "结果减半", "结果加倍"], "ans": 0, "trap": true,
+        "hint": "投影 AP·n 可正可负，距离要取绝对值。",
+        "explain": "AP·n 的正负取决于 P 在平面哪一侧，距离是非负量，必须加绝对值。" }
+    ]
+  },
+
+  "space_5_1": {
+    "title": "第五关 · 翻折截面 · 01",
+    "method": "三垂线定理与等体积法",
+    "color": "#45C7E5",
+    "summary": "三垂线定理快速证垂直；等体积法换顶点求高，替代向量法求点面距离。",
+    "levels": [
+      { "name": "三垂线定理",
+        "q": "三垂线定理：若平面内一条直线与斜线在该平面内的射影垂直，则？",
+        "opts": ["它与斜线垂直", "它与斜线平行", "它与斜线异面", "无法判断"], "ans": 0,
+        "hint": "射影垂直 ⇒ 斜线垂直。",
+        "scene": { "axes": true, "range": 3, "planes": [ { "origin": [0,0,0], "u": [3,0,0], "v": [0,3,0], "color": "#45C7E5" } ], "segments": [ { "p1": [0,0,0], "p2": [1,1,2], "color": "#ffd479", "label": "斜线" }, { "p1": [0,0,0], "p2": [1,1,0], "color": "#5ee6ff", "label": "射影" } ] } },
+
+      { "name": "等体积法",
+        "q": "等体积法求点面距离的思路是？",
+        "opts": ["换顶点，用同一四面体体积相等，由 V=(1/3)Sh 反解高 h", "直接量垂线", "用勾股定理", "用坐标相减"], "ans": 0,
+        "hint": "同一体积，换底换高。" },
+
+      { "name": "等体积法关键",
+        "q": "用等体积法求点面距离时，关键点是？",
+        "opts": ["同一几何体用两种方式表示体积，其中一种以所求距离为高", "随便取一个面", "取最大的面", "取最小的面"], "ans": 0,
+        "hint": "让所求距离成为某一种表示中的高。" }
+    ]
+  },
+
+  "space_5_2": {
+    "title": "第五关 · 翻折截面 · 02",
+    "method": "翻折模型的不变量",
+    "color": "#45C7E5",
+    "summary": "翻折不变量：同一平面内线段长度、角度不变；变化量：空间二面角、异面夹角、空间距离。",
+    "levels": [
+      { "name": "不变量",
+        "q": "将平面图形沿直线翻折成立体图形，下列量一定不变的是？",
+        "opts": ["同一平面内的线段长度与角度", "空间二面角", "异面直线夹角", "空间点面距离"], "ans": 0,
+        "hint": "翻折只在折痕处「弯折」，平面内的度量不变。",
+        "scene": { "axes": true, "range": 3, "planes": [ { "origin": [0,0,0], "u": [3,0,0], "v": [0,3,0], "color": "#45C7E5", "label": "折前" } ], "segments": [ { "p1": [0,0,0], "p2": [3,0,0], "color": "#ffd479", "label": "折痕" } ] } },
+
+      { "name": "变化量",
+        "q": "翻折后通常发生改变的量是？",
+        "opts": ["空间二面角、异面直线夹角、空间距离", "同一平面内的线段长度", "同一平面内的角", "折痕两侧公共边长"], "ans": 0,
+        "hint": "离开原平面后，空间关系随之改变。" },
+
+      { "name": "翻折中的建系",
+        "q": "翻折问题中确定坐标的常用做法是？",
+        "opts": ["以折痕所在直线为坐标轴，分别建立翻折前后各点的坐标关系", "随意建系", "把翻折后图形视为不变", "只考虑翻折前的平面"], "ans": 0,
+        "hint": "利用折痕上点不变、平面内度量不变来定坐标。" }
+    ]
+  },
+
+  "space_5_3": {
+    "title": "第五关 · 翻折截面 · 03",
+    "method": "截面问题",
+    "color": "#45C7E5",
+    "summary": "延长交线、面面平行作平行线；截面与各面的交线首尾相接构成截面多边形。",
+    "levels": [
+      { "name": "作截面的方法",
+        "q": "作棱柱/正方体截面时，若截线与某棱所在直线不相交，常用方法是？",
+        "opts": ["延长截线与棱所在平面求交点，或利用面面平行作平行线", "随意连接", "只连相邻顶点", "取中点连接"], "ans": 0,
+        "hint": "截面是平面，与各面的交线要首尾相接。",
+        "scene": { "axes": true, "range": 3, "segments": [ { "p1": [0,0,0], "p2": [2,0,0], "color": "#5ee6ff" }, { "p1": [2,0,0], "p2": [2,2,0], "color": "#5ee6ff" }, { "p1": [2,2,0], "p2": [0,2,0], "color": "#5ee6ff" }, { "p1": [0,2,0], "p2": [0,0,0], "color": "#5ee6ff" } ] } },
+
+      { "name": "截面与各面的交线",
+        "q": "关于截面与几何体各面的交线，正确的是？",
+        "opts": ["截面与各面的交线依次首尾相接，构成截面多边形", "截面边不一定在面上", "截面边一定互相平行", "截面必为三角形"], "ans": 0,
+        "hint": "截面多边形的每条边都在几何体的某个面上。" },
+
+      { "name": "截面最值",
+        "q": "求截面周长/面积最值，常用方法是？",
+        "opts": ["建立坐标或函数关系，讨论参数范围求最值", "目测", "只取特殊位置", "无需计算"], "ans": 0,
+        "hint": "把动点设参，转化为函数最值。" }
+    ]
+  },
+
+  "space_6_1": {
+    "title": "第六关 · 最值与球 · 01",
+    "method": "空间最值模型",
+    "color": "#45C7E5",
+    "summary": "垂线段最短；空间将军饮马展开平面化折为直；定底求高/定高求底求体积最值。",
+    "levels": [
+      { "name": "点线、点面最小值",
+        "q": "空间点线、点面距离的最小值由什么给出？",
+        "opts": ["垂线段最短", "斜线段最短", "任意连线", "无法确定"], "ans": 0,
+        "hint": "垂线段是点到直线/平面的最短距离。" },
+
+      { "name": "空间将军饮马",
+        "q": "空间将军饮马问题的处理方法是？",
+        "opts": ["将相关两个面展开到同一平面，化折线段为直线段", "直接连接两点", "取中点", "作垂线"], "ans": 0,
+        "hint": "展开后两点之间线段最短。",
+        "scene": { "axes": true, "range": 3, "planes": [ { "origin": [0,0,0], "u": [3,0,0], "v": [0,3,0], "color": "#45C7E5" }, { "origin": [0,0,0], "u": [3,0,0], "v": [0,0,3], "color": "#ffd479" } ] } },
+
+      { "name": "体积最值",
+        "q": "定底求高型体积最值的关键是？",
+        "opts": ["底面积固定时，高最大则体积最大，即求高的最大值", "底越大越好", "与高无关", "取任意高"], "ans": 0,
+        "hint": "V=(1/3)Sh，底定时 V 随 h 增大。" }
+    ]
+  },
+
+  "space_6_2": {
+    "title": "第六关 · 最值与球 · 02",
+    "method": "外接球四大模型",
+    "color": "#45C7E5",
+    "summary": "墙角模型 (2R)²=a²+b²+c²；直棱柱球心在上下底面外心连线中点；对棱相等补长方体。",
+    "levels": [
+      { "name": "墙角模型",
+        "q": "三条棱两两垂直、长度分别为 a、b、c 的三棱锥，其外接球半径 R 满足？",
+        "opts": ["res://art/space/formulas/sp62q1_1.png", "res://art/space/formulas/sp62q1_2.png", "res://art/space/formulas/sp62q1_3.png", "res://art/space/formulas/sp62q1_4.png"], "ans": 0,
+        "hint": "补成长方体，体对角线即直径。",
+        "scene": { "axes": true, "range": 3, "segments": [ { "p1": [0,0,0], "p2": [2,0,0], "color": "#45C7E5" }, { "p1": [0,0,0], "p2": [0,2,0], "color": "#45C7E5" }, { "p1": [0,0,0], "p2": [0,0,2], "color": "#45C7E5" }, { "p1": [2,0,0], "p2": [2,2,2], "color": "#5ee6ff" }, { "p1": [0,2,0], "p2": [2,2,2], "color": "#5ee6ff" }, { "p1": [0,0,2], "p2": [2,2,2], "color": "#5ee6ff" } ] } },
+
+      { "name": "直棱柱模型",
+        "q": "直棱柱外接球的球心在？",
+        "opts": ["上、下底面外接圆圆心连线的中点", "底面圆心", "某个顶点", "任意位置"], "ans": 0,
+        "hint": "球心到上下底面对应点距离相等，故在中点。" },
+
+      { "name": "对棱相等补形",
+        "q": "对棱相等的四面体可补形为？",
+        "opts": ["长方体，其外接球即四面体的外接球", "正方体加棱", "圆锥", "球"], "ans": 0,
+        "hint": "对棱相等是长方体的面对角线特征。" }
+    ]
+  },
+
+  "space_6_3": {
+    "title": "第六关 · 最值与球 · 03",
+    "method": "内切球与球截面",
+    "color": "#45C7E5",
+    "summary": "球截面：R²=d²+r²；内切球要求各面都能相切；正四面体 R=3r。",
+    "levels": [
+      { "name": "球截面公式",
+        "q": "球被平面所截，截面圆半径 r 与球半径 R、球心到平面距离 d 满足？",
+        "opts": ["res://art/space/formulas/sp63q1_1.png", "res://art/space/formulas/sp63q1_2.png", "res://art/space/formulas/sp63q1_3.png", "res://art/space/formulas/sp63q1_4.png"], "ans": 0,
+        "hint": "球心到截面圆的垂线段、截面半径、球半径构成直角三角形。",
+        "scene": { "axes": true, "range": 3, "planes": [ { "origin": [0,0,0], "u": [2,0,0], "v": [0,2,0], "color": "#45C7E5", "label": "截面" } ], "segments": [ { "p1": [0,0,2], "p2": [0,0,0], "color": "#ffd479", "label": "d" } ], "points": [ { "p": [0,0,2], "label": "球心O" } ] } },
+
+      { "name": "内切球的存在性(陷阱)",
+        "q": "多面体存在内切球的条件是？",
+        "opts": ["各面到球心距离相等(每个面都能与球相切)", "任意多面体都有内切球", "只有正方体才有", "只有正四面体才有"], "ans": 0, "trap": true,
+        "hint": "内切球要与所有面相切。",
+        "explain": "四面体一定有外接球，但不一定有内切球；只有各面都能相切时才存在。" },
+
+      { "name": "正四面体两球",
+        "q": "正四面体的内切球半径 r 与外接球半径 R 的关系是？",
+        "opts": ["res://art/space/formulas/sp63q3_1.png", "res://art/space/formulas/sp63q3_2.png", "res://art/space/formulas/sp63q3_3.png", "res://art/space/formulas/sp63q3_4.png"], "ans": 0,
+        "hint": "正四面体的高 h = R + r，且 R = 3r。" }
+    ]
+  },
+
+  "space_boss": {
+    "title": "隐藏 Boss · 空间向量真题试炼",
+    "method": "综合真题",
+    "color": "#ffd479",
+    "summary": "叉乘求模、线面角、点面距离、外接球——把空间向量的工具综合起来。",
+    "levels": [
+      { "name": "叉乘求模",
+        "q": "已知 a=(1,1,0),b=(1,0,1)，则 |a × b| = ?",
+        "opts": ["res://art/space/formulas/spbq1_1.png", "3", "1", "res://art/space/formulas/spbq1_4.png"], "ans": 0,
+        "hint": "a×b=(1·1−0·0, 0·1−1·1, 1·0−1·1)=(1,−1,−1)，再求模。",
+        "explain": "a×b=(1,−1,−1),|a×b|=√(1+1+1)=√3。" },
+
+      { "name": "线面角",
+        "q": "直线方向向量 u=(1,0,0)，平面法向量 n=(1,1,1)，则线面角 θ 满足 sinθ = ?",
+        "opts": ["res://art/space/formulas/spbq2_1.png", "res://art/space/formulas/spbq2_2.png", "res://art/space/formulas/spbq2_3.png", "res://art/space/formulas/spbq2_4.png"], "ans": 0,
+        "hint": "sinθ = |u·n| / (|u||n|)。",
+        "explain": "|u·n|=1,|u|=1,|n|=√3,sinθ=1/√3=√3/3。" },
+
+      { "name": "点面距离",
+        "q": "点 P(1,1,1) 到平面 x + y + z − 6 = 0 的距离是？",
+        "opts": ["res://art/space/formulas/spbq3_1.png", "3", "res://art/space/formulas/spbq3_3.png", "1"], "ans": 0,
+        "hint": "d = |1+1+1−6| / √(1+1+1)。",
+        "explain": "|−3|/√3 = 3/√3 = √3。" },
+
+      { "name": "正方体外接球",
+        "q": "棱长为 2 的正方体，其外接球半径是？",
+        "opts": ["res://art/space/formulas/spbq4_1.png", "2", "res://art/space/formulas/spbq4_3.png", "res://art/space/formulas/spbq4_4.png"], "ans": 0,
+        "hint": "外接球直径 = 正方体体对角线 = √3·棱长。",
+        "explain": "体对角线 = 2√3，故 R = √3。" }
+    ]
+  }
+}

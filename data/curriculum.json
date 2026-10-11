@@ -1,0 +1,326 @@
+{
+  "chapters": [
+    {
+      "id": "recurrence_methods",
+      "kind": "method",
+      "title": "数列递推求通项公式",
+      "subtitle": "档案 00 · 递推解码",
+      "color": "#FF99C3",
+      "levels": [
+        { "id": "recur_add",        "name": "累加法",   "technique": "aₙ₊₁−aₙ=f(n)", "archetype": "SLIDER", "sequence": "recur_add",        "scene": "res://scenes/SequenceStage.tscn" },
+        { "id": "recur_mul",        "name": "累乘法",   "technique": "aₙ₊₁/aₙ=f(n)", "archetype": "SLIDER", "sequence": "recur_mul",        "scene": "res://scenes/SequenceStage.tscn" },
+        { "id": "recur_construct",  "name": "构造等比", "technique": "aₙ₊₁=p·aₙ+q",  "archetype": "SLIDER", "sequence": "recur_construct",  "scene": "res://scenes/SequenceStage.tscn" },
+        { "id": "recur_reciprocal", "name": "取倒数",   "technique": "1/aₙ₊₁=1/aₙ+c", "archetype": "SLIDER", "sequence": "recur_reciprocal", "scene": "res://scenes/SequenceStage.tscn" },
+        { "id": "recur_log",        "name": "取对数",   "technique": "aₙ₊₁=c·aₙᵏ",  "archetype": "SLIDER", "sequence": "recur_log",        "scene": "res://scenes/SequenceStage.tscn" },
+        { "id": "recur_sn",         "name": "Sn 与 an", "technique": "aₙ=Sₙ−Sₙ₋₁",   "archetype": "SLIDER", "sequence": "recur_sn",         "scene": "res://scenes/SequenceStage.tscn" }
+      ]
+    },
+    {
+      "id": "solid",
+      "kind": "method",
+      "title": "立体几何",
+      "subtitle": "档案 01 · 空间探知",
+      "color": "#45C7E5",
+      "levels": [
+        { "id": "solid_complement", "name": "补形法 · 外接球", "technique": "补成长方体求半径", "archetype": "BUILD",  "method": "complement",    "scene": "res://scenes/SolidChallenge.tscn" },
+        { "id": "solid_vector",     "name": "坐标法 · 外接球", "technique": "建系列方程求解",   "archetype": "AIM",    "method": "vector_sphere", "scene": "res://scenes/SolidChallenge.tscn" },
+        { "id": "solid_geom",       "name": "垂线法 · 外接球", "technique": "外心垂线 + 勾股",  "archetype": "CHAIN",  "method": "geom_sphere",   "scene": "res://scenes/SolidChallenge.tscn" },
+        { "id": "solid_insphere",   "name": "等体积法 · 内切球", "technique": "V = (1/3)·S·r", "archetype": "CALC",   "method": "insphere",      "scene": "res://scenes/SolidChallenge.tscn" },
+        { "id": "solid_inout",      "name": "正四面体 · 两球", "technique": "R = 3r 且 R+r = h", "archetype": "DETECT", "method": "inout",         "scene": "res://scenes/SolidChallenge.tscn" },
+        { "id": "solid_angle",      "name": "线面角 · 二面角", "technique": "射影 / 平面角",   "archetype": "AIM",    "method": "anglepyramid",  "scene": "res://scenes/SolidChallenge.tscn" }
+      ]
+    },
+    {
+      "id": "conic",
+      "kind": "method",
+      "title": "圆锥曲线",
+      "subtitle": "档案 02 · 圆锥曲线",
+      "color": "#5AD8A6",
+      "levels": [
+        { "id": "conic_c1", "name": "第一定义", "technique": "椭圆 / 双曲线 / 抛物线", "archetype": "DETECT", "conic": "C1", "scene": "res://scenes/ConicStage.tscn" },
+        { "id": "conic_c2", "name": "第二定义", "technique": "离心率 e 的统一",       "archetype": "DETECT", "conic": "C2", "scene": "res://scenes/ConicStage.tscn" },
+        { "id": "conic_c3", "name": "第三定义", "technique": "斜率之积为定值",         "archetype": "CHAIN",  "conic": "C3", "scene": "res://scenes/ConicStage.tscn" }
+      ]
+    },
+    {
+      "id": "set_logic",
+      "kind": "knowledge",
+      "title": "集合与逻辑",
+      "subtitle": "档案 03 · 归类与秩序",
+      "color": "#5B8FF9",
+      "levels": [
+        { "id": "set_ops",        "name": "集合的交并补",   "technique": "数轴法 / Venn图法", "archetype": "MATCH",  "manim": "set_venn" },
+        { "id": "set_interval",   "name": "区间与集合互化", "technique": "端点取舍",         "archetype": "CALC",   "manim": "interval" },
+        { "id": "logic_cond",     "name": "充要条件",       "technique": "充分必要判定",     "archetype": "DETECT", "manim": "condition_arrows" },
+        { "id": "logic_neg",      "name": "命题与量词",     "technique": "正难则反 / 补集思想", "archetype": "SORT",   "manim": "negation" },
+        { "id": "logic_special",  "name": "特殊值检验",     "technique": "排除法",           "archetype": "DETECT", "manim": "special_value" }
+      ]
+    },
+    {
+      "id": "inequalities",
+      "kind": "knowledge",
+      "title": "不等式",
+      "subtitle": "档案 04 · 不等与平衡",
+      "color": "#F6BD16",
+      "levels": [
+        { "id": "ineq_quad",      "name": "一元二次不等式", "technique": "因式分解 / 标根法", "archetype": "MATCH", "manim": "ineq_parabola" },
+        { "id": "ineq_abs",       "name": "绝对值不等式",   "technique": "几何意义 / 分类讨论", "archetype": "DETECT", "manim": "ineq_abs" },
+        { "id": "ineq_basic",     "name": "基本不等式",     "technique": "1的代换 / 配凑",   "archetype": "CHAIN",  "manim": "am_gm" },
+        { "id": "ineq_cauchy",    "name": "柯西不等式",     "technique": "构造向量",         "archetype": "CHAIN",  "manim": "cauchy" },
+        { "id": "ineq_linear",    "name": "线性规划",       "technique": "可行域寻优",       "archetype": "CARDS",  "manim": "linear_program" }
+      ]
+    },
+    {
+      "id": "functions",
+      "kind": "knowledge",
+      "title": "函数",
+      "subtitle": "档案 05 · 变化律",
+      "color": "#5AD8A6",
+      "levels": [
+        { "id": "func_domain",    "name": "定义域优先",     "technique": "三要素",           "archetype": "MATCH",  "manim": "domain" },
+        { "id": "func_mono",      "name": "单调性与奇偶性", "technique": "定义法 / 图像法",  "archetype": "DETECT", "manim": "monotonic" },
+        { "id": "func_period",    "name": "周期与对称",     "technique": "对称性转化",       "archetype": "DETECT", "manim": "period_symmetry" },
+        { "id": "func_exp_log",   "name": "指数与对数",     "technique": "运算性质 / 比较大小", "archetype": "CALC", "manim": "exp_log" },
+        { "id": "func_abstract",  "name": "抽象函数",       "technique": "赋值法",           "archetype": "DETECT", "manim": "abstract_func" },
+        { "id": "func_zeros",     "name": "函数零点",       "technique": "数形结合 / 分离参数", "archetype": "SLIDER", "manim": "zeros" }
+      ]
+    },
+    {
+      "id": "trig",
+      "kind": "knowledge",
+      "title": "三角函数",
+      "subtitle": "档案 06 · 圆周律动",
+      "color": "#FF9D4D",
+      "levels": [
+        { "id": "trig_induce",    "name": "诱导公式",       "technique": "单位圆法",         "archetype": "MATCH",  "manim": "unit_circle" },
+        { "id": "trig_identity",  "name": "恒等变换",       "technique": "辅助角 / 二倍角 / 降幂", "archetype": "MATCH", "manim": "identity" },
+        { "id": "trig_graph",     "name": "图像与性质",     "technique": "五点法 / 求参",    "archetype": "SLIDER", "manim": "sin_graph" },
+        { "id": "trig_solve",     "name": "解三角形",       "technique": "正余弦定理 / 射影定理", "archetype": "AIM", "manim": "solve_triangle" },
+        { "id": "trig_apply",     "name": "测量应用",       "technique": "建模 / 仰角俯角",  "archetype": "AIM",    "manim": "measure" }
+      ]
+    },
+    {
+      "id": "vectors",
+      "kind": "knowledge",
+      "title": "平面向量",
+      "subtitle": "档案 07 · 方向与场",
+      "color": "#9270CA",
+      "levels": [
+        { "id": "vec_ops",        "name": "向量线性运算",   "technique": "三角形 / 平行四边形法则", "archetype": "AIM", "manim": "vector_add" },
+        { "id": "vec_coord",      "name": "坐标运算",       "technique": "基底法 / 坐标法",  "archetype": "MATCH",  "manim": "vector_coord" },
+        { "id": "vec_dot",        "name": "数量积与夹角",   "technique": "投影 / 极化恒等式", "archetype": "CALC",  "manim": "dot_product" },
+        { "id": "vec_collinear",  "name": "共线与垂直",     "technique": "等和线 / 奔驰定理", "archetype": "DETECT", "manim": "collinear" }
+      ]
+    },
+    {
+      "id": "sequences",
+      "kind": "knowledge",
+      "title": "数列",
+      "subtitle": "档案 08 · 离散序列",
+      "color": "#FF99C3",
+      "levels": [
+        { "id": "seq_basic",      "name": "等差等比",       "technique": "通项公式",         "archetype": "LOCK",   "manim": "ap_gp" },
+        { "id": "seq_recur",      "name": "递推数列",       "technique": "累加 / 累乘",      "archetype": "LOCK",   "manim": "recurrence" },
+        { "id": "seq_construct",  "name": "构造法",         "technique": "待定系数构造等比", "archetype": "CHAIN",  "manim": "construct_seq" },
+        { "id": "seq_displace",   "name": "错位相减",       "technique": "等差×等比求和",    "archetype": "SORT",   "manim": "dislocation" },
+        { "id": "seq_split",      "name": "裂项相消",       "technique": "通项拆分",         "archetype": "SORT",   "manim": "telescoping" },
+        { "id": "seq_sn",         "name": "Sn 与 an",       "technique": "作差法",           "archetype": "DETECT", "manim": "sn_an" }
+      ]
+    },
+    {
+      "id": "conics",
+      "kind": "knowledge",
+      "title": "解析几何",
+      "subtitle": "档案 09 · 曲线轨迹",
+      "color": "#F2637B",
+      "levels": [
+        { "id": "conic_line_circle", "name": "直线与圆",     "technique": "待定系数 / 点到直线距离", "archetype": "MATCH", "manim": "line_circle" },
+        { "id": "conic_def",      "name": "圆锥曲线定义",   "technique": "焦点性质",         "archetype": "SLIDER", "manim": "conic_def" },
+        { "id": "conic_pointdiff","name": "点差法",         "technique": "设而不求",         "archetype": "CHAIN",  "manim": "point_diff" },
+        { "id": "conic_tangent",  "name": "切线问题",       "technique": "隐函数求导 / 判别式", "archetype": "DETECT", "manim": "conic_tangent" },
+        { "id": "conic_fixed",    "name": "定点与定值",     "technique": "联立 / 韦达定理",  "archetype": "AIM",    "manim": "fixed_point" },
+        { "id": "conic_range",    "name": "最值与范围",     "technique": "参数法",           "archetype": "SLIDER", "manim": "conic_range" }
+      ]
+    },
+    {
+      "id": "probability",
+      "kind": "knowledge",
+      "title": "概率与统计",
+      "subtitle": "档案 10 · 随机与统计",
+      "color": "#6DC8EC",
+      "levels": [
+        { "id": "prob_classic",   "name": "古典与几何概型", "technique": "枚举 / 度量比",    "archetype": "DETECT", "manim": "classic_prob" },
+        { "id": "prob_cond",      "name": "条件概率",       "technique": "全概率 / 贝叶斯",  "archetype": "SORT",   "manim": "bayes" },
+        { "id": "prob_dist",      "name": "分布列与期望",   "technique": "随机变量建模",     "archetype": "CARDS",  "manim": "distribution" },
+        { "id": "prob_binom",     "name": "二项与正态",     "technique": "模型识别",         "archetype": "CARDS",  "manim": "binomial_normal" },
+        { "id": "prob_stats",     "name": "统计与回归",     "technique": "最小二乘 / 独立性检验", "archetype": "DETECT", "manim": "regression" }
+      ]
+    },
+    {
+      "id": "derivative",
+      "kind": "knowledge",
+      "title": "导数及其应用",
+      "subtitle": "档案 11 · 瞬时变化",
+      "color": "#E8684A",
+      "levels": [
+        { "id": "deriv_formula",  "name": "求导公式",       "technique": "运算法则",         "archetype": "MATCH",  "manim": "deriv_rules" },
+        { "id": "deriv_tangent",  "name": "导数的几何意义", "technique": "切线方程",         "archetype": "SLIDER", "manim": "tangent_line" },
+        { "id": "deriv_mono",     "name": "单调性与极值",   "technique": "含参分类讨论",     "archetype": "SLIDER", "manim": "mono_extreme" },
+        { "id": "deriv_param",    "name": "恒成立与分离参数", "technique": "必要性探路",     "archetype": "SLIDER", "manim": "separate_param" },
+        { "id": "deriv_prove",    "name": "不等式证明",     "technique": "构造函数 / 切线放缩", "archetype": "CHAIN", "manim": "ineq_proof" },
+        { "id": "deriv_zero",     "name": "零点与隐零点",   "technique": "极值点偏移 / 二次求导", "archetype": "CHAIN", "manim": "hidden_zero" }
+      ]
+    },
+    {
+      "id": "complex",
+      "kind": "knowledge",
+      "title": "复数",
+      "subtitle": "档案 12 · 复平面",
+      "color": "#B37FEB",
+      "levels": [
+        { "id": "cplx_calc",      "name": "复数的运算",     "technique": "四则 / 共轭 / 模",  "archetype": "CALC",   "manim": "complex_calc" },
+        { "id": "cplx_geo",       "name": "复数的几何意义", "technique": "距离 / 轨迹",      "archetype": "DETECT", "manim": "complex_plane" },
+        { "id": "cplx_period",    "name": "i 的周期性",     "technique": "幂运算规律",       "archetype": "LOCK",   "manim": "i_cycle" }
+      ]
+    },
+    {
+      "id": "counting",
+      "kind": "knowledge",
+      "title": "计数原理",
+      "subtitle": "档案 13 · 计数原理",
+      "color": "#FFC53D",
+      "levels": [
+        { "id": "count_rule",     "name": "两个基本原理",   "technique": "分类加法 / 分步乘法", "archetype": "BUILD", "manim": "count_rule" },
+        { "id": "count_comb",     "name": "排列组合",       "technique": "捆绑 / 插空 / 隔板", "archetype": "MATCH", "manim": "perm_comb" },
+        { "id": "count_indirect", "name": "间接法",         "technique": "正难则反",         "archetype": "SORT",   "manim": "indirect" },
+        { "id": "count_binomial", "name": "二项式定理",     "technique": "通项 / 赋值法",    "archetype": "CALC",   "manim": "binomial" }
+      ]
+    },
+    {
+      "id": "thinking",
+      "kind": "knowledge",
+      "title": "数学思想综合",
+      "subtitle": "隐藏档案 · 思想统合",
+      "color": "#9ED0A0",
+      "levels": [
+        { "id": "think_func_eq",  "name": "函数与方程",     "technique": "思想融合",         "archetype": "DETECT", "manim": "func_equation" },
+        { "id": "think_geo",      "name": "数形结合",       "technique": "图像辅助",         "archetype": "SLIDER", "manim": "number_shape" },
+        { "id": "think_classify", "name": "分类讨论",       "technique": "不重不漏",         "archetype": "SORT",   "manim": "classification" },
+        { "id": "think_convert",  "name": "转化与化归",     "technique": "陌生化熟悉",       "archetype": "CHAIN",  "manim": "reduction" }
+      ]
+    },
+    {
+      "id": "line_eq",
+      "kind": "knowledge",
+      "title": "直线方程",
+      "subtitle": "知识体系 · 直线方程",
+      "color": "#A878FF",
+      "hidden": true,
+      "levels": [
+        { "id": "line_1_1", "name": "1-1 倾斜角与斜率",     "technique": "倾斜角范围 / 两点斜率",     "archetype": "LINE", "line": "line_1_1", "scene": "res://scenes/LineStage.tscn" },
+        { "id": "line_1_2", "name": "1-2 倾角与斜率变化",   "technique": "分段递增 / 跨 90° 讨论",    "archetype": "LINE", "line": "line_1_2", "scene": "res://scenes/LineStage.tscn" },
+        { "id": "line_1_3", "name": "1-3 方向向量与法向量", "technique": "方向∥ / 法⊥ / 三点共线",   "archetype": "LINE", "line": "line_1_3", "scene": "res://scenes/LineStage.tscn" },
+        { "id": "line_2_1", "name": "2-1 点斜式与斜截式",   "technique": "y−y0=k(x−x0) / y=kx+b",   "archetype": "LINE", "line": "line_2_1", "scene": "res://scenes/LineStage.tscn" },
+        { "id": "line_2_2", "name": "2-2 两点式·截距式·一般式", "technique": "三种形式与适用条件",    "archetype": "LINE", "line": "line_2_2", "scene": "res://scenes/LineStage.tscn" },
+        { "id": "line_2_3", "name": "2-3 方程形式互化",     "technique": "一般式↔斜截式 / 读 k、b",  "archetype": "LINE", "line": "line_2_3", "scene": "res://scenes/LineStage.tscn" },
+        { "id": "line_3_1", "name": "3-1 斜率法判定",       "technique": "k1=k2 平行 / k1k2=−1 垂直", "archetype": "LINE", "line": "line_3_1", "scene": "res://scenes/LineStage.tscn" },
+        { "id": "line_3_2", "name": "3-2 一般式万能判定",   "technique": "平行 / 重合 / 垂直公式",    "archetype": "LINE", "line": "line_3_2", "scene": "res://scenes/LineStage.tscn" },
+        { "id": "line_3_3", "name": "3-3 交点与含参",       "technique": "联立 / 含参平行",           "archetype": "LINE", "line": "line_3_3", "scene": "res://scenes/LineStage.tscn" },
+        { "id": "line_4_1", "name": "4-1 两点间距离",       "technique": "勾股 / 水平竖直速算",       "archetype": "LINE", "line": "line_4_1", "scene": "res://scenes/LineStage.tscn" },
+        { "id": "line_4_2", "name": "4-2 点到直线距离",     "technique": "d=|Ax0+By0+C|/√(A²+B²)",  "archetype": "LINE", "line": "line_4_2", "scene": "res://scenes/LineStage.tscn" },
+        { "id": "line_4_3", "name": "4-3 平行线距离与最值", "technique": "统一系数 / 垂线段最短",     "archetype": "LINE", "line": "line_4_3", "scene": "res://scenes/LineStage.tscn" },
+        { "id": "line_5_1", "name": "5-1 四大直线系",       "technique": "定点/交点/平行/垂直",       "archetype": "LINE", "line": "line_5_1", "scene": "res://scenes/LineStage.tscn" },
+        { "id": "line_5_2", "name": "5-2 直线过定点",       "technique": "参数分离法",                "archetype": "LINE", "line": "line_5_2", "scene": "res://scenes/LineStage.tscn" },
+        { "id": "line_5_3", "name": "5-3 到角与夹角",       "technique": "夹角公式 / 交点系陷阱",     "archetype": "LINE", "line": "line_5_3", "scene": "res://scenes/LineStage.tscn" },
+        { "id": "line_6_1", "name": "6-1 点对称与轴对称",   "technique": "关于点 / 轴 / y=x 对称",    "archetype": "LINE", "line": "line_6_1", "scene": "res://scenes/LineStage.tscn" },
+        { "id": "line_6_2", "name": "6-2 距离和最小",       "technique": "将军饮马 / 对称转化",       "archetype": "LINE", "line": "line_6_2", "scene": "res://scenes/LineStage.tscn" },
+        { "id": "line_6_3", "name": "6-3 距离差最大",       "technique": "异侧连线 / 同侧对称",       "archetype": "LINE", "line": "line_6_3", "scene": "res://scenes/LineStage.tscn" },
+        { "id": "line_boss", "name": "隐藏Boss · 对称与最值压轴", "technique": "光反射 / 周长最小 / 综合对称", "archetype": "BOSS", "line": "line_boss", "scene": "res://scenes/LineStage.tscn" }
+      ]
+    },
+    {
+      "id": "space",
+      "kind": "knowledge",
+      "title": "空间向量与立体几何",
+      "subtitle": "知识体系 · 空间向量与立体几何",
+      "color": "#45C7E5",
+      "hidden": true,
+      "levels": [
+        { "id": "space_1_1", "name": "1-1 空间向量概念与运算", "technique": "自由向量 / 线性运算", "archetype": "SPACE", "space": "space_1_1", "scene": "res://scenes/SpaceStage.tscn" },
+        { "id": "space_1_2", "name": "1-2 共线共面与基底",     "technique": "共线共面 / 空间基底", "archetype": "SPACE", "space": "space_1_2", "scene": "res://scenes/SpaceStage.tscn" },
+        { "id": "space_1_3", "name": "1-3 数量积与坐标",       "technique": "点积 / 模长 / 夹角", "archetype": "SPACE", "space": "space_1_3", "scene": "res://scenes/SpaceStage.tscn" },
+        { "id": "space_2_1", "name": "2-1 方向向量与法向量",   "technique": "求法向量 / 叉乘",   "archetype": "SPACE", "space": "space_2_1", "scene": "res://scenes/SpaceStage.tscn" },
+        { "id": "space_2_2", "name": "2-2 位置关系判定",       "technique": "线线/线面/面面",    "archetype": "SPACE", "space": "space_2_2", "scene": "res://scenes/SpaceStage.tscn" },
+        { "id": "space_2_3", "name": "2-3 建系避坑与平面方程", "technique": "基底法 / 平面方程", "archetype": "SPACE", "space": "space_2_3", "scene": "res://scenes/SpaceStage.tscn" },
+        { "id": "space_3_1", "name": "3-1 异面直线夹角",       "technique": "点积 / 加绝对值",   "archetype": "SPACE", "space": "space_3_1", "scene": "res://scenes/SpaceStage.tscn" },
+        { "id": "space_3_2", "name": "3-2 线面角",             "technique": "sin = |点积|/模",   "archetype": "SPACE", "space": "space_3_2", "scene": "res://scenes/SpaceStage.tscn" },
+        { "id": "space_3_3", "name": "3-3 二面角",             "technique": "看图判原角/补角",   "archetype": "SPACE", "space": "space_3_3", "scene": "res://scenes/SpaceStage.tscn" },
+        { "id": "space_4_1", "name": "4-1 两点间距离",         "technique": "坐标差 / 开方",     "archetype": "SPACE", "space": "space_4_1", "scene": "res://scenes/SpaceStage.tscn" },
+        { "id": "space_4_2", "name": "4-2 点到直线距离",       "technique": "叉乘 / 面积÷底",    "archetype": "SPACE", "space": "space_4_2", "scene": "res://scenes/SpaceStage.tscn" },
+        { "id": "space_4_3", "name": "4-3 点到平面距离",       "technique": "法向量投影",        "archetype": "SPACE", "space": "space_4_3", "scene": "res://scenes/SpaceStage.tscn" },
+        { "id": "space_5_1", "name": "5-1 三垂线定理与等体积", "technique": "证垂直 / 换顶点",   "archetype": "SPACE", "space": "space_5_1", "scene": "res://scenes/SpaceStage.tscn" },
+        { "id": "space_5_2", "name": "5-2 翻折不变量",         "technique": "长度角度不变",      "archetype": "SPACE", "space": "space_5_2", "scene": "res://scenes/SpaceStage.tscn" },
+        { "id": "space_5_3", "name": "5-3 截面问题",           "technique": "延长交线 / 平行线", "archetype": "SPACE", "space": "space_5_3", "scene": "res://scenes/SpaceStage.tscn" },
+        { "id": "space_6_1", "name": "6-1 空间最值模型",       "technique": "垂线段 / 展开",     "archetype": "SPACE", "space": "space_6_1", "scene": "res://scenes/SpaceStage.tscn" },
+        { "id": "space_6_2", "name": "6-2 外接球四模型",       "technique": "墙角/棱柱/棱锥/补形", "archetype": "SPACE", "space": "space_6_2", "scene": "res://scenes/SpaceStage.tscn" },
+        { "id": "space_6_3", "name": "6-3 内切球与球截面",     "technique": "R² = d² + r²",      "archetype": "SPACE", "space": "space_6_3", "scene": "res://scenes/SpaceStage.tscn" },
+        { "id": "space_boss", "name": "隐藏Boss · 空间向量真题试炼", "technique": "综合真题 / 全考点", "archetype": "BOSS", "space": "space_boss", "scene": "res://scenes/SpaceStage.tscn" }
+      ]
+    },
+    {
+      "id": "vector",
+      "kind": "knowledge",
+      "title": "平面向量",
+      "subtitle": "知识体系 · 平面向量",
+      "color": "#9270CA",
+      "hidden": true,
+      "levels": [
+        { "id": "vector_1_1", "name": "1-1 平面向量的概念",       "technique": "自由向量 / 相等与相反", "archetype": "VECTOR", "vector": "vector_1_1", "scene": "res://scenes/VectorStage.tscn" },
+        { "id": "vector_1_2", "name": "1-2 向量的模长与单位向量", "technique": "模长 / 单位向量归一",   "archetype": "VECTOR", "vector": "vector_1_2", "scene": "res://scenes/VectorStage.tscn" },
+        { "id": "vector_1_3", "name": "1-3 零向量陷阱",           "technique": "零向量方向任意",       "archetype": "VECTOR", "vector": "vector_1_3", "scene": "res://scenes/VectorStage.tscn" },
+        { "id": "vector_2_1", "name": "2-1 向量加法的三角形法则", "technique": "首尾相接 / 平行四边形", "archetype": "VECTOR", "vector": "vector_2_1", "scene": "res://scenes/VectorStage.tscn" },
+        { "id": "vector_2_2", "name": "2-2 向量减法的方向",       "technique": "共起点 / 指向被减数",   "archetype": "VECTOR", "vector": "vector_2_2", "scene": "res://scenes/VectorStage.tscn" },
+        { "id": "vector_2_3", "name": "2-3 共线向量定理",         "technique": "a=λb / 三点共线",      "archetype": "VECTOR", "vector": "vector_2_3", "scene": "res://scenes/VectorStage.tscn" },
+        { "id": "vector_3_1", "name": "3-1 平面向量基本定理",     "technique": "基底不共线 / 唯一分解", "archetype": "VECTOR", "vector": "vector_3_1", "scene": "res://scenes/VectorStage.tscn" },
+        { "id": "vector_3_2", "name": "3-2 平面向量的坐标运算",   "technique": "终点减起点 / 点积坐标", "archetype": "VECTOR", "vector": "vector_3_2", "scene": "res://scenes/VectorStage.tscn" },
+        { "id": "vector_3_3", "name": "3-3 中点与重心公式",       "technique": "中点平均 / 重心三等分", "archetype": "VECTOR", "vector": "vector_3_3", "scene": "res://scenes/VectorStage.tscn" },
+        { "id": "vector_4_1", "name": "4-1 数量积的定义",         "technique": "|a||b|cosθ / 点积",    "archetype": "VECTOR", "vector": "vector_4_1", "scene": "res://scenes/VectorStage.tscn" },
+        { "id": "vector_4_2", "name": "4-2 坐标形式与求值",       "technique": "对应相乘求和",         "archetype": "VECTOR", "vector": "vector_4_2", "scene": "res://scenes/VectorStage.tscn" },
+        { "id": "vector_4_3", "name": "4-3 垂直判定与陷阱",       "technique": "点积为零 / 零向量特例", "archetype": "VECTOR", "vector": "vector_4_3", "scene": "res://scenes/VectorStage.tscn" },
+        { "id": "vector_5_1", "name": "5-1 数量投影",             "technique": "|b|cosθ 有正负",       "archetype": "VECTOR", "vector": "vector_5_1", "scene": "res://scenes/VectorStage.tscn" },
+        { "id": "vector_5_2", "name": "5-2 平行四边形恒等式",     "technique": "对角线平方和",         "archetype": "VECTOR", "vector": "vector_5_2", "scene": "res://scenes/VectorStage.tscn" },
+        { "id": "vector_5_3", "name": "5-3 三角形四心向量模型",   "technique": "重心/外心/垂心/内心",  "archetype": "VECTOR", "vector": "vector_5_3", "scene": "res://scenes/VectorStage.tscn" },
+        { "id": "vector_6_1", "name": "6-1 模长最值与三角不等式", "technique": "三角不等式 / 配方",    "archetype": "VECTOR", "vector": "vector_6_1", "scene": "res://scenes/VectorStage.tscn" },
+        { "id": "vector_6_2", "name": "6-2 数量积最值三法",       "technique": "坐标/投影/基底换元",   "archetype": "VECTOR", "vector": "vector_6_2", "scene": "res://scenes/VectorStage.tscn" },
+        { "id": "vector_6_3", "name": "6-3 动点轨迹模型",         "technique": "圆 / 直线 / 阿波罗尼斯", "archetype": "VECTOR", "vector": "vector_6_3", "scene": "res://scenes/VectorStage.tscn" },
+        { "id": "vector_boss", "name": "隐藏Boss · 平面向量真题试炼", "technique": "等和线 / 极化恒等式 / 综合", "archetype": "BOSS", "vector": "vector_boss", "scene": "res://scenes/VectorStage.tscn" }
+      ]
+    },
+    {
+      "id": "ellipse",
+      "kind": "knowledge",
+      "title": "椭圆",
+      "subtitle": "知识体系 · 圆锥曲线 · 椭圆",
+      "color": "#FF7EA8",
+      "hidden": true,
+      "levels": [
+        { "id": "ellipse_1_1", "name": "1-1 椭圆的定义 · 距离之和",       "technique": "|PF₁|+|PF₂| = 2a",               "archetype": "ELLIPSE", "ellipse": "ellipse_1_1", "scene": "res://scenes/EllipseStage.tscn" },
+        { "id": "ellipse_1_2", "name": "1-2 定义的三个条件",               "technique": "2a > 2c 椭圆 / 2a=2c 线段",      "archetype": "ELLIPSE", "ellipse": "ellipse_1_2", "scene": "res://scenes/EllipseStage.tscn" },
+        { "id": "ellipse_1_3", "name": "1-3 陷阱 · 退化成线段",             "technique": "2a = 2c 退化陷阱",             "archetype": "ELLIPSE", "ellipse": "ellipse_1_3", "scene": "res://scenes/EllipseStage.tscn" },
+        { "id": "ellipse_2_1", "name": "2-1 离心率 · 圆与扁",               "technique": "e = c/a ∈ (0,1)",              "archetype": "ELLIPSE", "ellipse": "ellipse_2_1", "scene": "res://scenes/EllipseStage.tscn" },
+        { "id": "ellipse_2_2", "name": "2-2 由方程读 a、b、c",             "technique": "a² = b² + c²",                 "archetype": "ELLIPSE", "ellipse": "ellipse_2_2", "scene": "res://scenes/EllipseStage.tscn" },
+        { "id": "ellipse_2_3", "name": "2-3 陷阱 · 焦点看分母",             "technique": "长轴在分母大的轴上",          "archetype": "ELLIPSE", "ellipse": "ellipse_2_3", "scene": "res://scenes/EllipseStage.tscn" },
+        { "id": "ellipse_3_1", "name": "3-1 焦点三角形面积",               "technique": "S = c·|y₀| = b²tan(θ/2)",       "archetype": "ELLIPSE", "ellipse": "ellipse_3_1", "scene": "res://scenes/EllipseStage.tscn" },
+        { "id": "ellipse_3_2", "name": "3-2 焦半径公式",                   "technique": "|PF₁| = a ± ex₀",               "archetype": "ELLIPSE", "ellipse": "ellipse_3_2", "scene": "res://scenes/EllipseStage.tscn" },
+        { "id": "ellipse_3_3", "name": "3-3 陷阱 · 焦点三角面积公式",       "technique": "椭圆是 tan，双曲线是 cot",     "archetype": "ELLIPSE", "ellipse": "ellipse_3_3", "scene": "res://scenes/EllipseStage.tscn" },
+        { "id": "ellipse_4_1", "name": "4-1 点差法 · 中点弦",               "technique": "k_AB·k_OM = −b²/a²",           "archetype": "ELLIPSE", "ellipse": "ellipse_4_1", "scene": "res://scenes/EllipseStage.tscn" },
+        { "id": "ellipse_4_2", "name": "4-2 点差法结论",                   "technique": "设而不求 / 斜率乘积定值",      "archetype": "ELLIPSE", "ellipse": "ellipse_4_2", "scene": "res://scenes/EllipseStage.tscn" },
+        { "id": "ellipse_4_3", "name": "4-3 陷阱 · 点差法必须验 Δ",         "technique": "回代检验 Δ > 0",               "archetype": "ELLIPSE", "ellipse": "ellipse_4_3", "scene": "res://scenes/EllipseStage.tscn" },
+        { "id": "ellipse_5_1", "name": "5-1 直线与椭圆 · 弦长",             "technique": "联立 + 硬解定理",              "archetype": "ELLIPSE", "ellipse": "ellipse_5_1", "scene": "res://scenes/EllipseStage.tscn" },
+        { "id": "ellipse_5_2", "name": "5-2 直线的四种设法",               "technique": "x = ty + m 优先",               "archetype": "ELLIPSE", "ellipse": "ellipse_5_2", "scene": "res://scenes/EllipseStage.tscn" },
+        { "id": "ellipse_5_3", "name": "5-3 陷阱 · 硬解适用范围",           "technique": "焦点在 x 轴 + 斜率存在",       "archetype": "ELLIPSE", "ellipse": "ellipse_5_3", "scene": "res://scenes/EllipseStage.tscn" },
+        { "id": "ellipse_boss", "name": "隐藏Boss · 椭圆综合试炼",           "technique": "焦点三角 · 离心率 · 硬解综合", "archetype": "BOSS",   "ellipse": "ellipse_boss", "scene": "res://scenes/EllipseStage.tscn" }
+      ]
+    }
+  ]
+}

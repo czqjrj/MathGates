@@ -1,0 +1,596 @@
+{
+  "ellipse_1_1": {
+    "title": "第1关 · 椭圆起源 · 01",
+    "method": "椭圆第一定义",
+    "color": "#FF7EA8",
+    "summary": "平面内到两定点距离之和为常数 2a(2a>2c)的点的轨迹是椭圆；2a=2c 退化为线段，2a<2c 无轨迹。",
+    "levels": [
+      {
+        "name": "1-1 椭圆的定义 · 距离之和(动手)",
+        "q": "平面内到两定点 F₁(−3,0)、F₂(3,0) 的距离之和为定值 10 的点的轨迹是椭圆。拖动动点 P，让 |PF₁|+|PF₂| = 10，亲手画出椭圆轨迹。",
+        "type": "interact",
+        "task": {
+          "model": "def_sum",
+          "a": 5.0,
+          "c": 3.0,
+          "axis": "x",
+          "target": 10.0,
+          "tol": 0.3,
+          "start": [
+            6.0,
+            2.0
+          ]
+        },
+        "tip": "拖动金色动点 P，把上部读数 |PF₁|+|PF₂| 调到 10(= 2a)。椭圆已用虚线画好作参照。",
+        "retry": "读数还没到 10：把 P 拖到椭圆上，椭圆上任意一点都满足 |PF₁|+|PF₂| = 2a。",
+        "hint": "椭圆上任意一点都满足 |PF₁|+|PF₂| = 2a = 10；把 P 靠近虚线椭圆即可。",
+        "explain": "第一定义：到两定点(焦点)距离之和为常数 2a(a>c)的轨迹是椭圆，2a 即长轴长。",
+        "scene": {
+          "axes": true,
+          "range": 7
+        }
+      },
+      {
+        "name": "1-2 定义的三个条件",
+        "q": "平面内到两定点 F₁、F₂ 的距离之和等于常数 2a 的点的轨迹。下列说法正确的是？",
+        "opts": [
+          "只要 2a 是常数，轨迹就一定是椭圆",
+          "当 2a > |F₁F₂| 时，轨迹是椭圆",
+          "当 2a = |F₁F₂| 时，轨迹是椭圆",
+          "2a 取任意正数都总有轨迹"
+        ],
+        "ans": 1,
+        "hint": "关键是把 2a 与两焦点间的距离 2c = |F₁F₂| 作比较。",
+        "explain": "2a > 2c 椭圆；2a = 2c 线段 F₁F₂;2a < 2c 无轨迹。",
+        "scene": {
+          "axes": true,
+          "range": 7,
+          "points": [
+            {
+              "p": [
+                -3,
+                0
+              ],
+              "label": "F₁",
+              "color": "#fb7185"
+            },
+            {
+              "p": [
+                3,
+                0
+              ],
+              "label": "F₂",
+              "color": "#fb7185"
+            }
+          ],
+          "segments": [
+            {
+              "p1": [
+                -3,
+                0
+              ],
+              "p2": [
+                3,
+                0
+              ],
+              "color": "#ffd47999"
+            }
+          ]
+        }
+      },
+      {
+        "name": "1-3 陷阱 · 退化成线段",
+        "q": "若动点 P 满足 |PF₁| + |PF₂| = |F₁F₂|(即 2a = 2c)，则 P 的轨迹是？",
+        "opts": [
+          "椭圆",
+          "线段 F₁F₂",
+          "圆",
+          "不存在"
+        ],
+        "ans": 1,
+        "trap": true,
+        "hint": "当到两定点的距离之和恰好等于两定点间的距离时，P 只能落在线段上。",
+        "explain": "2a = 2c 时轨迹退化为线段 F₁F₂，这是判定轨迹时最经典的陷阱。",
+        "scene": {
+          "axes": true,
+          "range": 7,
+          "points": [
+            {
+              "p": [
+                -3,
+                0
+              ],
+              "label": "F₁",
+              "color": "#fb7185"
+            },
+            {
+              "p": [
+                3,
+                0
+              ],
+              "label": "F₂",
+              "color": "#fb7185"
+            }
+          ],
+          "segments": [
+            {
+              "p1": [
+                -3,
+                0
+              ],
+              "p2": [
+                3,
+                0
+              ],
+              "color": "#ff7ea8"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "ellipse_2_1": {
+    "title": "第2关 · 椭圆参数 · 01",
+    "method": "标准方程与几何性质",
+    "color": "#FF7EA8",
+    "summary": "标准方程 x²/a²+y²/b²=1(a>b>0);a²=b²+c²,a 最大；焦点在分母大的坐标轴上；e=c/a 决定圆扁。",
+    "levels": [
+      {
+        "name": "2-1 离心率 · 圆与扁(动手)",
+        "q": "离心率 e = c/a 刻画椭圆的圆扁程度。拖动底部滑块调节 e(a 固定为 5)，观察椭圆由接近圆逐渐变扁，把 e 调到 0.6。",
+        "type": "interact",
+        "task": {
+          "model": "ecc",
+          "a": 5.0,
+          "range": [
+            0.05,
+            0.95
+          ],
+          "target": 0.6,
+          "tol": 0.03,
+          "start": 0.2,
+          "control": "slider"
+        },
+        "tip": "拖动底部滑块，把读数 e 调到 0.6;c = e·a,b = √(a²−c²) 会实时变化。",
+        "retry": "e 还没到位：继续拖动滑块，让 e = 0.6。",
+        "hint": "e 越接近 0 椭圆越接近圆，越接近 1 越扁；圆是 e=0 的极限。",
+        "explain": "e = c/a ∈ (0,1);e→0 趋于圆，e→1 趋于线段。",
+        "scene": {
+          "axes": true,
+          "range": 7
+        }
+      },
+      {
+        "name": "2-2 由方程读 a、b、c",
+        "q": "椭圆 x²/25 + y²/16 = 1 的焦距(两焦点间距离)是？",
+        "opts": [
+          "3",
+          "6",
+          "9",
+          "8"
+        ],
+        "ans": 1,
+        "hint": "a² = 25、b² = 16，则 c² = a² − b² = 9；焦距是 2c。",
+        "explain": "a = 5、b = 4,c = √(25−16) = 3，焦距 2c = 6。a² = b² + c²，记住 a 最大。",
+        "scene": {
+          "axes": true,
+          "range": 7,
+          "ellipse": {
+            "a": 5,
+            "b": 4,
+            "axis": "x",
+            "color": "#ff7ea8",
+            "label": "x²/25+y²/16=1"
+          },
+          "foci": {
+            "c": 3,
+            "axis": "x",
+            "color": "#fb7185"
+          }
+        }
+      },
+      {
+        "name": "2-3 陷阱 · 焦点看分母",
+        "q": "椭圆 x²/9 + y²/16 = 1 的焦点在？",
+        "opts": [
+          "x 轴上，(±3, 0)",
+          "y 轴上，(0, ±3)",
+          "y 轴上，(0, ±√7)",
+          "圆上，无焦点"
+        ],
+        "ans": 2,
+        "trap": true,
+        "hint": "哪个分母大，长轴就在哪条坐标轴上；焦点跟着长轴走。",
+        "explain": "a 最大：分母大的项对应长轴，故焦点在 y 轴；c = √(16−9) = √7，焦点 (0, ±√7)。",
+        "scene": {
+          "axes": true,
+          "range": 7,
+          "ellipse": {
+            "a": 4,
+            "b": 3,
+            "axis": "y",
+            "color": "#ff7ea8",
+            "label": "x²/9+y²/16=1"
+          },
+          "foci": {
+            "c": 2.6458,
+            "axis": "y",
+            "color": "#fb7185"
+          }
+        }
+      }
+    ]
+  },
+  "ellipse_3_1": {
+    "title": "第3关 · 焦点三角形 · 01",
+    "method": "焦半径 · 焦点三角形",
+    "color": "#FF7EA8",
+    "summary": "焦半径 |PF₁|=a±ex₀；焦点三角形面积 S=c·|y₀|=b²tan(θ/2),P 在短轴端点时 θ 最大。",
+    "levels": [
+      {
+        "name": "3-1 焦点三角形面积(动手)",
+        "q": "P 为椭圆 x²/25 + y²/9 = 1 上一点，焦点 F₁(−4,0)、F₂(4,0)。拖动 P 沿椭圆移动，把焦点三角形 △PF₁F₂ 的面积调到 6。",
+        "type": "interact",
+        "task": {
+          "model": "focal_tri",
+          "a": 5.0,
+          "b": 3.0,
+          "axis": "x",
+          "target": 6.0,
+          "tol": 0.3,
+          "start": [
+            5.0,
+            0.0
+          ]
+        },
+        "tip": "拖动金色动点 P(会自动吸附在椭圆上)，让面积 S = c·|y| = 4|y| 达到 6，即 |y| = 1.5。",
+        "retry": "面积还没到 6：让 P 的纵坐标 |y| ≈ 1.5。",
+        "hint": "三角形面积 = ½ · 底(2c) · 高(|y|) = c·|y|;4|y| = 6 得 |y| = 1.5。",
+        "explain": "焦点三角形面积 S = c·|y₀| = b²·tan(θ/2),θ = ∠F₁PF₂；本题 S = 4|y|。",
+        "scene": {
+          "axes": true,
+          "range": 7
+        }
+      },
+      {
+        "name": "3-2 焦半径公式",
+        "q": "设 P(x₀, y₀) 是椭圆 x²/a² + y²/b² = 1(a > b > 0) 上一点，F₁ 为左焦点，则 |PF₁| = ?",
+        "opts": [
+          "res://art/ellipse/formulas/ell_apecdotx_648d4cc8.png",
+          "res://art/ellipse/formulas/ell_amecdotx_230b183e.png",
+          "res://art/ellipse/formulas/ell_apecdoty_185f3db2.png",
+          "res://art/ellipse/formulas/ell_ecdotx_486e3457.png"
+        ],
+        "ans": 0,
+        "hint": "左焦点用 a + ex₀，右焦点用 a − ex₀。",
+        "explain": "焦点在 x 轴时 |PF₁| = a + ex₀、|PF₂| = a − ex₀；焦点在 y 轴时把 x₀ 换成 y₀。",
+        "scene": {
+          "axes": true,
+          "range": 6,
+          "ellipse": {
+            "a": 5,
+            "b": 3,
+            "axis": "x",
+            "color": "#ff7ea8"
+          },
+          "foci": {
+            "c": 4,
+            "axis": "x",
+            "color": "#fb7185"
+          }
+        }
+      },
+      {
+        "name": "3-3 陷阱 · 焦点三角面积公式",
+        "q": "若 ∠F₁PF₂ = θ，则焦点三角形 △PF₁F₂ 的面积 S = ?",
+        "opts": [
+          "res://art/ellipse/formulas/ell_b2cdottantheta2_3fbefdf9.png",
+          "res://art/ellipse/formulas/ell_b2cdotcottheta2_cc3d83be.png",
+          "res://art/ellipse/formulas/ell_a2cdottantheta2_e791ea46.png",
+          "res://art/ellipse/formulas/ell_ccdotbcdotsintheta_458ad268.png"
+        ],
+        "ans": 0,
+        "trap": true,
+        "hint": "椭圆焦点三角形面积是 b²tan(θ/2);b²cot(θ/2) 是双曲线的结论，别记混。",
+        "explain": "椭圆： S = b²·tan(θ/2)，且当 P 位于短轴端点时 θ 最大；双曲线才是 S = b²·cot(θ/2)。",
+        "scene": {
+          "axes": true,
+          "range": 6,
+          "ellipse": {
+            "a": 5,
+            "b": 3,
+            "axis": "x",
+            "color": "#ff7ea8"
+          },
+          "foci": {
+            "c": 4,
+            "axis": "x",
+            "color": "#fb7185"
+          }
+        }
+      }
+    ]
+  },
+  "ellipse_4_1": {
+    "title": "第4关 · 中点弦 · 01",
+    "method": "点差法 · 中点弦",
+    "color": "#FF7EA8",
+    "summary": "弦的中点 M 满足 k_AB·k_OM = −b²/a²；点差法求直线后必须回代检验 Δ>0，否则会得到不相交的直线。",
+    "levels": [
+      {
+        "name": "4-1 点差法 · 中点弦(动手)",
+        "q": "椭圆 x²/25 + y²/9 = 1,A(5,0) 为椭圆上一定点，弦 AB 的另一端点 B 在椭圆上。拖动 B，使弦 AB 的中点 M 落到绿色目标点。观察中部读数：k_AB·k_OM 恒等于 −b²/a² = −0.36。",
+        "type": "interact",
+        "task": {
+          "model": "point_diff",
+          "a": 5.0,
+          "b": 3.0,
+          "axis": "x",
+          "A": [
+            5.0,
+            0.0
+          ],
+          "target": [
+            2.5,
+            1.5
+          ],
+          "tol": 0.25,
+          "start": [
+            0.0,
+            -3.0
+          ]
+        },
+        "tip": "拖动金色端点 B(会自动吸附在椭圆上)，让中点 M 落到绿色目标 (2.5, 1.5)，即 B = (0, 3)。",
+        "retry": "中点 M 还没到 (2.5, 1.5):B = (0, 3) 时恰好 M = (2.5, 1.5)。",
+        "hint": "中点 M = ((5+x_B)/2, y_B/2)；要让 M = (2.5, 1.5)，取 B = (0, 3)。",
+        "explain": "把 A、B 代入椭圆方程相减得 k_AB·k_OM = −b²/a²，与弦的位置无关，这就是点差法。",
+        "scene": {
+          "axes": true,
+          "range": 7
+        }
+      },
+      {
+        "name": "4-2 点差法结论",
+        "q": "椭圆 x²/a² + y²/b² = 1(a > b > 0) 的弦 AB 的中点为 M(O 为原点)，则 k_AB · k_OM = ?",
+        "opts": [
+          "res://art/ellipse/formulas/ell_mb2a2_e9b1d401.png",
+          "res://art/ellipse/formulas/ell_b2a2_c785eec4.png",
+          "res://art/ellipse/formulas/ell_ma2b2_45ad157a.png",
+          "res://art/ellipse/formulas/ell_a2b2_93dc06a0.png"
+        ],
+        "ans": 0,
+        "hint": "点差法：两式相减后，斜率乘积与中点坐标挂钩。",
+        "explain": "k_AB·k_OM = −b²/a²；若焦点在 y 轴，公式变为 −a²/b²(把 a、b 对调)。",
+        "scene": {
+          "axes": true,
+          "range": 6,
+          "ellipse": {
+            "a": 5,
+            "b": 3,
+            "axis": "x",
+            "color": "#ff7ea8"
+          },
+          "points": [
+            {
+              "p": [
+                2.5,
+                1.5
+              ],
+              "label": "M",
+              "color": "#a878ff"
+            }
+          ]
+        }
+      },
+      {
+        "name": "4-3 陷阱 · 点差法必须验 Δ",
+        "q": "用点差法求出中点弦所在直线的斜率后，接下来还必须？",
+        "opts": [
+          "检验该直线与椭圆确实有两个交点(Δ > 0)",
+          "什么都不用做，直接作答",
+          "检验该直线过原点",
+          "检验斜率一定大于 0"
+        ],
+        "ans": 0,
+        "trap": true,
+        "hint": "点差法隐含了「弦存在(有交点)」的前提，求完直线必须回代检验。",
+        "explain": "点差法求出的直线未必与椭圆相交；必须代回联立检验 Δ>0,M 在椭圆内部的点才有满足条件的弦。",
+        "scene": {
+          "axes": true,
+          "range": 6,
+          "ellipse": {
+            "a": 5,
+            "b": 3,
+            "axis": "x",
+            "color": "#ff7ea8"
+          }
+        }
+      }
+    ]
+  },
+  "ellipse_5_1": {
+    "title": "第5关 · 直线与椭圆 · 01",
+    "method": "联立 · 硬解定理",
+    "color": "#FF7EA8",
+    "summary": "y=kx+m 代入椭圆得 (b²+a²k²)x²+2a²km·x+a²(m²−b²)=0;Δ、韦达、弦长公式一次性写出。",
+    "levels": [
+      {
+        "name": "5-1 直线与椭圆 · 弦长(动手)",
+        "q": "椭圆 x²/16 + y²/4 = 1，直线 y = x + m。拖动直线上下平移改变 m，先让直线与椭圆相交(Δ > 0)，再把弦长 |AB| 调到约 5.06。",
+        "type": "interact",
+        "task": {
+          "model": "secant",
+          "a": 4.0,
+          "b": 2.0,
+          "k": 1.0,
+          "target": 5.06,
+          "tol": 0.25,
+          "start": [
+            0.0,
+            6.0
+          ]
+        },
+        "tip": "起点在椭圆上方(Δ < 0 无交点)；向下移动先进入相交区，继续下移到 |AB| ≈ 5.06 时正好 m = 0。",
+        "retry": "弦长还没到 5.06：直线 y = x + 0(m = 0) 时 |AB| ≈ 5.06。",
+        "hint": "联立消 y: 5x² + 8mx + (4m² − 16) = 0；相切临界 |m| = √(a²k²+b²) = √20，弦长 = √(1+k²)·√Δ ÷ |A|。",
+        "explain": "硬解定理：y = kx + m 代入标准椭圆，得 A = b²+a²k²、Δ = 4a²b²(b²+a²k²−m²)，弦长 = 2ab√(1+k²)√(B)/A，式中 B = b²+a²k²−m²;|B|<0 即无交点。",
+        "scene": {
+          "axes": true,
+          "range": 7
+        }
+      },
+      {
+        "name": "5-2 直线的四种设法",
+        "q": "过 x 轴上定点 M(m, 0) 的直线与椭圆相交。为简化联立并避免讨论斜率不存在，最推荐的设法是？",
+        "opts": [
+          "res://art/ellipse/formulas/ell_yeqkxpm_ea264307.png",
+          "x = t·y + m(t 用于换元，竖直线也适用)",
+          "res://art/ellipse/formulas/ell_ymyeqkxmx_fa6921da.png",
+          "参数方程 x = x₀ + t·cosθ"
+        ],
+        "ans": 1,
+        "hint": "定点在 x 轴时用 x = ty + m，省去对「斜率不存在」的分类讨论。",
+        "explain": "过 x 轴定点优先设 x = ty + m；注意 t = 1/k 是冠以符号的量，并非斜率本身。",
+        "scene": {
+          "axes": true,
+          "range": 6,
+          "ellipse": {
+            "a": 4,
+            "b": 2,
+            "axis": "x",
+            "color": "#ff7ea8"
+          },
+          "points": [
+            {
+              "p": [
+                2,
+                0
+              ],
+              "label": "M",
+              "color": "#ffd479"
+            }
+          ],
+          "lines": [
+            {
+              "A": 1,
+              "B": 1,
+              "C": -2,
+              "color": "#5ee6ff",
+              "label": "x = ty + 2",
+              "dash": true
+            }
+          ]
+        }
+      },
+      {
+        "name": "5-3 陷阱 · 硬解公式的适用范围",
+        "q": "关于「硬解定理」(联立后一次性写出韦达与弦长公式)，下列说法正确的是？",
+        "opts": [
+          "对任意椭圆、任意直线都成立",
+          "只适用于焦点在 x 轴的标准椭圆，且要注意斜率不存在的情况",
+          "只适用于焦点在 y 轴的椭圆",
+          "只适用于双曲线，椭圆不适用"
+        ],
+        "ans": 1,
+        "trap": true,
+        "hint": "公式是从标准方程与 y = kx + m 联立推出的，前提必须严格满足。",
+        "explain": "它只适用于焦点在 x 轴的标准椭圆；焦点在 y 轴系数要互换，且 y = kx + m 会漏掉竖直线 x = m，需单独讨论。",
+        "scene": {
+          "axes": true,
+          "range": 6,
+          "ellipse": {
+            "a": 4,
+            "b": 2,
+            "axis": "x",
+            "color": "#ff7ea8"
+          }
+        }
+      }
+    ]
+  },
+  "ellipse_boss": {
+    "title": "隐藏Boss · 椭圆综合试炼",
+    "method": "焦点三角形 · 离心率 · 硬解综合",
+    "color": "#FF5B7F",
+    "summary": "综合运用三个二级结论：焦点三角形面积、离心率、硬解定理，挑战高考压轴级思维。",
+    "levels": [
+      {
+        "name": "焦点三角 · 面积到 9(动手)",
+        "q": "综合试炼：椭圆 x²/25 + y²/9 = 1，焦点 F₁(−4,0)、F₂(4,0)。拖动 P 沿椭圆运动，当 ∠F₁PF₂ = 90° 时，焦点三角形面积 S = b²·tan45° = 9。请把它调到 9。",
+        "type": "interact",
+        "task": {
+          "model": "focal_tri",
+          "a": 5.0,
+          "b": 3.0,
+          "axis": "x",
+          "target": 9.0,
+          "tol": 0.4,
+          "start": [
+            5.0,
+            0.0
+          ]
+        },
+        "tip": "拖动金色动点 P，让 S = c·|y| = 4|y| 达到 9(此时 θ = 90°，即 4|y| = 9)。",
+        "retry": "面积还没到 9：让 |y| ≈ 2.25,P ≈ (0, ±2.25) 附近。",
+        "hint": "S = b²·tan(θ/2);θ = 90° 时 tan45° = 1，故 S = b² = 9。",
+        "explain": "当 ∠F₁PF₂ = 90° 时 S = b² = 9。综合题常把角条件转化为面积条件，再用 S = c|y₀| 求坐标。",
+        "scene": {
+          "axes": true,
+          "range": 7
+        }
+      },
+      {
+        "name": "离心率范围 · 综合(陷阱)",
+        "q": "椭圆上存在一点 P，使 ∠F₁PF₂ = 120°。则离心率 e 的取值范围是？",
+        "opts": [
+          "res://art/ellipse/formulas/ell_sqrt321_9081b5c1.png",
+          "res://art/ellipse/formulas/ell_0sqrt32_7d40b7ff.png",
+          "res://art/ellipse/formulas/ell_012_5ee24693.png",
+          "res://art/ellipse/formulas/ell_121_77d4b7e5.png"
+        ],
+        "ans": 0,
+        "trap": true,
+        "hint": "P 在短轴端点时 ∠F₁PF₂ 达到最大；若该点处仍是 120°，椭圆就太扁。",
+        "explain": "焦点三角形 ∠F₁PF₂ 最大发生在短轴端点，此时 cosθ_min = 1 − 2e²；要能取到 120° 需 1 − 2e² ≤ cos120° = −1/2，得 e ≥ √3/2。",
+        "scene": {
+          "axes": true,
+          "range": 6,
+          "ellipse": {
+            "a": 5,
+            "b": 3,
+            "axis": "x",
+            "color": "#ff7ea8"
+          },
+          "foci": {
+            "c": 4,
+            "axis": "x",
+            "color": "#fb7185"
+          }
+        }
+      },
+      {
+        "name": "硬解 · 综合辨析",
+        "q": "直线 y = kx + 2 与椭圆 x²/4 + y² = 1 相交于两个不同点。关于 k 的取值范围，正确的是？",
+        "opts": [
+          "对任意 k 都有两个交点",
+          "需要 k² = 0.75 才有交点",
+          "k² < 0.75 时恒有两个交点",
+          "k² > 0.75 时有两个交点，即 |k| > √3/2"
+        ],
+        "ans": 3,
+        "hint": "代入判别式：Δ = B² − 4AC 须大于 0。",
+        "explain": "a²=4、b²=1、m=2:A=1+4k²、B=16k、C=12,Δ=16(4k²−3)。两交点⇔Δ>0⇔k²>3/4⇔|k|>√3/2。",
+        "scene": {
+          "axes": true,
+          "range": 5,
+          "ellipse": {
+            "a": 2,
+            "b": 1,
+            "axis": "x",
+            "color": "#ff7ea8"
+          }
+        }
+      }
+    ]
+  }
+}

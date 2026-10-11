@@ -1,0 +1,487 @@
+{
+  "methods": {
+    "complement": {
+      "title": "补形法 · 求三棱锥的外接球",
+      "method": "补形法",
+      "topic": "res://scripts/solid/topics/complement.gd",
+      "summary": "三条棱两两垂直 → 补成长方体，体对角线的一半就是外接球半径。",
+      "levels": [
+        {
+          "name": "第 1 关 · 墙角侦察",
+          "type": "pick",
+          "reveal": 1.4,
+          "q": "在三维图中点选从顶点 P 出发、两两互相垂直的三条棱(会高亮)。",
+          "hint": "从 P 出发的有 PA、PB、PC 三条。"
+        },
+        {
+          "name": "第 2 关 · 补成长方体",
+          "type": "choice",
+          "reveal": 2.6,
+          "q": "PA=3、PB=4、PC=5 两两垂直，补成的长方体的长宽高是？",
+          "opts": [
+            "res://art/formulas/sm_2x3x4_f745eeb6.png",
+            "res://art/formulas/sm_4x5x6_36c71748.png",
+            "res://art/formulas/sm_3x4x5_e8a8c133.png",
+            "res://art/formulas/sm_3x5x5_e24b5037.png"
+          ],
+          "ans": 2,
+          "hint": "三条直角棱本身就是长、宽、高。"
+        },
+        {
+          "name": "第 3 关 · 找直径",
+          "type": "choice",
+          "reveal": 3.4,
+          "q": "长方体的外接球，其直径是长方体的哪条线？",
+          "opts": [
+            "一条棱",
+            "某一个面的对角线",
+            "体对角线(相对两顶点的连线)"
+          ],
+          "ans": 2,
+          "hint": "球心在长方体中心，直径 = 体对角线。"
+        },
+        {
+          "name": "第 4 关 · 求半径",
+          "type": "choice",
+          "reveal": 4.7,
+          "cam_zoom": 3.0,
+          "q": "补成的长方体与三棱锥共用外接球，直径就是体对角线：",
+          "formula": "res://art/formulas/fq_complement_diag.png",
+          "opts": [
+            "res://art/formulas/opt_5r2_2.png",
+            "res://art/formulas/opt_r50.png",
+            "res://art/formulas/opt_5r2.png",
+            "res://art/formulas/opt_25_2.png"
+          ],
+          "ans": 0,
+          "hint": "R = √50 ÷ 2 = 5√2 / 2。"
+        },
+        {
+          "name": "第 5 关 · 定球心",
+          "type": "choice",
+          "reveal": 6.0,
+          "cam_zoom": 2.7,
+          "q": "外接球球心 O 在长方体的什么位置？",
+          "opts": [
+            "顶点 P",
+            "一条棱的中点",
+            "长方体中心 (1.5, 2, 2.5)"
+          ],
+          "ans": 2,
+          "hint": "体对角线的中点就是长方体中心。"
+        }
+      ]
+    },
+    "vector_sphere": {
+      "title": "空间向量法 · 求三棱锥的外接球",
+      "method": "坐标法",
+      "topic": "res://scripts/solid/topics/vector_sphere.gd",
+      "summary": "建系 → 设球心 → 由 OA=OB=OC=OP 列方程，两两相减消去二次项求解。",
+      "levels": [
+        {
+          "name": "第 1 关 · 建立坐标系",
+          "type": "choice",
+          "reveal": 1.4,
+          "q": "以 A 为原点建立空间直角坐标系，四个顶点中哪一个是原点？",
+          "opts": [
+            "res://art/formulas/sm_A000_f28d4a73.png",
+            "res://art/formulas/sm_B400_b1a3c17d.png",
+            "res://art/formulas/sm_C130_c58b7b8d.png",
+            "res://art/formulas/sm_P424_bb1c27e6.png"
+          ],
+          "ans": 0,
+          "hint": "题目以 A 为原点。"
+        },
+        {
+          "name": "第 2 关 · 顶点坐标",
+          "type": "choice",
+          "reveal": 2.4,
+          "q": "点 P 的坐标是？",
+          "opts": [
+            "res://art/formulas/sm_424_ea977031.png",
+            "res://art/formulas/sm_212_f95f79c5.png",
+            "res://art/formulas/sm_130_7ca9fd07.png",
+            "res://art/formulas/sm_000_96374018.png"
+          ],
+          "ans": 0,
+          "hint": "看图上的坐标标注。"
+        },
+        {
+          "name": "第 3 关 · 列方程",
+          "type": "choice",
+          "reveal": 3.4,
+          "q": "由 OA = OB，两边平方后展开得到：",
+          "formula": "res://art/formulas/fq_vector_eq.png",
+          "opts": [
+            "res://art/formulas/sm_xeq1_6ba939bc.png",
+            "res://art/formulas/sm_xeq2_57f851fd.png",
+            "res://art/formulas/sm_xeq3_739719aa.png",
+            "res://art/formulas/sm_xeq4_e537a705.png"
+          ],
+          "ans": 1,
+          "hint": "-8x + 16 = 0 → x = 2。"
+        },
+        {
+          "name": "第 4 关 · 求半径",
+          "type": "choice",
+          "reveal": 4.0,
+          "q": "球心 O(2, 1, 2),A(0, 0, 0)，外接球半径 R:",
+          "formula": "res://art/formulas/fq_vector_R.png",
+          "opts": [
+            "2",
+            "3",
+            "res://art/formulas/opt_r5.png",
+            "res://art/formulas/opt_r8.png"
+          ],
+          "ans": 1,
+          "hint": "R = √(4+1+4) = 3。"
+        },
+        {
+          "name": "第 5 关 · 球面方程",
+          "type": "choice",
+          "reveal": 6.75,
+          "cam_step": 6,
+          "cam_zoom": 2.1,
+          "q": "外接球的球面方程是？",
+          "opts": [
+            "res://art/formulas/opt_eq1.png",
+            "res://art/formulas/opt_eq2.png",
+            "res://art/formulas/opt_eq3.png",
+            "res://art/formulas/opt_eq4.png"
+          ],
+          "ans": 0,
+          "hint": "球心 (2,1,2),R² = 9。"
+        }
+      ]
+    },
+    "geom_sphere": {
+      "title": "垂线法 · 求三棱锥的外接球",
+      "method": "几何法",
+      "topic": "res://scripts/solid/topics/geom_sphere.gd",
+      "zoom": 2.5,
+      "summary": "底面外心 O′ → 过 O′ 作垂线 l → R² = r² + h²，由 OA=OP 解 h 求 R。",
+      "levels": [
+        {
+          "name": "第 1 关 · 找球心所在直线",
+          "type": "choice",
+          "reveal": 1.9,
+          "q": "一条棱垂直底面时，外接球球心 O 一定在哪条线上？",
+          "opts": [
+            "过底面外心 O′ 且垂直底面的直线 l",
+            "任意一条直线",
+            "底面的一条边",
+            "过 A 点的侧棱"
+          ],
+          "ans": 0,
+          "hint": "球心在底面的射影就是外心 O′。"
+        },
+        {
+          "name": "第 2 关 · 底面外接圆半径",
+          "type": "choice",
+          "reveal": 2.7,
+          "q": "底面外接圆半径 r 由正弦定理确定：",
+          "formula": "res://art/formulas/fq_geom_sine.png",
+          "opts": [
+            "res://art/formulas/opt_sqrt13.png",
+            "res://art/formulas/opt_2sqrt3.png",
+            "res://art/formulas/opt_sqrt10.png",
+            "res://art/formulas/opt_13_2.png"
+          ],
+          "ans": 0,
+          "hint": "r = √13。"
+        },
+        {
+          "name": "第 3 关 · 求高度 h",
+          "type": "choice",
+          "reveal": 3.8,
+          "q": "由 OA = OP 解得 OO′ = h = ?",
+          "opts": [
+            "4",
+            "6",
+            "8",
+            "12"
+          ],
+          "ans": 1,
+          "hint": "h = PA / 2 = 6。"
+        },
+        {
+          "name": "第 4 关 · 求半径 R",
+          "type": "choice",
+          "reveal": 5.3,
+          "cam_step": 5,
+          "cam_zoom": 3.6,
+          "q": "在 Rt△OO′A 中，求外接球半径 R:",
+          "formula": "res://art/formulas/fq_geom_R.png",
+          "opts": [
+            "5",
+            "6",
+            "7",
+            "res://art/formulas/opt_sqrt13.png"
+          ],
+          "ans": 2,
+          "hint": "R² = 13 + 36 = 49，故 R = 7。"
+        },
+        {
+          "name": "第 5 关 · 易错点",
+          "type": "choice",
+          "reveal": 7.35,
+          "cam_step": 7,
+          "cam_zoom": 2.5,
+          "q": "钝角三角形的外心在？",
+          "opts": [
+            "三角形内部",
+            "三角形外部",
+            "一条边上",
+            "顶点处"
+          ],
+          "ans": 1,
+          "hint": "钝角三角形的外心落在三角形外部。"
+        }
+      ]
+    },
+    "insphere": {
+      "title": "等体积法 · 求三棱锥的内切球",
+      "method": "等体积法",
+      "topic": "res://scripts/solid/topics/insphere.gd",
+      "zoom": 1.75,
+      "summary": "把棱锥分成以 r 为高的四个小锥体，V = (1/3)·S·r，反解 r。",
+      "levels": [
+        {
+          "name": "第 1 关 · 体积 V",
+          "type": "choice",
+          "reveal": 1.2,
+          "q": "PA=PB=PC=6 两两垂直，三棱锥的体积：",
+          "formula": "res://art/formulas/fq_insphere_V.png",
+          "opts": [
+            "18",
+            "36",
+            "54",
+            "216"
+          ],
+          "ans": 1,
+          "hint": "V = 36。"
+        },
+        {
+          "name": "第 2 关 · 表面积 S",
+          "type": "choice",
+          "reveal": 2.6,
+          "q": "三棱锥的全面积：",
+          "formula": "res://art/formulas/fq_insphere_s.png",
+          "opts": [
+            "res://art/formulas/opt_54p18r3.png",
+            "res://art/formulas/opt_36r3.png",
+            "res://art/formulas/opt_54p9r3.png",
+            "72"
+          ],
+          "ans": 0,
+          "hint": "S = 54 + 18√3。"
+        },
+        {
+          "name": "第 3 关 · 等体积法式",
+          "type": "choice",
+          "reveal": 3.5,
+          "q": "等体积法的核心关系式是？",
+          "opts": [
+            "res://art/formulas/opt_V3Sr.png",
+            "res://art/formulas/opt_VSr.png",
+            "res://art/formulas/opt_V2Sr.png",
+            "res://art/formulas/opt_Vsphere.png"
+          ],
+          "ans": 0,
+          "hint": "分割成以 r 为高的锥体：V = (1/3)·S·r。"
+        },
+        {
+          "name": "第 4 关 · 求内切半径",
+          "type": "choice",
+          "reveal": 4.9,
+          "q": "由等体积法，内切球半径 r:",
+          "formula": "res://art/formulas/fq_insphere_r.png",
+          "opts": [
+            "res://art/formulas/opt_3mr3.png",
+            "res://art/formulas/opt_3pr3.png",
+            "res://art/formulas/opt_r3.png",
+            "res://art/formulas/opt_3_2.png"
+          ],
+          "ans": 0,
+          "hint": "r = 3 - √3。"
+        },
+        {
+          "name": "第 5 关 · 底面切点",
+          "type": "choice",
+          "reveal": 5.4,
+          "q": "内切球与底面 △ABC 的切点坐标是？",
+          "opts": [
+            "res://art/formulas/sm_222_7303fe8e.png",
+            "res://art/formulas/sm_rr0_6f131db0.png",
+            "res://art/formulas/sm_000_96374018.png",
+            "res://art/formulas/sm_666_57a52b60.png"
+          ],
+          "ans": 0,
+          "hint": "底面切点是 (2, 2, 2)。"
+        }
+      ]
+    },
+    "inout": {
+      "title": "正四面体 · 内切球与外接球",
+      "method": "两球对比",
+      "topic": "res://scripts/solid/topics/inout.gd",
+      "summary": "正四面体的两球同心，恒有 R = 3r 且 R + r = h。",
+      "levels": [
+        {
+          "name": "第 1 关 · 正四面体的高",
+          "type": "choice",
+          "reveal": 1.0,
+          "q": "棱长 a = 6 的正四面体，其高：",
+          "formula": "res://art/formulas/fq_inout_h.png",
+          "opts": [
+            "res://art/formulas/opt_2r6.png",
+            "res://art/formulas/opt_r6.png",
+            "res://art/formulas/opt_4r6.png",
+            "res://art/formulas/opt_3r2.png"
+          ],
+          "ans": 0,
+          "hint": "h = 2√6。"
+        },
+        {
+          "name": "第 2 关 · 内切球半径",
+          "type": "choice",
+          "reveal": 3.95,
+          "q": "正四面体的内切球半径 r:",
+          "formula": "res://art/formulas/fq_inout_inr.png",
+          "opts": [
+            "res://art/formulas/opt_r6_2.png",
+            "res://art/formulas/opt_r6.png",
+            "res://art/formulas/opt_r3_2.png",
+            "res://art/formulas/opt_3_2.png"
+          ],
+          "ans": 0,
+          "hint": "r = √6 / 2。"
+        },
+        {
+          "name": "第 3 关 · 外接球半径",
+          "type": "choice",
+          "reveal": 4.85,
+          "q": "正四面体的外接球半径 R:",
+          "formula": "res://art/formulas/fq_inout_outR.png",
+          "opts": [
+            "res://art/formulas/opt_3r6_2.png",
+            "res://art/formulas/opt_r6_2.png",
+            "res://art/formulas/opt_3r6.png",
+            "res://art/formulas/opt_r6.png"
+          ],
+          "ans": 0,
+          "hint": "R = 3√6 / 2。"
+        },
+        {
+          "name": "第 4 关 · 半径关系",
+          "type": "choice",
+          "reveal": 5.9,
+          "q": "正四面体外接球半径 R 与内切球半径 r 的关系是？",
+          "opts": [
+            "res://art/formulas/sm_Reqr_7428d291.png",
+            "res://art/formulas/sm_Req2r_7856231f.png",
+            "res://art/formulas/sm_Req3r_71200eed.png",
+            "res://art/formulas/sm_Req4r_bc0f26ec.png"
+          ],
+          "ans": 2,
+          "hint": "R = 3r。"
+        },
+        {
+          "name": "第 5 关 · 高度关系",
+          "type": "choice",
+          "reveal": 5.9,
+          "cam_step": 5,
+          "cam_zoom": 2.3,
+          "q": "沿一条高观察，恒有？",
+          "opts": [
+            "res://art/formulas/sm_Rpreqh_3f196db2.png",
+            "res://art/formulas/sm_Rmreqh_c9961846.png",
+            "res://art/formulas/sm_2Rpreqh_ab01b020.png",
+            "res://art/formulas/sm_Rp2reqh_dbc8d1d4.png"
+          ],
+          "ans": 0,
+          "hint": "R + r = h。"
+        }
+      ]
+    },
+    "anglepyramid": {
+      "title": "二面角与线面角 · 正四棱锥",
+      "method": "两类角",
+      "topic": "res://scripts/solid/topics/anglepyramid.gd",
+      "summary": "线面角找射影、二面角作平面角，最终都化为直角三角形求角。",
+      "levels": [
+        {
+          "name": "第 1 关 · 线面角射影",
+          "type": "choice",
+          "reveal": 1.9,
+          "q": "PO ⊥ 底面，侧棱 PA 在底面上的射影是？",
+          "opts": [
+            "AO",
+            "AB",
+            "PO",
+            "AD"
+          ],
+          "ans": 0,
+          "hint": "O 是 P 在底面的射影，故射影为 AO。"
+        },
+        {
+          "name": "第 2 关 · 线面角大小",
+          "type": "choice",
+          "reveal": 2.9,
+          "q": "在直角 △POA 中，tan∠PAO 的值：",
+          "formula": "res://art/formulas/fq_angle_tan.png",
+          "opts": [
+            "res://art/formulas/opt_r6_2.png",
+            "res://art/formulas/opt_r3_2.png",
+            "res://art/formulas/opt_r2_2.png",
+            "res://art/formulas/opt_1_2.png"
+          ],
+          "ans": 0,
+          "hint": "tan∠PAO = √6 / 2。"
+        },
+        {
+          "name": "第 3 关 · 二面角平面角",
+          "type": "choice",
+          "reveal": 3.7,
+          "q": "取 AB 中点 M，二面角 P-AB-C 的平面角是？",
+          "opts": [
+            "∠PMO",
+            "∠PAO",
+            "∠POM",
+            "∠PMA"
+          ],
+          "ans": 0,
+          "hint": "OM ⊥ AB 且 PM ⊥ AB，垂足同为 M。"
+        },
+        {
+          "name": "第 4 关 · 二面角大小",
+          "type": "choice",
+          "reveal": 4.7,
+          "q": "由 tan∠PMO = √3，二面角 P-AB-C 等于？",
+          "opts": [
+            "res://art/formulas/sm_30deg_ee97aeee.png",
+            "res://art/formulas/sm_45deg_e61fa75a.png",
+            "res://art/formulas/sm_60deg_82db883b.png",
+            "res://art/formulas/sm_90deg_462f40ab.png"
+          ],
+          "ans": 2,
+          "hint": "tan = √3 → 60°。"
+        },
+        {
+          "name": "第 5 关 · 方法核心",
+          "type": "choice",
+          "reveal": 4.7,
+          "q": "求线面角与二面角的共同核心是？",
+          "opts": [
+            "都化为直角三角形求角",
+            "都用作图法",
+            "都用坐标法",
+            "都用体积法"
+          ],
+          "ans": 0,
+          "hint": "两类角最终都转化为直角三角形。"
+        }
+      ]
+    }
+  }
+}

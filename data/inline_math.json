@@ -1,0 +1,4122 @@
+{
+"'a=0'": {
+"p": "res://art/inline/in_92fd93e17f.png",
+"w": 137,
+"h": 41
+},
+"'ab=0'": {
+"p": "res://art/inline/in_84d4a900a5.png",
+"w": 158,
+"h": 41
+},
+"'x=1'": {
+"p": "res://art/inline/in_568a092923.png",
+"w": 139,
+"h": 41
+},
+"'x>0'": {
+"p": "res://art/inline/in_579992a731.png",
+"w": 139,
+"h": 42
+},
+"'x>2'": {
+"p": "res://art/inline/in_3e1389756a.png",
+"w": 139,
+"h": 42
+},
+"'x²=1'": {
+"p": "res://art/inline/in_01e59a58f4.png",
+"w": 159,
+"h": 44
+},
+"'x²>1'": {
+"p": "res://art/inline/in_cf2b66fcac.png",
+"w": 159,
+"h": 45
+},
+"'∀x∈R,x²≥0'": {
+"p": "res://art/inline/in_7cb1206fb8.png",
+"w": 335,
+"h": 53
+},
+"'∃x∈R": {
+"p": "res://art/inline/in_7514bcdc89.png",
+"w": 165,
+"h": 42
+},
+"(": {
+"p": "res://art/inline/in_3dfc43d01f.png",
+"w": 13,
+"h": 50
+},
+"(-2,3]": {
+"p": "res://art/inline/in_cc7dc926b2.png",
+"w": 132,
+"h": 50
+},
+"(-∞,3]": {
+"p": "res://art/inline/in_8683b9ec3f.png",
+"w": 157,
+"h": 50
+},
+"(0, ±√7)": {
+"p": "res://art/inline/in_a5c49d175c.png",
+"w": 181,
+"h": 59
+},
+"(0,+∞)": {
+"p": "res://art/inline/in_3985116c8d.png",
+"w": 164,
+"h": 50
+},
+"(0,0)": {
+"p": "res://art/inline/in_bf39abe218.png",
+"w": 100,
+"h": 50
+},
+"(0,1)": {
+"p": "res://art/inline/in_c83dd42a9c.png",
+"w": 100,
+"h": 50
+},
+"(0,5)": {
+"p": "res://art/inline/in_c47661e71c.png",
+"w": 100,
+"h": 50
+},
+"(0,b)": {
+"p": "res://art/inline/in_fecf8652a7.png",
+"w": 97,
+"h": 50
+},
+"(0,t)": {
+"p": "res://art/inline/in_7aa9f545f0.png",
+"w": 94,
+"h": 50
+},
+"(0°": {
+"p": "res://art/inline/in_018b480a58.png",
+"w": 55,
+"h": 50
+},
+"(0°)": {
+"p": "res://art/inline/in_8fe6e35681.png",
+"w": 74,
+"h": 50
+},
+"(1+5)/2=3": {
+"p": "res://art/inline/in_61e1da5e66.png",
+"w": 280,
+"h": 50
+},
+"(1, 2)": {
+"p": "res://art/inline/in_5301cce121.png",
+"w": 100,
+"h": 50
+},
+"(1,0)": {
+"p": "res://art/inline/in_a5c221ce3b.png",
+"w": 100,
+"h": 50
+},
+"(1,1)": {
+"p": "res://art/inline/in_c6058fac39.png",
+"w": 100,
+"h": 50
+},
+"(1,1):y-1=2(x-1)": {
+"p": "res://art/inline/in_e10d5010c3.png",
+"w": 493,
+"h": 50
+},
+"(1,2)": {
+"p": "res://art/inline/in_8829568811.png",
+"w": 100,
+"h": 50
+},
+"(1.2, 2.8)": {
+"p": "res://art/inline/in_900b7dc6d5.png",
+"w": 176,
+"h": 50
+},
+"(1/2)k = −1": {
+"p": "res://art/inline/in_8c2ba513bc.png",
+"w": 260,
+"h": 50
+},
+"(2, 2)": {
+"p": "res://art/inline/in_c07ad2cd2a.png",
+"w": 100,
+"h": 50
+},
+"(2, 2, 2)": {
+"p": "res://art/inline/in_7303fe8eda.png",
+"w": 146,
+"h": 50
+},
+"(2,0)": {
+"p": "res://art/inline/in_871b406040.png",
+"w": 100,
+"h": 50
+},
+"(2,1)": {
+"p": "res://art/inline/in_96557e2b7a.png",
+"w": 100,
+"h": 50
+},
+"(2,1,2),R² = 9": {
+"p": "res://art/inline/in_1e6fe5938d.png",
+"w": 319,
+"h": 56
+},
+"(2,2)": {
+"p": "res://art/inline/in_1a9b689118.png",
+"w": 100,
+"h": 50
+},
+"(2,3)": {
+"p": "res://art/inline/in_ee71380f03.png",
+"w": 100,
+"h": 50
+},
+"(2,4)": {
+"p": "res://art/inline/in_2bb4cdd3bc.png",
+"w": 100,
+"h": 50
+},
+"(2,−1)": {
+"p": "res://art/inline/in_4d70ebd6c1.png",
+"w": 139,
+"h": 50
+},
+"(2.5, 2.5)": {
+"p": "res://art/inline/in_e4ad14a784.png",
+"w": 176,
+"h": 50
+},
+"(2c) ·": {
+"p": "res://art/inline/in_36ff0f742e.png",
+"w": 89,
+"h": 50
+},
+"(2x + y − 1) + λ(x − y + 2) = 0": {
+"p": "res://art/inline/in_187c4ce038.png",
+"w": 671,
+"h": 50
+},
+"(3+7)/2=5 ⇒ (3,5)": {
+"p": "res://art/inline/in_8755af4ca4.png",
+"w": 463,
+"h": 50
+},
+"(3, 0)": {
+"p": "res://art/inline/in_d7599001ac.png",
+"w": 100,
+"h": 50
+},
+"(3, 1)": {
+"p": "res://art/inline/in_5aa6229eed.png",
+"w": 100,
+"h": 50
+},
+"(3, 5)": {
+"p": "res://art/inline/in_8fb6a03414.png",
+"w": 100,
+"h": 50
+},
+"(3,1)": {
+"p": "res://art/inline/in_8c3520cc69.png",
+"w": 100,
+"h": 50
+},
+"(3,2)": {
+"p": "res://art/inline/in_5ed364d960.png",
+"w": 100,
+"h": 50
+},
+"(3,3)": {
+"p": "res://art/inline/in_1e468766b6.png",
+"w": 100,
+"h": 50
+},
+"(3,4)": {
+"p": "res://art/inline/in_67cb31f7f6.png",
+"w": 100,
+"h": 50
+},
+"(3−1)/(2−1) = (m−3)/(3−2)": {
+"p": "res://art/inline/in_85fc8b896b.png",
+"w": 715,
+"h": 50
+},
+"(90°)": {
+"p": "res://art/inline/in_6053ba1833.png",
+"w": 99,
+"h": 50
+},
+"(A": {
+"p": "res://art/inline/in_e8cb767d80.png",
+"w": 51,
+"h": 50
+},
+"(A, B)": {
+"p": "res://art/inline/in_65518046af.png",
+"w": 128,
+"h": 50
+},
+"(AB": {
+"p": "res://art/inline/in_a4d9dc5a3d.png",
+"w": 90,
+"h": 50
+},
+"(B": {
+"p": "res://art/inline/in_b4013f34a0.png",
+"w": 53,
+"h": 50
+},
+"(OP·m=k)→": {
+"p": "res://art/inline/in_551bfd7ec3.png",
+"w": 343,
+"h": 50
+},
+"(a)": {
+"p": "res://art/inline/in_d73a846b3c.png",
+"w": 56,
+"h": 50
+},
+"(a+b)·a = 0 → |a|²+a·b = 0 → a·b = −1": {
+"p": "res://art/inline/in_795e15ad75.png",
+"w": 960,
+"h": 56
+},
+"(a+b)·a = 1 + a·b = 0 ⇒ a·b = −1": {
+"p": "res://art/inline/in_ed66bf1e42.png",
+"w": 810,
+"h": 50
+},
+"(a+b)⊥a": {
+"p": "res://art/inline/in_cefdbb051d.png",
+"w": 232,
+"h": 50
+},
+"(a·b)": {
+"p": "res://art/inline/in_46428b91dd.png",
+"w": 113,
+"h": 50
+},
+"(a·b)·c": {
+"p": "res://art/inline/in_9c7e7b10a8.png",
+"w": 173,
+"h": 50
+},
+"(b)": {
+"p": "res://art/inline/in_6a7aaa4800.png",
+"w": 51,
+"h": 50
+},
+"(b·c)": {
+"p": "res://art/inline/in_91b0c6c2e7.png",
+"w": 108,
+"h": 50
+},
+"(m − 1)x + (2m − 1)y = m − 3": {
+"p": "res://art/inline/in_e8978b19d2.png",
+"w": 658,
+"h": 50
+},
+"(m−3)/1=2,m=5": {
+"p": "res://art/inline/in_6436f9c8ed.png",
+"w": 453,
+"h": 50
+},
+"(q≠1)Sn=": {
+"p": "res://art/inline/in_426d50bd2b.png",
+"w": 259,
+"h": 50
+},
+"(x,y)": {
+"p": "res://art/inline/in_95db9bc4eb.png",
+"w": 105,
+"h": 50
+},
+"(x²)'=2x,(3x)'=3": {
+"p": "res://art/inline/in_e11503c32b.png",
+"w": 423,
+"h": 56
+},
+"(x₀,f(x₀))": {
+"p": "res://art/inline/in_f9ec4444a8.png",
+"w": 214,
+"h": 50
+},
+"(y−2)/(6−2) = (x−1)/(3−1)": {
+"p": "res://art/inline/in_57fdfc2bad.png",
+"w": 701,
+"h": 50
+},
+"(|OA|=|OB|=|OC|)": {
+"p": "res://art/inline/in_2c54166eb3.png",
+"w": 475,
+"h": 50
+},
+"(|PA|=t|PB|,t≠1)→": {
+"p": "res://art/inline/in_b50d04b39b.png",
+"w": 515,
+"h": 50
+},
+"(|y|) = c·|y|;4|y| = 6": {
+"p": "res://art/inline/in_df8f02412c.png",
+"w": 451,
+"h": 50
+},
+"(Δ > 0)": {
+"p": "res://art/inline/in_aa590c5772.png",
+"w": 160,
+"h": 50
+},
+"(−2, 1)": {
+"p": "res://art/inline/in_c792e963b6.png",
+"w": 139,
+"h": 50
+},
+")": {
+"p": "res://art/inline/in_b3751f8066.png",
+"w": 13,
+"h": 50
+},
+"),t=1": {
+"p": "res://art/inline/in_d42558a4ba.png",
+"w": 143,
+"h": 50
+},
+");OA+OB+OC=0": {
+"p": "res://art/inline/in_be8c5f0c87.png",
+"w": 478,
+"h": 50
+},
+")→": {
+"p": "res://art/inline/in_315c961a73.png",
+"w": 78,
+"h": 50
+},
+"+": {
+"p": "res://art/inline/in_e36abdc9c9.png",
+"w": 34,
+"h": 33
+},
+"+∞": {
+"p": "res://art/inline/in_0823028b00.png",
+"w": 83,
+"h": 33
+},
+"+∞);α∈(90°": {
+"p": "res://art/inline/in_7212714451.png",
+"w": 302,
+"h": 50
+},
+"-1(": {
+"p": "res://art/inline/in_f7c0cd1762.png",
+"w": 76,
+"h": 50
+},
+"-1<x<1": {
+"p": "res://art/inline/in_0993b005dd.png",
+"w": 239,
+"h": 35
+},
+"-8x + 16 = 0 → x = 2": {
+"p": "res://art/inline/in_90b80f54ba.png",
+"w": 479,
+"h": 37
+},
+"/": {
+"p": "res://art/inline/in_4b937430a8.png",
+"w": 20,
+"h": 50
+},
+"0 < e < 1 →": {
+"p": "res://art/inline/in_0aa643e6f5.png",
+"w": 261,
+"h": 35
+},
+"0(": {
+"p": "res://art/inline/in_656cb3476d.png",
+"w": 39,
+"h": 50
+},
+"0(b": {
+"p": "res://art/inline/in_0c11f23360.png",
+"w": 62,
+"h": 50
+},
+"0)": {
+"p": "res://art/inline/in_7bfa6d7c84.png",
+"w": 37,
+"h": 50
+},
+"0,+∞": {
+"p": "res://art/inline/in_0055112938.png",
+"w": 129,
+"h": 43
+},
+"0°": {
+"p": "res://art/inline/in_ef3b89fb94.png",
+"w": 38,
+"h": 37
+},
+"0°)": {
+"p": "res://art/inline/in_d98635e8c2.png",
+"w": 57,
+"h": 50
+},
+"0≠": {
+"p": "res://art/inline/in_f0b433ef1a.png",
+"w": 72,
+"h": 47
+},
+"0≤θ<90°": {
+"p": "res://art/inline/in_87e50e6541.png",
+"w": 243,
+"h": 43
+},
+"1 − 2e² ≤ cos120° = −1/2": {
+"p": "res://art/inline/in_3f1611e1e8.png",
+"w": 556,
+"h": 56
+},
+"1(C": {
+"p": "res://art/inline/in_20aa2ceba6.png",
+"w": 77,
+"h": 50
+},
+"1/2": {
+"p": "res://art/inline/in_fff93be36e.png",
+"w": 66,
+"h": 50
+},
+"120°": {
+"p": "res://art/inline/in_20470a338d.png",
+"w": 84,
+"h": 37
+},
+"120°]": {
+"p": "res://art/inline/in_64a37e62f0.png",
+"w": 97,
+"h": 50
+},
+"135°]": {
+"p": "res://art/inline/in_296832daa2.png",
+"w": 97,
+"h": 50
+},
+"135°]→k∈(−∞,−1]": {
+"p": "res://art/inline/in_8c06410499.png",
+"w": 468,
+"h": 50
+},
+"180)": {
+"p": "res://art/inline/in_3c8289e786.png",
+"w": 83,
+"h": 50
+},
+"180°": {
+"p": "res://art/inline/in_38943df2d7.png",
+"w": 84,
+"h": 37
+},
+"180°)": {
+"p": "res://art/inline/in_5c48f615ae.png",
+"w": 104,
+"h": 50
+},
+"180°−θ": {
+"p": "res://art/inline/in_4dbd248b47.png",
+"w": 173,
+"h": 37
+},
+"1×2+2×(−1)+2×0": {
+"p": "res://art/inline/in_94742a0bef.png",
+"w": 520,
+"h": 50
+},
+"2 ⇒ y = 2": {
+"p": "res://art/inline/in_fafdd987ae.png",
+"w": 213,
+"h": 44
+},
+"2(a+1) = 0": {
+"p": "res://art/inline/in_256941ed29.png",
+"w": 259,
+"h": 50
+},
+"2(a²+b²)": {
+"p": "res://art/inline/in_b8756b10b1.png",
+"w": 202,
+"h": 56
+},
+"2),log₃2<1(": {
+"p": "res://art/inline/in_20fbf32857.png",
+"w": 285,
+"h": 50
+},
+"2<": {
+"p": "res://art/inline/in_6352ceed75.png",
+"w": 70,
+"h": 35
+},
+"2a": {
+"p": "res://art/inline/in_2cf170b810.png",
+"w": 47,
+"h": 34
+},
+"2a < 2c": {
+"p": "res://art/inline/in_c1b542861b.png",
+"w": 159,
+"h": 35
+},
+"2a = 2c": {
+"p": "res://art/inline/in_909aa8289d.png",
+"w": 159,
+"h": 34
+},
+"2a = 2c)": {
+"p": "res://art/inline/in_19faa9a66d.png",
+"w": 174,
+"h": 50
+},
+"2a = 4,a = 2": {
+"p": "res://art/inline/in_1ec2179201.png",
+"w": 273,
+"h": 44
+},
+"2a > 2c": {
+"p": "res://art/inline/in_22d4c6f894.png",
+"w": 159,
+"h": 35
+},
+"2a − b =": {
+"p": "res://art/inline/in_ae2b607cee.png",
+"w": 179,
+"h": 36
+},
+"2a(a>c)": {
+"p": "res://art/inline/in_f580ff9b62.png",
+"w": 194,
+"h": 50
+},
+"2a<2c": {
+"p": "res://art/inline/in_34cd9dd3f4.png",
+"w": 159,
+"h": 35
+},
+"2a=(2,4)": {
+"p": "res://art/inline/in_ca4ae35b74.png",
+"w": 218,
+"h": 50
+},
+"2a=(2,4),2a−b=(2−3, 4−(−1))=(−1,5)": {
+"p": "res://art/inline/in_2f87973624.png",
+"w": 1006,
+"h": 50
+},
+"2a=2c": {
+"p": "res://art/inline/in_99994f0bf2.png",
+"w": 159,
+"h": 34
+},
+"2a>2c": {
+"p": "res://art/inline/in_72659a72b5.png",
+"w": 159,
+"h": 35
+},
+"2c": {
+"p": "res://art/inline/in_5a6de500d1.png",
+"w": 43,
+"h": 34
+},
+"2c = 6": {
+"p": "res://art/inline/in_f50d88e668.png",
+"w": 132,
+"h": 34
+},
+"2c = |F₁F₂|": {
+"p": "res://art/inline/in_d9b9d3ad72.png",
+"w": 233,
+"h": 50
+},
+"2x + 3y − 1 = 0": {
+"p": "res://art/inline/in_e6d0568898.png",
+"w": 334,
+"h": 44
+},
+"2x + 3y − 6 = 0": {
+"p": "res://art/inline/in_33b31618f5.png",
+"w": 334,
+"h": 44
+},
+"2x + a y − 8 = 0": {
+"p": "res://art/inline/in_1465fd3472.png",
+"w": 335,
+"h": 44
+},
+"2x + y = 4": {
+"p": "res://art/inline/in_508c94a55b.png",
+"w": 225,
+"h": 45
+},
+"2x − 2y − 3 = 0": {
+"p": "res://art/inline/in_4091dee9a6.png",
+"w": 335,
+"h": 44
+},
+"2x − 3y + 6 = 0": {
+"p": "res://art/inline/in_a2b5a0a014.png",
+"w": 334,
+"h": 44
+},
+"2x − y + 3 = 0": {
+"p": "res://art/inline/in_4240560527.png",
+"w": 310,
+"h": 44
+},
+"2x+3y=6,x": {
+"p": "res://art/inline/in_8204cfa9e7.png",
+"w": 298,
+"h": 44
+},
+"2x−y+3=0": {
+"p": "res://art/inline/in_551ec64f19.png",
+"w": 310,
+"h": 44
+},
+"2×1 + 1×(−2) = 0": {
+"p": "res://art/inline/in_7c58d2c91d.png",
+"w": 443,
+"h": 50
+},
+"2×2 + a×2 − 8 = 0": {
+"p": "res://art/inline/in_deacb8fcb5.png",
+"w": 453,
+"h": 37
+},
+"3(": {
+"p": "res://art/inline/in_6dab253f35.png",
+"w": 39,
+"h": 50
+},
+"3)": {
+"p": "res://art/inline/in_604ba98b62.png",
+"w": 37,
+"h": 50
+},
+"3,y": {
+"p": "res://art/inline/in_12880d5462.png",
+"w": 68,
+"h": 44
+},
+"3>": {
+"p": "res://art/inline/in_7f2a470ac3.png",
+"w": 70,
+"h": 35
+},
+"3x + 4y + 15 = 0": {
+"p": "res://art/inline/in_fbfd9e9153.png",
+"w": 358,
+"h": 45
+},
+"3x + 4y − 10 = 0": {
+"p": "res://art/inline/in_ab97e7eb1e.png",
+"w": 358,
+"h": 45
+},
+"3x + 4y − 2 = 0": {
+"p": "res://art/inline/in_2aa7f69a56.png",
+"w": 334,
+"h": 45
+},
+"3x + 4y − 5 = 0": {
+"p": "res://art/inline/in_fab34c9f55.png",
+"w": 334,
+"h": 45
+},
+"3x − 4y + 5 = 0": {
+"p": "res://art/inline/in_e94da703f3.png",
+"w": 334,
+"h": 45
+},
+"3·OG": {
+"p": "res://art/inline/in_87c3651978.png",
+"w": 135,
+"h": 36
+},
+"4(": {
+"p": "res://art/inline/in_2205d5ba39.png",
+"w": 40,
+"h": 50
+},
+"45°": {
+"p": "res://art/inline/in_e61fa75a7d.png",
+"w": 63,
+"h": 37
+},
+"5 = 2k + 1": {
+"p": "res://art/inline/in_5491e2747d.png",
+"w": 221,
+"h": 39
+},
+"5)": {
+"p": "res://art/inline/in_ed090c58a8.png",
+"w": 37,
+"h": 50
+},
+"90°": {
+"p": "res://art/inline/in_462f40abf6.png",
+"w": 62,
+"h": 37
+},
+"90°(a⊥b)": {
+"p": "res://art/inline/in_9c53551692.png",
+"w": 214,
+"h": 50
+},
+"90°)": {
+"p": "res://art/inline/in_81b4a798ad.png",
+"w": 82,
+"h": 50
+},
+"90°)→k∈[1,+∞);α∈(90°": {
+"p": "res://art/inline/in_cf95ebc5bf.png",
+"w": 614,
+"h": 50
+},
+"90°<θ≤180°": {
+"p": "res://art/inline/in_cadabf516e.png",
+"w": 311,
+"h": 43
+},
+"90°]": {
+"p": "res://art/inline/in_1a7107e294.png",
+"w": 75,
+"h": 50
+},
+"90°],cosθ=|cos<u,v>|=1/2,θ=60°": {
+"p": "res://art/inline/in_a988d77fb8.png",
+"w": 887,
+"h": 50
+},
+"<u,n>": {
+"p": "res://art/inline/in_ebf4b5f635.png",
+"w": 174,
+"h": 36
+},
+"=": {
+"p": "res://art/inline/in_a01541ef04.png",
+"w": 34,
+"h": 11
+},
+"= 2": {
+"p": "res://art/inline/in_d6cdf9437d.png",
+"w": 72,
+"h": 33
+},
+"= 2ab√(1+k²)√(B)/A": {
+"p": "res://art/inline/in_8f1bc5c236.png",
+"w": 432,
+"h": 60
+},
+"= 2√3": {
+"p": "res://art/inline/in_30c18989e0.png",
+"w": 141,
+"h": 50
+},
+"= a·b/|a| = (2·x_B)/2 = x_B": {
+"p": "res://art/inline/in_47ea486c6f.png",
+"w": 601,
+"h": 50
+},
+"= b ÷ |b|": {
+"p": "res://art/inline/in_70074f283e.png",
+"w": 174,
+"h": 50
+},
+"= |a|/|a| = 1": {
+"p": "res://art/inline/in_0f8fadbbba.png",
+"w": 267,
+"h": 50
+},
+"= |b|cos120° = 2×(−1/2) = −1": {
+"p": "res://art/inline/in_083e5cef0b.png",
+"w": 699,
+"h": 50
+},
+"= |b|cosθ": {
+"p": "res://art/inline/in_1e3ab731d5.png",
+"w": 203,
+"h": 50
+},
+"= |b|cosθ,θ": {
+"p": "res://art/inline/in_8de5a5bf43.png",
+"w": 249,
+"h": 50
+},
+"= |x2 − x1|": {
+"p": "res://art/inline/in_4f447c615f.png",
+"w": 237,
+"h": 50
+},
+"= √(1+k²)·√Δ ÷ |A|": {
+"p": "res://art/inline/in_81f5e2591c.png",
+"w": 461,
+"h": 60
+},
+"= √3·": {
+"p": "res://art/inline/in_e1813f7f3f.png",
+"w": 126,
+"h": 50
+},
+"A = b²+a²k²": {
+"p": "res://art/inline/in_ab11408ee5.png",
+"w": 290,
+"h": 47
+},
+"A(0, 0, 0)": {
+"p": "res://art/inline/in_f28d4a73d8.png",
+"w": 186,
+"h": 50
+},
+"A(0,0)": {
+"p": "res://art/inline/in_c2ce594670.png",
+"w": 140,
+"h": 50
+},
+"A(0,1)": {
+"p": "res://art/inline/in_1a6f4f73f5.png",
+"w": 140,
+"h": 50
+},
+"A(1, 0, 0)": {
+"p": "res://art/inline/in_2422adfc88.png",
+"w": 186,
+"h": 50
+},
+"A(1, 1)": {
+"p": "res://art/inline/in_6761a787fa.png",
+"w": 140,
+"h": 50
+},
+"A(1, 2)": {
+"p": "res://art/inline/in_fa8c167f83.png",
+"w": 140,
+"h": 50
+},
+"A(1,1)": {
+"p": "res://art/inline/in_0999e10781.png",
+"w": 140,
+"h": 50
+},
+"A(1,2)": {
+"p": "res://art/inline/in_af2710b8aa.png",
+"w": 140,
+"h": 50
+},
+"A(1,3)": {
+"p": "res://art/inline/in_5c8beee480.png",
+"w": 140,
+"h": 50
+},
+"A(2, 1)": {
+"p": "res://art/inline/in_b422d597b6.png",
+"w": 140,
+"h": 50
+},
+"A(x1,y1,z1)": {
+"p": "res://art/inline/in_682b71d9ad.png",
+"w": 264,
+"h": 50
+},
+"A(−2, 3)": {
+"p": "res://art/inline/in_ca17460528.png",
+"w": 179,
+"h": 50
+},
+"A(−2,0)": {
+"p": "res://art/inline/in_efb38091b7.png",
+"w": 179,
+"h": 50
+},
+"A1A2 + B1B2": {
+"p": "res://art/inline/in_d75d023133.png",
+"w": 307,
+"h": 40
+},
+"A1A2 + B1B2 = 0:(a+1)·1 + 1·(a+1) = 0": {
+"p": "res://art/inline/in_a1168ff701.png",
+"w": 1006,
+"h": 50
+},
+"A1B2 = A2B1": {
+"p": "res://art/inline/in_2585cc23a1.png",
+"w": 311,
+"h": 36
+},
+"A1B2 − A2B1": {
+"p": "res://art/inline/in_9755055291.png",
+"w": 306,
+"h": 36
+},
+"A1B2 − A2B1 = 0:(a−1)·a − 2·1 = 0": {
+"p": "res://art/inline/in_4039cd3599.png",
+"w": 886,
+"h": 50
+},
+"A1B2−A2B1=0": {
+"p": "res://art/inline/in_1eb749ff31.png",
+"w": 398,
+"h": 37
+},
+"A1C2 − A2C1": {
+"p": "res://art/inline/in_2a88fac372.png",
+"w": 304,
+"h": 37
+},
+"A1C2−A2C1=0": {
+"p": "res://art/inline/in_f8e8b8e5f4.png",
+"w": 396,
+"h": 37
+},
+"A=1, B=−1, C=1": {
+"p": "res://art/inline/in_8751421700.png",
+"w": 463,
+"h": 46
+},
+"A=B=0": {
+"p": "res://art/inline/in_3b8c47074b.png",
+"w": 229,
+"h": 37
+},
+"A={1,2,3},B={2,3,4}": {
+"p": "res://art/inline/in_6607b8e204.png",
+"w": 558,
+"h": 51
+},
+"A={1,2,3},B={3,4}": {
+"p": "res://art/inline/in_98410cbf4b.png",
+"w": 512,
+"h": 51
+},
+"A={1,2},B={2,3}": {
+"p": "res://art/inline/in_a052248210.png",
+"w": 466,
+"h": 51
+},
+"A={x|-1<x<2},B={x|0≤x<3}": {
+"p": "res://art/inline/in_46e0082834.png",
+"w": 885,
+"h": 51
+},
+"AB + BA = 0": {
+"p": "res://art/inline/in_8b0fb31ca3.png",
+"w": 300,
+"h": 40
+},
+"AB = (2,1) ⇒ B = A + (2,1) = (3,3)": {
+"p": "res://art/inline/in_e1f28ffccd.png",
+"w": 807,
+"h": 50
+},
+"AB = (xB−xA, yB−yA)": {
+"p": "res://art/inline/in_625aa9be45.png",
+"w": 578,
+"h": 50
+},
+"AB = −BA": {
+"p": "res://art/inline/in_6ec0ecd459.png",
+"w": 255,
+"h": 36
+},
+"AB=λAC": {
+"p": "res://art/inline/in_9b894c14cd.png",
+"w": 244,
+"h": 38
+},
+"AB∥AC": {
+"p": "res://art/inline/in_012b787ce0.png",
+"w": 203,
+"h": 50
+},
+"AP·n": {
+"p": "res://art/inline/in_cab6905a7c.png",
+"w": 138,
+"h": 37
+},
+"AP⊥BC": {
+"p": "res://art/inline/in_f0e0c23878.png",
+"w": 218,
+"h": 37
+},
+"Ax + By + C = 0": {
+"p": "res://art/inline/in_a953ee49d6.png",
+"w": 376,
+"h": 47
+},
+"Ax+By+C = 3−1+1 = 3": {
+"p": "res://art/inline/in_1e8b0419d7.png",
+"w": 635,
+"h": 47
+},
+"Ax+By+C=3": {
+"p": "res://art/inline/in_1ae63b622a.png",
+"w": 376,
+"h": 47
+},
+"Ax+By+Cz+D=0": {
+"p": "res://art/inline/in_cb6230fbea.png",
+"w": 502,
+"h": 47
+},
+"A²+B²=2": {
+"p": "res://art/inline/in_cef8143708.png",
+"w": 262,
+"h": 47
+},
+"A∩B": {
+"p": "res://art/inline/in_9a3b39695f.png",
+"w": 129,
+"h": 37
+},
+"A∩B={2}": {
+"p": "res://art/inline/in_25efd85fd7.png",
+"w": 267,
+"h": 51
+},
+"A∪B": {
+"p": "res://art/inline/in_589d2867a6.png",
+"w": 129,
+"h": 37
+},
+"B = (0, 3)": {
+"p": "res://art/inline/in_d2fe7ad775.png",
+"w": 207,
+"h": 50
+},
+"B = (1,2)+(2,1) = (3,3)": {
+"p": "res://art/inline/in_e1a2e154e8.png",
+"w": 550,
+"h": 50
+},
+"B = b²+a²k²−m²;|B|<0": {
+"p": "res://art/inline/in_73235113f7.png",
+"w": 597,
+"h": 56
+},
+"B(0, 1, 0)": {
+"p": "res://art/inline/in_4cf0023c7a.png",
+"w": 188,
+"h": 50
+},
+"B(1, 2, 2)": {
+"p": "res://art/inline/in_e0a0ab62ea.png",
+"w": 188,
+"h": 50
+},
+"B(1, −1)": {
+"p": "res://art/inline/in_fa80c478d9.png",
+"w": 181,
+"h": 50
+},
+"B(2, 3)": {
+"p": "res://art/inline/in_3fc765c5e6.png",
+"w": 142,
+"h": 50
+},
+"B(2,0)": {
+"p": "res://art/inline/in_17f0e54695.png",
+"w": 142,
+"h": 50
+},
+"B(2,4)": {
+"p": "res://art/inline/in_7a7576460e.png",
+"w": 142,
+"h": 50
+},
+"B(3, 6)": {
+"p": "res://art/inline/in_62ccb3beef.png",
+"w": 142,
+"h": 50
+},
+"B(4, 1)": {
+"p": "res://art/inline/in_986b5a0e87.png",
+"w": 142,
+"h": 50
+},
+"B(4, 5)": {
+"p": "res://art/inline/in_508b0eb919.png",
+"w": 142,
+"h": 50
+},
+"B(4,0)": {
+"p": "res://art/inline/in_aee83cbe98.png",
+"w": 142,
+"h": 50
+},
+"B(4,2)": {
+"p": "res://art/inline/in_e41089ef58.png",
+"w": 142,
+"h": 50
+},
+"B(4,−2)": {
+"p": "res://art/inline/in_179044021c.png",
+"w": 181,
+"h": 50
+},
+"B(5, 2)": {
+"p": "res://art/inline/in_37019742d5.png",
+"w": 142,
+"h": 50
+},
+"B(5,2)": {
+"p": "res://art/inline/in_f6168f22ae.png",
+"w": 142,
+"h": 50
+},
+"B(5,7)": {
+"p": "res://art/inline/in_89714b987c.png",
+"w": 142,
+"h": 50
+},
+"B(6, 1)": {
+"p": "res://art/inline/in_24ad30fbfd.png",
+"w": 142,
+"h": 50
+},
+"B(x2,y2,z2)": {
+"p": "res://art/inline/in_829b1f79e1.png",
+"w": 266,
+"h": 50
+},
+"B=16k": {
+"p": "res://art/inline/in_646457c83c.png",
+"w": 176,
+"h": 36
+},
+"C = a = (3,1)": {
+"p": "res://art/inline/in_850fb7faee.png",
+"w": 298,
+"h": 50
+},
+"C = b = (1,3)": {
+"p": "res://art/inline/in_60ae6dbf68.png",
+"w": 293,
+"h": 50
+},
+"C(3, m)": {
+"p": "res://art/inline/in_0f20e516d0.png",
+"w": 160,
+"h": 50
+},
+"C=12,Δ=16(4k²−3)": {
+"p": "res://art/inline/in_8850e095ec.png",
+"w": 518,
+"h": 56
+},
+"F1": {
+"p": "res://art/inline/in_b7cc530078.png",
+"w": 57,
+"h": 34
+},
+"F2": {
+"p": "res://art/inline/in_f0858d4b55.png",
+"w": 58,
+"h": 34
+},
+"F₁": {
+"p": "res://art/inline/in_98ae6666bb.png",
+"w": 45,
+"h": 41
+},
+"F₁(−3,0)": {
+"p": "res://art/inline/in_629d9cb2ff.png",
+"w": 192,
+"h": 50
+},
+"F₁(−4,0)": {
+"p": "res://art/inline/in_5659e59ba1.png",
+"w": 192,
+"h": 50
+},
+"F₁F₂": {
+"p": "res://art/inline/in_22e96d115d.png",
+"w": 97,
+"h": 41
+},
+"F₁F₂;2a < 2c": {
+"p": "res://art/inline/in_5c01930bf7.png",
+"w": 283,
+"h": 44
+},
+"F₂": {
+"p": "res://art/inline/in_4ef85b9556.png",
+"w": 46,
+"h": 41
+},
+"F₂(3,0)": {
+"p": "res://art/inline/in_69442deebc.png",
+"w": 154,
+"h": 50
+},
+"F₂(4,0)": {
+"p": "res://art/inline/in_c8dbb9892e.png",
+"w": 154,
+"h": 50
+},
+"GA + GB + GC =": {
+"p": "res://art/inline/in_9d2fd3b9e5.png",
+"w": 398,
+"h": 40
+},
+"GA+GB+GC=(OA−OG)+(OB−OG)+(OC−OG)=0": {
+"p": "res://art/inline/in_f4f2e3e950.png",
+"w": 1381,
+"h": 50
+},
+"GA+GB+GC=0": {
+"p": "res://art/inline/in_a7c8e426d9.png",
+"w": 437,
+"h": 40
+},
+"M = ((5+x_B)/2, y_B/2)": {
+"p": "res://art/inline/in_7ffda200de.png",
+"w": 503,
+"h": 50
+},
+"M = (2.5, 1.5)": {
+"p": "res://art/inline/in_5440eced83.png",
+"w": 296,
+"h": 50
+},
+"M = (A+B)/2": {
+"p": "res://art/inline/in_04b8e8facf.png",
+"w": 336,
+"h": 50
+},
+"M(O": {
+"p": "res://art/inline/in_5e51868c3e.png",
+"w": 106,
+"h": 50
+},
+"M(m, 0)": {
+"p": "res://art/inline/in_14fec9f286.png",
+"w": 173,
+"h": 50
+},
+"O(0, 0)": {
+"p": "res://art/inline/in_2647202ce3.png",
+"w": 141,
+"h": 50
+},
+"O(2, 1, 2),A(0, 0, 0)": {
+"p": "res://art/inline/in_cd18f10a56.png",
+"w": 400,
+"h": 50
+},
+"OA = OB": {
+"p": "res://art/inline/in_5fddd95536.png",
+"w": 215,
+"h": 37
+},
+"OA = OP": {
+"p": "res://art/inline/in_20ea781d1e.png",
+"w": 214,
+"h": 37
+},
+"OA+OB+OC": {
+"p": "res://art/inline/in_846583d67c.png",
+"w": 348,
+"h": 40
+},
+"OC = x·a + y·b,a=(3,1)": {
+"p": "res://art/inline/in_4a6125d47e.png",
+"w": 590,
+"h": 50
+},
+"OG = ?(O": {
+"p": "res://art/inline/in_993c80f9fb.png",
+"w": 206,
+"h": 50
+},
+"OG=(OA+OB+OC)/3": {
+"p": "res://art/inline/in_bc297102a9.png",
+"w": 576,
+"h": 50
+},
+"OM = (OA+OB)/2": {
+"p": "res://art/inline/in_4b6122f6ec.png",
+"w": 452,
+"h": 50
+},
+"OM ⊥ AB": {
+"p": "res://art/inline/in_15eb277809.png",
+"w": 230,
+"h": 37
+},
+"OP·m": {
+"p": "res://art/inline/in_faf87b17aa.png",
+"w": 153,
+"h": 36
+},
+"OP·m = k ⇔ ax + by = k": {
+"p": "res://art/inline/in_5044c85373.png",
+"w": 574,
+"h": 46
+},
+"OP·m = y": {
+"p": "res://art/inline/in_380f4b0842.png",
+"w": 243,
+"h": 46
+},
+"P(": {
+"p": "res://art/inline/in_dc30944f6b.png",
+"w": 53,
+"h": 50
+},
+"P(1, 2)": {
+"p": "res://art/inline/in_d455deccd2.png",
+"w": 140,
+"h": 50
+},
+"P(1,1,1)": {
+"p": "res://art/inline/in_d8422b4d67.png",
+"w": 187,
+"h": 50
+},
+"P(2, 2)": {
+"p": "res://art/inline/in_cc5e436ac9.png",
+"w": 140,
+"h": 50
+},
+"P(2, 3)": {
+"p": "res://art/inline/in_7cfee446a6.png",
+"w": 140,
+"h": 50
+},
+"P(2, 5)": {
+"p": "res://art/inline/in_a59cbb83b3.png",
+"w": 140,
+"h": 50
+},
+"P(2, −1)": {
+"p": "res://art/inline/in_2d0de60c33.png",
+"w": 179,
+"h": 50
+},
+"P(x₀, y₀)": {
+"p": "res://art/inline/in_c2ea266ca5.png",
+"w": 183,
+"h": 50
+},
+"PA + PB": {
+"p": "res://art/inline/in_d27bd380c6.png",
+"w": 209,
+"h": 40
+},
+"PA=3": {
+"p": "res://art/inline/in_aafd964ddd.png",
+"w": 161,
+"h": 37
+},
+"PA=PB=PC=6": {
+"p": "res://art/inline/in_d478785440.png",
+"w": 447,
+"h": 37
+},
+"PA·(PB−PC)=0": {
+"p": "res://art/inline/in_13a0476f38.png",
+"w": 451,
+"h": 50
+},
+"PA·(PB−PC)=PA·CB=0": {
+"p": "res://art/inline/in_01fc7883f5.png",
+"w": 705,
+"h": 50
+},
+"PA·CB=0": {
+"p": "res://art/inline/in_cbfc1cdfa7.png",
+"w": 275,
+"h": 37
+},
+"PA·PB": {
+"p": "res://art/inline/in_7b99548a8b.png",
+"w": 185,
+"h": 36
+},
+"PA·PB = PA·PC(": {
+"p": "res://art/inline/in_3132f921ca.png",
+"w": 457,
+"h": 50
+},
+"PA·PB = |PM|² − (|AB|/2)²": {
+"p": "res://art/inline/in_b1258186d9.png",
+"w": 657,
+"h": 56
+},
+"PA·PB = |PM|² − 4": {
+"p": "res://art/inline/in_de77b2557c.png",
+"w": 475,
+"h": 56
+},
+"PA·PB=PA·PC": {
+"p": "res://art/inline/in_302029d4f9.png",
+"w": 439,
+"h": 37
+},
+"PA·PB=PA·PC=PB·PC": {
+"p": "res://art/inline/in_20be1fdfb3.png",
+"w": 695,
+"h": 37
+},
+"PA⊥BC": {
+"p": "res://art/inline/in_e820f91055.png",
+"w": 217,
+"h": 37
+},
+"PB=4": {
+"p": "res://art/inline/in_679da5e84b.png",
+"w": 165,
+"h": 34
+},
+"PC=5": {
+"p": "res://art/inline/in_7b413b18ba.png",
+"w": 162,
+"h": 36
+},
+"PM ⊥ AB": {
+"p": "res://art/inline/in_ba89e63a98.png",
+"w": 230,
+"h": 36
+},
+"PO ⊥": {
+"p": "res://art/inline/in_012efa55b4.png",
+"w": 125,
+"h": 36
+},
+"R + r = h": {
+"p": "res://art/inline/in_3f196db23f.png",
+"w": 212,
+"h": 39
+},
+"R = 3r": {
+"p": "res://art/inline/in_71200eed66.png",
+"w": 147,
+"h": 35
+},
+"R = 3√6 / 2": {
+"p": "res://art/inline/in_646a5be0eb.png",
+"w": 237,
+"h": 59
+},
+"R = 7": {
+"p": "res://art/inline/in_2403707018.png",
+"w": 125,
+"h": 35
+},
+"R = √(4+1+4) = 3": {
+"p": "res://art/inline/in_dc97469ada.png",
+"w": 425,
+"h": 50
+},
+"R = √3": {
+"p": "res://art/inline/in_cdc5f00943.png",
+"w": 168,
+"h": 50
+},
+"R = √50 ÷ 2 = 5√2 / 2": {
+"p": "res://art/inline/in_250b2e0fd3.png",
+"w": 479,
+"h": 59
+},
+"R² = 13 + 36 = 49": {
+"p": "res://art/inline/in_dc91a46719.png",
+"w": 391,
+"h": 47
+},
+"S =": {
+"p": "res://art/inline/in_349edb3665.png",
+"w": 81,
+"h": 36
+},
+"S = 4|y|": {
+"p": "res://art/inline/in_a73d29ef7f.png",
+"w": 168,
+"h": 50
+},
+"S = 54 + 18√3": {
+"p": "res://art/inline/in_48ad0e012e.png",
+"w": 321,
+"h": 50
+},
+"S = b² = 9": {
+"p": "res://art/inline/in_271be43503.png",
+"w": 226,
+"h": 44
+},
+"S = b²·cot(θ/2)": {
+"p": "res://art/inline/in_3f3e0d7589.png",
+"w": 344,
+"h": 56
+},
+"S = b²·tan(θ/2)": {
+"p": "res://art/inline/in_0ee0f9d9d2.png",
+"w": 349,
+"h": 56
+},
+"S = b²·tan(θ/2);θ = 90°": {
+"p": "res://art/inline/in_63263e97af.png",
+"w": 530,
+"h": 56
+},
+"S = b²·tan45° = 9": {
+"p": "res://art/inline/in_824ddb9f1e.png",
+"w": 409,
+"h": 44
+},
+"S = c|y₀|": {
+"p": "res://art/inline/in_bd2362a43f.png",
+"w": 183,
+"h": 50
+},
+"S = c·|y₀| = b²·tan(θ/2),θ = ∠F₁PF₂": {
+"p": "res://art/inline/in_7a3eaa2755.png",
+"w": 833,
+"h": 56
+},
+"Sn=": {
+"p": "res://art/inline/in_5fee0de6f6.png",
+"w": 110,
+"h": 36
+},
+"Sn=a₁(1-qⁿ)/(1-q)(q≠1)": {
+"p": "res://art/inline/in_4bd38fa67d.png",
+"w": 659,
+"h": 50
+},
+"Sn=n(a₁+aₙ)/2": {
+"p": "res://art/inline/in_9c11610503.png",
+"w": 393,
+"h": 50
+},
+"U={1,2,3,4,5},A={1,3,5}": {
+"p": "res://art/inline/in_c44e79525f.png",
+"w": 648,
+"h": 51
+},
+"V = (1/3)·S·r": {
+"p": "res://art/inline/in_9db22d4b1c.png",
+"w": 341,
+"h": 50
+},
+"V = 36": {
+"p": "res://art/inline/in_f6e112208e.png",
+"w": 150,
+"h": 35
+},
+"V=(1/3)Sh": {
+"p": "res://art/inline/in_624efba2ae.png",
+"w": 274,
+"h": 50
+},
+"[-1,2)": {
+"p": "res://art/inline/in_95c9f3ef6a.png",
+"w": 133,
+"h": 50
+},
+"[/b]": {
+"p": "res://art/inline/in_d658631354.png",
+"w": 62,
+"h": 50
+},
+"[0": {
+"p": "res://art/inline/in_35445d7ff7.png",
+"w": 32,
+"h": 50
+},
+"[0,+∞)": {
+"p": "res://art/inline/in_52681b9e98.png",
+"w": 158,
+"h": 50
+},
+"[0,5]": {
+"p": "res://art/inline/in_6fecbfde29.png",
+"w": 87,
+"h": 50
+},
+"[0,π]": {
+"p": "res://art/inline/in_0ca3151d6e.png",
+"w": 92,
+"h": 50
+},
+"[0°": {
+"p": "res://art/inline/in_04c117f8f4.png",
+"w": 49,
+"h": 50
+},
+"[1,5]": {
+"p": "res://art/inline/in_d476481a96.png",
+"w": 87,
+"h": 50
+},
+"[b]": {
+"p": "res://art/inline/in_ebaf7dd890.png",
+"w": 38,
+"h": 50
+},
+"[−1,1]": {
+"p": "res://art/inline/in_0e47f6b27c.png",
+"w": 126,
+"h": 50
+},
+"a + ex₀": {
+"p": "res://art/inline/in_483f8ee929.png",
+"w": 153,
+"h": 36
+},
+"a =": {
+"p": "res://art/inline/in_e80672ba61.png",
+"w": 74,
+"h": 23
+},
+"a = (1,2) + (2,1) = (3,3)": {
+"p": "res://art/inline/in_398b44f650.png",
+"w": 537,
+"h": 50
+},
+"a = 5": {
+"p": "res://art/inline/in_96ee5e3a95.png",
+"w": 112,
+"h": 34
+},
+"a = 6": {
+"p": "res://art/inline/in_cdea07777d.png",
+"w": 113,
+"h": 34
+},
+"a = −1": {
+"p": "res://art/inline/in_e0afc95c95.png",
+"w": 150,
+"h": 34
+},
+"a − b": {
+"p": "res://art/inline/in_555b75fc62.png",
+"w": 107,
+"h": 36
+},
+"a − ex₀": {
+"p": "res://art/inline/in_8898b02612.png",
+"w": 154,
+"h": 29
+},
+"a)": {
+"p": "res://art/inline/in_1465894810.png",
+"w": 40,
+"h": 50
+},
+"a+b": {
+"p": "res://art/inline/in_f3af9abecf.png",
+"w": 106,
+"h": 39
+},
+"a+b = (2,1) + (1,1) = (3,2)": {
+"p": "res://art/inline/in_fe88a53a34.png",
+"w": 618,
+"h": 50
+},
+"a/|a|": {
+"p": "res://art/inline/in_3f73589ef3.png",
+"w": 97,
+"h": 50
+},
+"a=(1,0)": {
+"p": "res://art/inline/in_c2a57bfe47.png",
+"w": 194,
+"h": 50
+},
+"a=(1,0,0),b=(0,1,0)": {
+"p": "res://art/inline/in_e39053f805.png",
+"w": 504,
+"h": 50
+},
+"a=(1,1,0),b=(1,0,1)": {
+"p": "res://art/inline/in_9c4079b5e9.png",
+"w": 504,
+"h": 50
+},
+"a=(1,2)": {
+"p": "res://art/inline/in_f4970a1178.png",
+"w": 194,
+"h": 50
+},
+"a=(1,2,2)": {
+"p": "res://art/inline/in_d05e96d6a1.png",
+"w": 241,
+"h": 50
+},
+"a=(1,2,2),b=(2,−1,0)": {
+"p": "res://art/inline/in_de0e4963fe.png",
+"w": 542,
+"h": 50
+},
+"a=(2,0)": {
+"p": "res://art/inline/in_83a42dc33a.png",
+"w": 194,
+"h": 50
+},
+"a=(2,1)": {
+"p": "res://art/inline/in_82257f059b.png",
+"w": 194,
+"h": 50
+},
+"a=0": {
+"p": "res://art/inline/in_b3c5fa693b.png",
+"w": 113,
+"h": 34
+},
+"a=b": {
+"p": "res://art/inline/in_18a59996d6.png",
+"w": 111,
+"h": 36
+},
+"a=log₂3": {
+"p": "res://art/inline/in_9960a927c9.png",
+"w": 204,
+"h": 47
+},
+"a=x e₁+y e₂": {
+"p": "res://art/inline/in_37078b35ce.png",
+"w": 285,
+"h": 40
+},
+"ab=0": {
+"p": "res://art/inline/in_6770794707.png",
+"w": 134,
+"h": 36
+},
+"a² = 25": {
+"p": "res://art/inline/in_d88a514f6e.png",
+"w": 156,
+"h": 44
+},
+"a² = b² + c²": {
+"p": "res://art/inline/in_42f174966c.png",
+"w": 248,
+"h": 47
+},
+"a² − a − 2 = 0 → a = 2": {
+"p": "res://art/inline/in_769050b3da.png",
+"w": 497,
+"h": 44
+},
+"a²=4": {
+"p": "res://art/inline/in_38deaae3a0.png",
+"w": 134,
+"h": 44
+},
+"a·(b·c)": {
+"p": "res://art/inline/in_5881428d3d.png",
+"w": 172,
+"h": 50
+},
+"a·a": {
+"p": "res://art/inline/in_82dae21143.png",
+"w": 86,
+"h": 23
+},
+"a·a = |a|²": {
+"p": "res://art/inline/in_ee16f17ed6.png",
+"w": 222,
+"h": 56
+},
+"a·a=|a|²": {
+"p": "res://art/inline/in_38c2078e2f.png",
+"w": 222,
+"h": 56
+},
+"a·b": {
+"p": "res://art/inline/in_9d320f554b.png",
+"w": 82,
+"h": 36
+},
+"a·b =": {
+"p": "res://art/inline/in_3360837c5f.png",
+"w": 131,
+"h": 36
+},
+"a·b = 0": {
+"p": "res://art/inline/in_2fe0400385.png",
+"w": 170,
+"h": 36
+},
+"a·b = 0 ⇔ θ = 90° ⇔ a⊥b": {
+"p": "res://art/inline/in_d99d0dcaf1.png",
+"w": 598,
+"h": 37
+},
+"a·b = 2·2 + 1·0 = 4(": {
+"p": "res://art/inline/in_24d53fd431.png",
+"w": 483,
+"h": 50
+},
+"a·b = 2·x + 1·y": {
+"p": "res://art/inline/in_b31a137dba.png",
+"w": 379,
+"h": 46
+},
+"a·b = 2×1 + 1×2": {
+"p": "res://art/inline/in_2fea6a7910.png",
+"w": 424,
+"h": 39
+},
+"a·b = x₁x₂ + y₁y₂ = 2×1 + 1×2 = 4": {
+"p": "res://art/inline/in_778b95fb21.png",
+"w": 824,
+"h": 46
+},
+"a·b = |a| ×(b": {
+"p": "res://art/inline/in_66bddf604a.png",
+"w": 301,
+"h": 50
+},
+"a·b > 0": {
+"p": "res://art/inline/in_d47ccc7b26.png",
+"w": 170,
+"h": 37
+},
+"a·b:2×(−1)+1×2": {
+"p": "res://art/inline/in_14868eb5e6.png",
+"w": 476,
+"h": 50
+},
+"a·b<0": {
+"p": "res://art/inline/in_1b8c495b2a.png",
+"w": 170,
+"h": 37
+},
+"a·b=0": {
+"p": "res://art/inline/in_e02745cfa5.png",
+"w": 170,
+"h": 36
+},
+"a·b=0(": {
+"p": "res://art/inline/in_1a371823b5.png",
+"w": 188,
+"h": 50
+},
+"a·b=1×1+0×1=1;|a|=1,|b|=√2;cosθ=1/(1×√2)=√2/2": {
+"p": "res://art/inline/in_4bb32d298b.png",
+"w": 1484,
+"h": 59
+},
+"a·b=2×(−1)+1×2=0": {
+"p": "res://art/inline/in_cfdc42fe8b.png",
+"w": 592,
+"h": 50
+},
+"a·b=x₁x₂+y₁y₂=2+2=4": {
+"p": "res://art/inline/in_5b3def29aa.png",
+"w": 653,
+"h": 46
+},
+"a·b=|a||b|": {
+"p": "res://art/inline/in_12a325c0f8.png",
+"w": 244,
+"h": 50
+},
+"a·b=|a||b|cosθ": {
+"p": "res://art/inline/in_e83b66a6cb.png",
+"w": 354,
+"h": 50
+},
+"a·b>0": {
+"p": "res://art/inline/in_2b5f6625e4.png",
+"w": 170,
+"h": 37
+},
+"a×b": {
+"p": "res://art/inline/in_4177f0e979.png",
+"w": 107,
+"h": 36
+},
+"a×b=(0·0−0·1, 0·0−1·0, 1·1−0·0)=(0,0,1)": {
+"p": "res://art/inline/in_d388515b13.png",
+"w": 1161,
+"h": 50
+},
+"a×b=(1,−1,−1),|a×b|=√(1+1+1)=√3": {
+"p": "res://art/inline/in_c346852b71.png",
+"w": 993,
+"h": 59
+},
+"a×b=(1·1−0·0, 0·1−1·1, 1·0−1·1)=(1,−1,−1)": {
+"p": "res://art/inline/in_93f4234ec0.png",
+"w": 1238,
+"h": 50
+},
+"a₁=1": {
+"p": "res://art/inline/in_1c3fc315cf.png",
+"w": 131,
+"h": 40
+},
+"a₁=2": {
+"p": "res://art/inline/in_8416915f25.png",
+"w": 132,
+"h": 40
+},
+"a₃=": {
+"p": "res://art/inline/in_a3315b6d9c.png",
+"w": 94,
+"h": 29
+},
+"a₅=": {
+"p": "res://art/inline/in_ed1ae5eb95.png",
+"w": 94,
+"h": 29
+},
+"aₙ=": {
+"p": "res://art/inline/in_a24e57f40b.png",
+"w": 98,
+"h": 29
+},
+"aₙ=1+2(n-1)=2n-1": {
+"p": "res://art/inline/in_362a09121f.png",
+"w": 576,
+"h": 50
+},
+"aₙ=a₁+(n-1)d=1+4×2=9": {
+"p": "res://art/inline/in_f40f8f0e8c.png",
+"w": 745,
+"h": 50
+},
+"aₙ=a₁qⁿ⁻¹=2×3²=18": {
+"p": "res://art/inline/in_19ca061ebd.png",
+"w": 559,
+"h": 53
+},
+"a−b": {
+"p": "res://art/inline/in_d20dc1fec0.png",
+"w": 107,
+"h": 36
+},
+"a−b = (2,1) ⇒ a = b + (2,1) = (3,3)": {
+"p": "res://art/inline/in_20c247a27a.png",
+"w": 808,
+"h": 50
+},
+"a−b = a+(−b)": {
+"p": "res://art/inline/in_bd866e3895.png",
+"w": 352,
+"h": 50
+},
+"a−b = −(b−a)": {
+"p": "res://art/inline/in_56a8e45e12.png",
+"w": 352,
+"h": 50
+},
+"a≠0": {
+"p": "res://art/inline/in_b36c253101.png",
+"w": 113,
+"h": 47
+},
+"a⊥b": {
+"p": "res://art/inline/in_1ce05cf3fc.png",
+"w": 112,
+"h": 36
+},
+"b = 4,c = √(25−16) = 3": {
+"p": "res://art/inline/in_434c65209f.png",
+"w": 506,
+"h": 54
+},
+"b = λa": {
+"p": "res://art/inline/in_7aff4b037a.png",
+"w": 137,
+"h": 37
+},
+"b,|a+b|² + |a−b|² =": {
+"p": "res://art/inline/in_97c1ae0025.png",
+"w": 459,
+"h": 56
+},
+"b=(1,1)": {
+"p": "res://art/inline/in_095be5ef54.png",
+"w": 189,
+"h": 50
+},
+"b=(1,2)": {
+"p": "res://art/inline/in_a744b7929c.png",
+"w": 189,
+"h": 50
+},
+"b=(1,3)": {
+"p": "res://art/inline/in_20856d02fc.png",
+"w": 189,
+"h": 50
+},
+"b=(2,0))": {
+"p": "res://art/inline/in_8ed57f325f.png",
+"w": 208,
+"h": 50
+},
+"b=(3,−1)": {
+"p": "res://art/inline/in_1b6c41b1e3.png",
+"w": 228,
+"h": 50
+},
+"b=(−1,2)": {
+"p": "res://art/inline/in_aae8853233.png",
+"w": 227,
+"h": 50
+},
+"b=0": {
+"p": "res://art/inline/in_0aaa68aa49.png",
+"w": 107,
+"h": 36
+},
+"b=log₃2": {
+"p": "res://art/inline/in_575e45980a.png",
+"w": 197,
+"h": 47
+},
+"b² = 16": {
+"p": "res://art/inline/in_efe8c9cfb8.png",
+"w": 151,
+"h": 44
+},
+"b²=1": {
+"p": "res://art/inline/in_3c34e5cdbe.png",
+"w": 125,
+"h": 44
+},
+"b²tan(θ/2);b²cot(θ/2)": {
+"p": "res://art/inline/in_ab7d9ff06c.png",
+"w": 470,
+"h": 56
+},
+"b≠0": {
+"p": "res://art/inline/in_bb0e22ffbd.png",
+"w": 107,
+"h": 47
+},
+"c = √(16−9) = √7": {
+"p": "res://art/inline/in_ec0002166f.png",
+"w": 393,
+"h": 52
+},
+"cosθ": {
+"p": "res://art/inline/in_755e317140.png",
+"w": 96,
+"h": 36
+},
+"cosθ = a·b / (|a||b|)": {
+"p": "res://art/inline/in_1bf3813883.png",
+"w": 406,
+"h": 50
+},
+"cosθ = a·b/(|a||b|)": {
+"p": "res://art/inline/in_f5a73817ef.png",
+"w": 406,
+"h": 50
+},
+"cosθ = a·b/(|a||b|) = 4/5": {
+"p": "res://art/inline/in_93a3e1e2fc.png",
+"w": 544,
+"h": 50
+},
+"cosθ = a·b/(|a||b|) = −1/(1×√2) = −√2/2": {
+"p": "res://art/inline/in_c51f40fc41.png",
+"w": 967,
+"h": 59
+},
+"cosθ=a·b/(|a||b|)": {
+"p": "res://art/inline/in_523c27e88f.png",
+"w": 406,
+"h": 50
+},
+"cosθ=|−1/2|=1/2": {
+"p": "res://art/inline/in_7d30039e66.png",
+"w": 460,
+"h": 50
+},
+"cosθ>0": {
+"p": "res://art/inline/in_c4c15c4ecd.png",
+"w": 185,
+"h": 37
+},
+"cosθ_min = 1 − 2e²": {
+"p": "res://art/inline/in_3e3737e48d.png",
+"w": 376,
+"h": 50
+},
+"c² = a² − b² = 9": {
+"p": "res://art/inline/in_df39876aa0.png",
+"w": 341,
+"h": 44
+},
+"d = |1+1+1−6| / √(1+1+1)": {
+"p": "res://art/inline/in_c9740f46ae.png",
+"w": 656,
+"h": 57
+},
+"d = |1−(−3/2)|/√2 = 5√2/4": {
+"p": "res://art/inline/in_9bb2c7180f.png",
+"w": 647,
+"h": 59
+},
+"d = |3×1 + 4×2 − 5| / √(3²+4²)": {
+"p": "res://art/inline/in_ab9a05b98b.png",
+"w": 697,
+"h": 59
+},
+"d = |C1 − C2| / √(A²+B²)": {
+"p": "res://art/inline/in_60ebfea67d.png",
+"w": 546,
+"h": 59
+},
+"d=2": {
+"p": "res://art/inline/in_ba64e41139.png",
+"w": 112,
+"h": 36
+},
+"e < 1": {
+"p": "res://art/inline/in_68e50aa934.png",
+"w": 107,
+"h": 35
+},
+"e = 1": {
+"p": "res://art/inline/in_111e017bdf.png",
+"w": 107,
+"h": 34
+},
+"e = 1 →": {
+"p": "res://art/inline/in_332d18cc1f.png",
+"w": 171,
+"h": 34
+},
+"e = a/|a|": {
+"p": "res://art/inline/in_2d6f5838bb.png",
+"w": 184,
+"h": 50
+},
+"e = b/|b|": {
+"p": "res://art/inline/in_c0d08ea20b.png",
+"w": 174,
+"h": 50
+},
+"e = c/a": {
+"p": "res://art/inline/in_78a0632ebc.png",
+"w": 156,
+"h": 50
+},
+"e = c/a ∈ (0,1);e→0": {
+"p": "res://art/inline/in_1d7ebf5585.png",
+"w": 472,
+"h": 50
+},
+"e > 1": {
+"p": "res://art/inline/in_70c9d7a845.png",
+"w": 107,
+"h": 35
+},
+"e > 1 →": {
+"p": "res://art/inline/in_1d9c3f6632.png",
+"w": 171,
+"h": 35
+},
+"e ≥ √3/2": {
+"p": "res://art/inline/in_7167eec2a2.png",
+"w": 199,
+"h": 59
+},
+"e(a": {
+"p": "res://art/inline/in_87efc4008f.png",
+"w": 65,
+"h": 50
+},
+"e=0": {
+"p": "res://art/inline/in_80bc6e5e21.png",
+"w": 109,
+"h": 34
+},
+"e₁·e₁": {
+"p": "res://art/inline/in_179c011a74.png",
+"w": 114,
+"h": 29
+},
+"e₁·e₂": {
+"p": "res://art/inline/in_4834128ee6.png",
+"w": 115,
+"h": 29
+},
+"e₁·e₂(": {
+"p": "res://art/inline/in_8beb81cb50.png",
+"w": 136,
+"h": 50
+},
+"e₂·e₂": {
+"p": "res://art/inline/in_7ed9d596ad.png",
+"w": 115,
+"h": 29
+},
+"e→1": {
+"p": "res://art/inline/in_394f596f08.png",
+"w": 119,
+"h": 34
+},
+"f'(x)": {
+"p": "res://art/inline/in_d211a8d0fb.png",
+"w": 101,
+"h": 53
+},
+"f'(x)=3x²,f'(1)=3": {
+"p": "res://art/inline/in_d211cb689a.png",
+"w": 456,
+"h": 56
+},
+"f'(x₀)": {
+"p": "res://art/inline/in_2763bd6911.png",
+"w": 120,
+"h": 53
+},
+"f(-x)=-f(x)": {
+"p": "res://art/inline/in_af40f55e15.png",
+"w": 328,
+"h": 50
+},
+"f(-x)=-x³-x=-f(x)": {
+"p": "res://art/inline/in_031b9a2c63.png",
+"w": 568,
+"h": 56
+},
+"f(-x)=f(x)": {
+"p": "res://art/inline/in_fa17a6ec63.png",
+"w": 289,
+"h": 50
+},
+"f(-x)=x²=f(x)": {
+"p": "res://art/inline/in_908cf2b64d.png",
+"w": 402,
+"h": 56
+},
+"f(x)=-x": {
+"p": "res://art/inline/in_729ebc61d2.png",
+"w": 224,
+"h": 50
+},
+"f(x)=x²": {
+"p": "res://art/inline/in_b6d2a7b18b.png",
+"w": 203,
+"h": 56
+},
+"f(x)=x²+3x": {
+"p": "res://art/inline/in_faade94c52.png",
+"w": 316,
+"h": 56
+},
+"f(x)=x³": {
+"p": "res://art/inline/in_743b83b6de.png",
+"w": 204,
+"h": 56
+},
+"f(x)=x³+x": {
+"p": "res://art/inline/in_0d92e65fde.png",
+"w": 292,
+"h": 56
+},
+"h = 2√6": {
+"p": "res://art/inline/in_98ad1cb15f.png",
+"w": 183,
+"h": 50
+},
+"h = PA / 2 = 6": {
+"p": "res://art/inline/in_956ac999e1.png",
+"w": 304,
+"h": 50
+},
+"h = R + r": {
+"p": "res://art/inline/in_454041fff1.png",
+"w": 211,
+"h": 39
+},
+"k =": {
+"p": "res://art/inline/in_adbe4cb6ca.png",
+"w": 75,
+"h": 36
+},
+"k = (y2 − y1)/(x2 − x1)": {
+"p": "res://art/inline/in_459a5f9ff3.png",
+"w": 513,
+"h": 50
+},
+"k = 0": {
+"p": "res://art/inline/in_a6ea439392.png",
+"w": 114,
+"h": 36
+},
+"k = 2": {
+"p": "res://art/inline/in_32183878ae.png",
+"w": 113,
+"h": 36
+},
+"k = ?(": {
+"p": "res://art/inline/in_366a246760.png",
+"w": 117,
+"h": 50
+},
+"k = tanα": {
+"p": "res://art/inline/in_5ce3410944.png",
+"w": 199,
+"h": 36
+},
+"k = −1": {
+"p": "res://art/inline/in_593d52286a.png",
+"w": 151,
+"h": 36
+},
+"k = −2": {
+"p": "res://art/inline/in_fe7a3a24a4.png",
+"w": 152,
+"h": 36
+},
+"k = −A/B = −3/4,b = −C/B = 2/4 = 1/2": {
+"p": "res://art/inline/in_48a08538d2.png",
+"w": 930,
+"h": 50
+},
+"k(AB) = k(BC)": {
+"p": "res://art/inline/in_b995ebe232.png",
+"w": 344,
+"h": 50
+},
+"k(AB)=2": {
+"p": "res://art/inline/in_81e8f16a4c.png",
+"w": 227,
+"h": 50
+},
+"k(PA)·k(PB) =": {
+"p": "res://art/inline/in_fdb38e18e7.png",
+"w": 366,
+"h": 50
+},
+"k(PA)·k(PB) = +b²/a²": {
+"p": "res://art/inline/in_a4cbfc6640.png",
+"w": 527,
+"h": 56
+},
+"k(PA)·k(PB) = -b²/a²": {
+"p": "res://art/inline/in_009f22c211.png",
+"w": 527,
+"h": 56
+},
+"k1·k2 = −1": {
+"p": "res://art/inline/in_8e9ba3b517.png",
+"w": 262,
+"h": 36
+},
+"k<0": {
+"p": "res://art/inline/in_f7f8cda585.png",
+"w": 114,
+"h": 37
+},
+"k=1": {
+"p": "res://art/inline/in_09c02a1c5f.png",
+"w": 112,
+"h": 36
+},
+"k=tanα": {
+"p": "res://art/inline/in_56c3c7f74e.png",
+"w": 199,
+"h": 36
+},
+"k=−1": {
+"p": "res://art/inline/in_26ab5b808c.png",
+"w": 151,
+"h": 36
+},
+"k>0": {
+"p": "res://art/inline/in_9b185eccdb.png",
+"w": 114,
+"h": 37
+},
+"k_AB · k_OM =": {
+"p": "res://art/inline/in_5b33a6ce1d.png",
+"w": 259,
+"h": 42
+},
+"k_AB·k_OM": {
+"p": "res://art/inline/in_205a640bbb.png",
+"w": 206,
+"h": 42
+},
+"k_AB·k_OM = −b²/a²": {
+"p": "res://art/inline/in_a400c0bbe3.png",
+"w": 420,
+"h": 56
+},
+"k∈(−∞": {
+"p": "res://art/inline/in_f5f0021d2f.png",
+"w": 191,
+"h": 50
+},
+"k∈[√3/3": {
+"p": "res://art/inline/in_d0b3cff12d.png",
+"w": 212,
+"h": 59
+},
+"k≤−1": {
+"p": "res://art/inline/in_adc41d1147.png",
+"w": 152,
+"h": 42
+},
+"k≤−√3": {
+"p": "res://art/inline/in_66b923317a.png",
+"w": 197,
+"h": 53
+},
+"k≥1": {
+"p": "res://art/inline/in_75c890be4d.png",
+"w": 113,
+"h": 42
+},
+"k≥√3/3": {
+"p": "res://art/inline/in_9097744389.png",
+"w": 204,
+"h": 59
+},
+"l(x": {
+"p": "res://art/inline/in_0a79c3e207.png",
+"w": 59,
+"h": 50
+},
+"l1": {
+"p": "res://art/inline/in_dcb9a04516.png",
+"w": 35,
+"h": 36
+},
+"l1 ⊥ l2": {
+"p": "res://art/inline/in_273ff64246.png",
+"w": 142,
+"h": 36
+},
+"l1: (a + 1)x + y − 1 = 0": {
+"p": "res://art/inline/in_e444530674.png",
+"w": 515,
+"h": 50
+},
+"l1: (a − 1)x + y + 1 = 0": {
+"p": "res://art/inline/in_502989f99a.png",
+"w": 515,
+"h": 50
+},
+"l1: 2x + y − 1 = 0": {
+"p": "res://art/inline/in_023023491e.png",
+"w": 391,
+"h": 46
+},
+"l1: y = (1/2)x + 1": {
+"p": "res://art/inline/in_b1ba9d7854.png",
+"w": 390,
+"h": 50
+},
+"l1: y = x": {
+"p": "res://art/inline/in_b4b0e6a6de.png",
+"w": 196,
+"h": 46
+},
+"l1∥l2": {
+"p": "res://art/inline/in_176441c7ff.png",
+"w": 128,
+"h": 50
+},
+"l2": {
+"p": "res://art/inline/in_a1af51cd80.png",
+"w": 36,
+"h": 36
+},
+"l2: 2x + a y + 1 = 0": {
+"p": "res://art/inline/in_29994f7469.png",
+"w": 416,
+"h": 46
+},
+"l2: x + (a + 1)y + 2 = 0": {
+"p": "res://art/inline/in_d964200091.png",
+"w": 514,
+"h": 50
+},
+"l2: x − 2y + 3 = 0": {
+"p": "res://art/inline/in_b1267c7551.png",
+"w": 391,
+"h": 46
+},
+"l2: y = √3 x": {
+"p": "res://art/inline/in_2bccd03b23.png",
+"w": 262,
+"h": 57
+},
+"l: x + y = 4": {
+"p": "res://art/inline/in_97d36b4a78.png",
+"w": 258,
+"h": 46
+},
+"l: x + y = 5": {
+"p": "res://art/inline/in_de44d00c3e.png",
+"w": 256,
+"h": 46
+},
+"l: x − 2y + 1 = 0": {
+"p": "res://art/inline/in_4ee999aea5.png",
+"w": 367,
+"h": 46
+},
+"l: x − y + 1 = 0": {
+"p": "res://art/inline/in_18e5b9587f.png",
+"w": 342,
+"h": 46
+},
+"l: y = kx": {
+"p": "res://art/inline/in_0be13ae5b4.png",
+"w": 199,
+"h": 46
+},
+"l: y = kx + 1": {
+"p": "res://art/inline/in_6e8b6756dd.png",
+"w": 282,
+"h": 46
+},
+"log₂3>1(": {
+"p": "res://art/inline/in_1d66886994.png",
+"w": 221,
+"h": 50
+},
+"l∥": {
+"p": "res://art/inline/in_54d5efff5d.png",
+"w": 47,
+"h": 50
+},
+"l∥α": {
+"p": "res://art/inline/in_f5fbc283c4.png",
+"w": 96,
+"h": 50
+},
+"l⊥α": {
+"p": "res://art/inline/in_e6ff177960.png",
+"w": 110,
+"h": 36
+},
+"m =": {
+"p": "res://art/inline/in_b9c22a8e81.png",
+"w": 92,
+"h": 23
+},
+"m(x + 2y − 1) + (−x − y + 3) = 0": {
+"p": "res://art/inline/in_8b3b14afa6.png",
+"w": 727,
+"h": 50
+},
+"m=(0,1)": {
+"p": "res://art/inline/in_68b1b95966.png",
+"w": 212,
+"h": 50
+},
+"m=2:A=1+4k²": {
+"p": "res://art/inline/in_dd6789a93e.png",
+"w": 427,
+"h": 47
+},
+"m·A(x,y)+B(x,y)=0": {
+"p": "res://art/inline/in_cc5e07f39c.png",
+"w": 529,
+"h": 50
+},
+"n1": {
+"p": "res://art/inline/in_f9e4e055f8.png",
+"w": 49,
+"h": 34
+},
+"n2": {
+"p": "res://art/inline/in_92a72233fb.png",
+"w": 50,
+"h": 34
+},
+"n=(1,1,1)": {
+"p": "res://art/inline/in_911cd6c8ba.png",
+"w": 244,
+"h": 50
+},
+"q=3": {
+"p": "res://art/inline/in_fb03714d2d.png",
+"w": 111,
+"h": 43
+},
+"r = 3 - √3": {
+"p": "res://art/inline/in_e7a63e2c73.png",
+"w": 240,
+"h": 50
+},
+"r = √13": {
+"p": "res://art/inline/in_479b2ddd5b.png",
+"w": 179,
+"h": 50
+},
+"r = √6 / 2": {
+"p": "res://art/inline/in_0e28143917.png",
+"w": 200,
+"h": 59
+},
+"sinθ": {
+"p": "res://art/inline/in_0107d8bb79.png",
+"w": 90,
+"h": 36
+},
+"sinθ =": {
+"p": "res://art/inline/in_4f99246370.png",
+"w": 141,
+"h": 36
+},
+"sinθ = |u·n| / (|u||n|)": {
+"p": "res://art/inline/in_f689163bbb.png",
+"w": 448,
+"h": 50
+},
+"sinθ=0": {
+"p": "res://art/inline/in_c38ddcded1.png",
+"w": 180,
+"h": 36
+},
+"sinθ=|cos<u,n>|=|u·n|/(|u||n|)": {
+"p": "res://art/inline/in_ab48bc5097.png",
+"w": 825,
+"h": 50
+},
+"t = 1/k": {
+"p": "res://art/inline/in_7dc9d2103a.png",
+"w": 155,
+"h": 50
+},
+"t=1": {
+"p": "res://art/inline/in_db840e74c4.png",
+"w": 103,
+"h": 34
+},
+"t=1/2": {
+"p": "res://art/inline/in_9c90726443.png",
+"w": 152,
+"h": 50
+},
+"t>0": {
+"p": "res://art/inline/in_25f34c743e.png",
+"w": 105,
+"h": 35
+},
+"tan = √3 → 60°": {
+"p": "res://art/inline/in_4cad8600d0.png",
+"w": 343,
+"h": 50
+},
+"tan120°=−√3": {
+"p": "res://art/inline/in_0cc29c8a24.png",
+"w": 343,
+"h": 50
+},
+"tan30°=√3/3": {
+"p": "res://art/inline/in_8f6fe0aa6c.png",
+"w": 326,
+"h": 59
+},
+"tan45° = 1": {
+"p": "res://art/inline/in_74cda1cdd0.png",
+"w": 234,
+"h": 37
+},
+"tan90°": {
+"p": "res://art/inline/in_1e8564a758.png",
+"w": 143,
+"h": 37
+},
+"tanθ = |(k2 − k1)/(1 + k1·k2)|": {
+"p": "res://art/inline/in_e12096a9a7.png",
+"w": 677,
+"h": 50
+},
+"tanθ = |(√3−1)/(1+√3)| = 2 − √3 = tan15°": {
+"p": "res://art/inline/in_4505b2fa44.png",
+"w": 1023,
+"h": 59
+},
+"tan∠PAO = √6 / 2": {
+"p": "res://art/inline/in_b8ed47ceeb.png",
+"w": 406,
+"h": 59
+},
+"tan∠PMO = √3": {
+"p": "res://art/inline/in_c744f212b9.png",
+"w": 376,
+"h": 50
+},
+"t≠1": {
+"p": "res://art/inline/in_635dc46c5c.png",
+"w": 103,
+"h": 47
+},
+"t≠1 →": {
+"p": "res://art/inline/in_b8a2bab760.png",
+"w": 167,
+"h": 47
+},
+"u1": {
+"p": "res://art/inline/in_d7e030910e.png",
+"w": 48,
+"h": 34
+},
+"u2": {
+"p": "res://art/inline/in_8b135ff67d.png",
+"w": 49,
+"h": 34
+},
+"u=(1,0,0)": {
+"p": "res://art/inline/in_fbac053144.png",
+"w": 243,
+"h": 50
+},
+"x + y + z − 6 = 0": {
+"p": "res://art/inline/in_0feca8f4c3.png",
+"w": 371,
+"h": 44
+},
+"x + y = 4": {
+"p": "res://art/inline/in_8afda61fd9.png",
+"w": 202,
+"h": 45
+},
+"x + y − 4 = 0": {
+"p": "res://art/inline/in_3b308e2b97.png",
+"w": 286,
+"h": 45
+},
+"x = 2": {
+"p": "res://art/inline/in_57f851fd63.png",
+"w": 114,
+"h": 34
+},
+"x = m": {
+"p": "res://art/inline/in_739f723f0d.png",
+"w": 134,
+"h": 23
+},
+"x = ty + m": {
+"p": "res://art/inline/in_af9262a746.png",
+"w": 238,
+"h": 42
+},
+"x = x0": {
+"p": "res://art/inline/in_1f3dcd6b52.png",
+"w": 143,
+"h": 34
+},
+"x − y + 1 = 0": {
+"p": "res://art/inline/in_339535c22b.png",
+"w": 286,
+"h": 44
+},
+"x − y + 2 = 0": {
+"p": "res://art/inline/in_e34f99af58.png",
+"w": 286,
+"h": 44
+},
+"x − y = 0": {
+"p": "res://art/inline/in_ea9c2138b4.png",
+"w": 202,
+"h": 44
+},
+"x+1=0'": {
+"p": "res://art/inline/in_879ee01478.png",
+"w": 211,
+"h": 44
+},
+"x+2y−1=0": {
+"p": "res://art/inline/in_230761e6e7.png",
+"w": 311,
+"h": 44
+},
+"x+y": {
+"p": "res://art/inline/in_8621e51dba.png",
+"w": 111,
+"h": 40
+},
+"x+y=1": {
+"p": "res://art/inline/in_7acb3e8a06.png",
+"w": 199,
+"h": 44
+},
+"x/a + y/b = 1": {
+"p": "res://art/inline/in_3639588c37.png",
+"w": 294,
+"h": 50
+},
+"x=0": {
+"p": "res://art/inline/in_6211fb9d61.png",
+"w": 115,
+"h": 34
+},
+"x=1": {
+"p": "res://art/inline/in_558afed79e.png",
+"w": 113,
+"h": 34
+},
+"x=5,y=−2": {
+"p": "res://art/inline/in_c27400dc11.png",
+"w": 291,
+"h": 44
+},
+"x>0": {
+"p": "res://art/inline/in_a167f327b4.png",
+"w": 115,
+"h": 35
+},
+"x>2": {
+"p": "res://art/inline/in_7b1ce245c9.png",
+"w": 114,
+"h": 35
+},
+"x²": {
+"p": "res://art/inline/in_0e2161f4a4.png",
+"w": 43,
+"h": 44
+},
+"x²/16 + y²/4 = 1": {
+"p": "res://art/inline/in_2682479bae.png",
+"w": 360,
+"h": 56
+},
+"x²/25 + y²/16 = 1": {
+"p": "res://art/inline/in_619e2e7142.png",
+"w": 385,
+"h": 56
+},
+"x²/25 + y²/9 = 1": {
+"p": "res://art/inline/in_a1bb9a09c1.png",
+"w": 360,
+"h": 56
+},
+"x²/25 + y²/9 = 1,A(5,0)": {
+"p": "res://art/inline/in_23d64e720e.png",
+"w": 526,
+"h": 56
+},
+"x²/4 + y² = 1": {
+"p": "res://art/inline/in_92ff93dc09.png",
+"w": 287,
+"h": 56
+},
+"x²/9 + y²/16 = 1": {
+"p": "res://art/inline/in_2e46b5f70f.png",
+"w": 360,
+"h": 56
+},
+"x²/a² + y²/b² = 1(a > b > 0)": {
+"p": "res://art/inline/in_25bb30388a.png",
+"w": 612,
+"h": 56
+},
+"x²<1": {
+"p": "res://art/inline/in_5f3276f98d.png",
+"w": 133,
+"h": 45
+},
+"x²=0": {
+"p": "res://art/inline/in_f87774e88f.png",
+"w": 135,
+"h": 44
+},
+"x²=1": {
+"p": "res://art/inline/in_fbf29b7bc8.png",
+"w": 133,
+"h": 44
+},
+"x·a + y·b": {
+"p": "res://art/inline/in_456ec1853d.png",
+"w": 231,
+"h": 46
+},
+"x₀": {
+"p": "res://art/inline/in_fd61f90342.png",
+"w": 44,
+"h": 29
+},
+"x−y+1=0": {
+"p": "res://art/inline/in_06299e5f70.png",
+"w": 286,
+"h": 44
+},
+"x−y+2=0(": {
+"p": "res://art/inline/in_2587c4c34c.png",
+"w": 304,
+"h": 50
+},
+"x−y−3/2=0": {
+"p": "res://art/inline/in_80ca70175e.png",
+"w": 336,
+"h": 50
+},
+"y = 0": {
+"p": "res://art/inline/in_952288f077.png",
+"w": 113,
+"h": 44
+},
+"y = 1 + 1.5x": {
+"p": "res://art/inline/in_1e37cc0ac6.png",
+"w": 263,
+"h": 44
+},
+"y = 2x + 1": {
+"p": "res://art/inline/in_d9657f907b.png",
+"w": 223,
+"h": 44
+},
+"y = 2x − 5": {
+"p": "res://art/inline/in_36ed985b10.png",
+"w": 225,
+"h": 44
+},
+"y = kx + 2": {
+"p": "res://art/inline/in_c08de08f5f.png",
+"w": 227,
+"h": 46
+},
+"y = kx + 2k + 1": {
+"p": "res://art/inline/in_c07b22ca5f.png",
+"w": 338,
+"h": 46
+},
+"y = kx + b,k=2,b=−1": {
+"p": "res://art/inline/in_662dd46ac0.png",
+"w": 533,
+"h": 46
+},
+"y = kx + m": {
+"p": "res://art/inline/in_ea264307af.png",
+"w": 247,
+"h": 46
+},
+"y = x": {
+"p": "res://art/inline/in_ca57709427.png",
+"w": 116,
+"h": 33
+},
+"y = x + m": {
+"p": "res://art/inline/in_a1e06da1b6.png",
+"w": 220,
+"h": 40
+},
+"y = −(A/B)x − C/B": {
+"p": "res://art/inline/in_4761b86873.png",
+"w": 455,
+"h": 50
+},
+"y = −x + 2": {
+"p": "res://art/inline/in_86eec78f6b.png",
+"w": 239,
+"h": 44
+},
+"y − 1 = k(x + 2)": {
+"p": "res://art/inline/in_73409ea220.png",
+"w": 348,
+"h": 50
+},
+"y − y0 = k(x − x0)": {
+"p": "res://art/inline/in_007e1cf27e.png",
+"w": 403,
+"h": 50
+},
+"y'=2": {
+"p": "res://art/inline/in_b7588fac95.png",
+"w": 124,
+"h": 51
+},
+"y'=2x": {
+"p": "res://art/inline/in_2ef3400acd.png",
+"w": 152,
+"h": 51
+},
+"y+1 = 2(x−2)": {
+"p": "res://art/inline/in_0a8f471f98.png",
+"w": 346,
+"h": 50
+},
+"y: 5x² + 8mx + (4m² − 16) = 0": {
+"p": "res://art/inline/in_5c201ab56f.png",
+"w": 676,
+"h": 56
+},
+"y:−3y = −2x − 6": {
+"p": "res://art/inline/in_7c79c4ca72.png",
+"w": 395,
+"h": 44
+},
+"y=0": {
+"p": "res://art/inline/in_8b3cc356f7.png",
+"w": 113,
+"h": 44
+},
+"y=2": {
+"p": "res://art/inline/in_f3ff555824.png",
+"w": 112,
+"h": 44
+},
+"y=2x-1": {
+"p": "res://art/inline/in_8d40391fa3.png",
+"w": 224,
+"h": 44
+},
+"y=kx+b": {
+"p": "res://art/inline/in_9c4fa9bba1.png",
+"w": 226,
+"h": 46
+},
+"y=x": {
+"p": "res://art/inline/in_17f81eed2b.png",
+"w": 116,
+"h": 33
+},
+"y=x²": {
+"p": "res://art/inline/in_f3c5afb060.png",
+"w": 134,
+"h": 54
+},
+"y₀": {
+"p": "res://art/inline/in_82ff984974.png",
+"w": 40,
+"h": 33
+},
+"{1,2,3,4}": {
+"p": "res://art/inline/in_c89e5512d7.png",
+"w": 207,
+"h": 51
+},
+"{2,4}": {
+"p": "res://art/inline/in_c895d175e8.png",
+"w": 114,
+"h": 51
+},
+"{x|-1≤x<2}": {
+"p": "res://art/inline/in_445ec6fd33.png",
+"w": 355,
+"h": 51
+},
+"{x|x≤3}": {
+"p": "res://art/inline/in_633ff918ba.png",
+"w": 204,
+"h": 51
+},
+"|2a+b| =": {
+"p": "res://art/inline/in_041788308d.png",
+"w": 203,
+"h": 50
+},
+"|2a+b|=√17": {
+"p": "res://art/inline/in_127846f47c.png",
+"w": 310,
+"h": 59
+},
+"|2a+b|² = 4|a|² + b² + 4a·b;a⊥b": {
+"p": "res://art/inline/in_c5cd7fc5df.png",
+"w": 738,
+"h": 56
+},
+"|2a+b|²=4|a|²+4a·b+|b|²=4×4+0+1=17": {
+"p": "res://art/inline/in_b8b7459091.png",
+"w": 1089,
+"h": 56
+},
+"|6| / 5 = 6/5": {
+"p": "res://art/inline/in_785e6e13be.png",
+"w": 231,
+"h": 50
+},
+"|AB|": {
+"p": "res://art/inline/in_a9fd810917.png",
+"w": 93,
+"h": 50
+},
+"|AB| =": {
+"p": "res://art/inline/in_1724e44be3.png",
+"w": 149,
+"h": 50
+},
+"|MA|": {
+"p": "res://art/inline/in_7f5233a6fe.png",
+"w": 106,
+"h": 50
+},
+"|MB|": {
+"p": "res://art/inline/in_7229a9bd26.png",
+"w": 109,
+"h": 50
+},
+"|OA|=|OB|=|OC|": {
+"p": "res://art/inline/in_442244ee95.png",
+"w": 434,
+"h": 50
+},
+"|OP| = r(r": {
+"p": "res://art/inline/in_7b358f42df.png",
+"w": 230,
+"h": 50
+},
+"|PA| + |PB|": {
+"p": "res://art/inline/in_def02d5c93.png",
+"w": 257,
+"h": 50
+},
+"|PA| = 2|PB|(A": {
+"p": "res://art/inline/in_d0d2f18a9c.png",
+"w": 348,
+"h": 50
+},
+"|PA|+|PB|": {
+"p": "res://art/inline/in_576b94ff7e.png",
+"w": 257,
+"h": 50
+},
+"|PA|+|PB| = |AB|": {
+"p": "res://art/inline/in_95d4046b65.png",
+"w": 427,
+"h": 50
+},
+"|PA|/|PB| = t": {
+"p": "res://art/inline/in_c79b01db01.png",
+"w": 310,
+"h": 50
+},
+"|PA|/|PB|=t": {
+"p": "res://art/inline/in_371cb0d042.png",
+"w": 310,
+"h": 50
+},
+"|PA|=t|PB|": {
+"p": "res://art/inline/in_107411a7c5.png",
+"w": 280,
+"h": 50
+},
+"|PF1| + |PF2| = 2a": {
+"p": "res://art/inline/in_2920abcde0.png",
+"w": 427,
+"h": 50
+},
+"|PF| = d(P, l)": {
+"p": "res://art/inline/in_fc1f2a256d.png",
+"w": 294,
+"h": 50
+},
+"|PF₁| + |PF₂| = |F₁F₂|(": {
+"p": "res://art/inline/in_27c1338b19.png",
+"w": 503,
+"h": 50
+},
+"|PF₁| =": {
+"p": "res://art/inline/in_5869f845ab.png",
+"w": 162,
+"h": 50
+},
+"|PF₁| = a + ex₀": {
+"p": "res://art/inline/in_381258289b.png",
+"w": 332,
+"h": 50
+},
+"|PF₁|+|PF₂| = 10": {
+"p": "res://art/inline/in_c813c21a5b.png",
+"w": 402,
+"h": 50
+},
+"|PF₁|+|PF₂| = 2a = 10": {
+"p": "res://art/inline/in_390feac894.png",
+"w": 518,
+"h": 50
+},
+"|PF₂| = a − ex₀": {
+"p": "res://art/inline/in_6d5323cdd8.png",
+"w": 332,
+"h": 50
+},
+"|PM|": {
+"p": "res://art/inline/in_1663f6aa0f.png",
+"w": 107,
+"h": 50
+},
+"|P|": {
+"p": "res://art/inline/in_e63e958b37.png",
+"w": 55,
+"h": 50
+},
+"|a × b|": {
+"p": "res://art/inline/in_508455a891.png",
+"w": 124,
+"h": 50
+},
+"|a × b| =": {
+"p": "res://art/inline/in_49271ac44f.png",
+"w": 180,
+"h": 50
+},
+"|a+b|": {
+"p": "res://art/inline/in_5062c38b17.png",
+"w": 124,
+"h": 50
+},
+"|a+b| < |a|+|b|(": {
+"p": "res://art/inline/in_009b4bf841.png",
+"w": 374,
+"h": 50
+},
+"|a+b|=|a−b|": {
+"p": "res://art/inline/in_54e3437f62.png",
+"w": 324,
+"h": 50
+},
+"|a+b|² − |a−b|² = 4a·b": {
+"p": "res://art/inline/in_2f906a0708.png",
+"w": 537,
+"h": 56
+},
+"|a+b|²+|a−b|²=2(|a|²+|b|²)": {
+"p": "res://art/inline/in_24f07fdc45.png",
+"w": 689,
+"h": 56
+},
+"|a+b|²=a²+b²+2a·b,|a−b|²=a²+b²−2a·b": {
+"p": "res://art/inline/in_e90957181b.png",
+"w": 1083,
+"h": 56
+},
+"|a|": {
+"p": "res://art/inline/in_b6e2a0001f.png",
+"w": 43,
+"h": 50
+},
+"|a| =": {
+"p": "res://art/inline/in_e2ac89d659.png",
+"w": 98,
+"h": 50
+},
+"|a| = 2": {
+"p": "res://art/inline/in_0a085a7264.png",
+"w": 136,
+"h": 50
+},
+"|a|+|b|": {
+"p": "res://art/inline/in_24085b31d1.png",
+"w": 151,
+"h": 50
+},
+"|a|+|b|=5": {
+"p": "res://art/inline/in_ad7332bf6a.png",
+"w": 244,
+"h": 50
+},
+"|a|=1": {
+"p": "res://art/inline/in_146188ce8a.png",
+"w": 135,
+"h": 50
+},
+"|a|=2": {
+"p": "res://art/inline/in_5257c483a4.png",
+"w": 136,
+"h": 50
+},
+"|a|=3": {
+"p": "res://art/inline/in_dff586ce70.png",
+"w": 137,
+"h": 50
+},
+"|a|=√(1²+2²+2²)": {
+"p": "res://art/inline/in_e26f2eeef7.png",
+"w": 408,
+"h": 59
+},
+"|a|=√(a·a)=√(x₁²+y₁²)": {
+"p": "res://art/inline/in_f95515ec32.png",
+"w": 511,
+"h": 90
+},
+"|a|²=a·a": {
+"p": "res://art/inline/in_a3d9dc26b6.png",
+"w": 220,
+"h": 56
+},
+"|a−b|": {
+"p": "res://art/inline/in_fcf3c0f4d3.png",
+"w": 124,
+"h": 50
+},
+"|b|": {
+"p": "res://art/inline/in_ba2528fcaf.png",
+"w": 38,
+"h": 50
+},
+"|b| = 1": {
+"p": "res://art/inline/in_ee31567fe2.png",
+"w": 130,
+"h": 50
+},
+"|b|=1": {
+"p": "res://art/inline/in_169871a0a4.png",
+"w": 130,
+"h": 50
+},
+"|b|=2": {
+"p": "res://art/inline/in_a7e47ee55b.png",
+"w": 131,
+"h": 50
+},
+"|b|=2,|a|=1": {
+"p": "res://art/inline/in_a325ed5b0a.png",
+"w": 295,
+"h": 50
+},
+"|b|=√2": {
+"p": "res://art/inline/in_d4104b7d02.png",
+"w": 176,
+"h": 59
+},
+"|b|cosθ:θ": {
+"p": "res://art/inline/in_d09552812b.png",
+"w": 214,
+"h": 50
+},
+"|m| = √(a²k²+b²) = √20": {
+"p": "res://art/inline/in_85c7937c1d.png",
+"w": 521,
+"h": 59
+},
+"|u|": {
+"p": "res://art/inline/in_f6cadedd90.png",
+"w": 45,
+"h": 50
+},
+"|u·n|=1,|u|=1,|n|=√3,sinθ=1/√3=√3/3": {
+"p": "res://art/inline/in_b1ef1555aa.png",
+"w": 1056,
+"h": 59
+},
+"|y| = 1.5": {
+"p": "res://art/inline/in_3bdae64863.png",
+"w": 174,
+"h": 50
+},
+"||3|−|2||=1 ≤ |a+b| ≤ 3+2=5": {
+"p": "res://art/inline/in_cd2449472f.png",
+"w": 741,
+"h": 50
+},
+"||PA| − |PB||": {
+"p": "res://art/inline/in_65476a723b.png",
+"w": 286,
+"h": 50
+},
+"||PA|−|PB||": {
+"p": "res://art/inline/in_646bdb1075.png",
+"w": 286,
+"h": 50
+},
+"||PF1| − |PF2|| = 2a": {
+"p": "res://art/inline/in_573cbeb835.png",
+"w": 455,
+"h": 50
+},
+"||a|−|b||": {
+"p": "res://art/inline/in_f6f5b4c9f6.png",
+"w": 180,
+"h": 50
+},
+"||a|−|b||=1": {
+"p": "res://art/inline/in_02ab72ce02.png",
+"w": 272,
+"h": 50
+},
+"||a|−|b||≤|a+b|≤|a|+|b|": {
+"p": "res://art/inline/in_179dafbf8b.png",
+"w": 609,
+"h": 50
+},
+"|−10| / 5 = 2": {
+"p": "res://art/inline/in_ff4be0898e.png",
+"w": 269,
+"h": 50
+},
+"|−3|/√3 = 3/√3 = √3": {
+"p": "res://art/inline/in_6adcca67bb.png",
+"w": 511,
+"h": 59
+},
+"|−5 − 15| / 5 = 20/5 = 4": {
+"p": "res://art/inline/in_cbbfcc6648.png",
+"w": 519,
+"h": 50
+},
+"±2a·b": {
+"p": "res://art/inline/in_3e8c75efd6.png",
+"w": 144,
+"h": 36
+},
+"±a/|a|": {
+"p": "res://art/inline/in_7d44f7c8d7.png",
+"w": 135,
+"h": 50
+},
+"×": {
+"p": "res://art/inline/in_835dac587a.png",
+"w": 25,
+"h": 24
+},
+"÷": {
+"p": "res://art/inline/in_9e4d2900ae.png",
+"w": 34,
+"h": 29
+},
+"Δ = 4a²b²(b²+a²k²−m²)": {
+"p": "res://art/inline/in_f90447c668.png",
+"w": 564,
+"h": 56
+},
+"Δ = B² − 4AC": {
+"p": "res://art/inline/in_61987dbde3.png",
+"w": 323,
+"h": 44
+},
+"Δ>0,M": {
+"p": "res://art/inline/in_e241741811.png",
+"w": 202,
+"h": 46
+},
+"Δx = 0": {
+"p": "res://art/inline/in_f3b27c58d6.png",
+"w": 155,
+"h": 37
+},
+"Δx = 0)": {
+"p": "res://art/inline/in_c8844158ab.png",
+"w": 171,
+"h": 50
+},
+"Δx = 3,Δy = 4": {
+"p": "res://art/inline/in_aa8b0aa6b7.png",
+"w": 334,
+"h": 47
+},
+"Δx = 3,Δy = −4": {
+"p": "res://art/inline/in_0171215635.png",
+"w": 373,
+"h": 47
+},
+"Δx=−1,Δy=1,Δz=0": {
+"p": "res://art/inline/in_65f414d20d.png",
+"w": 549,
+"h": 47
+},
+"Δy/Δx)": {
+"p": "res://art/inline/in_159972fc53.png",
+"w": 172,
+"h": 50
+},
+"α": {
+"p": "res://art/inline/in_a421d055e4.png",
+"w": 29,
+"h": 23
+},
+"α = 120°": {
+"p": "res://art/inline/in_e408b54cee.png",
+"w": 184,
+"h": 37
+},
+"α = 90°": {
+"p": "res://art/inline/in_f0e03ea789.png",
+"w": 160,
+"h": 37
+},
+"α(": {
+"p": "res://art/inline/in_416e99600a.png",
+"w": 47,
+"h": 50
+},
+"α∈[0°": {
+"p": "res://art/inline/in_7c8b7c73fc.png",
+"w": 145,
+"h": 50
+},
+"α∈[30°": {
+"p": "res://art/inline/in_0af01d8228.png",
+"w": 169,
+"h": 50
+},
+"α∈[45°": {
+"p": "res://art/inline/in_6ec09afa06.png",
+"w": 169,
+"h": 50
+},
+"α⊥β": {
+"p": "res://art/inline/in_90a55fdc65.png",
+"w": 126,
+"h": 45
+},
+"β": {
+"p": "res://art/inline/in_eb45e3f605.png",
+"w": 28,
+"h": 45
+},
+"θ": {
+"p": "res://art/inline/in_ee70e4d8a1.png",
+"w": 22,
+"h": 36
+},
+"θ = 135°": {
+"p": "res://art/inline/in_800dc43006.png",
+"w": 177,
+"h": 37
+},
+"θ = 15°": {
+"p": "res://art/inline/in_23e26ca6f8.png",
+"w": 153,
+"h": 37
+},
+"θ=120°": {
+"p": "res://art/inline/in_0fdacb6e10.png",
+"w": 177,
+"h": 37
+},
+"θ=45°": {
+"p": "res://art/inline/in_762a3e5010.png",
+"w": 153,
+"h": 37
+},
+"θ=90°(": {
+"p": "res://art/inline/in_ba33a840c1.png",
+"w": 174,
+"h": 50
+},
+"θ∈(0°": {
+"p": "res://art/inline/in_a865f68e5a.png",
+"w": 143,
+"h": 50
+},
+"λ": {
+"p": "res://art/inline/in_c25330c231.png",
+"w": 25,
+"h": 37
+},
+"λ<0)": {
+"p": "res://art/inline/in_02e52817cc.png",
+"w": 131,
+"h": 50
+},
+"λ>0": {
+"p": "res://art/inline/in_798b950eca.png",
+"w": 115,
+"h": 37
+},
+"→": {
+"p": "res://art/inline/in_0ddc57a8e8.png",
+"w": 45,
+"h": 26
+},
+"⇒": {
+"p": "res://art/inline/in_f58a255db5.png",
+"w": 45,
+"h": 27
+},
+"⇒ a·b = 0 ⇒ a⊥b": {
+"p": "res://art/inline/in_485414e464.png",
+"w": 425,
+"h": 36
+},
+"⇔": {
+"p": "res://art/inline/in_0c8e24503e.png",
+"w": 48,
+"h": 27
+},
+"⇔ b = λa(λ": {
+"p": "res://art/inline/in_327820ef1d.png",
+"w": 249,
+"h": 50
+},
+"⇔ x₁x₂+y₁y₂=0": {
+"p": "res://art/inline/in_988403b063.png",
+"w": 393,
+"h": 44
+},
+"⇔Δ>0⇔k²>3/4⇔|k|>√3/2": {
+"p": "res://art/inline/in_eb49d7e1e2.png",
+"w": 766,
+"h": 59
+},
+"−1": {
+"p": "res://art/inline/in_a4fde5710a.png",
+"w": 56,
+"h": 33
+},
+"−1 ⇒ b": {
+"p": "res://art/inline/in_cdc911b051.png",
+"w": 158,
+"h": 36
+},
+"−1(": {
+"p": "res://art/inline/in_f7c0cd1762.png",
+"w": 76,
+"h": 50
+},
+"−1/2": {
+"p": "res://art/inline/in_26d4d4c6e9.png",
+"w": 105,
+"h": 50
+},
+"−3": {
+"p": "res://art/inline/in_c84dba55c8.png",
+"w": 58,
+"h": 34
+},
+"−3 ⇒ |PM|² = 1 ⇒ |P| = 1": {
+"p": "res://art/inline/in_fee26152a0.png",
+"w": 595,
+"h": 56
+},
+"−a": {
+"p": "res://art/inline/in_5766e995a5.png",
+"w": 60,
+"h": 23
+},
+"−a²/b²(": {
+"p": "res://art/inline/in_e9d8c0424a.png",
+"w": 162,
+"h": 56
+},
+"−b²/a² = −0.36": {
+"p": "res://art/inline/in_518286eb09.png",
+"w": 335,
+"h": 56
+},
+"−x−y+3=0": {
+"p": "res://art/inline/in_181f897712.png",
+"w": 322,
+"h": 44
+},
+"−√3]": {
+"p": "res://art/inline/in_01426ee8f1.png",
+"w": 109,
+"h": 59
+},
+"−∞": {
+"p": "res://art/inline/in_897f4f0ba2.png",
+"w": 82,
+"h": 23
+},
+"√(1+4+4)=3": {
+"p": "res://art/inline/in_21c72fd2dd.png",
+"w": 320,
+"h": 50
+},
+"√(9+16) = √25 = 5": {
+"p": "res://art/inline/in_40460dad44.png",
+"w": 415,
+"h": 52
+},
+"∠F₁PF₂": {
+"p": "res://art/inline/in_718b9c7b89.png",
+"w": 172,
+"h": 42
+},
+"∠F₁PF₂ = 120°": {
+"p": "res://art/inline/in_3d03999469.png",
+"w": 329,
+"h": 43
+},
+"∠F₁PF₂ = 90°": {
+"p": "res://art/inline/in_10bf21b687.png",
+"w": 304,
+"h": 43
+},
+"∠F₁PF₂ = θ": {
+"p": "res://art/inline/in_40fd5de322.png",
+"w": 263,
+"h": 42
+},
+"≠": {
+"p": "res://art/inline/in_cf4479785a.png",
+"w": 34,
+"h": 47
+},
+"△PF₁F₂": {
+"p": "res://art/inline/in_3c225573e0.png",
+"w": 180,
+"h": 43
+},
+"(1/aₙ)": {
+"p": "res://art/inline/in_5ce003a681.png",
+"w": 128,
+"h": 50
+},
+"(aₙ + 3)": {
+"p": "res://art/inline/in_fea8ff261a.png",
+"w": 163,
+"h": 50
+},
+"(lg aₙ)": {
+"p": "res://art/inline/in_f3cf5fda8e.png",
+"w": 126,
+"h": 50
+},
+"+a₃": {
+"p": "res://art/inline/in_68eaa24143.png",
+"w": 79,
+"h": 36
+},
+"1/aₙ = 1 + 2(n−1) = 2n−1 ⇒ aₙ = 1/(2n−1)": {
+"p": "res://art/inline/in_c564285a77.png",
+"w": 1038,
+"h": 50
+},
+"1/aₙ₊₁ = 1/aₙ + 2": {
+"p": "res://art/inline/in_2091bb2bbd.png",
+"w": 385,
+"h": 50
+},
+"1/aₙ₊₁ = 1/aₙ + c": {
+"p": "res://art/inline/in_840f431325.png",
+"w": 384,
+"h": 50
+},
+"1/aₙ₊₁ − 1/aₙ = c ⇒": {
+"p": "res://art/inline/in_a75630c242.png",
+"w": 445,
+"h": 50
+},
+"Sₙ = n² + n": {
+"p": "res://art/inline/in_a0a472f127.png",
+"w": 254,
+"h": 50
+},
+"Sₙ = n·a₁ + d·n(n−1)/2": {
+"p": "res://art/inline/in_8a2dd6d0a3.png",
+"w": 576,
+"h": 50
+},
+"Sₙ₋₁ = S₀": {
+"p": "res://art/inline/in_6ba070d408.png",
+"w": 209,
+"h": 42
+},
+"a₁": {
+"p": "res://art/inline/in_568bd4bb88.png",
+"w": 40,
+"h": 29
+},
+"a₁ = 1": {
+"p": "res://art/inline/in_f3b4a8580c.png",
+"w": 131,
+"h": 40
+},
+"a₁ = 2": {
+"p": "res://art/inline/in_ccb67cfe7a.png",
+"w": 132,
+"h": 40
+},
+"a₁ = S₁": {
+"p": "res://art/inline/in_294e166ff5.png",
+"w": 155,
+"h": 42
+},
+"a₁ = S₁ = 2": {
+"p": "res://art/inline/in_11954eb4df.png",
+"w": 247,
+"h": 42
+},
+"a₂,a₃,…": {
+"p": "res://art/inline/in_d88be84dd0.png",
+"w": 187,
+"h": 32
+},
+"a₂,…,aₙ₋₁": {
+"p": "res://art/inline/in_3d0e168cdc.png",
+"w": 243,
+"h": 32
+},
+"a₂−a₁=f(1)": {
+"p": "res://art/inline/in_3460e77cb3.png",
+"w": 304,
+"h": 50
+},
+"a₃": {
+"p": "res://art/inline/in_c879c951ce.png",
+"w": 42,
+"h": 29
+},
+"a₃−a₂=f(2)": {
+"p": "res://art/inline/in_c040f4f47d.png",
+"w": 304,
+"h": 50
+},
+"aₙ =": {
+"p": "res://art/inline/in_81f4e72111.png",
+"w": 98,
+"h": 29
+},
+"aₙ = (2/1)·(3/2)·…·(n/(n−1)) = n": {
+"p": "res://art/inline/in_748a8dabe8.png",
+"w": 839,
+"h": 50
+},
+"aₙ = (n²+n) − (n²−n) = 2n": {
+"p": "res://art/inline/in_b33070f6a2.png",
+"w": 645,
+"h": 56
+},
+"aₙ = 1 + 2·(n−1)n/2 = 1 + n(n−1) = n² − n + 1": {
+"p": "res://art/inline/in_ec81663343.png",
+"w": 1106,
+"h": 56
+},
+"aₙ = 2^(1+2+…+(n−1)) = 2^(n(n−1)/2)": {
+"p": "res://art/inline/in_80ed306a11.png",
+"w": 620,
+"h": 53
+},
+"aₙ = 2¹ · 2² · … · 2ⁿ⁻¹ = 2^(1+2+…+(n−1))": {
+"p": "res://art/inline/in_cdad781e72.png",
+"w": 789,
+"h": 53
+},
+"aₙ = 2ⁿ⁺¹ − 3": {
+"p": "res://art/inline/in_35eaa2dbee.png",
+"w": 291,
+"h": 50
+},
+"aₙ = Sₙ − Sₙ₋₁": {
+"p": "res://art/inline/in_704b698262.png",
+"w": 321,
+"h": 42
+},
+"aₙ = Sₙ − Sₙ₋₁ = (n²+n) − ((n−1)²+(n−1))": {
+"p": "res://art/inline/in_252085f613.png",
+"w": 1047,
+"h": 56
+},
+"aₙ = a₁ + 2(1+2+…+(n−1)) = 1 + n(n−1)": {
+"p": "res://art/inline/in_424e2faf90.png",
+"w": 1048,
+"h": 50
+},
+"aₙ = a₁ + f(1)+f(2)+…+f(n−1)": {
+"p": "res://art/inline/in_c3cdb1a4f9.png",
+"w": 818,
+"h": 50
+},
+"aₙ = a₁ + f(1)+f(2)+…+f(n−1) = 1 + n(n−1)": {
+"p": "res://art/inline/in_9c969f9756.png",
+"w": 1150,
+"h": 50
+},
+"aₙ = a₁·f(1)·f(2)·…·f(n−1)": {
+"p": "res://art/inline/in_96eebcf7a3.png",
+"w": 722,
+"h": 50
+},
+"aₙ = n": {
+"p": "res://art/inline/in_9477874b72.png",
+"w": 142,
+"h": 29
+},
+"aₙ = n² − n": {
+"p": "res://art/inline/in_8ff64cc931.png",
+"w": 251,
+"h": 50
+},
+"aₙ − a₁": {
+"p": "res://art/inline/in_1d0af8621b.png",
+"w": 150,
+"h": 29
+},
+"aₙ − a₁ = f(1)+f(2)+…+f(n−1)": {
+"p": "res://art/inline/in_d38ccf1ec5.png",
+"w": 819,
+"h": 50
+},
+"aₙ+3 = (a₁+3)·2ⁿ⁻¹ = 4·2ⁿ⁻¹ = 2ⁿ⁺¹": {
+"p": "res://art/inline/in_9bf94aacd4.png",
+"w": 867,
+"h": 56
+},
+"aₙ/a₁": {
+"p": "res://art/inline/in_1544231010.png",
+"w": 113,
+"h": 50
+},
+"aₙ/a₁ = f(1)·f(2)·…·f(n−1)": {
+"p": "res://art/inline/in_462f8b9b2f.png",
+"w": 710,
+"h": 50
+},
+"aₙ>0": {
+"p": "res://art/inline/in_a4009e2b4b.png",
+"w": 137,
+"h": 40
+},
+"aₙ₊₁ = 0.5·aₙ + q": {
+"p": "res://art/inline/in_5e923fbf12.png",
+"w": 388,
+"h": 44
+},
+"aₙ₊₁ = 2aₙ + 3": {
+"p": "res://art/inline/in_611fa6c6db.png",
+"w": 315,
+"h": 44
+},
+"aₙ₊₁ = 2ⁿ·aₙ": {
+"p": "res://art/inline/in_eea521937a.png",
+"w": 290,
+"h": 46
+},
+"aₙ₊₁ = 3aₙ": {
+"p": "res://art/inline/in_0dbd9eb8b5.png",
+"w": 230,
+"h": 44
+},
+"aₙ₊₁ = aₙ = λ": {
+"p": "res://art/inline/in_dab3c17fff.png",
+"w": 301,
+"h": 46
+},
+"aₙ₊₁ = aₙ/(1 + c·aₙ)": {
+"p": "res://art/inline/in_bba73ef4c7.png",
+"w": 457,
+"h": 50
+},
+"aₙ₊₁ = aₙ/(1+c·aₙ)": {
+"p": "res://art/inline/in_d0e3fbf544.png",
+"w": 457,
+"h": 50
+},
+"aₙ₊₁ = aₙ/(2aₙ + 1)": {
+"p": "res://art/inline/in_258029b1f4.png",
+"w": 424,
+"h": 50
+},
+"aₙ₊₁ = c·aₙ^k": {
+"p": "res://art/inline/in_90286baa00.png",
+"w": 263,
+"h": 56
+},
+"aₙ₊₁ = p·aₙ + q": {
+"p": "res://art/inline/in_2bad826d8e.png",
+"w": 350,
+"h": 40
+},
+"aₙ₊₁ = q·aₙ": {
+"p": "res://art/inline/in_083eb08bdd.png",
+"w": 265,
+"h": 33
+},
+"aₙ₊₁ − aₙ = 2n": {
+"p": "res://art/inline/in_f46341b66d.png",
+"w": 321,
+"h": 44
+},
+"aₙ₊₁ − λ = p(aₙ − λ)": {
+"p": "res://art/inline/in_af70be789e.png",
+"w": 445,
+"h": 50
+},
+"aₙ₊₁/aₙ = (n+1)/n": {
+"p": "res://art/inline/in_09bebd6ee4.png",
+"w": 435,
+"h": 50
+},
+"lg 3": {
+"p": "res://art/inline/in_1a3298319c.png",
+"w": 69,
+"h": 46
+},
+"lg a₁ = 0": {
+"p": "res://art/inline/in_617e92518a.png",
+"w": 180,
+"h": 46
+},
+"lg aₙ": {
+"p": "res://art/inline/in_d8650827a0.png",
+"w": 93,
+"h": 46
+},
+"lg aₙ =": {
+"p": "res://art/inline/in_764fa34585.png",
+"w": 145,
+"h": 46
+},
+"lg aₙ = 0 + (n−1)·lg3": {
+"p": "res://art/inline/in_7beb315bfb.png",
+"w": 503,
+"h": 50
+},
+"lg aₙ = lg a₁ + (n−1)·lg q": {
+"p": "res://art/inline/in_36fe85213b.png",
+"w": 570,
+"h": 50
+},
+"lg aₙ₊₁ − lg aₙ = lg q": {
+"p": "res://art/inline/in_c0202f54e2.png",
+"w": 432,
+"h": 46
+},
+"lg q": {
+"p": "res://art/inline/in_f5339219d8.png",
+"w": 68,
+"h": 46
+},
+"lg(c·aₙ^k) = lg c + k·lg aₙ": {
+"p": "res://art/inline/in_f4114da563.png",
+"w": 532,
+"h": 57
+},
+"n=1": {
+"p": "res://art/inline/in_32e9ac038f.png",
+"w": 115,
+"h": 34
+},
+"n−1": {
+"p": "res://art/inline/in_c0f379f5a7.png",
+"w": 110,
+"h": 34
+},
+"n≥2": {
+"p": "res://art/inline/in_198e600558.png",
+"w": 117,
+"h": 40
+},
+"λ = 3/(1−2) = −3": {
+"p": "res://art/inline/in_97d753bdd8.png",
+"w": 416,
+"h": 50
+},
+"λ = p·λ + q": {
+"p": "res://art/inline/in_6efc061072.png",
+"w": 263,
+"h": 45
+},
+"λ = pλ + q ⇒ λ = q/(1−p)": {
+"p": "res://art/inline/in_b314db9ef4.png",
+"w": 591,
+"h": 50
+},
+"λ = q/(1−p)": {
+"p": "res://art/inline/in_7835d5e190.png",
+"w": 283,
+"h": 50
+},
+"−a₃": {
+"p": "res://art/inline/in_632de8c495.png",
+"w": 78,
+"h": 29
+}
+}

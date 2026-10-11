@@ -1,0 +1,683 @@
+{
+  "recur_add": {
+    "title": "递推求通项 · 累加法",
+    "method": "累加法",
+    "color": "#FF99C3",
+    "summary": "已知 aₙ₊₁ − aₙ = f(n)：把 a₂−a₁=f(1)、…、aₙ−aₙ₋₁=f(n−1) 全部相加，中间项抵消，得 aₙ − a₁ = f(1)+f(2)+…+f(n−1)，再移项得 aₙ = a₁ + f(1)+f(2)+…+f(n−1)。",
+    "levels": [
+      {
+        "name": "实验一 · 等式叠加，中间项相消",
+        "type": "explore",
+        "q": "已知 a₁ = 1，aₙ₊₁ − aₙ = 2n。拖动下方滑块增加式子的个数 n，观察右侧：把 a₂−a₁=f(1)、a₃−a₂=f(2)、… 依次相加，中间项 a₂,a₃,… 会一对对相消，最后只剩 aₙ − a₁。",
+        "tip": "动手实验：拖动滑块增加 n，看等式竖排、中间项被划掉相消，最后收成 aₙ − a₁，再进入追问。",
+        "confirm": "实验完成，回答追问",
+        "ask": "把上述 n−1 个等式相加后，等号左边变成了什么？",
+        "opts": [
+          "只剩 aₙ − a₁（中间项全部相消）",
+          "res://art/inline/in_3b57a90895.png",
+          "只剩 aₙ + a₁",
+          "res://art/inline/in_aa5e190196.png"
+        ],
+        "ans": 0,
+        "success": "对！这正是「叠加相消」：中间的 a₂,…,aₙ₋₁ 加、减各出现一次，正好抵消。",
+        "hint": "每个中间项（如 a₃）在一个式子里是 +a₃，在下一个式子里是 −a₃，相加即消。",
+        "explain": "相加消去中间项后：aₙ − a₁ = f(1)+f(2)+…+f(n−1)，移项得 aₙ = a₁ + f(1)+f(2)+…+f(n−1)。",
+        "scene": {
+          "seq": "add",
+          "a1": 1,
+          "n": 2,
+          "coef": 2.0,
+          "param_kind": "n",
+          "caption": "把 n−1 个等式相加：中间项两两相消，只剩 aₙ − a₁",
+          "slider": {
+            "label": "n",
+            "range": [
+              2,
+              7
+            ],
+            "value": 2,
+            "answer": 2,
+            "tol": 0.1,
+            "step": 1
+          }
+        }
+      },
+      {
+        "name": "实验二 · 差是 2n 的累加",
+        "type": "choice",
+        "q": "已知 a₁ = 1，aₙ₊₁ − aₙ = 2n，则 aₙ = ?",
+        "opts": [
+          "res://art/inline/in_3d2d621afb.png",
+          "res://art/inline/in_c95afc56c3.png",
+          "res://art/inline/in_e1ebb9f8f4.png",
+          "res://art/inline/in_02c0ca992e.png"
+        ],
+        "ans": 0,
+        "hint": "累加：aₙ = a₁ + 2(1+2+…+(n−1)) = 1 + n(n−1)。",
+        "explain": "aₙ = 1 + 2·(n−1)n/2 = 1 + n(n−1) = n² − n + 1。",
+        "scene": {
+          "seq": "add",
+          "a1": 1,
+          "n": 7,
+          "coef": 2.0,
+          "x": [
+            0,
+            8
+          ],
+          "y": [
+            0,
+            45
+          ],
+          "caption": "aₙ = 1 + 2(1+2+…+(n−1)) = n² − n + 1",
+          "imgs": [
+            {
+              "f": "add_r2",
+              "x": 0.5,
+              "y": 0.84,
+              "w": 0.6
+            }
+          ]
+        }
+      },
+      {
+        "name": "实验三 · 别漏掉首项 a₁",
+        "type": "choice",
+        "q": "已知 a₁ = 1，aₙ₊₁ − aₙ = 2n，有人算得 aₙ = n² − n，错在哪里？",
+        "opts": [
+          "漏加了首项 a₁",
+          "把累加当成了累乘",
+          "把 n 取错了",
+          "没有错"
+        ],
+        "ans": 0,
+        "trap": true,
+        "hint": "累加得到的是 aₙ − a₁ = f(1)+f(2)+…+f(n−1)，还要把 a₁ 加回来。",
+        "explain": "aₙ = a₁ + f(1)+f(2)+…+f(n−1) = 1 + n(n−1)；漏掉 a₁ 会整体少 1。",
+        "scene": {
+          "seq": "add",
+          "a1": 1,
+          "n": 6,
+          "coef": 2.0,
+          "x": [
+            0,
+            7
+          ],
+          "y": [
+            0,
+            35
+          ],
+          "caption": "aₙ = a₁ + f(1)+f(2)+…+f(n−1)（别忘 a₁）",
+          "imgs": [
+            {
+              "f": "add_r2",
+              "x": 0.5,
+              "y": 0.84,
+              "w": 0.6
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "recur_mul": {
+    "title": "递推求通项 · 累乘法",
+    "method": "累乘法",
+    "color": "#C79BFF",
+    "summary": "已知 aₙ₊₁/aₙ = f(n)：把 n−1 个等式逐项连乘，中间项两两约掉，得 aₙ/a₁ = f(1)·f(2)·…·f(n−1)，即 aₙ = a₁·f(1)·f(2)·…·f(n−1)。",
+    "levels": [
+      {
+        "name": "实验一 · 连乘相消",
+        "type": "explore",
+        "q": "已知 a₁ = 1，aₙ₊₁/aₙ = (n+1)/n。拖动滑块改变 n，观察把各等式相乘时，前一式的分子与后一式的分母两两约掉，最后只剩 aₙ/a₁。",
+        "tip": "动手实验：拖动滑块改变 n，看竖排各式的分子分母两两约分，最后收成 aₙ/a₁，再进入追问。",
+        "confirm": "实验完成，回答追问",
+        "ask": "把上述 n−1 个等式相乘后，等号左边变成了什么？",
+        "opts": [
+          "只剩 aₙ / a₁（中间项全部约掉）",
+          "res://art/inline/in_4a29c50a8b.png",
+          "只剩 aₙ · a₁",
+          "res://art/inline/in_b30ff47ccb.png"
+        ],
+        "ans": 0,
+        "success": "对！这正是「连乘相消」：中间的 a₂,…,aₙ₋₁ 在分子、分母各出现一次，正好约掉。",
+        "hint": "每个中间项（如 a₃）在一个式子里是分子，在下一个式子里是分母，相乘即约。",
+        "explain": "相乘约去中间项后：aₙ/a₁ = f(1)·f(2)·…·f(n−1)，移项得 aₙ = a₁·f(1)·f(2)·…·f(n−1)。本题 aₙ = (2/1)·(3/2)·…·(n/(n−1)) = n。",
+        "scene": {
+          "seq": "mul",
+          "a1": 1,
+          "n": 4,
+          "param_kind": "n",
+          "ratio_kind": "telescoping",
+          "caption": "把 n−1 个等式相乘：中间项两两约掉，只剩 aₙ / a₁",
+          "slider": {
+            "label": "n",
+            "range": [
+              3,
+              8
+            ],
+            "value": 4,
+            "answer": 4,
+            "tol": 0.1,
+            "step": 1
+          }
+        }
+      },
+      {
+        "name": "实验二 · 比值是 2 的幂",
+        "type": "choice",
+        "q": "已知 a₁ = 1，且 aₙ₊₁ = 2ⁿ·aₙ，则 aₙ = ?",
+        "opts": [
+          "res://art/inline/in_cada76da1f.png",
+          "res://art/inline/in_c6ee82419c.png",
+          "res://art/inline/in_563bdb2708.png",
+          "res://art/inline/in_3a5fa370ce.png"
+        ],
+        "ans": 0,
+        "hint": "累乘：aₙ = 2¹ · 2² · … · 2ⁿ⁻¹ = 2^(1+2+…+(n−1))。",
+        "explain": "aₙ = 2^(1+2+…+(n−1)) = 2^(n(n−1)/2)。",
+        "scene": {
+          "seq": "mul",
+          "a1": 1,
+          "n": 5,
+          "ratio_kind": "pow2",
+          "caption": "累乘比值：aₙ = a₁ · f(1)·…·f(n−1)",
+          "imgs": [
+            {
+              "f": "mul_r2",
+              "x": 0.5,
+              "y": 0.84,
+              "w": 0.6
+            }
+          ]
+        }
+      },
+      {
+        "name": "实验三 · 别忘了首项 a₁",
+        "type": "choice",
+        "q": "已知 a₁ = 2，aₙ₊₁/aₙ = (n+1)/n，有人算得 aₙ = n，错在哪里？",
+        "opts": [
+          "漏乘了首项 a₁（应得 aₙ = 2n）",
+          "把累乘当成了累加",
+          "把 n 取错了",
+          "没有错"
+        ],
+        "ans": 0,
+        "trap": true,
+        "hint": "连乘得到的是 aₙ/a₁ = f(1)·f(2)·…·f(n−1)，还要把 a₁ 乘回去。",
+        "explain": "aₙ = a₁·f(1)·f(2)·…·f(n−1) = 2·[(2/1)·(3/2)·…·(n/(n−1))] = 2n；漏掉 a₁ 会整体少一倍。",
+        "scene": {
+          "seq": "mul",
+          "a1": 2,
+          "n": 6,
+          "param_kind": "n",
+          "ratio_kind": "telescoping",
+          "caption": "aₙ = a₁ · f(1)·…·f(n−1)（别忘 a₁）"
+        }
+      }
+    ]
+  },
+  "recur_construct": {
+    "title": "递推求通项 · 构造等比",
+    "method": "构造法",
+    "color": "#7FD0FF",
+    "summary": "形如 aₙ₊₁ = p·aₙ + q：设 aₙ₊₁ − λ = p(aₙ − λ)，λ = q/(1−p)，可化为等比数列。",
+    "levels": [
+      {
+        "name": "实验一 · 蛛网找不动点",
+        "type": "explore",
+        "q": "已知 a₁ = 1，aₙ₊₁ = 0.5·aₙ + q。拖动滑块改变 q，用「蛛网」观察数列是否收敛到不动点。",
+        "tip": "动手实验：拖动滑块改变 q，看蛛网是收敛到不动点还是发散，再进入追问。",
+        "confirm": "实验完成，回答追问",
+        "ask": "aₙ₊₁ = p·aₙ + q 的「不动点」λ（数列收敛的极限）等于？",
+        "opts": [
+          "res://art/inline/in_69908f152a.png",
+          "res://art/inline/in_19ed4c9329.png",
+          "res://art/inline/in_406ccad09c.png",
+          "res://art/inline/in_30e195fc82.png"
+        ],
+        "ans": 0,
+        "success": "对！让 aₙ₊₁ = aₙ = λ，解出 λ。",
+        "hint": "令 aₙ₊₁ = aₙ = λ，则 λ = p·λ + q。",
+        "explain": "λ = pλ + q ⇒ λ = q/(1−p)。蛛网收敛到 (λ, λ)。",
+        "scene": {
+          "seq": "construct",
+          "a1": 1,
+          "p": 0.5,
+          "n": 12,
+          "caption": "aₙ₊₁ = 0.5·aₙ + q（蛛网）",
+          "slider": {
+            "label": "q",
+            "range": [
+              -1.0,
+              3.0
+            ],
+            "value": 0.0,
+            "answer": 2.0,
+            "tol": 0.15,
+            "step": 0.1
+          },
+          "imgs": [
+            {
+              "f": "construct_res",
+              "x": 0.5,
+              "y": 0.82,
+              "w": 0.7
+            }
+          ]
+        }
+      },
+      {
+        "name": "实验二 · 构造等比求通项",
+        "type": "choice",
+        "q": "已知 a₁ = 1，aₙ₊₁ = 2aₙ + 3，则 aₙ = ?",
+        "opts": [
+          "res://art/inline/in_fe68a29438.png",
+          "res://art/inline/in_1f40e387cc.png",
+          "res://art/inline/in_0b56b8fbaf.png",
+          "res://art/inline/in_3e07969347.png"
+        ],
+        "ans": 0,
+        "hint": "λ = 3/(1−2) = −3，则 (aₙ + 3) 是公比为 2 的等比数列。",
+        "explain": "aₙ+3 = (a₁+3)·2ⁿ⁻¹ = 4·2ⁿ⁻¹ = 2ⁿ⁺¹，故 aₙ = 2ⁿ⁺¹ − 3。",
+        "scene": {
+          "seq": "construct",
+          "a1": 1,
+          "p": 2.0,
+          "q": 3.0,
+          "n": 7,
+          "caption": "aₙ₊₁ = 2·aₙ + 3 ⇒ 构造 (aₙ+3) 等比",
+          "imgs": [
+            {
+              "f": "construct_eq1",
+              "x": 0.5,
+              "y": 0.85,
+              "w": 0.72
+            }
+          ]
+        }
+      },
+      {
+        "name": "实验三 · 构造的关键动作",
+        "type": "choice",
+        "q": "用构造法处理 aₙ₊₁ = p·aₙ + q，关键是把递推式两边同时做什么？",
+        "opts": [
+          "加上（减去）λ 凑成等比",
+          "乘以 p",
+          "取倒数",
+          "取对数"
+        ],
+        "ans": 0,
+        "hint": "目标是变成 aₙ₊₁ − λ = p(aₙ − λ) 的等比形式。",
+        "explain": "选定 λ = q/(1−p)，即可把递推式整理成等比数列。",
+        "scene": {
+          "seq": "construct",
+          "a1": 2,
+          "p": 0.5,
+          "q": 1.0,
+          "n": 10,
+          "caption": "aₙ₊₁ − λ = p(aₙ − λ)",
+          "imgs": [
+            {
+              "f": "construct_eq1",
+              "x": 0.5,
+              "y": 0.85,
+              "w": 0.72
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "recur_reciprocal": {
+    "title": "递推求通项 · 取倒数",
+    "method": "取倒数法",
+    "color": "#FFB37A",
+    "summary": "形如 aₙ₊₁ = aₙ/(1 + c·aₙ)：两边取倒数得 1/aₙ₊₁ = 1/aₙ + c，数列 (1/aₙ) 为等差数列。",
+    "levels": [
+      {
+        "name": "实验一 · 倒数化成等差",
+        "type": "explore",
+        "q": "已知 a₁ = 1，aₙ₊₁ = aₙ/(1 + c·aₙ)。拖动滑块改变 c，观察数列 (1/aₙ) 是否落在一条直线上。",
+        "tip": "动手实验：拖动滑块改变 c，观察取倒数后的点列是否共线，再进入追问。",
+        "confirm": "实验完成，回答追问",
+        "ask": "取倒数后得到的数列 (1/aₙ) 是什么数列？",
+        "opts": [
+          "等差数列",
+          "等比数列",
+          "常数列",
+          "摆动数列"
+        ],
+        "ans": 0,
+        "success": "对！取倒数后点列共线，说明它是等差数列。",
+        "hint": "1/aₙ₊₁ = 1/aₙ + c，相邻差恒为 c。",
+        "explain": "1/aₙ₊₁ − 1/aₙ = c ⇒ 数列 (1/aₙ) 为等差数列。",
+        "scene": {
+          "seq": "reciprocal",
+          "a1": 1,
+          "n": 8,
+          "caption": "1/aₙ = 1/a₁ + (n−1)·c　（拖动 c）",
+          "slider": {
+            "label": "c",
+            "range": [
+              0.2,
+              2.0
+            ],
+            "value": 0.5,
+            "answer": 1.0,
+            "tol": 0.1,
+            "step": 0.1
+          },
+          "imgs": [
+            {
+              "f": "recip_res",
+              "x": 0.5,
+              "y": 0.84,
+              "w": 0.62
+            }
+          ]
+        }
+      },
+      {
+        "name": "实验二 · 取倒数求通项",
+        "type": "choice",
+        "q": "已知 a₁ = 1，aₙ₊₁ = aₙ/(2aₙ + 1)，则 aₙ = ?",
+        "opts": [
+          "res://art/inline/in_598dfb2828.png",
+          "res://art/inline/in_51fcde4d48.png",
+          "res://art/inline/in_21f0bbf2ba.png",
+          "res://art/inline/in_26f3f6ef60.png"
+        ],
+        "ans": 0,
+        "hint": "取倒数：1/aₙ₊₁ = 1/aₙ + 2，故数列 (1/aₙ) 是首项 1、公差 2 的等差。",
+        "explain": "1/aₙ = 1 + 2(n−1) = 2n−1 ⇒ aₙ = 1/(2n−1)。",
+        "scene": {
+          "seq": "reciprocal",
+          "a1": 1,
+          "c": 2.0,
+          "n": 6,
+          "x": [
+            0,
+            7
+          ],
+          "y": [
+            0,
+            12
+          ],
+          "caption": "取倒数后成等差：1/aₙ = 2n−1",
+          "imgs": [
+            {
+              "f": "recip_res",
+              "x": 0.5,
+              "y": 0.83,
+              "w": 0.56
+            }
+          ]
+        }
+      },
+      {
+        "name": "实验三 · 什么时候该取倒数",
+        "type": "choice",
+        "q": "递推式 aₙ₊₁ = aₙ/(2aₙ + 1) 应采用的方法是？",
+        "opts": [
+          "两边取倒数",
+          "两边取对数",
+          "累加法",
+          "构造等比"
+        ],
+        "ans": 0,
+        "trap": true,
+        "hint": "分母里带 aₙ，取倒数后分母的 aₙ 就跑到分子，变成线性。",
+        "explain": "对 aₙ₊₁ = aₙ/(1+c·aₙ) 型，取倒数即可化为等差数列。",
+        "scene": {
+          "seq": "reciprocal",
+          "a1": 2,
+          "c": 0.5,
+          "n": 6,
+          "caption": "1/aₙ₊₁ = 1/aₙ + c",
+          "imgs": [
+            {
+              "f": "recip_eq1",
+              "x": 0.5,
+              "y": 0.85,
+              "w": 0.62
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "recur_log": {
+    "title": "递推求通项 · 取对数",
+    "method": "取对数法",
+    "color": "#8AE6C0",
+    "summary": "形如 aₙ₊₁ = c·aₙ^k：两边取对数得 lg aₙ₊₁ = lg c + k·lg aₙ，把乘法/幂化成线性。",
+    "levels": [
+      {
+        "name": "实验一 · 取对数变线性",
+        "type": "explore",
+        "q": "已知 a₁ = 1，aₙ₊₁ = q·aₙ。拖动滑块改变 q，观察数列 (lg aₙ) 是否成一条直线。",
+        "tip": "动手实验：拖动滑块改变 q，观察取对数后的点列是否共线，再进入追问。",
+        "confirm": "实验完成，回答追问",
+        "ask": "取对数后得到的数列 (lg aₙ) 是什么数列？",
+        "opts": [
+          "等差数列",
+          "等比数列",
+          "常数列",
+          "摆动数列"
+        ],
+        "ans": 0,
+        "success": "对！lg aₙ 相邻差恒为 lg q，是等差数列。",
+        "hint": "lg aₙ = lg a₁ + (n−1)·lg q，相邻差为 lg q。",
+        "explain": "lg aₙ₊₁ − lg aₙ = lg q（常数）⇒ 数列 (lg aₙ) 为等差数列。",
+        "scene": {
+          "seq": "log",
+          "a1": 1,
+          "n": 8,
+          "caption": "lg aₙ = (n−1)·lg q　（拖动 q）",
+          "slider": {
+            "label": "q",
+            "range": [
+              0.5,
+              3.0
+            ],
+            "value": 1.0,
+            "answer": 2.0,
+            "tol": 0.1,
+            "step": 0.1
+          },
+          "imgs": [
+            {
+              "f": "log_res",
+              "x": 0.5,
+              "y": 0.84,
+              "w": 0.7
+            }
+          ]
+        }
+      },
+      {
+        "name": "实验二 · 取对数求通项",
+        "type": "choice",
+        "q": "已知 a₁ = 1，aₙ₊₁ = 3aₙ，则 lg aₙ = ?",
+        "opts": [
+          "res://art/inline/in_886aac0a55.png",
+          "res://art/inline/in_a18473c80c.png",
+          "res://art/inline/in_c55c0b49b3.png",
+          "res://art/inline/in_a54e5f890e.png"
+        ],
+        "ans": 0,
+        "hint": "lg aₙ 是首项 lg a₁ = 0、公差 lg 3 的等差。",
+        "explain": "lg aₙ = 0 + (n−1)·lg3。",
+        "scene": {
+          "seq": "log",
+          "a1": 1,
+          "n": 6,
+          "x": [
+            0,
+            7
+          ],
+          "y": [
+            0,
+            3
+          ],
+          "caption": "lg aₙ = (n−1)·lg3",
+          "imgs": [
+            {
+              "f": "log_res",
+              "x": 0.5,
+              "y": 0.83,
+              "w": 0.66
+            }
+          ]
+        }
+      },
+      {
+        "name": "实验三 · 幂型递推的钥匙",
+        "type": "choice",
+        "q": "对于形如 aₙ₊₁ = c·aₙ^k（aₙ>0）的递推，两边取对数后变为？",
+        "opts": [
+          "res://art/inline/in_55ed1d1e59.png",
+          "res://art/inline/in_3d3e35f069.png",
+          "res://art/inline/in_8370a1ee38.png",
+          "res://art/inline/in_55164855e8.png"
+        ],
+        "ans": 0,
+        "hint": "对数运算：lg(c·aₙ^k) = lg c + k·lg aₙ。",
+        "explain": "取对数把「幂」变成「乘系数」，从而化为线性递推。",
+        "scene": {
+          "seq": "log",
+          "a1": 1,
+          "q": 1.6,
+          "n": 7,
+          "caption": "lg aₙ₊₁ = lg c + k·lg aₙ",
+          "imgs": [
+            {
+              "f": "log_eq1",
+              "x": 0.5,
+              "y": 0.85,
+              "w": 0.72
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "recur_sn": {
+    "title": "递推求通项 · Sn 与 an",
+    "method": "作差法",
+    "color": "#FFC53D",
+    "summary": "已知前 n 项和 Sₙ：n≥2 时 aₙ = Sₙ − Sₙ₋₁，且 a₁ = S₁（需单独验证）。",
+    "levels": [
+      {
+        "name": "实验一 · 柱子上的「差」",
+        "type": "explore",
+        "q": "已知 Sₙ = n·a₁ + d·n(n−1)/2（等差数列前 n 项和）。拖动滑块改变 d，观察柱子 Sₙ 与「相邻差」aₙ 的关系。",
+        "tip": "动手实验：拖动滑块改变 d，观察相邻柱子的高度差就是 aₙ，再进入追问。",
+        "confirm": "实验完成，回答追问",
+        "ask": "aₙ 与 Sₙ 的关系是？",
+        "opts": [
+          "res://art/inline/in_704b698262.png",
+          "res://art/inline/in_7ad2a89a62.png",
+          "res://art/inline/in_a0ef082376.png",
+          "res://art/inline/in_af950c3ed1.png"
+        ],
+        "ans": 0,
+        "success": "对！每个柱子的高度差就是对应的 aₙ。",
+        "hint": "Sₙ 是前 n 项之和，相邻两次求和相差的正好是第 n 项。",
+        "explain": "aₙ = Sₙ − Sₙ₋₁（n≥2），a₁ = S₁。",
+        "scene": {
+          "seq": "sn",
+          "a1": 1,
+          "n": 8,
+          "caption": "aₙ = Sₙ − Sₙ₋₁　（拖动 d）",
+          "slider": {
+            "label": "d",
+            "range": [
+              -1.0,
+              3.0
+            ],
+            "value": 0.0,
+            "answer": 2.0,
+            "tol": 0.15,
+            "step": 0.1
+          },
+          "imgs": [
+            {
+              "f": "sn_res",
+              "x": 0.5,
+              "y": 0.84,
+              "w": 0.64
+            }
+          ]
+        }
+      },
+      {
+        "name": "实验二 · 已知 Sn 求 an",
+        "type": "choice",
+        "q": "已知 Sₙ = n² + n，则 aₙ = ?",
+        "opts": [
+          "res://art/inline/in_02c0ca992e.png",
+          "res://art/inline/in_bb62636c1f.png",
+          "res://art/inline/in_d26a2ef69b.png",
+          "res://art/inline/in_bdf30577d2.png"
+        ],
+        "ans": 0,
+        "hint": "aₙ = Sₙ − Sₙ₋₁ = (n²+n) − ((n−1)²+(n−1))。",
+        "explain": "aₙ = (n²+n) − (n²−n) = 2n（且 a₁ = S₁ = 2，符合）。",
+        "scene": {
+          "seq": "sn",
+          "a1": 2,
+          "d": 2.0,
+          "n": 7,
+          "x": [
+            0,
+            8
+          ],
+          "y": [
+            0,
+            60
+          ],
+          "caption": "Sₙ = n² + n ⇒ aₙ = 2n",
+          "imgs": [
+            {
+              "f": "sn_res",
+              "x": 0.5,
+              "y": 0.83,
+              "w": 0.6
+            }
+          ]
+        }
+      },
+      {
+        "name": "实验三 · 别忘了首项",
+        "type": "choice",
+        "q": "已知 Sₙ 求 aₙ 时，下列说法正确的是？",
+        "opts": [
+          "a₁ 用 S₁ 单独验证；n≥2 时 aₙ = Sₙ − Sₙ₋₁",
+          "对一切 n 都用 aₙ = Sₙ − Sₙ₋₁",
+          "res://art/inline/in_3cb01af83a.png",
+          "res://art/inline/in_7ad2a89a62.png"
+        ],
+        "ans": 0,
+        "trap": true,
+        "hint": "n=1 时 Sₙ₋₁ = S₀ 无意义，首项必须单独求。",
+        "explain": "作差式只对 n≥2 成立；a₁ = S₁，需回代验证。",
+        "scene": {
+          "seq": "sn",
+          "a1": 1,
+          "d": 1.0,
+          "n": 7,
+          "caption": "n≥2：aₙ = Sₙ − Sₙ₋₁；a₁ = S₁",
+          "imgs": [
+            {
+              "f": "sn_res",
+              "x": 0.5,
+              "y": 0.85,
+              "w": 0.68
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
