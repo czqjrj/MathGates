@@ -25,6 +25,7 @@ static var _voice := ""
 static var _cute_voice := ""
 static var _last := ""
 static var _last_cute := false
+static var _f_re: RegEx
 
 ## 萌宠音色关键词：优先童声/女声，读起来更萌。
 const CUTE_KEYS := ["yaoyao", "yao", "xiaoxiao", "xiaoyi", "huihui", "xiaomo",
@@ -172,9 +173,14 @@ static func stop() -> void:
 	if _supported:
 		DisplayServer.tts_stop()
 
-## 清洗文本：去除 BBCode 标记，并把常用数学符号转成可朗读文字。
+## 清洗文本：去掉 BBCode（连线内公式图片整块替换为"公式"）与 {f:名称} 标记，
+## 并把常用数学符号转成可朗读文字。
 static func sanitize(text: String) -> String:
 	var t := text.replace("\r", "\n")
+	if _f_re == null:
+		_f_re = RegEx.new()
+		_f_re.compile("\\{f:[A-Za-z0-9_]+\\}")
+	t = _f_re.sub(t, "公式", true)
 	var out := ""
 	var i := 0
 	var n := t.length()
@@ -182,20 +188,54 @@ static func sanitize(text: String) -> String:
 		var c := t[i]
 		if c == "[":
 			var j := t.find("]", i)
-			if j != -1:
-				i = j + 1
+			if j == -1:
+				out += c
+				i += 1
 				continue
+			var tag := t.substr(i + 1, j - i - 1)
+			var name := tag
+			var eq := tag.find("=")
+			if eq != -1:
+				name = tag.substr(0, eq)
+			if name.strip_edges() == "img":
+				var close_tag := "[/img]"
+				var k := t.find(close_tag, j)
+				if k != -1:
+					out += "公式"
+					i = k + close_tag.length()
+					continue
+			i = j + 1
+			continue
 		out += c
 		i += 1
+	while out.find("公式公式") != -1:
+		out = out.replace("公式公式", "公式")
 	out = out.replace("\n", "，").replace("\t", " ")
 	var rep := {
 		"√": "根号", "≤": "小于等于", "≥": "大于等于", "≠": "不等于",
 		"≈": "约等于", "±": "正负", "⊥": "垂直", "∥": "平行",
 		"∠": "角", "△": "三角形", "°": "度", "π": "派",
 		"·": "点", "×": "乘以", "÷": "除以", "→": "到",
+		"⇒": "所以", "⇔": "等价于", "≡": "恒等于", "∈": "属于",
 		"Δ": "德尔塔", "α": "阿尔法", "β": "贝塔", "θ": "西塔",
-		"∞": "无穷", "∈": "属于", "∪": "并", "∩": "交",
-		"∑": "求和", "φ": "斐", "λ": "兰姆达",
+		"∞": "无穷", "∪": "并", "∩": "交", "∑": "求和",
+		"φ": "斐", "λ": "兰姆达", "Ω": "欧米伽", "ω": "欧米伽",
+		"−": "减", "–": "到", "—": "，", "…": "等等",
+		"′": "撇", "″": "双撇", "①": "一", "②": "二", "③": "三",
+		"₀": "0", "₁": "1", "₂": "2", "₃": "3", "₄": "4",
+		"₅": "5", "₆": "6", "₇": "7", "₈": "8", "₉": "9",
+		"₊": "+", "₋": "-", "₌": "=", "₍": "(", "₎": ")",
+		"ₐ": "a", "ₑ": "e", "ₕ": "h", "ₖ": "k", "ₗ": "l", "ₘ": "m",
+		"ₙ": "n", "ₒ": "o", "ₚ": "p", "ᵣ": "r", "ₛ": "s", "ₜ": "t",
+		"ᵤ": "u", "ᵥ": "v", "ₓ": "x",
+		"⁰": "的0次方", "¹": "的1次方", "²": "的平方", "³": "的立方",
+		"⁴": "的4次方", "⁵": "的5次方", "⁶": "的6次方", "⁷": "的7次方",
+		"⁸": "的8次方", "⁹": "的9次方",
+		"⁺": "+", "⁻": "-", "⁼": "=", "⁽": "(", "⁾": ")",
+		"ᵃ": "的a次方", "ᵇ": "的b次方", "ᶜ": "的c次方", "ᵈ": "的d次方",
+		"ᵉ": "的e次方", "ᵏ": "的k次方", "ⁿ": "的n次方",
+		"ᴹ": "的M次方", "ˣ": "的x次方", "ʸ": "的y次方",
+		"{": "", "}": "",
 	}
 	for k in rep:
 		out = out.replace(k, rep[k])
