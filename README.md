@@ -29,7 +29,7 @@ art/             美术 PNG/WebP + 公式小图 + Android 图标 + 标题字体(
 audio/           音效 wav
 tools/           开发/测试脚本:check_all.gd(脚本检查)、smoke_scene(全场景冒烟)、
 				 capture_scene(截图)、dev_seq(单关调试)
-docs/            设计文档 .docx
+tests/           回归测试(GameData 纯逻辑)
 build/           导出产物(APK,git 忽略)
 ```
 
