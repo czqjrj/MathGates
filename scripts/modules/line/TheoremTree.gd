@@ -7,7 +7,7 @@ extends Control
 
 ## 各模块主题(单元)名，与关卡名 "N-M xxx" 的 N 对应(1 起)
 const GROUP_TITLES := {
-	"line_eq": ["倾斜角 · 斜率", "直线方程的四种形式", "平行与垂直", "距离公式", "直线系与夹角", "对称与最值"],
+	"line_eq": ["倾斜角 · 斜率", "直线方程的四种形式", "平行与垂直", "距离公式", "直线系方程", "对称与最值"],
 	"space":  ["空间向量基础", "方向向量 · 位置关系", "空间角", "距离问题", "三垂线 · 翻折", "球与最值"],
 	"vector": ["基础本源", "共线与线性运算", "基底与坐标", "数量积与夹角", "投影与几何恒等式", "最值与范围"],
 	"ellipse": ["椭圆定义与轨迹", "标准方程与几何性质", "焦半径与焦点三角形", "中点弦 · 点差法", "直线与椭圆 · 硬解定理"],
@@ -425,7 +425,7 @@ func _build_topbar() -> void:
 	hb.add_child(UI.ghost_button("← 返回终端", func() -> void:
 		Scene.goto("res://scenes/MainHub.tscn")
 	))
-	hb.add_child(_hairline(Vector2(1, 18)))
+	hb.add_child(UI.hairline(Vector2(1, 18)))
 	hb.add_child(UI.make_label("知识体系", 22))
 	hb.add_child(UI.mono_label("KNOWLEDGE MAP", 13, Color(UI.COL_TEXT_DIM, 0.7)))
 	var sp := Control.new()
@@ -819,7 +819,7 @@ func _open_panel(li: int) -> void:
 	var col := Color(str(mod["color"]))
 
 	_panel_layer = CanvasLayer.new()
-	_panel_layer.layer = 50
+	_panel_layer.layer = UiConst.LAYER_PANEL
 	add_child(_panel_layer)
 
 	var dim := ColorRect.new()
@@ -860,7 +860,7 @@ func _open_panel(li: int) -> void:
 	head.add_child(hsp)
 	head.add_child(UI.mono_label(_stars_str(int(GameData.stars.get(lv["id"], 0))), 17, UI.COL_ACCENT))
 
-	vb.add_child(_hairline(Vector2(0, 1)))
+	vb.add_child(UI.hairline(Vector2(0, 1)))
 	vb.add_child(UI.mono_label("%s · %s" % [str(mod["title"]), str(lv.get("technique", ""))], 14, UI.COL_TEXT_DIM))
 
 	var row := HBoxContainer.new()
@@ -902,13 +902,3 @@ func _on_back_requested() -> bool:
 
 func _stars_str(s: int) -> String:
 	return "★".repeat(s) + "☆".repeat(maxi(0, 3 - s))
-
-func _hairline(min_size: Vector2) -> ColorRect:
-	var r := ColorRect.new()
-	r.color = UI.COL_LINE
-	r.custom_minimum_size = min_size
-	r.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	if min_size.x <= 0.0:
-		r.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	return r

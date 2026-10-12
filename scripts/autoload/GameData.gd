@@ -60,6 +60,14 @@ const MEDALS := [
 	{ "id": "pet_10",         "name": "形影不离", "desc": "投喂萌宠 10 次",               "symbol": "伴", "color": "#4dd6a8" },
 ]
 
+## 每日任务：metric 对应当日增量(answers/clears/coins)或当日峰值(streak)。
+const DAILY_MISSIONS := [
+	{ "id": "d_answer", "name": "勤勉推演", "desc": "今日作答 20 题",     "metric": "answers", "goal": 20,  "coins": 80,  "exp": 40 },
+	{ "id": "d_clear",  "name": "破关斩将", "desc": "今日通关 3 个关卡",   "metric": "clears",  "goal": 3,   "coins": 120, "exp": 60 },
+	{ "id": "d_coins",  "name": "聚沙成塔", "desc": "今日获得 200 金币",   "metric": "coins",   "goal": 200, "coins": 60,  "exp": 30 },
+	{ "id": "d_streak", "name": "连击达人", "desc": "今日达成 5 连击",     "metric": "streak",  "goal": 5,   "coins": 100, "exp": 50 },
+]
+
 ## 知识领域：把课程章节归入 7 个领域，用于「掌握度」聚合与萌宠知识进化。
 ## chapters 为该领域涵盖的章节 id；掌握度由领域内关卡的星级 / 清关质量 / 错题聚合而来。
 const DOMAINS := [
@@ -102,6 +110,7 @@ var chapters: Array = []
 var stars: Dictionary = {}      # level_id -> int(0..3)
 var player_exp: int = 0
 var coins: int = 0
+var coins_earned: int = 0        # 累计获得金币(消费不清零，供勋章判定)
 var medals: Dictionary = {}     # medal_id -> 解锁时间戳
 var pet_parts: Dictionary = {}  # domain_id -> 解锁时间戳(知识进化部件，只增不减)
 var pet_stage: int = 0          # 已解锁部件数(萌宠形态等级)
@@ -132,6 +141,20 @@ var current_level: Dictionary = {}
 var last_chapter_id: String = ""   # 上次学习的章节 id(跨启动记住「正在学习」，即使重开也应置顶)
 
 var _questions: Dictionary = {}   # level_id -> Array[Dictionary]
+var _save_pending: bool = false   # 是否有一次延迟落盘待执行(见 _save_soon)
+var review_focus: int = -1        # 错题深链要优先显示的题号(原始 qi)，-1 表示无
+
+# ---- 收集 / 养成(可存档) ----
+var owned_avatars: Array = ["player"]  # 已解锁头像 id
+var hint_tokens: int = 0               # 提示卡库存(使用时不记错)
+var coin_boost: int = 0                # 双倍金币卡库存(结算时翻倍并消耗)
+var best_streak: int = 0               # 历史最高连击
+var last_login_date: String = ""       # 上次每日登录奖励日期 "YYYY-MM-DD"
+var login_streak: int = 0              # 连续登录天数
+var daily_date: String = ""            # 每日任务所在日期
+var daily_base: Dictionary = {}        # 每日任务基准(metric -> 当日开始时数值)
+var daily_peak_streak: int = 0         # 今日最高连击
+var daily_claimed: Dictionary = {}     # 已领取的每日任务 id
 
 func _ready() -> void:
 	_load_curriculum()
@@ -184,7 +207,15 @@ func start_level(chapter_index: int, level_index: int) -> bool:
 	current_level_index = level_index
 	current_level = levels[level_index]
 	last_chapter_id = str(chapters[chapter_index].get("id", ""))
+	review_focus = -1
 	_save()
+	return true
+
+## 从错题深链进入：进入关卡并让指定题号(qi)优先显示，供「去复习第 N 题」。
+func start_level_focus(chapter_index: int, level_index: int, qi: int) -> bool:
+	if not start_level(chapter_index, level_index):
+		return false
+	review_focus = qi
 	return true
 
 ## 上次学习的章节在 chapters 中的下标（本会话优先用运行时下标，重开时回退到存档里的 id）
@@ -256,7 +287,8 @@ func _enter_level(e: Dictionary) -> void:
 	if not start_level(int(e["ci"]), int(e["li"])):
 		return
 	Sound.play("begin")
-	Scene.goto(str(e["level"].get("scene", "res://scenes/Battle.tscn")))
+	# 不记录历史：上一关/下一关不应污染「返回来源」，返回键始终回到进入关卡前的场景。
+	Scene.goto(str(e["level"].get("scene", "res://scenes/Battle.tscn")), false)
 
 # ---------------------------------------------------------------- 进度查询
 ## 章节分类: "method"=方法推演(专题方法实验与汇总) / "knowledge"=知识体系(知识点由来与简单运用)。
@@ -432,7 +464,7 @@ func _medal_met(id: String) -> bool:
 		"answer_100":     return total_questions >= 100
 		"answer_500":     return total_questions >= 500
 		"accuracy_80":    return total_questions >= 50 and accuracy() >= 0.8
-		"coins_1000":     return coins >= 1000
+		"coins_1000":     return coins_earned >= 1000
 		"boss_first":     return _boss_cleared_count() >= 1
 		"boss_all":
 			var total := _boss_level_ids().size()
@@ -479,16 +511,203 @@ func reset_progress() -> void:
 	pet_last_seen = 0
 	pet_parts.clear()
 	pet_stage = 0
+	coins_earned = 0
+	owned_avatars = ["player"]
+	hint_tokens = 0
+	coin_boost = 0
+	best_streak = 0
+	login_streak = 0
+	last_login_date = ""
+	daily_date = ""
+	daily_base = {}
+	daily_peak_streak = 0
+	daily_claimed = {}
 	_level_mastery.clear()
 	_domain_mastery.clear()
 	_save()
 	progress_changed.emit()
 
 func add_coins(n: int) -> void:
+	if n <= 0:
+		return
 	coins += n
+	coins_earned += n
 	_eval_medals()
 	_save()
 	progress_changed.emit()
+
+## 消费金币：余额不足返回 false(不扣除)
+func spend_coins(n: int) -> bool:
+	if n <= 0:
+		return true
+	if coins < n:
+		return false
+	coins -= n
+	_eval_medals()
+	_save()
+	progress_changed.emit()
+	return true
+
+func add_exp(n: int) -> void:
+	if n <= 0:
+		return
+	player_exp += n
+	_save()
+	progress_changed.emit()
+
+# ---------------------------------------------------------------- 收集商店
+func has_avatar(id: String) -> bool:
+	return id in owned_avatars
+
+## 解锁头像：金币不足或已拥有返回 false
+func unlock_avatar(id: String, cost: int) -> bool:
+	if has_avatar(id):
+		return false
+	if not spend_coins(cost):
+		return false
+	owned_avatars.append(id)
+	_save()
+	progress_changed.emit()
+	return true
+
+## 使用一张提示卡，成功消耗返回 true
+func consume_hint_token() -> bool:
+	if hint_tokens <= 0:
+		return false
+	hint_tokens -= 1
+	_save()
+	progress_changed.emit()
+	return true
+
+func add_hint_tokens(n: int) -> void:
+	hint_tokens += n
+	_save()
+	progress_changed.emit()
+
+func consume_coin_boost() -> bool:
+	if coin_boost <= 0:
+		return false
+	coin_boost -= 1
+	_save()
+	progress_changed.emit()
+	return true
+
+func add_coin_boosts(n: int) -> void:
+	coin_boost += n
+	_save()
+	progress_changed.emit()
+
+# ---------------------------------------------------------------- 每日登录
+func _today() -> String:
+	return Time.get_datetime_string_from_system(false, true).substr(0, 10)
+
+func _yesterday() -> String:
+	return Time.get_datetime_string_from_system(true, true).substr(0, 10)
+
+## 今日是否还能领取每日登录奖励
+func daily_available() -> bool:
+	return last_login_date != _today()
+
+## 领取每日登录奖励：返回 {ok, streak, coins, exp, is_first}
+func claim_daily() -> Dictionary:
+	if not daily_available():
+		return { "ok": false }
+	if last_login_date == _yesterday():
+		login_streak += 1
+	else:
+		login_streak = 1
+	last_login_date = _today()
+	var mult := 1.0 + 0.2 * float(login_streak - 1)
+	var reward := int(50.0 * mult)
+	var ex := int(20.0 * mult)
+	add_coins(reward)
+	add_exp(ex)
+	_save()
+	progress_changed.emit()
+	return { "ok": true, "streak": login_streak, "coins": reward, "exp": ex, "is_first": login_streak == 1 }
+
+# ---------------------------------------------------------------- 每日任务
+func _daily_metrics() -> Dictionary:
+	return {
+		"answers": total_questions,
+		"clears": _cleared_level_count(),
+		"coins": coins_earned,
+		"streak": daily_peak_streak,
+	}
+
+## 跨天则重置每日任务基准与领取状态(登录/创建时也会主动调用)
+func _reset_daily_if_needed() -> void:
+	var today := _today()
+	if daily_date == today:
+		return
+	daily_date = today
+	daily_peak_streak = 0
+	daily_claimed = {}
+	var m := _daily_metrics()
+	daily_base = { "answers": int(m["answers"]), "clears": int(m["clears"]), "coins": int(m["coins"]) }
+
+## 记录今日连击峰值(由关卡在达成连击时调用)
+func note_streak(s: int) -> void:
+	_reset_daily_if_needed()
+	if s > daily_peak_streak:
+		daily_peak_streak = s
+		_save_soon()
+
+func daily_mission_progress(mm: Dictionary) -> int:
+	_reset_daily_if_needed()
+	var goal := int(mm["goal"])
+	if str(mm["metric"]) == "streak":
+		return mini(daily_peak_streak, goal)
+	var metric := str(mm["metric"])
+	var base := int(daily_base.get(metric, 0))
+	var cur := int(_daily_metrics().get(metric, 0))
+	return clampi(cur - base, 0, goal)
+
+## 今日任务列表：{id,name,desc,cur,goal,done,claimed,coins,exp}
+func daily_missions() -> Array:
+	_reset_daily_if_needed()
+	var out: Array = []
+	for mm in DAILY_MISSIONS:
+		var goal := int(mm["goal"])
+		var cur := daily_mission_progress(mm)
+		out.append({
+			"id": str(mm["id"]), "name": str(mm["name"]), "desc": str(mm["desc"]),
+			"cur": cur, "goal": goal, "done": cur >= goal,
+			"claimed": daily_claimed.has(str(mm["id"])),
+			"coins": int(mm["coins"]), "exp": int(mm["exp"]),
+		})
+	return out
+
+func daily_claimable_count() -> int:
+	var n := 0
+	for m in daily_missions():
+		if bool(m["done"]) and not bool(m["claimed"]):
+			n += 1
+	return n
+
+func daily_claimed_count() -> int:
+	return daily_claimed.size()
+
+## 领取任务奖励：返回是否成功
+func claim_daily_mission(id: String) -> bool:
+	_reset_daily_if_needed()
+	if daily_claimed.has(id):
+		return false
+	var mm := {}
+	for x in DAILY_MISSIONS:
+		if str(x["id"]) == id:
+			mm = x
+			break
+	if mm.is_empty():
+		return false
+	if daily_mission_progress(mm) < int(mm["goal"]):
+		return false
+	daily_claimed[id] = true
+	add_coins(int(mm["coins"]))
+	add_exp(int(mm["exp"]))
+	_save()
+	progress_changed.emit()
+	return true
 
 func add_pet_fed() -> void:
 	pet_fed += 1
@@ -585,9 +804,6 @@ func lore_entries() -> Array:
 ## 该领域碑文是否已寻回(与萌宠部件解锁同步)
 func lore_unlocked(domain_id: String) -> bool:
 	return pet_parts.has(domain_id)
-
-func lore_restored_count() -> int:
-	return pet_parts.size()
 
 ## 记忆恢复度 0..1
 func memory_ratio() -> float:
@@ -689,15 +905,16 @@ func record_answer(level_id: String, qi: int, qname: String, correct: bool, chos
 	else:
 		var key := "%s#%d" % [level_id, qi]
 		var rec: Dictionary = wrong_log.get(key, {})
+		var did := domain_id_for_level(level_id)
 		wrong_log[key] = {
-			"level_id": level_id, "qi": qi, "name": qname, "module": module,
+			"level_id": level_id, "qi": qi, "name": qname, "module": did if did != "" else module,
 			"count": int(rec.get("count", 0)) + 1,
 			"last_chose": chose, "correct": ans,
 		}
 	pet_mood = clampf(pet_mood + (0.04 if correct else -0.05), 0.2, 1.0)
 	_eval_mastery()
 	_eval_medals()
-	_save()
+	_save_soon()
 	progress_changed.emit()
 
 ## 记录一次关卡结果
@@ -768,6 +985,10 @@ func _domain_of_level(level_id: String) -> Dictionary:
 			return d
 	return {}
 
+## 关卡所属知识领域 id(规范标识，供错题/诊断聚合)；未知返回 ""
+func domain_id_for_level(level_id: String) -> String:
+	return str(_domain_of_level(level_id).get("id", ""))
+
 ## 关卡导航信息：{ci, li, scene}；不存在返回 {}
 func _level_nav(level_id: String) -> Dictionary:
 	for ci in chapters.size():
@@ -820,27 +1041,32 @@ func wrong_count_for(level_id: String, qi: int) -> int:
 ## 错题优先：把历史错过的题(错得越多越靠前)重排到关卡最前面，其余保持原序。
 ## 返回 { stages: 重排后的题列表, order: Array[int](显示下标→原始下标), review: bool }。
 ## 注意：order[i] 为该显示位置对应的原始题号，记录作答时须用它作为 qi，才能与错题账本对齐。
-func review_order(level_id: String, stages: Array) -> Dictionary:
+func review_order(level_id: String, stages: Array, focus: int = -1) -> Dictionary:
+	var n := stages.size()
 	var order: Array[int] = []
-	for i in stages.size():
+	for i in n:
 		order.append(i)
 	var any_wrong := false
-	for i in stages.size():
+	for i in n:
 		if wrong_count_for(level_id, i) > 0:
 			any_wrong = true
 			break
-	if not any_wrong or stages.size() < 2:
-		return { "stages": stages, "order": order, "review": false }
-	order.sort_custom(func(a: int, b: int) -> bool:
-		var wa := wrong_count_for(level_id, a)
-		var wb := wrong_count_for(level_id, b)
-		if wa != wb:
-			return wa > wb
-		return a < b)
+	if any_wrong and n >= 2:
+		order.sort_custom(func(a: int, b: int) -> bool:
+			var wa := wrong_count_for(level_id, a)
+			var wb := wrong_count_for(level_id, b)
+			if wa != wb:
+				return wa > wb
+			return a < b)
+	# 错题深链：把指定题号提到最前，实现「去复习第 N 题」
+	var has_focus := focus >= 0 and focus < n
+	if has_focus:
+		order.erase(focus)
+		order.push_front(focus)
 	var re: Array = []
 	for i in order:
 		re.append(stages[i])
-	return { "stages": re, "order": order, "review": true }
+	return { "stages": re, "order": order, "review": any_wrong and n >= 2 }
 
 # ---------------------------------------------------------------- 学情诊断
 ## 各领域错题统计：{ domain_id: { count, levels: { level_id: count } } }
@@ -997,6 +1223,11 @@ func _blank_user() -> Dictionary:
 		"medals": {},
 		"chapter_order": [],
 		"last_chapter": "",
+		"coins_earned": 0,
+		"owned_avatars": ["player"],
+		"hint_tokens": 0, "coin_boost": 0,
+		"best_streak": 0, "last_login_date": "", "login_streak": 0,
+		"daily_date": "", "daily_base": {}, "daily_peak_streak": 0, "daily_claimed": {},
 		"created": Time.get_datetime_string_from_system(false, true),
 	}
 
@@ -1011,6 +1242,11 @@ func _snapshot() -> Dictionary:
 		"medals": medals,
 		"chapter_order": chapter_order,
 		"last_chapter": last_chapter_id,
+		"coins_earned": coins_earned,
+		"owned_avatars": owned_avatars,
+		"hint_tokens": hint_tokens, "coin_boost": coin_boost,
+		"best_streak": best_streak, "last_login_date": last_login_date, "login_streak": login_streak,
+		"daily_date": daily_date, "daily_base": daily_base, "daily_peak_streak": daily_peak_streak, "daily_claimed": daily_claimed,
 		"created": users.get(current_user, {}).get("created", Time.get_datetime_string_from_system(false, true)),
 	}
 
@@ -1029,11 +1265,32 @@ func _apply(d: Dictionary) -> void:
 	pet_parts = pp if typeof(pp) == TYPE_DICTIONARY else {}
 	pet_stage = int(d.get("pet_stage", pet_parts.size()))
 	regions_seen = int(d.get("regions_seen", 0))
+	coins_earned = int(d.get("coins_earned", int(d.get("coins", 0))))
+	hint_tokens = int(d.get("hint_tokens", 0))
+	coin_boost = int(d.get("coin_boost", 0))
+	best_streak = int(d.get("best_streak", 0))
+	last_login_date = str(d.get("last_login_date", ""))
+	login_streak = int(d.get("login_streak", 0))
+	daily_date = str(d.get("daily_date", ""))
+	daily_peak_streak = int(d.get("daily_peak_streak", 0))
+	var db = d.get("daily_base", {})
+	daily_base = db if typeof(db) == TYPE_DICTIONARY else {}
+	var dc = d.get("daily_claimed", {})
+	daily_claimed = dc if typeof(dc) == TYPE_DICTIONARY else {}
+	var oa = d.get("owned_avatars", null)
+	if typeof(oa) == TYPE_ARRAY:
+		owned_avatars = oa.duplicate()
+	else:
+		# 旧档：默认为已拥有全部头像(不影响既有体验)
+		owned_avatars = []
+		for a in AVATARS:
+			owned_avatars.append(str(a["id"]))
 	var co = d.get("chapter_order", [])
 	chapter_order = co.duplicate() if typeof(co) == TYPE_ARRAY else []
 	last_chapter_id = str(d.get("last_chapter", ""))
 	var wl = d.get("wrong_log", {})
 	wrong_log = wl if typeof(wl) == TYPE_DICTIONARY else {}
+	_normalize_wrong_modules()
 	var lr = d.get("level_records", {})
 	level_records = lr if typeof(lr) == TYPE_DICTIONARY else {}
 	var md = d.get("medals", {})
@@ -1046,6 +1303,17 @@ func _apply(d: Dictionary) -> void:
 			if stars.has(k):
 				stars[k] = int(sv[k])
 
+## 迁移：把历史错题记录的 module 统一为规范领域 id(旧档可能是 ""、"line" 或章节 id)
+func _normalize_wrong_modules() -> void:
+	for key in wrong_log.keys():
+		var rec = wrong_log[key]
+		if typeof(rec) != TYPE_DICTIONARY:
+			continue
+		var did := domain_id_for_level(str(rec.get("level_id", "")))
+		if did != "" and str(rec.get("module", "")) != did:
+			rec["module"] = did
+			wrong_log[key] = rec
+
 func list_users() -> Array:
 	var arr: Array = []
 	for k in users.keys():
@@ -1055,7 +1323,7 @@ func list_users() -> Array:
 		if typeof(sv) == TYPE_DICTIONARY:
 			for kk in sv.keys():
 				used += int(sv[kk])
-		arr.append({ "name": k, "avatar": str(d.get("avatar", "player")), "stars": used })
+		arr.append({ "name": k, "avatar": str(d.get("avatar", "player")), "stars": used, "best_streak": int(d.get("best_streak", 0)) })
 	arr.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return str(a["name"]) < str(b["name"]))
 	return arr
 
@@ -1067,6 +1335,7 @@ func create_user(nm: String, av: String) -> bool:
 	users[nm]["avatar"] = av
 	current_user = nm
 	_apply(users[nm])
+	_reset_daily_if_needed()
 	_eval_mastery(false)
 	_eval_medals(false)
 	_save()
@@ -1078,6 +1347,7 @@ func login(nm: String) -> bool:
 		return false
 	current_user = nm
 	_apply(users[nm])
+	_reset_daily_if_needed()
 	pet_decay()
 	_eval_mastery(false)
 	_eval_medals(false)
@@ -1145,7 +1415,20 @@ func save_now() -> void:
 	_save()
 
 func _save() -> void:
+	_save_pending = false
 	if current_user == "":
 		return
 	users[current_user] = _snapshot()
 	_write_users()
+
+## 延迟落盘：作答等高频时机先合并，1 秒后统一写盘，避免每次作答都做一次原子写。
+## 关闭/失焦时 _notification 会立即落盘，故不会丢失进度。
+func _save_soon() -> void:
+	if current_user == "" or _save_pending:
+		return
+	_save_pending = true
+	get_tree().create_timer(1.0).timeout.connect(_flush_pending_save)
+
+func _flush_pending_save() -> void:
+	if _save_pending:
+		_save()

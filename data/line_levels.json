@@ -20,6 +20,7 @@
         "q": "经过 A(1, 2)、B(3, 6) 两点的直线，斜率 k = ?(可拖动点 B 观察 Δy/Δx)",
         "opts": ["res://art/line/formulas/l11q2_1.png", "res://art/line/formulas/l11q2_2.png", "res://art/line/formulas/l11q2_3.png", "res://art/line/formulas/l11q2_4.png"], "ans": 0,
         "hint": "k = (y2 − y1)/(x2 − x1)。",
+        "explain": "k = (y2 − y1)/(x2 − x1) = (6 − 2)/(3 − 1) = 4/2 = 2。",
         "scene": { "slope_explorer": true, "a": [1, 2], "b": [3, 6], "x": [-2, 6], "y": [-3, 8], "prompt": "拖动点 B，观察 Δy、Δx 与斜率 k 的变化" } },
 
       { "name": "竖直直线",
@@ -62,23 +63,25 @@
 
   "line_1_3": {
     "title": "第一关 · 倾角斜率 · 03",
-    "method": "方向向量与法向量",
+    "method": "方向向量",
     "color": "#5ee6ff",
-    "summary": "方向向量与直线平行，法向量与直线垂直；一般式 Ax+By+C=0 的法向量为 (A,B)。",
+    "summary": "方向向量与直线平行；斜率为 k 的直线可取方向向量 (1, k)，其纵、横坐标之比等于斜率。",
     "levels": [
       { "name": "方向向量",
         "q": "直线 y = 2x + 1 的一个方向向量是？",
         "opts": ["res://art/line/formulas/l13q1_a.png", "res://art/line/formulas/l13q1_b.png", "res://art/line/formulas/l13q1_c.png", "res://art/line/formulas/l13q1_d.png"], "ans": 0,
         "hint": "方向向量的纵坐标比横坐标 = 斜率 = 2。",
+        "explain": "方向向量与直线平行，其纵、横坐标之比等于斜率 2，故 (1, 2) 是它的一个方向向量。",
         "scene": { "lines": [ { "k": 2, "b": 1, "color": "#5ee6ff", "label": "l", "trace": true } ],
           "drag": { "start": [1, 3], "constraint": { "type": "line", "A": -2, "B": 1, "C": -1 }, "targets": [[0, 1]], "metric": "ratio", "metric_label": "Δy/Δx" } } },
 
-      { "name": "法向量",
-        "q": "直线 3x − 4y + 5 = 0 的一个法向量是？",
-        "opts": ["res://art/line/formulas/l13q2_a.png", "res://art/line/formulas/l13q2_b.png", "res://art/line/formulas/l13q2_c.png", "res://art/line/formulas/l13q2_d.png"], "ans": 0,
-        "hint": "Ax + By + C = 0 的法向量就是 (A, B)。",
-        "scene": { "lines": [ { "A": 3, "B": -4, "C": 5, "color": "#5ee6ff", "label": "l", "trace": true } ],
-          "drag": { "start": [3, 3.5], "constraint": { "type": "line", "A": 3, "B": -4, "C": 5 }, "targets": [[1, 2]], "metric": "ratio", "metric_label": "Δy/Δx" } } },
+      { "name": "由斜率定方向向量",
+        "q": "直线 y = −(1/2)x + 3 的一个方向向量是？",
+        "opts": ["(2, −1)", "(1, 2)", "(2, 1)", "(−1, 2)"], "ans": 0,
+        "hint": "方向向量的纵坐标与横坐标之比等于斜率 −1/2。",
+        "explain": "直线斜率为 −1/2；方向向量 (Δx, Δy) 满足 Δy/Δx = −1/2，取 Δx = 2 得 (2, −1)。",
+        "scene": { "lines": [ { "k": -0.5, "b": 3, "color": "#5ee6ff", "label": "l", "trace": true } ],
+          "drag": { "start": [2, 2], "constraint": { "type": "line", "A": 1, "B": 2, "C": -6 }, "targets": [[0, 3]], "metric": "ratio", "metric_label": "Δy/Δx" } } },
 
       { "name": "三点共线",
         "q": "A(1, 1)、B(2, 3)、C(3, m) 三点共线，则 m = ?",
@@ -102,12 +105,14 @@
         "q": "过点 P(2, 3) 且斜率 k = −1 的直线，其点斜式方程是？",
         "opts": ["res://art/line/formulas/l21q1_a.png", "res://art/line/formulas/l21q1_b.png", "res://art/line/formulas/l21q1_c.png", "res://art/line/formulas/l21q1_d.png"], "ans": 0,
         "hint": "套 y − y0 = k(x − x0)，把 (2,3)、k=−1 代入。",
+        "explain": "点斜式 y − y0 = k(x − x0)，代入 (2, 3)、k = −1 得 y − 3 = −(x − 2)，即 y = −x + 5。",
         "scene": { "lineeq_explorer": true, "mode": "point_slope", "p": [2, 3], "k0": -1, "x": [-1, 5], "y": [-2, 6], "prompt": "拖动直线绕定点 P(2,3) 旋转，实时观察点斜式方程", "formula": "res://art/line/formulas/l21q1_a.png" } },
 
       { "name": "斜截式",
         "q": "斜率为 2，且在 y 轴上的截距为 −1 的直线方程是？",
         "opts": ["res://art/line/formulas/l21q2_a.png", "res://art/line/formulas/l21q2_b.png", "res://art/line/formulas/l21q2_c.png", "res://art/line/formulas/l21q2_d.png"], "ans": 0,
         "hint": "斜截式 y = kx + b,k=2,b=−1。",
+        "explain": "斜截式 y = kx + b，代入 k = 2、b = −1 得 y = 2x − 1。",
         "scene": { "lineeq_explorer": true, "mode": "slope_intercept", "k0": 2, "b0": -1, "x": [-3, 3], "y": [-3, 5], "prompt": "拖动 k、b 两个手柄，实时观察斜截式 y = kx + b", "formula": "res://art/line/formulas/l21q2_a.png" } },
 
       { "name": "什么时候不能用点斜式(陷阱)",
@@ -129,6 +134,7 @@
         "q": "过 A(1, 2)、B(3, 6) 的直线，其两点式方程是？",
         "opts": ["res://art/line/formulas/l22q1_a.png", "res://art/line/formulas/l22q1_b.png", "res://art/line/formulas/l22q1_c.png", "res://art/line/formulas/l22q1_d.png"], "ans": 0,
         "hint": "(y−2)/(6−2) = (x−1)/(3−1)。",
+        "explain": "两点式 (y − 2)/(6 − 2) = (x − 1)/(3 − 1)，即 (y − 2)/4 = (x − 1)/2，化简得 y = 2x。",
         "scene": { "lineeq_explorer": true, "mode": "two_points", "a": [1, 2], "b": [3, 6], "x": [-1, 5], "y": [-1, 7], "prompt": "拖动 A、B 两点观察两点式；把两点拖成同 x 或同 y，会看到它失效", "formula": "res://art/line/formulas/l22q1_a.png" } },
 
       { "name": "求截距",
@@ -143,6 +149,7 @@
         "q": "拖动滑块，使直线 l: y = kx + 1 经过点 P(2, 5)。",
         "param": "k", "target": 2.0, "tol": 0.06, "range": [-3, 3], "start": -3,
         "hint": "把 P 代入：5 = 2k + 1，得 k = 2。",
+        "explain": "直线经过某点，当且仅当该点坐标满足直线方程——这是求待定系数的基本原理：5 = 2k + 1，解得 k = 2。",
         "scene": { "lines": [ { "model": "slope", "b": 1, "color": "#5b8ff9", "label": "l", "trace": true } ],
           "points": [ { "p": [2, 5], "label": "P", "color": "#ffd479", "show_coord": true } ],
           "y": [-4, 7] } }
@@ -159,6 +166,7 @@
         "q": "直线 2x − 3y + 6 = 0 化为斜截式是？",
         "opts": ["res://art/line/formulas/l23q1_a.png", "res://art/line/formulas/l23q1_b.png", "res://art/line/formulas/l23q1_c.png", "res://art/line/formulas/l23q1_d.png"], "ans": 0,
         "hint": "解出 y:−3y = −2x − 6。",
+        "explain": "由 2x − 3y + 6 = 0 解出 y：3y = 2x + 6，即 y = (2/3)x + 2；这正是一般式与斜截式的互化。",
         "scene": { "lineeq_explorer": true, "mode": "general", "A": 2, "B": -3, "C": 6, "x": [-2, 5], "y": [-2, 5], "prompt": "拖动直线：同时观察一般式与斜截式，体会两者互化", "formula": "res://art/line/formulas/line_gn_l23q1.png", "formula2": "res://art/line/formulas/l23q1_a.png" } },
 
       { "name": "读斜率与截距",
@@ -207,7 +215,7 @@
         "opts": ["两直线斜率相等，则它们一定平行", "两直线平行，则它们的斜率一定相等", "若 k1·k2 = −1，则两直线垂直", "若两直线垂直，则 k1·k2 = −1 一定成立"], "ans": 2,
         "hint": "注意竖直直线(斜率不存在)的例外情况。",
         "explain": "斜率相等可能重合(A 错)；两条竖直直线平行但斜率都不存在(B 错)；若一条直线斜率不存在，垂直时另一条斜率为 0，此时 D 不成立，只有 C 正确。",
-        "scene": { "lines": [ { "k": 2, "b": 0, "color": "#5ee6ff", "label": "l₁" }, { "k": -0.5, "b": 3, "color": "#a878ff", "label": "l₂ ⊥ l₁" }, { "k": 2, "b": -2, "color": "#ffd479", "label": "l₃ ∥ l₁", "dash": true } ], "x": [-3, 4], "y": [-3, 5] } }
+        "scene": { "dual_explorer": true, "mode": "relation", "l1": { "k": 2, "b": 0 }, "k2": -0.5, "b2": 3, "x": [-3, 4], "y": [-3, 5], "prompt": "拖动 l2 的 k、b 手柄：k2 = k1 时平行(还可能重合)；k1·k2 = −1 时垂直。看判别式读数" } }
     ]
   },
 
@@ -256,6 +264,7 @@
         "start": [0, 4], "answer": [2, 2], "tol": 0.3,
         "constraint": { "type": "line", "A": 1, "B": 1, "C": -4 },
         "hint": "联立 x + y = 4 与 x − y = 0，解得 (2, 2)。",
+        "explain": "交点即两条直线方程的公共解：联立 x + y = 4 与 x − y = 0，两式相加得 2x = 4，x = 2、y = 2，故交点为 (2, 2)。",
         "scene": { "lines": [ { "A": 1, "B": 1, "C": -4, "color": "#5ee6ff", "label": "l1" }, { "A": 1, "B": -1, "C": 0, "color": "#a878ff", "label": "l2" } ] } },
 
       { "name": "三线共点求参",
@@ -272,7 +281,9 @@
         "opts": ["res://art/line/formulas/l33q3_1.png", "res://art/line/formulas/l33q3_2.png", "res://art/line/formulas/l33q3_3.png", "res://art/line/formulas/l33q3_4.png"], "ans": 0,
         "hint": "令 A1A2 + B1B2 = 0:(a+1)·1 + 1·(a+1) = 0。",
         "explain": "2(a+1) = 0，得 a = −1。",
-        "scene": { "lines": [ { "A": 0, "B": 1, "C": -1, "color": "#5ee6ff", "label": "l₁" }, { "A": 1, "B": 0, "C": 2, "color": "#a878ff", "label": "l₂" } ], "x": [-4, 4], "y": [-4, 4] } }
+        "scene": { "lines": [ { "model": "expr", "a1": 1, "a0": 1, "b1": 0, "b0": 1, "c1": 0, "c0": -1, "color": "#5ee6ff", "label": "l₁" }, { "model": "expr", "a1": 0, "a0": 1, "b1": 1, "b0": 1, "c1": 0, "c0": 2, "color": "#a878ff", "label": "l₂" } ],
+          "slider": { "param": "a", "range": [-4, 4], "start": 2, "target": -1, "tol": 0.06 },
+          "x": [-4, 4], "y": [-4, 4] } }
     ]
   },
 
@@ -286,6 +297,7 @@
         "q": "A(1, 1)、B(4, 5) 两点间的距离是？",
         "opts": ["res://art/line/formulas/l41q1_1.png", "res://art/line/formulas/l41q1_2.png", "res://art/line/formulas/l41q1_3.png", "res://art/line/formulas/l41q1_4.png"], "ans": 0,
         "hint": "Δx = 3,Δy = 4，勾股数 3-4-5。",
+        "explain": "|AB| = √((4−1)² + (5−1)²) = √(9 + 16) = √25 = 5，由勾股定理得到。",
         "scene": { "distance_explorer": true, "mode": "two_points", "a": [1, 1], "b": [4, 5], "x": [-2, 6], "y": [-2, 7], "prompt": "拖动 A、B：观察直角三角形与 |AB|" } },
 
       { "name": "带负号坐标",
@@ -299,6 +311,7 @@
         "q": "水平线段两端为 A(2, 1)、B(6, 1)，其长度是？",
         "opts": ["res://art/line/formulas/l41q3_1.png", "res://art/line/formulas/l41q3_2.png", "res://art/line/formulas/l41q3_3.png", "res://art/line/formulas/l41q3_4.png"], "ans": 0,
         "hint": "水平线段长度 = |x2 − x1|，不必套公式。",
+        "explain": "水平线上 Δy = 0，代入距离公式得 |AB| = |x2 − x1| = |6 − 2| = 4。",
         "scene": { "distance_explorer": true, "mode": "two_points", "a": [2, 1], "b": [6, 1], "x": [-1, 8], "y": [-2, 4], "prompt": "拖动 A、B：水平时 Δy = 0，长度 = |Δx|" } }
     ]
   },
@@ -310,26 +323,27 @@
     "summary": "d = |Ax0 + By0 + C| / √(A² + B²)；直线必须先化为一般式，分子带绝对值。",
     "levels": [
       { "name": "基础应用",
-        "q": "点 P(1, 2) 到直线 3x + 4y − 5 = 0 的距离是？",
-        "opts": ["res://art/line/formulas/l42q1_1.png", "res://art/line/formulas/l42q1_2.png", "res://art/line/formulas/l42q1_3.png", "res://art/line/formulas/l42q1_4.png"], "ans": 0,
-        "hint": "代入 d = |3×1 + 4×2 − 5| / √(3²+4²)。",
-        "explain": "|6| / 5 = 6/5。",
-        "scene": { "distance_explorer": true, "mode": "point_line", "A": 3, "B": 4, "C": -5, "p": [1, 2], "x": [-3, 5], "y": [-2, 5], "prompt": "拖动 P：作出垂线段，实时读出点到直线的距离" } },
+        "q": "点 P(−1, 3) 到直线 4x − 3y + 5 = 0 的距离是？",
+        "opts": ["8/5", "−8/5", "8/25", "2"], "ans": 0,
+        "hint": "代入 d = |4×(−1) − 3×3 + 5| / √(4²+(−3)²)，分子记得取绝对值。",
+        "explain": "|−4 − 9 + 5| / 5 = |−8| / 5 = 8/5。",
+        "scene": { "distance_explorer": true, "mode": "point_line", "A": 4, "B": -3, "C": 5, "p": [-1, 3], "x": [-3, 5], "y": [-2, 5], "prompt": "拖动 P：作出垂线段，实时读出点到直线的距离" } },
 
       { "name": "原点到直线",
-        "q": "原点 O(0, 0) 到直线 3x + 4y − 10 = 0 的距离是？",
-        "opts": ["res://art/line/formulas/l42q2_1.png", "res://art/line/formulas/l42q2_2.png", "res://art/line/formulas/l42q2_3.png", "res://art/line/formulas/l42q2_4.png"], "ans": 0,
-        "hint": "把 (0,0) 代入。",
-        "explain": "|−10| / 5 = 2。",
-        "scene": { "distance_explorer": true, "mode": "point_line", "A": 3, "B": 4, "C": -10, "p": [0, 0], "x": [-2, 5], "y": [-3, 5], "prompt": "拖动 P：观察原点到直线的距离" } },
+        "q": "原点 O(0, 0) 到直线 x + y − 6 = 0 的距离是？",
+        "opts": ["3√2", "6", "3", "6√2"], "ans": 0,
+        "hint": "把 (0,0) 代入 d = |C| / √(A²+B²)，分母是 √2。",
+        "explain": "|−6| / √2 = 6/√2 = 3√2。",
+        "scene": { "distance_explorer": true, "mode": "point_line", "A": 1, "B": 1, "C": -6, "p": [0, 0], "x": [-2, 5], "y": [-3, 5], "prompt": "拖动 P：观察原点到直线的距离" } },
 
       { "name": "垂线段最短",
         "type": "interact", "kind": "drag",
-        "q": "拖动直线 l: x + y = 5 上的动点 P，使它到原点 O 的距离最小，再点击确认。",
-        "start": [0, 5], "answer": [2.5, 2.5], "tol": 0.3,
-        "constraint": { "type": "line", "A": 1, "B": 1, "C": -5 },
-        "hint": "垂线段最短：过 O 作 l 的垂线，由对称性垂足为 (2.5, 2.5)。",
-        "scene": { "lines": [ { "A": 1, "B": 1, "C": -5, "color": "#5ee6ff", "label": "l" } ],
+        "q": "拖动直线 l: 2x + y = 5 上的动点 P，使它到原点 O 的距离最小，再点击确认。",
+        "start": [0, 5], "answer": [2, 1], "tol": 0.3,
+        "constraint": { "type": "line", "A": 2, "B": 1, "C": -5 },
+        "hint": "垂线段最短：过 O 作 l 的垂线，垂足即所求点。l 的斜率为 −2，故垂线斜率为 1/2。",
+        "explain": "l: 2x + y = 5 的斜率为 −2，其垂线斜率为 1/2；过 O 的垂线 y = (1/2)x 与 l 交于 (2, 1)，即垂足。",
+        "scene": { "lines": [ { "A": 2, "B": 1, "C": -5, "color": "#5ee6ff", "label": "l" } ],
           "points": [ { "p": [0, 0], "label": "O", "color": "#fb7185" } ] } }
     ]
   },
@@ -341,29 +355,30 @@
     "summary": "两平行线距离 d = |C1 − C2| / √(A² + B²)，前提是 A、B 系数已统一；点到直线的最短距离即垂线段。",
     "levels": [
       { "name": "平行线距离",
-        "q": "两条平行线 3x + 4y − 5 = 0 与 3x + 4y + 15 = 0 之间的距离是？",
-        "opts": ["res://art/line/formulas/l43q1_1.png", "res://art/line/formulas/l43q1_2.png", "res://art/line/formulas/l43q1_3.png", "res://art/line/formulas/l43q1_4.png"], "ans": 0,
+        "q": "两条平行线 2x − y + 1 = 0 与 2x − y + 6 = 0 之间的距离是？",
+        "opts": ["√5", "5", "7√5/5", "√5/5"], "ans": 0,
         "hint": "A、B 已一致，直接 d = |C1 − C2| / √(A²+B²)。",
-        "explain": "|−5 − 15| / 5 = 20/5 = 4。",
-        "scene": { "distance_explorer": true, "mode": "parallel", "A": 3, "B": 4, "C": -5, "C2": 15, "x": [-6, 5], "y": [-5, 5], "prompt": "拖动 l1 上的点：两条平行线间的距离恒定不变" } },
+        "explain": "|1 − 6| / √5 = 5/√5 = √5。",
+        "scene": { "distance_explorer": true, "mode": "parallel", "A": 2, "B": -1, "C": 1, "C2": 6, "x": [-6, 5], "y": [-5, 5], "prompt": "拖动 l1 上的点：两条平行线间的距离恒定不变" } },
 
       { "name": "系数未统一的陷阱(陷阱)",
-        "q": "求直线 x − y + 1 = 0 与 2x − 2y − 3 = 0 的距离时，直接代入公式会出错，原因是？",
+        "q": "求直线 3x + 4y + 2 = 0 与 6x + 8y − 5 = 0 的距离时，直接代入公式会出错，原因是？",
         "opts": ["两直线不平行", "必须先统一 x、y 的系数 A、B，使它们完全相同", "常数项要取绝对值", "公式只适用于垂直直线"], "ans": 1, "trap": true,
         "hint": "两式 A、B 成比例但不相等。",
-        "explain": "先化为 x−y+1=0 与 x−y−3/2=0，再用公式：d = |1−(−3/2)|/√2 = 5√2/4。",
-        "scene": { "distance_explorer": true, "mode": "parallel", "A": 1, "B": -1, "C": 1, "C2": -1.5, "x": [-3, 5], "y": [-4, 4], "prompt": "l2 先化为 x − y − 3/2 = 0(统一系数)，再代入公式" } },
+        "explain": "先化为 3x+4y+2=0 与 3x+4y−5/2=0，再用公式：d = |2−(−5/2)|/5 = (9/2)/5 = 9/10。",
+        "scene": { "distance_explorer": true, "mode": "parallel", "A": 3, "B": 4, "C": 2, "C2": -2.5, "x": [-3, 5], "y": [-4, 4], "prompt": "l2 先化为 3x + 4y − 5/2 = 0(统一系数)，再代入公式" } },
 
       { "name": "垂线段最短",
         "q": "点 P 到直线 l 的最短距离是？",
         "opts": ["过 P 的垂线段长度", "斜线段长度", "任意连线的长度", "无法确定"], "ans": 0,
         "hint": "几何上点到直线的垂线段最短。",
+        "explain": "点到直线上各点的连线中，垂线段最短——因为其它斜线与垂线段构成直角三角形，斜边必大于直角边。",
         "scene": { "distance_explorer": true, "mode": "point_line", "A": 1, "B": -1, "C": 0, "p": [3, 0], "x": [-2, 5], "y": [-2, 4], "prompt": "拖动 P：无论 P 在哪里，垂线段都最短" } }
     ]
   },
 
   "line_5_1": {
-    "title": "第五关 · 直线系与角度 · 01",
+    "title": "第五关 · 直线系方程 · 01",
     "method": "四大直线系方程",
     "color": "#a878ff",
     "summary": "定点直线系、交点直线系、平行直线系、垂直直线系；平行系与原直线 A、B 相同，垂直系 A、B 互换变号。",
@@ -372,6 +387,7 @@
         "q": "过定点 (1, 2) 的直线系方程可以写成？",
         "opts": ["res://art/line/formulas/l51q1_a.png", "res://art/line/formulas/l51q1_b.png", "res://art/line/formulas/l51q1_c.png", "res://art/line/formulas/l51q1_d.png"], "ans": 0,
         "hint": "点斜式本身就是过定点的直线系(不含竖直直线)。",
+        "explain": "过定点 (x0, y0) 的点斜式 y − y0 = k(x − x0) 随 k 变化，得到过该点的一族直线，即定点直线系(不含竖直直线)。",
         "scene": { "points": [ { "p": [1, 2], "label": "(1,2)", "color": "#ffd479", "show_coord": true } ],
           "lines": [ { "model": "point_slope_pt", "px": 1, "py": 2, "color": "#a878ff", "width": 2.0, "label": "l" }, { "k": 1, "b": 1, "color": "#a878ff", "width": 1.0, "dash": true }, { "k": -1, "b": 3, "color": "#a878ff", "width": 1.0, "dash": true } ],
           "slider": { "param": "k", "range": [-3, 3], "start": 1, "target": 1, "tol": 0.06 },
@@ -381,6 +397,7 @@
         "q": "与直线 2x + 3y − 1 = 0 平行的直线系方程是？",
         "opts": ["res://art/line/formulas/l51q2_a.png", "res://art/line/formulas/l51q2_b.png", "res://art/line/formulas/l51q2_c.png", "res://art/line/formulas/l51q2_d.png"], "ans": 0,
         "hint": "平行直线系保持 x、y 的系数 A、B 不变，只变常数项。",
+        "explain": "平行直线系与原直线 A、B 相同、常数项不同：与 2x + 3y − 1 = 0 平行的直线系可写成 2x + 3y + λ = 0（λ 为参数）。",
         "scene": { "lines": [ { "A": 2, "B": 3, "C": -1, "color": "#5ee6ff", "label": "l" }, { "model": "parallel", "A": 2, "B": 3, "color": "#a878ff", "label": "l′", "dash": true } ],
           "slider": { "param": "C", "range": [-8, 8], "start": 4, "target": 4, "tol": 0.06 },
           "x": [-4, 4], "y": [-4, 4] } },
@@ -390,12 +407,13 @@
         "q": "拖动滑块，使直线 l: y = kx 与直线 y = x 的夹角为 45°。",
         "param": "k", "target": 0.0, "tol": 0.06, "range": [-3, 3], "start": -3,
         "hint": "当 k = 0 时，l 与 y = x 的夹角为 45°。",
+        "explain": "两直线夹角 θ 满足 tanθ = |(k₂ − k₁)/(1 + k₁k₂)|；令 k₁ = 1、k₂ = k，k = 0 时 tanθ = 1，即夹角为 45°。",
         "scene": { "lines": [ { "model": "slope", "b": 0, "color": "#5ee6ff", "label": "l", "trace": true }, { "k": 1, "b": 0, "color": "#a878ff", "label": "y=x", "dash": true } ] } }
     ]
   },
 
   "line_5_2": {
-    "title": "第五关 · 直线系与角度 · 02",
+    "title": "第五关 · 直线系方程 · 02",
     "method": "直线过定点",
     "color": "#a878ff",
     "summary": "含参直线整理成 m·A(x,y) + B(x,y) = 0，令 A(x,y)=0 且 B(x,y)=0，解出定点。",
@@ -429,41 +447,6 @@
           "points": [ { "p": [5, -2], "label": "(5,−2)", "color": "#ffd479", "show_coord": true } ],
           "slider": { "param": "m", "range": [-3, 3], "start": 0, "target": 0, "tol": 0.06 },
           "x": [1, 8], "y": [-7, 3] } }
-    ]
-  },
-
-  "line_5_3": {
-    "title": "第五关 · 直线系与角度 · 03",
-    "method": "到角与夹角",
-    "color": "#a878ff",
-    "summary": "夹角 θ∈[0°，90°],tanθ = |(k2−k1)/(1+k1k2)|；到角有方向，范围 0°～180°。",
-    "levels": [
-      { "name": "夹角的范围",
-        "q": "两条直线的夹角的取值范围是？",
-        "opts": ["res://art/line/formulas/l53q1_1.png", "res://art/line/formulas/l53q1_2.png", "res://art/line/formulas/l53q1_3.png", "res://art/line/formulas/l53q1_4.png"], "ans": 0,
-        "hint": "夹角是不超过 90° 的那个角。",
-        "explain": "夹角取 [0°，90°]；若明确为「到角」则范围是 0°～180°。",
-        "scene": { "lines": [ { "A": 0, "B": 1, "C": 0, "color": "#8fa3c8", "label": "l₁" }, { "model": "slope", "b": 0, "color": "#a878ff", "label": "l₂", "trace": true } ],
-          "slider": { "param": "k", "range": [-3, 3], "start": 1, "target": 1, "tol": 0.06 },
-          "x": [-3, 4], "y": [-3, 4] } },
-
-      { "name": "夹角计算",
-        "q": "直线 l1: y = x 与 l2: y = √3 x 的夹角是？",
-        "opts": ["res://art/line/formulas/l53q2_1.png", "res://art/line/formulas/l53q2_2.png", "res://art/line/formulas/l53q2_3.png", "res://art/line/formulas/l53q2_4.png"], "ans": 0,
-        "hint": "用 tanθ = |(k2 − k1)/(1 + k1·k2)|。",
-        "explain": "tanθ = |(√3−1)/(1+√3)| = 2 − √3 = tan15°，故 θ = 15°。",
-        "scene": { "lines": [ { "k": 1, "b": 0, "color": "#5ee6ff", "label": "l₁" }, { "model": "slope", "b": 0, "color": "#a878ff", "label": "l₂", "trace": true } ],
-          "slider": { "param": "k", "range": [-3, 3], "start": 1.732, "target": 1.732, "tol": 0.06 },
-          "x": [-3, 4], "y": [-3, 4] } },
-
-      { "name": "交点直线系的陷阱(陷阱)",
-        "q": "直线系 (2x + y − 1) + λ(x − y + 2) = 0 能表示？",
-        "opts": ["过两直线交点的所有直线", "过交点但不包含直线 x − y + 2 = 0 的所有直线", "两条直线的交点", "平行于两直线的直线"], "ans": 1, "trap": true,
-        "hint": "λ 取任意实数时，直线 x − y + 2 = 0 本身无法表示。",
-        "explain": "交点直线系必过两直线交点，但无论 λ 取何值都表示不出第二条直线 x−y+2=0(需要 λ 为无穷大)。",
-        "scene": { "lines": [ { "A": 2, "B": 1, "C": -1, "color": "#5ee6ff", "label": "l₁" }, { "A": 1, "B": -1, "C": 2, "color": "#a878ff", "label": "l₂" }, { "model": "expr", "a1": 1, "a0": 2, "b1": -1, "b0": 1, "c1": 2, "c0": -1, "color": "#ffd479", "label": "直线系", "dash": true } ],
-          "slider": { "param": "λ", "range": [-5, 5], "start": 0, "target": 0, "tol": 0.06 },
-          "x": [-3, 4], "y": [-3, 4] } }
     ]
   },
 
@@ -517,7 +500,7 @@
         "task": { "start": [3, 1], "gate": false, "reflect": "line", "reflect_line": { "A": 1, "B": -2, "C": 1 }, "reflect_label": "P′" },
         "derive": { "line": { "A": 1, "B": -2, "C": 1 }, "tpl_perp": "l6_perp_tpl", "tpl_mid": "l6_mid_tpl", "formula": "l6_reflect_formula" },
         "ask": "求点 P 关于直线 l: Ax + By + C = 0 的对称点 P′，应按什么列式？",
-        "opts": ["PP′ ⊥ l（即 PP′ 沿法向量 (A,B) 方向），且 PP′ 的中点在 l 上", "PP′ ∥ l，且 PP′ 的中点在 l 上", "PP′ ⊥ l，且 P′ 到 l 的距离是 P 的两倍", "只要求 P′ 落在 l 的另一侧"], "ans": 0,
+        "opts": ["PP′ ⊥ l，且 PP′ 的中点在 l 上", "PP′ ∥ l，且 PP′ 的中点在 l 上", "PP′ ⊥ l，且 P′ 到 l 的距离是 P 的两倍", "只要求 P′ 落在 l 的另一侧"], "ans": 0,
         "hint": "对称轴 l 是线段 PP′ 的垂直平分线。",
         "explain": "设 P′(x′, y′)，由“垂直平分”列两个方程：① 垂直 {f:l6_perp_tpl}；② 平分 {f:l6_mid_tpl}。联立解得 {f:l6_reflect_formula}。",
         "scene": { "lines": [ { "A": 1, "B": -2, "C": 1, "color": "#8fa3c8", "label": "l" } ], "x": [-3, 5], "y": [-3, 5] } },
@@ -562,6 +545,7 @@
         "start": [0, 0], "answer": [3, 0], "tol": 0.35,
         "constraint": { "type": "xaxis" },
         "hint": "作 A 关于 x 轴的对称点 A′(1, −2)，连 A′B 与 x 轴交于 (3, 0)。",
+        "explain": "作 A 关于 x 轴的对称点 A′(1, −2)，则 |PA| = |PA′|；连 A′B 与 x 轴交于 (3, 0)，此时 |PA| + |PB| = |A′B| 取到最小值。",
         "scene": { "lines": [ { "A": 0, "B": 1, "C": 0, "color": "#8fa3c8", "width": 1.4, "label": "x轴" } ],
           "points": [ { "p": [1, 2], "label": "A", "color": "#fb7185" }, { "p": [4, 1], "label": "B", "color": "#5ee6ff" } ],
           "y": [-3, 4] } },

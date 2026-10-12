@@ -18,6 +18,10 @@ func _ready() -> void:
 		"res://scenes/UserProfile.tscn",
 		"res://scenes/Login.tscn",
 		"res://scenes/TheoremTree.tscn",
+		"res://scenes/WrongNotebook.tscn",
+		"res://scenes/DailyMissions.tscn",
+		"res://scenes/Achievements.tscn",
+		"res://scenes/Shop.tscn",
 		"res://scenes/BootSplash.tscn",
 	]
 	for path in standalone:

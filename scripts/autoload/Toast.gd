@@ -4,7 +4,7 @@ extends CanvasLayer
 var _active: int = 0
 
 func _ready() -> void:
-	layer = 100
+	layer = UiConst.LAYER_TOAST
 
 func show_toast(text: String) -> void:
 	var pc := PanelContainer.new()

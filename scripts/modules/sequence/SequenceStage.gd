@@ -130,7 +130,7 @@ func _current() -> Dictionary:
 
 ## 错题优先：本关存在历史错题时重排题序，并记录原始题号映射。
 func _apply_review() -> void:
-	var r := GameData.review_order(GameData.current_level_id(), _stages)
+	var r := GameData.review_order(GameData.current_level_id(), _stages, GameData.review_focus)
 	_stages = r["stages"]
 	_qid = r["order"]
 	_review = r["review"]
@@ -544,7 +544,7 @@ func _update_hud() -> void:
 # ---------------------------------------------------------------- UI
 func _build_ui() -> void:
 	var layer := CanvasLayer.new()
-	layer.layer = 10
+	layer.layer = UiConst.LAYER_STAGE_UI
 	add_child(layer)
 	_ui = Control.new()
 	_ui.theme = UI.make_theme()
@@ -578,8 +578,8 @@ func _build_ui() -> void:
 	var hb := HBoxContainer.new()
 	hb.add_theme_constant_override("separation", 16)
 	bar.add_child(hb)
-	hb.add_child(UI.ghost_button("← 方法推演", func() -> void:
-		Scene.goto(BACK_SCENE)
+	hb.add_child(UI.ghost_button("← " + Scene.origin_label("方法推演"), func() -> void:
+		Scene.goto_origin(BACK_SCENE)
 	))
 	var vl := ColorRect.new()
 	vl.color = UI.COL_LINE
@@ -727,8 +727,8 @@ func _build_ui() -> void:
 	vv.add_child(row)
 	_nav_prev = UI.ghost_button("上一关", func() -> void: GameData.goto_prev_level(), 15)
 	row.add_child(_nav_prev)
-	row.add_child(UI.ghost_button("返回方法推演", func() -> void:
-		Scene.goto(BACK_SCENE)
+	row.add_child(UI.ghost_button("返回" + Scene.origin_label("方法推演"), func() -> void:
+		Scene.goto_origin(BACK_SCENE)
 	, 16))
 	var again := Button.new()
 	again.text = "重新推演"

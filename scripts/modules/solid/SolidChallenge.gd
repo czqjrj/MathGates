@@ -823,7 +823,7 @@ func _is_over_ui() -> bool:
 # ---------------------------------------------------------------- UI
 func _build_ui() -> void:
 	var layer := CanvasLayer.new()
-	layer.layer = 10
+	layer.layer = UiConst.LAYER_STAGE_UI
 	add_child(layer)
 
 	_ui_root = Control.new()
@@ -860,9 +860,7 @@ func _build_ui() -> void:
 	var hb := HBoxContainer.new()
 	hb.add_theme_constant_override("separation", 16)
 	bar.add_child(hb)
-	hb.add_child(UI.ghost_button("← 返回区域", func() -> void:
-		Scene.goto("res://scenes/WorldMap.tscn")
-	))
+	hb.add_child(UI.ghost_button("← " + Scene.origin_label("方法推演"), func() -> void: Scene.goto_origin("res://scenes/WorldMap.tscn")))
 	var vline := ColorRect.new()
 	vline.color = UI.COL_LINE
 	vline.custom_minimum_size = Vector2(1, 18)
@@ -1033,9 +1031,7 @@ func _build_ui() -> void:
 	vv.add_child(row)
 	_nav_prev = UI.ghost_button("上一关", func() -> void: GameData.goto_prev_level(), 15)
 	row.add_child(_nav_prev)
-	row.add_child(UI.ghost_button("返回区域", func() -> void:
-		Scene.goto("res://scenes/WorldMap.tscn")
-	, 16))
+	row.add_child(UI.ghost_button("返回" + Scene.origin_label("方法推演"), func() -> void: Scene.goto_origin("res://scenes/WorldMap.tscn"), 16))
 	var again := Button.new()
 	again.text = "重新推演"
 	again.custom_minimum_size = Vector2(180, 56)

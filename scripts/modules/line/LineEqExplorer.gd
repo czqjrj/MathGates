@@ -183,11 +183,6 @@ func _rat(v: float) -> String:
 			return "%d/%d" % [int(num), den]
 	return "%.2f" % v
 
-func _signed(v: float, first: bool) -> String:
-	if first:
-		return ("−%s" % _fmt(absf(v))) if v < 0.0 else _fmt(v)
-	return (" − " if v < 0.0 else " + ") + _fmt(absf(v))
-
 func _tex(n: String) -> Texture2D:
 	var p := "res://art/line/formulas/%s.png" % n
 	return load(p) if ResourceLoader.exists(p) else null
@@ -371,27 +366,6 @@ func _tp_bad() -> bool:
 func _ic_bad() -> bool:
 	return absf(_xi) < 0.1 or absf(_yi) < 0.1
 
-func _int_general() -> String:
-	var den := 1
-	for dd in range(1, 13):
-		if _is_int(_k * dd) and _is_int(_b * dd):
-			den = dd
-			break
-	var A := roundf(_k * den)
-	var B := -float(den)
-	var C := roundf(_b * den)
-	var g := _gcd(int(roundf(absf(A))), int(roundf(absf(B))))
-	g = _gcd(g, int(roundf(absf(C))))
-	if g > 0:
-		A /= g
-		B /= g
-		C /= g
-	if A < -1e-6 or (absf(A) < 1e-6 and B < -1e-6):
-		A = -A
-		B = -B
-		C = -C
-	return _coef_eq(A, B, C)
-
 func _is_int(x: float) -> bool:
 	return absf(x - roundf(x)) < 1e-4
 
@@ -425,10 +399,6 @@ func _coef_term(c: float, v: String, first: bool) -> String:
 	if first:
 		return ("−" if c < 0.0 else "") + core
 	return (" − " if c < 0.0 else " + ") + core
-
-func _fail_cross(cx: float, cy: float, w: float) -> void:
-	var r := Rect2(cx - w * 0.5, cy - 22.0, w, 44.0)
-	_fail_cross_rect(r)
 
 func _fail_cross_rect(r: Rect2) -> void:
 	draw_line(r.position + Vector2(6, 6), r.end - Vector2(6, 6), Color(COL_DANGER, 0.85), 3.0)

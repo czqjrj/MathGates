@@ -55,36 +55,10 @@ func _process(delta: float) -> void:
 
 # ---------------------------------------------------------------- 顶栏
 func _build_topbar() -> void:
-	var bar := PanelContainer.new()
-	bar.add_theme_stylebox_override("panel", UI.topbar_box())
-	bar.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	bar.custom_minimum_size = Vector2(0, 64)
-	bar.offset_bottom = 64
-	add_child(bar)
-
-	var hb := HBoxContainer.new()
-	hb.add_theme_constant_override("separation", 18)
-	bar.add_child(hb)
-
-	hb.add_child(UI.ghost_button("← 返回终端", func() -> void:
-		Scene.goto("res://scenes/MainHub.tscn")
-	))
-	hb.add_child(_hairline(Vector2(1, 18)))
-	hb.add_child(UI.make_label("方法推演", 22))
-	hb.add_child(UI.mono_label("METHOD SECTOR", 13, Color(UI.COL_TEXT_DIM, 0.7)))
-
-	var sp := Control.new()
-	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	hb.add_child(sp)
-
+	var hb := UI.screen_topbar(self, "方法推演", "METHOD SECTOR", "res://scenes/MainHub.tscn")
 	_star_lbl = UI.mono_label("", 17, UI.COL_ACCENT)
 	hb.add_child(_star_lbl)
 	_refresh_topbar()
-
-	hb.add_child(UI.ghost_button("重置推演", func() -> void:
-		GameData.reset_progress()
-		Toast.show_toast("推演档案已重置")
-	, 14))
 
 func _refresh_topbar() -> void:
 	if _star_lbl != null:
@@ -228,7 +202,7 @@ func _open_panel(index: int) -> void:
 	var ch: Dictionary = GameData.chapters[index]
 
 	_panel_layer = CanvasLayer.new()
-	_panel_layer.layer = 50
+	_panel_layer.layer = UiConst.LAYER_PANEL
 	add_child(_panel_layer)
 
 	var dim := ColorRect.new()
@@ -273,7 +247,7 @@ func _open_panel(index: int) -> void:
 	head.add_child(hsp)
 	head.add_child(UI.mono_label("★ %d / %d" % [GameData.chapter_stars(ch), GameData.chapter_max_stars(ch)], 17, UI.COL_ACCENT))
 
-	vb.add_child(_hairline(Vector2(0, 1)))
+	vb.add_child(UI.hairline(Vector2(0, 1)))
 
 	# 关卡网格
 	var grid := GridContainer.new()
@@ -388,13 +362,3 @@ func _add_empty_hint() -> void:
 	l.size = Vector2(get_viewport_rect().size.x, 28)
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_content.add_child(l)
-
-func _hairline(min_size: Vector2) -> ColorRect:
-	var r := ColorRect.new()
-	r.color = UI.COL_LINE
-	r.custom_minimum_size = min_size
-	r.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	if min_size.x <= 0.0:
-		r.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	return r

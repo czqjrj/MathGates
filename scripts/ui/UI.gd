@@ -32,6 +32,7 @@ static var animations := true
 static var _active_confirm: Control = null
 
 static var _font: Font
+static var _font_bold: Font
 static var _mono: Font
 static var _title_font: Font
 static var _panel_style: StyleBox
@@ -47,6 +48,18 @@ static func font() -> Font:
 		])
 		_font = f
 	return _font
+
+## 粗体字体(与正文字体同族)，用于需要强调的文本
+static func font_bold() -> Font:
+	if _font_bold == null:
+		var f := SystemFont.new()
+		f.font_names = PackedStringArray([
+			"Microsoft YaHei UI", "Microsoft YaHei", "SimHei",
+			"PingFang SC", "Noto Sans CJK SC", "Segoe UI", "sans-serif"
+		])
+		f.font_weight = 700
+		_font_bold = f
+	return _font_bold
 
 ## 等宽字体栈(数字/代号用)，缺字形时回落到中文字体
 static func mono_font() -> Font:
@@ -580,6 +593,68 @@ static func mono_label(text: String, size: int = 16, color: Color = COL_TEXT, al
 	var l := make_label(text, size, color, align)
 	l.add_theme_font_override("font", mono_font())
 	return l
+
+# ---------------------------------------------------------------- 通用页面组件
+## 页面顶栏：返回按钮 + 标题 + 英文副题 + 弹性留白。返回 HBox 供调用方追加右侧内容。
+static func screen_topbar(root: Control, title: String, en: String, back_scene: String) -> HBoxContainer:
+	var bar := PanelContainer.new()
+	bar.add_theme_stylebox_override("panel", topbar_box())
+	bar.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	bar.custom_minimum_size = Vector2(0, 64)
+	bar.offset_bottom = 64
+	root.add_child(bar)
+	var hb := HBoxContainer.new()
+	hb.add_theme_constant_override("separation", 18)
+	bar.add_child(hb)
+	hb.add_child(ghost_button("← 返回终端", func() -> void: Scene.goto(back_scene)))
+	hb.add_child(hairline(Vector2(1, 18)))
+	hb.add_child(make_label(title, 22))
+	hb.add_child(mono_label(en, 13, Color(COL_TEXT_DIM, 0.7)))
+	var sp := Control.new()
+	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hb.add_child(sp)
+	return hb
+
+static func hairline(min_size: Vector2) -> ColorRect:
+	var r := ColorRect.new()
+	r.color = COL_LINE
+	r.custom_minimum_size = min_size
+	r.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	if min_size.x <= 0.0:
+		r.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return r
+
+## 小节标题：左侧色条 + 标题
+static func section(title: String, col: Color) -> Control:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	var bar := ColorRect.new()
+	bar.color = col
+	bar.custom_minimum_size = Vector2(4, 22)
+	bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(bar)
+	row.add_child(make_label(title, 20, COL_TEXT))
+	return row
+
+## 读数格：上值下标签
+static func stat_box(label: String, value: String) -> Control:
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 2)
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	box.add_child(mono_label(value, 22, COL_ACCENT))
+	box.add_child(make_label(label, 13, COL_TEXT_DIM))
+	return box
+
+static func gap(h: int) -> Control:
+	var c := Control.new()
+	c.custom_minimum_size = Vector2(0, h)
+	return c
+
+## 选项序号 -> A/B/C/D
+static func letter(i: int) -> String:
+	return "ABCD".substr(i, 1) if i >= 0 and i <= 3 else "—"
 
 static func full_rect(c: Control) -> void:
 	c.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)

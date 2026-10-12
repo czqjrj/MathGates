@@ -105,7 +105,6 @@ var _spark_cd := 0.0
 # 智能与养成扩展
 var _combo := 0            # 连续答对数(跨题保持，答错清零)
 var _grumble := 0          # 连续答错数
-var _stat_t := 0.0         # 状态卡显示计时(悬停/互动后短暂显示)
 var _trick_cd := 3.0       # 自主小动作冷却
 var _medal_ready := false  # 限制勋章反应延迟(避免登录回填时齐声庆祝)
 var _aura := 0.0           # 光环脉动相位
@@ -119,7 +118,6 @@ func _ready() -> void:
 	_blink_t = randf_range(2.0, 4.0)
 	mouse_entered.connect(func() -> void:
 		_hover = true
-		_stat_t = 2.2
 		_wake()
 	)
 	mouse_exited.connect(func() -> void: _hover = false)
@@ -181,7 +179,7 @@ func _roam_update(delta: float) -> void:
 static func spawn(parent: Node, greet: String = "") -> Pet:
 	var layer := CanvasLayer.new()
 	layer.name = "PetLayer"
-	layer.layer = 90
+	layer.layer = UiConst.LAYER_PET
 	parent.add_child(layer)
 	var pet := Pet.new()
 	pet.size = Vector2(116, 116)
@@ -247,8 +245,7 @@ func _process(delta: float) -> void:
 			_offer_quest()
 		else:
 			say(TIPS[randi() % TIPS.size()], 3.0)
-	# 状态卡 / 光环 / 复习任务窗口
-	_stat_t = maxf(_stat_t - delta, 0.0)
+	# 光环 / 复习任务窗口
 	_aura += delta
 	_quest_t = maxf(_quest_t - delta, 0.0)
 	if _quest_t <= 0.0 and not _quest.is_empty():
@@ -304,7 +301,6 @@ func _pop() -> void:
 	_happy(1.2)
 	GameData.pet_touch()
 	GameData.pet_mood = clampf(GameData.pet_mood + 0.03, 0.2, 1.0)
-	_stat_t = 2.4
 	var chance := 0.2 + affection_tier() * 0.15
 	if randf() < chance:
 		var pool := _clingy_pool()
@@ -327,7 +323,6 @@ func _feed() -> void:
 	_wake()
 	GameData.add_pet_fed()
 	_spawn_hearts(5)
-	_stat_t = 2.4
 	Sound.play("select")
 
 # ---------------------------------------------------------------- 智能
@@ -723,12 +718,12 @@ func _draw() -> void:
 		draw_circle(dp, 13.0, Color(1, 1, 1, 0.08))
 		draw_arc(dp, 13.0, 0.0, TAU, 24, Color(1, 1, 1, 0.30), 1.2, true)
 		_draw_spark(dp, 6.0, 0.9)
-	# 气泡
+	# 气泡(按萌宠在屏幕中的位置自动上/下翻转：位于下半屏时气泡在上方，
+	# 避免遮挡底部的交互信息栏；位于上半屏时改为在下方，避免超出屏幕顶部)
 	if _bubble > 0.0 and _bubble_text != "":
-		_draw_bubble(center + Vector2(0, -R - 32))
-	# 养成状态卡(悬停或互动后短暂显示)
-	if _stat_t > 0.0:
-		_draw_status_card(center + Vector2(0, -R - 40))
+		var bpos := center + Vector2(0, -R - 32)
+		var above := (global_position.y + bpos.y) > get_viewport_rect().size.y * 0.5
+		_draw_bubble(bpos, above)
 
 func _draw_face(center: Vector2, R: float) -> void:
 	var ex := R * 0.40
@@ -917,42 +912,7 @@ func _draw_core(center: Vector2, R: float) -> void:
 	draw_circle(gp, 4.6, Color(col, 0.95))
 	draw_circle(gp, 2.0, Color.WHITE)
 
-## 养成状态卡(形态 / 好感度 / 饱食度 / 心情)，悬停或互动后短暂显示
-func _draw_status_card(pos: Vector2) -> void:
-	var w := 156.0
-	var h := 84.0
-	var rect := Rect2(pos - Vector2(w * 0.5 + 8.0, h + 12.0), Vector2(w + 16.0, h + 12.0))
-	var vp := get_viewport_rect()
-	var gp := global_position + rect.position
-	gp.x = clampf(gp.x, 6.0, maxf(vp.size.x - rect.size.x - 6.0, 6.0))
-	gp.y = clampf(gp.y, 6.0, maxf(vp.size.y - rect.size.y - 6.0, 6.0))
-	rect.position = gp - global_position
-	draw_rect(rect, Color(0.05, 0.07, 0.12, 0.92), true)
-	draw_rect(rect, Color(UI.COL_ACCENT, 0.5), false, 1.2)
-	var f := UI.font()
-	var fsz := UI.fs(12)
-	var pad := rect.position + Vector2(12.0, 8.0)
-	# 形态(随知识掌握进化)
-	draw_string(f, pad, "形态", HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, UI.COL_TEXT_DIM)
-	draw_string(f, pad + Vector2(46.0, 0.0), GameData.pet_form_name(), HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, UI.COL_ACCENT)
-	# 好感度(♥ 随喂养等级增加)
-	draw_string(f, pad + Vector2(0, 24.0), "好感", HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, UI.COL_TEXT_DIM)
-	var tier := affection_tier()
-	for i in 3:
-		_draw_heart(pad + Vector2(46.0 + i * 15.0, 30.0), 7.5, 1.0 if i <= tier else 0.22)
-	# 饱食度
-	var sat: float = GameData.pet_satiety
-	draw_string(f, pad + Vector2(0, 45.0), "饱食", HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, UI.COL_TEXT_DIM)
-	draw_rect(Rect2(pad + Vector2(46.0, 37.0), Vector2(92.0, 7.0)), Color(1, 1, 1, 0.12), true)
-	draw_rect(Rect2(pad + Vector2(46.0, 37.0), Vector2(92.0 * clampf(sat, 0.0, 1.0), 7.0)), Color("#ffd479"), true)
-	# 心情
-	var mood: float = GameData.pet_mood
-	var mood_col: Color = UI.COL_SUCCESS if mood >= 0.75 else (UI.COL_ACCENT if mood >= 0.45 else Color("#ff9a6b"))
-	draw_string(f, pad + Vector2(0, 66.0), "心情", HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, UI.COL_TEXT_DIM)
-	draw_rect(Rect2(pad + Vector2(46.0, 58.0), Vector2(92.0, 7.0)), Color(1, 1, 1, 0.12), true)
-	draw_rect(Rect2(pad + Vector2(46.0, 58.0), Vector2(92.0 * clampf(mood, 0.0, 1.0), 7.0)), Color(mood_col), true)
-
-func _draw_bubble(pos: Vector2) -> void:
+func _draw_bubble(pos: Vector2, above: bool = true) -> void:
 	var f := UI.font()
 	var fsz := UI.fs(14)
 	var lh := float(fsz) + 5.0
@@ -962,7 +922,8 @@ func _draw_bubble(pos: Vector2) -> void:
 	for ln in lines:
 		w = maxf(w, f.get_string_size(ln, HORIZONTAL_ALIGNMENT_LEFT, -1, fsz).x)
 	var bh := 12.0 + lines.size() * lh
-	var rect := Rect2(pos - Vector2(w * 0.5 + 10.0, bh), Vector2(w + 20.0, bh))
+	# above=true: 气泡在锚点上方；above=false: 气泡在锚点下方
+	var rect := Rect2(pos - Vector2(w * 0.5 + 10.0, bh if above else 0.0), Vector2(w + 20.0, bh))
 	# 以全局坐标夹取：rect 用的是本地坐标，直接用视口尺寸夹会因萌宠位置而漂移出屏
 	var vp := get_viewport_rect()
 	var gp := global_position + rect.position
@@ -972,10 +933,16 @@ func _draw_bubble(pos: Vector2) -> void:
 	draw_rect(rect, Color(0.05, 0.07, 0.12, 0.94), true)
 	draw_rect(rect, Color(UI.COL_ACCENT, 0.55), false, 1.5)
 	var tx := clampf(pos.x, rect.position.x + 10.0, rect.end.x - 10.0)
-	draw_colored_polygon(PackedVector2Array([
-		Vector2(tx - 7.0, rect.end.y - 1.0),
-		Vector2(tx + 7.0, rect.end.y - 1.0),
-		Vector2(tx, rect.end.y + 9.0)]), Color(0.05, 0.07, 0.12, 0.94))
+	if above:
+		draw_colored_polygon(PackedVector2Array([
+			Vector2(tx - 7.0, rect.end.y - 1.0),
+			Vector2(tx + 7.0, rect.end.y - 1.0),
+			Vector2(tx, rect.end.y + 9.0)]), Color(0.05, 0.07, 0.12, 0.94))
+	else:
+		draw_colored_polygon(PackedVector2Array([
+			Vector2(tx - 7.0, rect.position.y + 1.0),
+			Vector2(tx + 7.0, rect.position.y + 1.0),
+			Vector2(tx, rect.position.y - 9.0)]), Color(0.05, 0.07, 0.12, 0.94))
 	var y := rect.position.y + 5.0
 	for ln in lines:
 		draw_string(f, Vector2(rect.position.x + 10.0, y + fsz), ln, HORIZONTAL_ALIGNMENT_LEFT, -1, fsz, UI.COL_TEXT)

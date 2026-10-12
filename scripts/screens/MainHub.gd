@@ -6,6 +6,7 @@ var _lv_lbl: Label
 var _star_lbl: Label
 var _prog_lbl: Label
 var _prog_line: ProgressLine
+var _daily_btn: Button
 
 func _ready() -> void:
 	theme = UI.make_theme()
@@ -18,6 +19,25 @@ func _ready() -> void:
 	_add_pet()
 	_refresh_status()
 	GameData.progress_changed.connect(_refresh_status)
+	_maybe_daily()
+
+## 每日登录奖励：当天未领取时弹窗，连续登录加成。
+func _maybe_daily() -> void:
+	if not GameData.daily_available():
+		return
+	var next_streak := (GameData.login_streak + 1) if GameData.last_login_date == GameData._yesterday() else 1
+	var mult := 1.0 + 0.2 * float(next_streak - 1)
+	var coins := int(50.0 * mult)
+	var ex := int(20.0 * mult)
+	await get_tree().process_frame
+	if not is_inside_tree():
+		return
+	UI.confirm(self, "每日登录奖励", "连续登录第 %d 天\n金币 +%d   ·   经验 +%d" % [next_streak, coins, ex], func() -> void:
+		var r := GameData.claim_daily()
+		if bool(r.get("ok", false)):
+			Sound.play("unlock")
+			Toast.show_toast("每日奖励 · 金币 +%d   经验 +%d" % [int(r["coins"]), int(r["exp"])])
+	, "领取")
 
 func _add_pet() -> void:
 	var pet := Pet.spawn(self)
@@ -85,6 +105,11 @@ func _build_topbar() -> void:
 	av.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hb.add_child(av)
 	hb.add_child(UI.make_label(GameData.current_user, 17))
+	_daily_btn = UI.ghost_button(_daily_text(), func() -> void:
+		Sound.play("select")
+		Scene.goto("res://scenes/DailyMissions.tscn")
+	, 14)
+	hb.add_child(_daily_btn)
 	hb.add_child(UI.ghost_button("退出登录", func() -> void:
 		GameData.logout()
 		Sound.play("select")
@@ -92,8 +117,10 @@ func _build_topbar() -> void:
 	, 14))
 
 	hb.add_child(UI.ghost_button("重置推演", func() -> void:
-		GameData.reset_progress()
-		Toast.show_toast("推演档案已重置")
+		UI.confirm(self, "重置推演", "将清空全部推演进度(星数、错题、萌宠成长等)，且无法撤销。确定吗？", func() -> void:
+			GameData.reset_progress()
+			Toast.show_toast("推演档案已重置")
+		)
 	, 14))
 
 	hb.add_child(UI.ghost_button("设置", func() -> void:
@@ -111,6 +138,8 @@ func _refresh_status() -> void:
 	_name_lbl.text = GameData.rank_title()
 	_lv_lbl.text = "Lv.%d" % GameData.player_level()
 	_star_lbl.text = "★ %d / %d" % [GameData.total_stars(), GameData.total_max_stars()]
+	if _daily_btn != null and is_instance_valid(_daily_btn):
+		_daily_btn.text = _daily_text()
 	var rp := GameData.rank_progress()
 	if str(rp["next_title"]) == "":
 		_prog_line.set_ratio(1.0)
@@ -118,6 +147,11 @@ func _refresh_status() -> void:
 	else:
 		_prog_line.set_ratio(float(rp["ratio"]))
 		_prog_lbl.text = "称号进度 · 距「%s」还需 %d★" % [str(rp["next_title"]), int(rp["need"])]
+
+## 顶栏「每日任务」按钮文案：有可领取时附数量。
+func _daily_text() -> String:
+	var n := GameData.daily_claimable_count()
+	return ("每日任务 (%d)" % n) if n > 0 else "每日任务"
 
 # ---------------------------------------------------------------- 中央
 func _build_center() -> void:
@@ -177,8 +211,9 @@ func _build_center() -> void:
 	vb.add_child(row)
 	row.add_child(_card("知识体系", "思维导图统整知识，逐点点亮", Color("#a878ff"), "icon_tree", _on_theorem_tree, true))
 	row.add_child(_card("方法推演", "进入区域，逐层解析命题", Color("#5b8cff"), "icon_map", _on_adventure, false, true))
-	row.add_child(_card("档案库", "用户档案与错题复盘", Color("#ffa64d"), "icon_book", _on_archive, false, true))
-	row.add_child(_card("错题笔记", "记录错题，回看再练", Color("#4dd6a8"), "icon_train", _soon, false))
+	row.add_child(_card("档案库", "用户档案与学情诊断", Color("#ffa64d"), "icon_book", _on_archive, false, true))
+	row.add_child(_card("错题笔记", "逐题回看错题，一键重练", Color("#4dd6a8"), "icon_train", _on_wrong_notebook, false, true))
+	row.add_child(_card("星辉市集", "金币兑换头像与道具", Color("#ffd479"), "icon_star_full", _on_shop, false, true))
 
 	UI.fade_in(vb, 0.42)
 	UI.card_deal_in(row, 0.09, 0.55)
@@ -265,6 +300,10 @@ func _on_archive() -> void:
 	Sound.play("begin")
 	Scene.goto("res://scenes/UserProfile.tscn")
 
-func _soon() -> void:
-	Sound.play("error")
-	Toast.show_toast("该模块尚未接入")
+func _on_wrong_notebook() -> void:
+	Sound.play("begin")
+	Scene.goto("res://scenes/WrongNotebook.tscn")
+
+func _on_shop() -> void:
+	Sound.play("begin")
+	Scene.goto("res://scenes/Shop.tscn")

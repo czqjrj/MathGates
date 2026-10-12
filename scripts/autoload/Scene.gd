@@ -6,6 +6,17 @@ extends Node
 const MAX_HISTORY := 24
 ## 根场景：从这里返回应退出程序(或询问退出)，而不是继续回退。
 const ROOT_SCENES := ["res://scenes/MainHub.tscn", "res://scenes/Login.tscn"]
+## 用于「返回」按钮文案的场景中文名。
+const SCENE_LABELS := {
+	"res://scenes/MainHub.tscn": "终端",
+	"res://scenes/WorldMap.tscn": "方法推演",
+	"res://scenes/TheoremTree.tscn": "知识体系",
+	"res://scenes/WrongNotebook.tscn": "错题笔记",
+	"res://scenes/UserProfile.tscn": "档案库",
+	"res://scenes/Achievements.tscn": "成就馆",
+	"res://scenes/DailyMissions.tscn": "每日任务",
+	"res://scenes/Shop.tscn": "星辉市集",
+}
 
 var _pending := ""
 ## 上一个场景路径(供「设置」等模态页返回)
@@ -60,6 +71,26 @@ func back() -> bool:
 	_pending = ""
 	goto(target, false)
 	return true
+
+## 下一个「返回」将回到的场景(仅预览,不弹栈)；无有效目标返回空串。
+func back_target() -> String:
+	var cur := get_tree().current_scene
+	var cur_path := "" if cur == null else cur.scene_file_path
+	for i in range(_history.size() - 1, -1, -1):
+		var p: String = _history[i]
+		if p != cur_path and ResourceLoader.exists(p):
+			return p
+	return ""
+
+## 依据「返回」目标给出中文标签；未知或为空时用 fallback。
+func origin_label(fallback: String) -> String:
+	return SCENE_LABELS.get(back_target(), fallback)
+
+## 返回来源场景(错题笔记/方法推演/知识体系等)；历史不足时退回 default_path。
+## 关卡内所有「返回」按钮统一走这里，保证深链进入后能按来源返回。
+func goto_origin(default_path: String) -> void:
+	if not back():
+		goto(default_path)
 
 ## 处理一次「返回」请求：先关闭弹窗/面板，再存档，然后回退；无路可退才询问退出。
 func handle_back() -> void:

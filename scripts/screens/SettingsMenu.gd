@@ -21,7 +21,7 @@ func _build_topbar() -> void:
 	hb.add_theme_constant_override("separation", 18)
 	bar.add_child(hb)
 	hb.add_child(UI.ghost_button("← 返回", _go_back))
-	hb.add_child(_hairline(Vector2(1, 18)))
+	hb.add_child(UI.hairline(Vector2(1, 18)))
 	hb.add_child(UI.make_label("设置", 22))
 	hb.add_child(UI.mono_label("SETTINGS", 13, Color(UI.COL_TEXT_DIM, 0.7)))
 	var sp := Control.new()
@@ -323,13 +323,5 @@ func _divider() -> Control:
 	var r := ColorRect.new()
 	r.color = UI.COL_LINE
 	r.custom_minimum_size = Vector2(0, 1)
-	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	return r
-
-func _hairline(min_size: Vector2) -> ColorRect:
-	var r := ColorRect.new()
-	r.color = UI.COL_LINE
-	r.custom_minimum_size = min_size
-	r.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return r

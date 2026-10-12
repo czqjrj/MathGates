@@ -74,11 +74,6 @@ func play_varied(nm: String, volume_db: float = 0.0, spread: float = 0.06) -> vo
 	play(nm, volume_db, 1.0 + randf_range(-spread, spread))
 
 ## 延迟播放(秒)
-func play_delayed(nm: String, delay: float, volume_db: float = 0.0) -> void:
-	if not enabled:
-		return
-	get_tree().create_timer(delay).timeout.connect(func(): play(nm, volume_db))
-
 func toggle() -> void:
 	enabled = not enabled
 

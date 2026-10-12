@@ -239,9 +239,6 @@ func _draw_target(p: Vector2, label: String) -> void:
 	if label != "":
 		_draw_label(sp + Vector2(14, 20), label, COL_GREEN, 14)
 
-func _task_label() -> String:
-	return str(_task.get("label", "拖动金点，对准目标"))
-
 # ---------------------------------------------------------------- 模型几何
 ## 返回当前任务的可测值 + 辅助绘制所需的量；由 _draw_task 与 _check_ok 共用。
 func _geom() -> Dictionary:

@@ -427,29 +427,6 @@ func _dot(p: Vector2, col: Color, r: float) -> void:
 	draw_circle(sp, r + 3.0, Color(col, 0.18))
 	draw_circle(sp, r, col)
 
-func _draw_curve(with_jump: bool) -> void:
-	var count := _a.size()
-	if count == 0:
-		return
-	var reveal := _reveal()
-	var shown := maxi(2, int(ceil(reveal * float(count))))
-	var line := PackedVector2Array()
-	for i in mini(shown, count):
-		line.append(_to_screen(Vector2(float(i + 1), float(_a[i]))))
-	if line.size() >= 2:
-		draw_polyline(line, Color(COL_ACCENT, 0.85), 2.2, true)
-	if with_jump:
-		for i in range(1, mini(shown, count)):
-			var p0 := _to_screen(Vector2(float(i + 1), float(_a[i - 1])))
-			var p1 := _to_screen(Vector2(float(i + 1), float(_a[i])))
-			draw_line(p0, p1, Color(COL_GOLD, 0.9), 2.4, true)
-			draw_dashed_line(_to_screen(Vector2(float(i), float(_a[i - 1]))), p0, Color(COL_DIM, 0.3), 1.0, 5.0)
-	for i in mini(shown, count):
-		var cur := i == mini(shown, count) - 1
-		_dot(Vector2(float(i + 1), float(_a[i])), COL_GOLD if cur else COL_ACCENT, 5.0 if cur else 4.0)
-	var gi := clampi(int(_reveal() * float(count - 1)), 0, count - 1)
-	draw_circle(_to_screen(Vector2(float(gi + 1), float(_a[gi]))), 9.0 + 2.0 * sin(_anim * 4.0), Color(COL_GOLD, 0.22))
-
 ## ---------------------------------------------------------------- 横式推导链
 ## 单元格：{t:"frac", n, d} / {t:"sum", a, op, b} / {t:"atom", n} / {t:"num", v}
 func _cell_w(c: Dictionary, sc: float) -> float:
@@ -512,14 +489,6 @@ func _chain_measure(cells: Array, rhs: Array, sc: float, sep: float, eq_gap: flo
 		rw += _cell_w(c, sc)
 	rw += sep * float(maxi(rhs.size() - 1, 0))
 	return lw + rw + eq_gap * 2.0 + _tex_size("op_eq", sc).x
-
-## 竖式基线友好的公式绘制（按目标像素高缩放）
-func _draw_tex_fit(name: String, center: Vector2, h: float, tint: Color) -> void:
-	var t := _tex(name)
-	if t == null or t.get_height() <= 0.0:
-		return
-	var s := Vector2(h * t.get_width() / t.get_height(), h)
-	draw_texture_rect(t, Rect2(center - s * 0.5, s), false, tint)
 
 ## 按目标像素宽缩放绘制（横式公式更自然）
 func _draw_tex_w(name: String, center: Vector2, w: float, tint: Color) -> void:

@@ -120,7 +120,7 @@ func _ready() -> void:
 
 ## 错题优先：本关存在历史错题时重排题序，并记录原始题号映射。
 func _apply_review() -> void:
-	var r := GameData.review_order(GameData.current_level_id(), _questions)
+	var r := GameData.review_order(GameData.current_level_id(), _questions, GameData.review_focus)
 	_questions = r["stages"]
 	_qid = r["order"]
 	_review = r["review"]
@@ -176,10 +176,8 @@ func _build_topbar() -> void:
 	hb.add_theme_constant_override("separation", 16)
 	bar.add_child(hb)
 
-	hb.add_child(UI.ghost_button("← 返回区域", func() -> void:
-		Scene.goto("res://scenes/WorldMap.tscn")
-	))
-	hb.add_child(_hairline(Vector2(1, 18)))
+	hb.add_child(UI.ghost_button("← " + _back_label(), func() -> void: _go_back()))
+	hb.add_child(UI.hairline(Vector2(1, 18)))
 	hb.add_child(UI.make_label(str(_level.get("name", "推演节点")), 22))
 
 	var arch := str(_level.get("archetype", ""))
@@ -378,11 +376,31 @@ func _option_row(k: int, text: String) -> Control:
 		tex_r.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		content = tex_r
 	else:
-		var l := UI.make_label(text, 17, UI.COL_TEXT)
-		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		content = l
+		var opt_txt := UI.inline_formulas(text, 24)
+		if opt_txt.find("[img") >= 0:
+			var rt := RichTextLabel.new()
+			rt.bbcode_enabled = true
+			rt.fit_content = true
+			rt.scroll_active = false
+			rt.text = opt_txt
+			rt.add_theme_font_override("normal_font", UI.font())
+			rt.add_theme_font_override("bold_font", UI.font_bold())
+			rt.add_theme_font_override("italics_font", UI.font())
+			rt.add_theme_font_size_override("normal_font_size", UI.fs(20))
+			rt.add_theme_font_size_override("bold_font_size", UI.fs(20))
+			rt.add_theme_font_size_override("italics_font_size", UI.fs(20))
+			rt.add_theme_color_override("default_color", UI.COL_TEXT)
+			rt.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			rt.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			rt.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			content = rt
+		else:
+			var l := UI.make_label(opt_txt, 20, UI.COL_TEXT)
+			l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			content = l
 	hb.add_child(content)
 
 	UI.corner_marks(box, 6, 9, 2, Color(1, 1, 1, 0.22))
@@ -515,7 +533,7 @@ func _finish() -> void:
 	Sound.play("begin" if st > 0 else "error")
 
 	var layer := CanvasLayer.new()
-	layer.layer = 5
+	layer.layer = UiConst.LAYER_STAGE_HUD
 	add_child(layer)
 
 	var dim := ColorRect.new()
@@ -539,7 +557,7 @@ func _finish() -> void:
 
 	vb.add_child(UI.mono_label("DEDUCTION COMPLETE", 13, UI.COL_ACCENT, HORIZONTAL_ALIGNMENT_CENTER))
 	vb.add_child(UI.make_label("推演完成", 30, UI.COL_TEXT, HORIZONTAL_ALIGNMENT_CENTER))
-	vb.add_child(_hairline(Vector2(0, 1)))
+	vb.add_child(UI.hairline(Vector2(0, 1)))
 
 	var srow := HBoxContainer.new()
 	srow.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -563,7 +581,7 @@ func _finish() -> void:
 			srow.add_child(UI.mono_label("★" if full else "☆", 40,
 				UI.COL_ACCENT if full else Color("#3c4a66"), HORIZONTAL_ALIGNMENT_CENTER))
 
-	vb.add_child(_hairline(Vector2(0, 1)))
+	vb.add_child(UI.hairline(Vector2(0, 1)))
 	vb.add_child(UI.mono_label("解析正确 %d / %d 题" % [_correct, total], 18, UI.COL_TEXT, HORIZONTAL_ALIGNMENT_CENTER))
 	vb.add_child(UI.make_label(GameData.rank_title(), 15, UI.COL_TEXT_DIM, HORIZONTAL_ALIGNMENT_CENTER))
 
@@ -574,9 +592,7 @@ func _finish() -> void:
 	var prev_b := UI.ghost_button("上一关", func() -> void: GameData.goto_prev_level(), 15)
 	prev_b.disabled = not GameData.has_prev_level()
 	row.add_child(prev_b)
-	row.add_child(UI.ghost_button("返回区域", func() -> void:
-		Scene.goto("res://scenes/WorldMap.tscn")
-	, 16))
+	row.add_child(UI.ghost_button("返回" + _back_label(), func() -> void: _go_back(), 16))
 	var again := Button.new()
 	again.text = "重新推演"
 	again.custom_minimum_size = Vector2(180, 56)
@@ -609,23 +625,17 @@ func _build_empty() -> void:
 	vb.add_child(UI.make_label("可先返回体验其他区域", 15, UI.COL_TEXT_DIM, HORIZONTAL_ALIGNMENT_CENTER))
 	var row := CenterContainer.new()
 	vb.add_child(row)
-	row.add_child(UI.ghost_button("返回区域", func() -> void:
-		Scene.goto("res://scenes/WorldMap.tscn")
-	, 16))
+	row.add_child(UI.ghost_button("返回" + _back_label(), func() -> void: _go_back(), 16))
 	await get_tree().process_frame
 	if is_instance_valid(panel):
 		UI.popup_in(panel)
 
 # ---------------------------------------------------------------- 工具
+func _back_label() -> String:
+	return Scene.origin_label("方法推演")
+
+func _go_back() -> void:
+	Scene.goto_origin("res://scenes/WorldMap.tscn")
+
 func _letter(k: int) -> String:
 	return "ABCD".substr(k, 1) if k >= 0 and k < 4 else str(k + 1)
-
-func _hairline(min_size: Vector2) -> ColorRect:
-	var r := ColorRect.new()
-	r.color = UI.COL_LINE
-	r.custom_minimum_size = min_size
-	r.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	if min_size.x <= 0.0:
-		r.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	return r

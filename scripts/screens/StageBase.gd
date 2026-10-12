@@ -21,6 +21,7 @@ var _ui: Control
 var _top_fill: ColorRect
 var _prog: Label
 var _coins: Label
+var _combo_lbl: Label
 var _panel: PanelContainer
 var _action_bar: PanelContainer
 var _title: Label
@@ -59,6 +60,7 @@ var _q_recorded := false
 var _last_picked := -1
 var _explore_done := false
 var _streak := 0
+var _max_streak := 0
 ## 错题优先复习：显示下标→原始题号；记录作答时用 _q_index() 与错题账本对齐。
 var _qid: Array[int] = []
 var _review := false
@@ -75,7 +77,7 @@ func _ready() -> void:
 
 ## 若本关存在历史错题，则重排题序让错题优先，并记录原始题号映射。
 func _apply_review() -> void:
-	var r := GameData.review_order(GameData.current_level_id(), _stages)
+	var r := GameData.review_order(GameData.current_level_id(), _stages, GameData.review_focus)
 	_stages = r["stages"]
 	_qid = r["order"]
 	_review = r["review"]
@@ -116,8 +118,8 @@ func _victory_text(passed: bool) -> String:
 	return "推演通关" if passed else "推演失败 · 请复盘"
 func _default_color() -> String: return "#5ee6ff"
 func _default_title() -> String: return ""
-func _back_text() -> String: return "← 知识体系"
-func _back_row_text() -> String: return "返回知识体系"
+func _back_text() -> String: return "← " + Scene.origin_label("知识体系")
+func _back_row_text() -> String: return "返回" + Scene.origin_label("知识体系")
 func _back_scene() -> String: return "res://scenes/TheoremTree.tscn"
 func _panel_label() -> String: return "QUERY"
 func _report_label() -> String: return "MISSION REPORT"
@@ -191,6 +193,8 @@ func _reset() -> void:
 	_done = false
 	_trap_missed = false
 	_streak = 0
+	_max_streak = 0
+	_refresh_combo()
 	_clean.clear()
 	for i in _stages.size():
 		_clean.append(0)
@@ -242,12 +246,31 @@ func _choice_row(k: int, opt: String) -> Control:
 		tex_r.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		content = tex_r
 	else:
-		var l := UI.make_label(opt, 18, UI.COL_TEXT)
-		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		content = l
+		var opt_txt := UI.inline_formulas(opt, 24)
+		if opt_txt.find("[img") >= 0:
+			var rt := RichTextLabel.new()
+			rt.bbcode_enabled = true
+			rt.fit_content = true
+			rt.scroll_active = false
+			rt.text = opt_txt
+			rt.add_theme_font_override("normal_font", UI.font())
+			rt.add_theme_font_override("bold_font", UI.font_bold())
+			rt.add_theme_font_override("italics_font", UI.font())
+			rt.add_theme_font_size_override("normal_font_size", UI.fs(18))
+			rt.add_theme_font_size_override("bold_font_size", UI.fs(18))
+			rt.add_theme_font_size_override("italics_font_size", UI.fs(18))
+			rt.add_theme_color_override("default_color", UI.COL_TEXT)
+			rt.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			rt.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			rt.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			content = rt
+		else:
+			var l := UI.make_label(opt_txt, 18, UI.COL_TEXT)
+			l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			content = l
 	hb.add_child(content)
 
 	var mark := UI.make_label("", 20, UI.COL_TEXT, HORIZONTAL_ALIGNMENT_RIGHT)
@@ -324,10 +347,13 @@ func _level_ok() -> void:
 	if bool(s.get("trap", false)):
 		msg = "漂亮，成功规避陷阱！"
 	if s.has("explain"):
-		msg += "  " + str(s["explain"])
+		msg += "  " + UI.inline_formulas(str(s["explain"]), 22)
 	_show_feed(msg, UI.COL_SUCCESS)
 	_next.disabled = false
 	_streak += 1
+	_max_streak = maxi(_max_streak, _streak)
+	GameData.note_streak(_streak)
+	_refresh_combo()
 	_fx_correct(_last_picked)
 	_level_ok_fx()
 
@@ -360,9 +386,10 @@ func _wrong(msg: String) -> void:
 	if _pet != null:
 		_pet.comfort()
 	if _current().has("explain"):
-		msg += "\n[复盘] " + str(_current()["explain"])
+		msg += "\n[复盘] " + UI.inline_formulas(str(_current()["explain"]), 22)
 	_show_feed(msg, UI.COL_DANGER)
 	_streak = 0
+	_refresh_combo()
 	_fx_wrong()
 
 ## 答错动效：所选项旋转摇头 + 红环扩散 + 画面红闪。
@@ -377,13 +404,37 @@ func _fx_wrong() -> void:
 	Vfx.float_text(_ui, pos, "再想想", UI.COL_DANGER, 24)
 	Vfx.screen_flash(_ui, UI.COL_DANGER, 0.14, 0.4)
 
+## 顶栏连击徽标：连击≥2 时显示并随档位变色，断连则隐藏。
+func _refresh_combo() -> void:
+	if _combo_lbl == null or not is_instance_valid(_combo_lbl):
+		return
+	if _streak < 2:
+		_combo_lbl.visible = false
+		return
+	_combo_lbl.visible = true
+	_combo_lbl.text = "连击 x%d" % _streak
+	var col := Color("#ffd479")
+	if _streak >= 5:
+		col = Color("#fb7185")
+	elif _streak >= 3:
+		col = Color("#ffa64d")
+	_combo_lbl.add_theme_color_override("font_color", col)
+	if UI.animations:
+		_combo_lbl.pivot_offset = _combo_lbl.size * 0.5
+		_combo_lbl.scale = Vector2(1.3, 1.3)
+		var tw := create_tween()
+		tw.tween_property(_combo_lbl, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
 func _use_hint() -> void:
 	if _solved or _done or _hint_used or _stages.is_empty():
 		return
 	_hint_used = true
-	_wrongs += 1
 	_hint.disabled = true
-	_show_feed("[提示] " + str(_current().get("hint", "")), Color("#ffd479"))
+	if GameData.consume_hint_token():
+		_show_feed("[提示卡] " + str(_current().get("hint", "")), Color("#5ee6ff"))
+	else:
+		_wrongs += 1
+		_show_feed("[提示] " + str(_current().get("hint", "")), Color("#ffd479"))
 
 func _next_pressed() -> void:
 	if not _solved or _done:
@@ -393,6 +444,16 @@ func _next_pressed() -> void:
 		_load_q()
 	else:
 		_finish()
+
+## 结算评级：S(全对满分无陷阱) / A(三星) / B(二星) / C(其余)
+func _grade(st: int, clean: int, total: int, trap_missed: bool) -> String:
+	if st >= 3 and clean == total and not trap_missed:
+		return "S"
+	if st >= 3:
+		return "A"
+	if st == 2:
+		return "B"
+	return "C"
 
 func _finish() -> void:
 	_done = true
@@ -409,15 +470,23 @@ func _finish() -> void:
 	if _trap_missed and st > 0:
 		st -= 1
 	var lv0 := GameData.player_level()
-	if GameData.current_level_id() != "":
-		GameData.grant_stars(GameData.current_level_id(), st)
-		GameData.record_level_result(GameData.current_level_id(), st, clean, total, _trap_missed)
+	var lid := GameData.current_level_id()
+	var prev_best := int(GameData.level_records.get(lid, {}).get("best_stars", 0)) if lid != "" else 0
+	if lid != "":
+		GameData.grant_stars(lid, st)
+		GameData.record_level_result(lid, st, clean, total, _trap_missed)
 	var lv1 := GameData.player_level()
 	var reward := 30 + clean * 15 + st * 20
 	if st >= 3:
 		reward += 60
 	if not _trap_missed:
 		reward += 30
+	reward += _max_streak * 3
+	var boosted := GameData.consume_coin_boost()
+	if boosted:
+		reward *= 2
+	if _max_streak > GameData.best_streak:
+		GameData.best_streak = _max_streak
 	GameData.add_coins(reward)
 	_update_hud()
 
@@ -432,13 +501,21 @@ func _finish() -> void:
 			_pet.on_level_up(lv1)
 	_v_title.text = _victory_text(passed)
 	_v_title.add_theme_color_override("font_color", UI.COL_TEXT if passed else UI.COL_DANGER)
+	var grade := _grade(st, clean, total, _trap_missed)
 	if st >= 3:
-		_v_rate.text = "正确率 %d%%   ·   完美通关！" % pct
+		_v_rate.text = "评级 %s   ·   正确率 %d%%   ·   完美通关！" % [grade, pct]
 		_v_rate.add_theme_color_override("font_color", Color("#ffd479"))
 	else:
-		_v_rate.text = "正确率 %d%%" % pct
+		_v_rate.text = "评级 %s   ·   正确率 %d%%" % [grade, pct]
 		_v_rate.add_theme_color_override("font_color", UI.COL_ACCENT if passed else UI.COL_DANGER)
-	_v_score.text = "无失误 %d / %d 关" % [clean, total]
+	var score_txt := "无失误 %d / %d 关" % [clean, total]
+	if _max_streak >= 2:
+		score_txt += "   ·   最高连击 x%d" % _max_streak
+	if passed and st > prev_best and prev_best > 0:
+		score_txt += "   ·   新纪录！"
+	if boosted:
+		score_txt += "   ·   双倍金币"
+	_v_score.text = score_txt
 	for c in _v_star_row.get_children():
 		_v_star_row.remove_child(c)
 		c.free()
@@ -525,7 +602,7 @@ func _update_hud() -> void:
 # ---------------------------------------------------------------- UI
 func _build_ui() -> void:
 	var layer := CanvasLayer.new()
-	layer.layer = 10
+	layer.layer = UiConst.LAYER_STAGE_UI
 	add_child(layer)
 	_ui = Control.new()
 	_ui.theme = UI.make_theme()
@@ -560,7 +637,7 @@ func _build_ui() -> void:
 	hb.add_theme_constant_override("separation", 16)
 	bar.add_child(hb)
 	hb.add_child(UI.ghost_button(_back_text(), func() -> void:
-		Scene.goto(_back_scene())
+		Scene.goto_origin(_back_scene())
 	))
 	var vl := ColorRect.new()
 	vl.color = UI.COL_LINE
@@ -579,6 +656,10 @@ func _build_ui() -> void:
 	var sp := Control.new()
 	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hb.add_child(sp)
+	_combo_lbl = UI.mono_label("", 16, Color("#ffd479"))
+	_combo_lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_combo_lbl.visible = false
+	hb.add_child(_combo_lbl)
 	_coins = UI.mono_label("◆ 0", 16, Color("#ffd479"))
 	_coins.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	hb.add_child(_coins)
@@ -727,7 +808,7 @@ func _build_ui() -> void:
 	_nav_prev = UI.ghost_button("上一关", func() -> void: GameData.goto_prev_level(), 15)
 	row.add_child(_nav_prev)
 	row.add_child(UI.ghost_button(_back_row_text(), func() -> void:
-		Scene.goto(_back_scene())
+		Scene.goto_origin(_back_scene())
 	, 16))
 	var again := Button.new()
 	again.text = "重新推演"

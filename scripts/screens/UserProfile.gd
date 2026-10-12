@@ -19,24 +19,7 @@ func _pet_comment() -> String:
 	return "重点：「%s · %s」累计错 %d 次，建议先重练它！" % [str(info.get("chapter", "")), str(info.get("name", "")), int(top["count"])]
 
 func _build_topbar() -> void:
-	var bar := PanelContainer.new()
-	bar.add_theme_stylebox_override("panel", UI.topbar_box())
-	bar.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	bar.custom_minimum_size = Vector2(0, 64)
-	bar.offset_bottom = 64
-	add_child(bar)
-	var hb := HBoxContainer.new()
-	hb.add_theme_constant_override("separation", 18)
-	bar.add_child(hb)
-	hb.add_child(UI.ghost_button("← 返回终端", func() -> void:
-		Scene.goto("res://scenes/MainHub.tscn")
-	))
-	hb.add_child(_hairline(Vector2(1, 18)))
-	hb.add_child(UI.make_label("档案库", 22))
-	hb.add_child(UI.mono_label("USER PROFILE", 13, Color(UI.COL_TEXT_DIM, 0.7)))
-	var sp := Control.new()
-	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	hb.add_child(sp)
+	var hb := UI.screen_topbar(self, "档案库", "USER PROFILE", "res://scenes/MainHub.tscn")
 	hb.add_child(UI.mono_label("★ %d / %d" % [GameData.total_stars(), GameData.total_max_stars()], 17, UI.COL_ACCENT))
 
 func _build_body() -> void:
@@ -61,7 +44,7 @@ func _build_body() -> void:
 
 	# ---- 概览 ----
 	var overview := UI.card(true, UI.COL_ACCENT, UI.COL_GLASS, Color(UI.COL_ACCENT, 0.3), 14, 22, Color(UI.COL_ACCENT, 0.2))
-	overview.custom_minimum_size = Vector2(920, 0)
+	overview.custom_minimum_size = Vector2(UiConst.CARD_W, 0)
 	vb.add_child(overview)
 	var ovb := VBoxContainer.new()
 	ovb.add_theme_constant_override("separation", 12)
@@ -84,14 +67,14 @@ func _build_body() -> void:
 	var stats := HBoxContainer.new()
 	stats.add_theme_constant_override("separation", 18)
 	ovb.add_child(stats)
-	stats.add_child(_stat("已通关卡", "%d" % done_levels))
-	stats.add_child(_stat("累计作答", "%d" % GameData.total_questions))
-	stats.add_child(_stat("累计答对", "%d" % GameData.total_correct))
-	stats.add_child(_stat("正确率", "%d%%" % acc))
-	stats.add_child(_stat("总星数", "%d" % GameData.total_stars()))
-	stats.add_child(_stat("投喂萌宠", "%d" % GameData.pet_fed))
-	var tier_name: String = ["初识", "熟悉", "黏人"][_pet_tier()]
-	stats.add_child(_stat("好感度", tier_name))
+	stats.add_child(UI.stat_box("已通关卡", "%d" % done_levels))
+	stats.add_child(UI.stat_box("累计作答", "%d" % GameData.total_questions))
+	stats.add_child(UI.stat_box("累计答对", "%d" % GameData.total_correct))
+	stats.add_child(UI.stat_box("正确率", "%d%%" % acc))
+	stats.add_child(UI.stat_box("总星数", "%d" % GameData.total_stars()))
+	stats.add_child(UI.stat_box("投喂萌宠", "%d" % GameData.pet_fed))
+	var tier_name: String = ["初识", "熟悉", "黏人"][clampi(GameData.pet_affection_tier(), 0, 2)]
+	stats.add_child(UI.stat_box("好感度", tier_name))
 
 	# ---- 进阶 · 等级与称号 ----
 	vb.add_child(_advance_card())
@@ -105,63 +88,19 @@ func _build_body() -> void:
 	# ---- 记忆档案 · 馆灵碑文 ----
 	vb.add_child(_lore_card())
 
-	# ---- 成就 · 勋章墙 ----
-	vb.add_child(_section("成就 · 勋章墙  %d / %d" % [GameData.medal_count(), GameData.MEDALS.size()], Color("#a878ff")))
-	var gcenter := CenterContainer.new()
-	vb.add_child(gcenter)
-	var grid := GridContainer.new()
-	grid.columns = 8
-	grid.add_theme_constant_override("h_separation", 14)
-	grid.add_theme_constant_override("v_separation", 16)
-	gcenter.add_child(grid)
-	for m in GameData.MEDALS:
-		grid.add_child(_medal_cell(m))
+	# ---- 成就 · 勋章(明细收敛到「成就馆」页) ----
+	vb.add_child(_achievements_summary_card())
 
-	# ---- 出错位置 ----
-	vb.add_child(_section("出错位置 · 错题本", Color("#fb7185")))
-	var wl := GameData.wrong_list()
-	if wl.is_empty():
-		vb.add_child(_empty("暂无错题记录，保持这个状态！"))
-	else:
-		for rec in wl:
-			vb.add_child(_wrong_row(rec))
+	# ---- 错题与重点(明细统一收敛到「错题笔记」页) ----
+	vb.add_child(_wrong_summary_card())
 
-	# ---- 重点 ----
-	vb.add_child(_section("重点 · 错误集中的知识点", Color("#ffd479")))
-	var kp := GameData.key_points()
-	if kp.is_empty():
-		vb.add_child(_empty("暂无明显薄弱点。"))
-	else:
-		for rec in kp:
-			vb.add_child(_key_row(rec))
-
-	vb.add_child(_gap(20))
+	vb.add_child(UI.gap(20))
 	UI.stagger_in(vb, 0.035, 0.24, 10)
-
-func _section(title: String, col: Color) -> Control:
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 10)
-	var bar := ColorRect.new()
-	bar.color = col
-	bar.custom_minimum_size = Vector2(4, 22)
-	bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_child(bar)
-	row.add_child(UI.make_label(title, 20, UI.COL_TEXT))
-	return row
-
-func _stat(label: String, value: String) -> Control:
-	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 2)
-	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	box.add_child(UI.mono_label(value, 22, UI.COL_ACCENT))
-	box.add_child(UI.make_label(label, 13, UI.COL_TEXT_DIM))
-	return box
 
 ## 进阶卡片：推演等级 + 称号进度(两条进度条)
 func _advance_card() -> Control:
 	var card := UI.card(true, UI.COL_ACCENT, UI.COL_GLASS, Color("#a878ff", 0.3), 14, 22, Color("#a878ff", 0.18))
-	card.custom_minimum_size = Vector2(920, 0)
+	card.custom_minimum_size = Vector2(UiConst.CARD_W, 0)
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 14)
 	card.add_child(box)
@@ -205,7 +144,7 @@ func _advance_card() -> Control:
 ## 知识掌握卡片：各领域掌握度进度条 + 当前萌宠形态
 func _mastery_card() -> Control:
 	var card := UI.card(true, UI.COL_ACCENT, UI.COL_GLASS, Color(UI.COL_ACCENT, 0.3), 14, 22, Color(UI.COL_ACCENT, 0.18))
-	card.custom_minimum_size = Vector2(920, 0)
+	card.custom_minimum_size = Vector2(UiConst.CARD_W, 0)
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 12)
 	card.add_child(box)
@@ -217,6 +156,14 @@ func _mastery_card() -> Control:
 	hsp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(hsp)
 	head.add_child(UI.mono_label("形态 · %s  (%d/%d)" % [GameData.pet_form_name(), GameData.pet_part_count(), GameData.DOMAINS.size()], 14, UI.COL_ACCENT))
+	var stats := HBoxContainer.new()
+	stats.add_theme_constant_override("separation", 22)
+	box.add_child(stats)
+	var tier := clampi(GameData.pet_affection_tier(), 0, 2)
+	var aff: String = ["初识", "熟悉", "黏人"][tier]
+	stats.add_child(UI.mono_label("好感 %s · %s" % ["♥".repeat(tier + 1) + "♡".repeat(2 - tier), aff], 14, Color("#ff7ab8")))
+	stats.add_child(UI.mono_label("饱食 %s" % GameData.pet_satiety_label(), 14, Color("#ffd479")))
+	stats.add_child(UI.mono_label("心情 %s" % GameData.pet_mood_label(), 14, UI.COL_ACCENT))
 	var grid := GridContainer.new()
 	grid.columns = 2
 	grid.add_theme_constant_override("h_separation", 26)
@@ -265,7 +212,7 @@ func _domain_row(d: Dictionary) -> Control:
 func _diagnosis_card() -> Control:
 	var diag := GameData.diagnose()
 	var card := UI.card(true, UI.COL_ACCENT, UI.COL_GLASS, Color("#34d399", 0.3), 14, 22, Color("#34d399", 0.16))
-	card.custom_minimum_size = Vector2(920, 0)
+	card.custom_minimum_size = Vector2(UiConst.CARD_W, 0)
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 10)
 	card.add_child(box)
@@ -331,7 +278,7 @@ func _diag_row(w: Dictionary) -> Control:
 ## 馆灵记忆档案：寻回的碑文与尚未寻回的裂隙
 func _lore_card() -> Control:
 	var card := UI.card(true, UI.COL_ACCENT, UI.COL_GLASS, Color("#5ee6ff", 0.3), 14, 22, Color("#5ee6ff", 0.16))
-	card.custom_minimum_size = Vector2(920, 0)
+	card.custom_minimum_size = Vector2(UiConst.CARD_W, 0)
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 10)
 	card.add_child(box)
@@ -372,91 +319,77 @@ func _lore_row(l: Dictionary) -> Control:
 	col_box.add_child(UI.make_label(text, 13, UI.COL_TEXT if got else Color(UI.COL_TEXT_DIM, 0.7)))
 	return row
 
-## 单枚勋章格：徽章 + 名称(未解锁灰色)
-func _medal_cell(m: Dictionary) -> Control:
-	var unlocked := GameData.is_medal_unlocked(str(m["id"]))
-	var cell := VBoxContainer.new()
-	cell.custom_minimum_size = Vector2(92, 0)
-	cell.add_theme_constant_override("separation", 5)
-	cell.tooltip_text = "%s\n%s" % [str(m["desc"]), "已解锁" if unlocked else "未解锁"]
-	var badge := MedalBadge.new()
-	badge.custom_minimum_size = Vector2(58, 58)
-	badge.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	badge.col = Color(str(m["color"]))
-	badge.symbol = str(m["symbol"])
-	badge.unlocked = unlocked
-	cell.add_child(badge)
-	var nm := UI.make_label(str(m["name"]), 12, UI.COL_TEXT if unlocked else Color(UI.COL_TEXT_DIM, 0.6), HORIZONTAL_ALIGNMENT_CENTER)
-	nm.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	cell.add_child(nm)
-	return cell
+## 成就摘要：只给进度与入口，勋章图鉴统一收敛到「成就馆」页。
+func _achievements_summary_card() -> Control:
+	var card := UI.card(true, UI.COL_ACCENT, UI.COL_GLASS, Color("#a878ff", 0.35), 14, 22, Color("#a878ff", 0.2))
+	card.custom_minimum_size = Vector2(UiConst.CARD_W, 0)
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 12)
+	card.add_child(box)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 14)
+	box.add_child(head)
+	head.add_child(UI.make_label("成就 · 勋章", 22, UI.COL_TEXT))
+	var hsp := Control.new()
+	hsp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(hsp)
+	head.add_child(UI.mono_label("%d / %d" % [GameData.medal_count(), GameData.MEDALS.size()], 15, Color("#a878ff")))
+	head.add_child(UI.ghost_button("打开成就馆", func() -> void:
+		Sound.play("select")
+		Scene.goto("res://scenes/Achievements.tscn")
+	, 14))
+	var total := maxi(1, GameData.MEDALS.size())
+	var bar := ProgressLine.new()
+	bar.col = Color("#a878ff")
+	bar.glow = GameData.medal_count() > 0
+	bar.set_ratio(float(GameData.medal_count()) / float(total), false)
+	box.add_child(bar)
+	var un := GameData.unlocked_medals()
+	if un.is_empty():
+		box.add_child(UI.make_label("尚未点亮勋章，去闯关摘取第一枚吧！", 14, UI.COL_TEXT_DIM))
+	else:
+		var names := ""
+		for m in un.slice(maxi(0, un.size() - 3)):
+			names += ("、" if names != "" else "") + str(m["name"])
+		box.add_child(UI.make_label("最近解锁：%s" % names, 14, Color("#ffd479")))
+	return card
 
-func _wrong_row(rec: Dictionary) -> Control:
-	var info: Dictionary = GameData.level_info(str(rec["level_id"]))
-	var p := UI.card(false, UI.COL_ACCENT, Color(1, 1, 1, 0.065), Color(1, 1, 1, 0.13), 12, 16)
-	p.custom_minimum_size = Vector2(920, 0)
-	var vb := VBoxContainer.new()
-	vb.add_theme_constant_override("separation", 3)
-	p.add_child(vb)
-	var line1 := HBoxContainer.new()
-	line1.add_theme_constant_override("separation", 8)
-	vb.add_child(line1)
-	line1.add_child(UI.mono_label("第 %d 题" % (int(rec["qi"]) + 1), 14, Color("#fb7185")))
-	line1.add_child(UI.make_label(str(rec["name"]), 16, UI.COL_TEXT))
-	var sp := Control.new()
-	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	line1.add_child(sp)
-	line1.add_child(UI.mono_label("错 %d 次" % int(rec["count"]), 14, Color("#ffd479")))
-	var nav := GameData.quest_target({ "level_id": str(rec["level_id"]), "qi": int(rec.get("qi", 0)) })
-	if not nav.is_empty():
-		line1.add_child(UI.ghost_button("去复习", func() -> void:
-			GameData.start_level(int(nav["ci"]), int(nav["li"]))
-			Scene.goto(str(nav["scene"]))
-		, 13))
-	var line2 := UI.make_label("%s · %s     上次选 %s，正确 %s" % [str(info.get("chapter", "")), str(info.get("name", "")), _letter(int(rec.get("last_chose", -1))), _letter(int(rec.get("correct", -1)))], 13, UI.COL_TEXT_DIM)
-	vb.add_child(line2)
-	return p
-
-func _key_row(rec: Dictionary) -> Control:
-	var info: Dictionary = GameData.level_info(str(rec["level_id"]))
-	var row := UI.card(false, UI.COL_ACCENT, Color(0.15, 0.12, 0.03, 0.5), Color("#ffd479", 0.35), 12, 14)
-	row.custom_minimum_size = Vector2(920, 0)
-	var hb := HBoxContainer.new()
-	hb.add_theme_constant_override("separation", 10)
-	row.add_child(hb)
-	hb.add_child(UI.mono_label("▲", 15, Color("#ffd479")))
-	hb.add_child(UI.make_label("%s · %s" % [str(info.get("chapter", "")), str(info.get("name", ""))], 16, UI.COL_TEXT))
-	var sp := Control.new()
-	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	hb.add_child(sp)
-	hb.add_child(UI.mono_label("累计错 %d 次" % int(rec["count"]), 14, Color("#fb7185")))
-	return row
-
-func _empty(text: String) -> Control:
-	var p := UI.card(false, UI.COL_ACCENT, Color(1, 1, 1, 0.06), Color(1, 1, 1, 0.13), 12, 18)
-	p.custom_minimum_size = Vector2(920, 0)
-	p.add_child(UI.make_label(text, 15, UI.COL_TEXT_DIM))
-	return p
-
-func _letter(i: int) -> String:
-	return "ABCD".substr(i, 1) if i >= 0 and i <= 3 else "—"
-
-func _pet_tier() -> int:
-	if GameData.pet_fed >= 8:
-		return 2
-	if GameData.pet_fed >= 3:
-		return 1
-	return 0
-
-func _gap(h: int) -> Control:
-	var c := Control.new()
-	c.custom_minimum_size = Vector2(0, h)
-	return c
-
-func _hairline(min_size: Vector2) -> ColorRect:
-	var r := ColorRect.new()
-	r.color = UI.COL_LINE
-	r.custom_minimum_size = min_size
-	r.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	return r
+## 错题与重点摘要：只给概览与入口，逐题/按关卡的明细统一收敛到「错题笔记」页。
+func _wrong_summary_card() -> Control:
+	var wl := GameData.wrong_list()
+	var card := UI.card(true, UI.COL_ACCENT, UI.COL_GLASS, Color("#fb7185", 0.35), 14, 22, Color("#fb7185", 0.2))
+	card.custom_minimum_size = Vector2(UiConst.CARD_W, 0)
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 12)
+	card.add_child(box)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 14)
+	box.add_child(head)
+	head.add_child(UI.make_label("错题与重点", 22, UI.COL_TEXT))
+	var hsp := Control.new()
+	hsp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(hsp)
+	head.add_child(UI.ghost_button("打开错题笔记", func() -> void:
+		Sound.play("select")
+		Scene.goto("res://scenes/WrongNotebook.tscn")
+	, 14))
+	if wl.is_empty():
+		box.add_child(UI.make_label("暂无错题记录，保持这个状态！", 15, UI.COL_SUCCESS))
+		return card
+	var total := 0
+	var levels := {}
+	for rec in wl:
+		total += int(rec.get("count", 0))
+		levels[str(rec["level_id"])] = true
+	var stats := HBoxContainer.new()
+	stats.add_theme_constant_override("separation", 18)
+	box.add_child(stats)
+	stats.add_child(UI.stat_box("错题题数", "%d" % wl.size()))
+	stats.add_child(UI.stat_box("累计错次", "%d" % total))
+	stats.add_child(UI.stat_box("涉及关卡", "%d" % levels.size()))
+	var kp := GameData.key_points()
+	if not kp.is_empty():
+		var top: Dictionary = kp[0]
+		var info := GameData.level_info(str(top["level_id"]))
+		box.add_child(UI.make_label("重点：「%s · %s」累计错 %d 次" % [str(info.get("chapter", "")), str(info.get("name", "")), int(top["count"])], 14, Color("#ffd479")))
+	return card

@@ -56,7 +56,7 @@ func _build() -> void:
 	line.custom_minimum_size = Vector2(120, 3)
 	line.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	vb.add_child(line)
-	vb.add_child(_gap(6))
+	vb.add_child(UI.gap(6))
 
 	_body = VBoxContainer.new()
 	_body.add_theme_constant_override("separation", 10)
@@ -98,7 +98,7 @@ func _build_list() -> void:
 	else:
 		for u in list:
 			_body.add_child(_user_card(u))
-	_body.add_child(_gap(6))
+	_body.add_child(UI.gap(6))
 	var row := CenterContainer.new()
 	_body.add_child(row)
 	var nb := Button.new()
@@ -169,19 +169,22 @@ func _build_create() -> void:
 	_body.add_child(grid)
 	for a in GameData.AVATARS:
 		var id := str(a["id"])
+		var owned := GameData.has_avatar(id)
 		var box := Control.new()
 		box.custom_minimum_size = Vector2(72, 72)
 		var p := PanelContainer.new()
-		p.add_theme_stylebox_override("panel", UI.glass_box(Color(1, 1, 1, 0.05), 12, Color(str(a["color"]), 0.9 if id == _sel_avatar else 0.25), 2 if id == _sel_avatar else 1, 6))
+		var bord := (Color(str(a["color"]), 0.9 if id == _sel_avatar else 0.25) if owned else Color(1, 1, 1, 0.12))
+		p.add_theme_stylebox_override("panel", UI.glass_box(Color(1, 1, 1, 0.05), 12, bord, 2 if id == _sel_avatar else 1, 6))
 		UI.full_rect(p)
 		box.add_child(p)
 		var tex_r := TextureRect.new()
-		tex_r.texture = _avatar_tex(id, 48)
+		tex_r.texture = _avatar_tex(id, 48) if owned else UI.icon("icon_lock", 38, Color(1, 1, 1, 0.4))
 		tex_r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		tex_r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		tex_r.custom_minimum_size = Vector2(48, 48)
 		tex_r.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		tex_r.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		tex_r.modulate = Color(1, 1, 1, 1) if owned else Color(1, 1, 1, 0.7)
 		tex_r.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		p.add_child(tex_r)
 		var btn := Button.new()
@@ -191,8 +194,11 @@ func _build_create() -> void:
 		btn.add_theme_stylebox_override("pressed", UI.glass_box(Color(0, 0, 0, 0.25), 12, Color(UI.COL_ACCENT, 0.8), 1, 0))
 		btn.add_theme_stylebox_override("focus", UI.stylebox(Color(0, 0, 0, 0), 12, Color(0, 0, 0, 0), 0, 0))
 		btn.pressed.connect(func() -> void:
-			_sel_avatar = id
-			_build()
+			if owned:
+				_sel_avatar = id
+				_build()
+			else:
+				Toast.show_toast("尚未解锁 · 登录后到星辉市集解锁")
 		)
 		box.add_child(btn)
 		grid.add_child(box)
@@ -200,7 +206,7 @@ func _build_create() -> void:
 	if _err != "":
 		_body.add_child(UI.make_label(_err, 14, UI.COL_DANGER, HORIZONTAL_ALIGNMENT_CENTER))
 
-	_body.add_child(_gap(4))
+	_body.add_child(UI.gap(4))
 	var row := HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
 	row.add_theme_constant_override("separation", 14)
@@ -238,8 +244,3 @@ func _on_delete(nm: String) -> void:
 	GameData.delete_user(nm)
 	Sound.play("select")
 	_build()
-
-func _gap(h: int) -> Control:
-	var c := Control.new()
-	c.custom_minimum_size = Vector2(0, h)
-	return c
