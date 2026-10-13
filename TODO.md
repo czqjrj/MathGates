@@ -104,14 +104,18 @@
 - [x] 导出 APK：`Godot_v4.7.2 --headless --path . --export-debug "Android" "build/衍数阁.apk"`（4.7.2 导出模板；扩展为 4.4 godot-cpp，实测 4.7.2 可加载）。
       - APK 内容核对：`lib/arm64-v8a/{libgodot_android.so, libc++_shared.so, libgodot_math_tex.android.debug.arm64.so}` + `assets/gdextension/res.bin` + `assets/math_tex.gdextension`。✅
       - 注意：debug 条目当前复用了 release 构建的 `.so`（同为 template_debug godot-cpp），如需严格 debug 需重编。
-- [ ] 导出 APK 并在真机/模拟器安装启动。（本机 `adb devices` 无设备，未能真机验证）
-- 验收：Android 上扩展加载成功，公式可渲染。（打包链路已验证，待真机确认）
+- [x] 导出 APK 并在真机安装启动：`adb install -r` 成功；Redmi 22011211C 上正常启动、渲染、无崩溃。
+- 验收：Android 上扩展加载成功，公式可渲染。✅（真机已验证）
 
-### [ ] 8. 双端公式渲染校对与性能验证
-- [ ] Windows 与 Android 各截一组含公式的界面，逐条比对（透明度/基线/字号/颜色/本地化）。
-- [ ] 性能：首帧与连续题切换的渲染耗时、内存/纹理数量；必要时加预热与缓存上限。
-- [ ] 回归：跑 `tests/` 与 `tools/check_all.gd`、`tools/smoke_scene`。
-- 验收：双端视觉一致，帧率/内存无明显回退。
+### [x] 8. 双端公式渲染校对与性能验证
+- [x] 真机验证（Redmi 22011211C / Android）：`adb install` + 启动无 `dlopen`/崩溃；扩展加载成功，`res.bin` 解压到 `cache/tmp/mathtex_res`，公式以 `.mttex` 落盘（拉回为有效 PNG）。日志仅有既有 TTS 未初始化告警。
+- [x] **修复排版 bug**：`Graphics2D_Image::scale()` 误把平移量 `(e,f)` 一并缩放（且 b/c 交叉），而 MicroTeX `CharBox::draw` 对上下标是「先 `translate(x,y)` 再 `scale(s,s)`」→ 下标被拉回原点、与基字重叠。改为 Cairo/Qt 语义（缩放只作用于基向量），`rotate()` 一并对齐。
+      - 以旧版 **dvipng 基准 PNG** 逐条比对：`a_{1}=1` / `a_{3}-a_{2}=f(2)` / `a_{n}-a_{1}` / `a_{n+1}-a_{n}=2n` 修复后与基准一致；Windows 与 Android 两端尺寸/字形一致（像素级仅 FreeType 抗锯齿微差）。
+      - 渲染缓存加版本盐 `InlineMath.MT_CACHE_VERSION`（当前 `v2`），后端排版变动时旧 `mt_cache` 自动失效。
+- [x] 性能：`tools/mt_bench.gd`（Windows debug、headless 计时）：configure 冷启动 ≈9.6ms；冷渲染 ≈1.84ms/公式（20 条不同）；热渲染 ≈0.67ms/公式；`_mt_inline_bbcode` 首命中（含渲染+落盘）≈2.64ms；静态内存 ≈19.6MB。
+      - 结论：单公式毫秒级，题干内联渲染无感知；暂不需要预热/缓存上限（进程内 `_mt_cache` + 磁盘 `mt_cache` 已够）。
+- [x] 回归：`tests/Tests.tscn` **817 passed / 0 failed**；`tools/check_all.gd` **80 scripts / 0 failures**；`tools/smoke_scene.tscn` **230 ok / 0 fail**；`tools/mathtex_test` **failures=0**；`tools/mt_extract_test.gd` 解压→configure→render；主工程 headless 启动 exit 0。
+- 验收：双端视觉一致，帧率/内存无明显回退。✅（含下标排版修复，两端已比对）
 
 ---
 

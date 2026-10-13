@@ -44,29 +44,26 @@ void Graphics2D_Image::translate(float dx, float dy) {
 }
 
 void Graphics2D_Image::scale(float sx, float sy) {
+	// 与 Cairo/Qt 语义一致：缩放只作用于基向量，不改变平移分量。
+	// MicroTeX 常「先 translate(x,y) 再 scale(s,s)」绘制缩小的上/下标，
+	// 若此处连 (e,f) 一起缩放，下标会被拉回原点附近而与基字重叠。
 	_a *= sx;
-	_b *= sy;
-	_c *= sx;
+	_b *= sx;
+	_c *= sy;
 	_d *= sy;
-	_e *= sx;
-	_f *= sy;
 }
 
 void Graphics2D_Image::rotate(float angle) {
 	const float c = std::cos(angle);
 	const float s = std::sin(angle);
-	const float a = _a * c + _b * -s;
-	const float b = _a * s + _b * c;
-	const float cc = _c * c + _d * -s;
-	const float d = _c * s + _d * c;
-	const float e = _e * c + _f * -s;
-	const float f = _e * s + _f * c;
+	const float a = _a * c + _c * s;
+	const float b = _b * c + _d * s;
+	const float cc = -_a * s + _c * c;
+	const float d = -_b * s + _d * c;
 	_a = a;
 	_b = b;
 	_c = cc;
 	_d = d;
-	_e = e;
-	_f = f;
 }
 
 void Graphics2D_Image::rotate(float angle, float px, float py) {

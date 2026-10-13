@@ -18,6 +18,8 @@ static var _mt_state := -1
 static var _mt_cache: Dictionary = {}
 ## bbcode 内联公式的默认颜色（深色玻璃面板上的正文色）。
 static var MT_COLOR := Color("#eaf2ff")
+## 渲染缓存版本：后端排版/字体有变时 +1，使旧的 mt_cache 失效。
+const MT_CACHE_VERSION := "v2"
 ## .mttex 资源加载器是否已注册(去重)。
 static var _mt_loader_added := false
 ## MicroTeX 运行时资源目录（res:// 开发态直接读；导出态先用内置 zip 解压到 user://）。
@@ -217,7 +219,7 @@ static func _ensure_mt_loader() -> void:
 ## 用 MicroTeX 渲染 latex → 写入 user://mt_cache/<hash>.mttex → 返回 bbcode。
 ## 渲染尺寸与颜色进入缓存键；同键复用磁盘缓存，避免重复光栅化。
 static func _mt_inline_bbcode(latex: String, h: int, color: Color) -> String:
-	var key := "%s|%d|%s" % [latex, h, color.to_html(true)]
+	var key := "%s|%s|%d|%s" % [MT_CACHE_VERSION, latex, h, color.to_html(true)]
 	var hash := key.md5_text()
 	var disk := "user://mt_cache/%s.mttex" % hash
 	var size: Vector2i = _mt_cache.get(hash, Vector2i.ZERO)
