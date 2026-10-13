@@ -218,7 +218,7 @@ func _build_camera() -> void:
 	if st.has("yaw"):
 		cam_yaw = st["yaw"]
 		cam_pitch = st["pitch"]
-		cam_dist = st["dist"] * _zoom
+		cam_dist = st["dist"] * _zoom * _region_fit()
 		cam_target = _mv(st["focus"])
 	cam_yaw_goal = cam_yaw
 	cam_pitch_goal = cam_pitch
@@ -227,6 +227,14 @@ func _build_camera() -> void:
 
 func _mv(v: Vector3) -> Vector3:
 	return Vector3(v.x, v.z, v.y)
+
+## 三维主体与左侧任务面板的比例适配系数：面板越宽(右侧图形区越窄)，
+## 越要拉远镜头让主体整体落入右侧区域，避免图像左溢出到文字面板上。
+func _region_fit() -> float:
+	var sw := maxf(get_viewport().get_visible_rect().size.x, 1.0)
+	var region_left := float(UI.stage_layout()["view_left"])
+	var region_w := maxf(sw - region_left, 1.0)
+	return clampf(sw / region_w, 1.0, 1.4)
 
 # ---------------------------------------------------------------- 流程
 func _reset(animated: bool) -> void:
@@ -269,7 +277,7 @@ func _cam_to_stage(i: int) -> void:
 	if st.has("yaw"):
 		cam_yaw_goal = st["yaw"]
 		cam_pitch_goal = st["pitch"]
-		cam_dist_goal = st["dist"] * z
+		cam_dist_goal = st["dist"] * z * _region_fit()
 		cam_goal = _mv(st["focus"])
 		cam_target = cam_goal
 
@@ -754,10 +762,15 @@ func update_camera(delta: float) -> void:
 	_camera.fov = 22.0
 	_camera.near = 0.02
 	_camera.far = 2000.0
-	# 把三维主体推到左侧任务面板之外
+	# 把三维主体的中心对准右侧图形区中心(按当前分辨率动态计算)，
+	# 使其稳定落在左侧任务面板之外，不再随窗口宽度变化而左溢出。
 	var vp := get_viewport().get_visible_rect()
-	var asp := vp.size.x / maxf(vp.size.y, 1.0)
-	_camera.h_offset = -0.26 * cam_dist * tan(deg_to_rad(_camera.fov * 0.5)) * asp
+	var sw := maxf(vp.size.x, 1.0)
+	var asp := sw / maxf(vp.size.y, 1.0)
+	var region_left := float(UI.stage_layout()["view_left"])
+	var region_center := (region_left + sw) * 0.5
+	var coeff := clampf((region_center / sw - 0.5) * 2.0, 0.0, 0.92)
+	_camera.h_offset = -coeff * cam_dist * tan(deg_to_rad(_camera.fov * 0.5)) * asp
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:

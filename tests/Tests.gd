@@ -21,6 +21,7 @@ func _eq(a, b, name: String) -> void:
 
 func _run() -> void:
 	_test_domain_mapping()
+	_test_lab_data()
 	_test_wrong_queries()
 	_test_review_order()
 	_test_focus()
@@ -35,7 +36,57 @@ func _test_domain_mapping() -> void:
 	_eq(GameData.domain_id_for_level("set_ops"), "algebra", "set_ops -> algebra")
 	_eq(GameData.domain_id_for_level("solid_complement"), "solid", "solid_complement -> solid")
 	_eq(GameData.domain_id_for_level("conic_c1"), "conic", "conic_c1 -> conic")
+	_eq(GameData.domain_id_for_level("circle_1_1"), "line", "circle_1_1 -> line")
+	_eq(GameData.domain_id_for_level("circle_boss"), "line", "circle_boss -> line")
+	_eq(GameData.domain_id_for_level("trig_induce"), "algebra", "trig_induce -> algebra")
+	_eq(GameData.domain_id_for_level("func_domain"), "algebra", "func_domain -> algebra")
+	_eq(GameData.domain_id_for_level("rv_dist"), "algebra", "rv_dist -> algebra")
+	_eq(GameData.domain_id_for_level("cd_regress"), "algebra", "cd_regress -> algebra")
+	_eq(GameData.domain_id_for_level("stat_sample"), "algebra", "stat_sample -> algebra")
+	_eq(GameData.domain_id_for_level("cplx_calc"), "algebra", "cplx_calc -> algebra")
+	_eq(GameData.domain_id_for_level("hypo_def"), "conic", "hypo_def -> conic")
+	_eq(GameData.domain_id_for_level("para_std"), "conic", "para_std -> conic")
+	_eq(GameData.domain_id_for_level("solid_kinds"), "solid", "solid_kinds -> solid")
 	_eq(GameData.domain_id_for_level("__missing__"), "", "missing level -> empty")
+
+## 校验「实验探究」章节数据齐备：每个关卡配置存在且含 3 轮(探究/建构/迁移)。
+func _test_lab_data() -> void:
+	var specs := [
+		{ "file": "res://data/trig_levels.json", "ids": ["trig_induce", "trig_identity", "trig_graph", "trig_solve", "trig_apply", "trig_radian", "trig_tan", "trig_concept", "trig_sincos"] },
+		{ "file": "res://data/functions_levels.json", "ids": ["func_domain", "func_mono", "func_period", "func_exp_log", "func_abstract", "func_zeros", "func_power", "func_apply", "func_bisect"] },
+		{ "file": "res://data/set_logic_levels.json", "ids": ["set_ops", "set_interval", "logic_cond", "logic_neg", "logic_special"] },
+		{ "file": "res://data/inequalities_levels.json", "ids": ["ineq_quad", "ineq_basic"] },
+		{ "file": "res://data/vectors_levels.json", "ids": ["vec_ops", "vec_coord", "vec_dot", "vec_collinear"] },
+		{ "file": "res://data/sequences_levels.json", "ids": ["seq_basic", "seq_recur", "seq_construct", "seq_displace", "seq_split", "seq_sn", "seq_concept"] },
+		{ "file": "res://data/conics_levels.json", "ids": ["conic_line_circle", "conic_def", "conic_pointdiff", "conic_tangent", "conic_fixed", "conic_range"] },
+		{ "file": "res://data/probability_levels.json", "ids": ["prob_classic", "prob_cond", "prob_dist", "prob_binom", "prob_stats", "prob_total", "prob_hypergeo", "prob_event", "prob_props", "prob_indep", "prob_freq"] },
+		{ "file": "res://data/derivative_levels.json", "ids": ["deriv_formula", "deriv_tangent", "deriv_mono", "deriv_param", "deriv_prove", "deriv_zero"] },
+		{ "file": "res://data/complex_levels.json", "ids": ["cplx_calc", "cplx_geo", "cplx_period"] },
+		{ "file": "res://data/counting_levels.json", "ids": ["count_rule", "count_comb", "count_indirect", "count_binomial"] },
+		{ "file": "res://data/thinking_levels.json", "ids": ["think_func_eq", "think_geo", "think_classify", "think_convert"] },
+		{ "file": "res://data/statistics_levels.json", "ids": ["stat_sample", "stat_freq", "stat_avg", "stat_percentile"] },
+		{ "file": "res://data/random_var_levels.json", "ids": ["rv_dist", "rv_binom", "rv_normal"] },
+		{ "file": "res://data/corr_data_levels.json", "ids": ["cd_scatter", "cd_regress", "cd_indep"] },
+		{ "file": "res://data/hyperbola_levels.json", "ids": ["hypo_def", "hypo_std", "hypo_asym", "hypo_ecc", "hypo_apply", "hypo_focal_tri", "hypo_focal_radius", "hypo_pointdiff", "hypo_line", "hypo_conjugate", "hypo_fixed"] },
+		{ "file": "res://data/parabola_levels.json", "ids": ["para_def", "para_std", "para_geo", "para_chord", "para_apply", "para_props", "para_focal_chord", "para_pointdiff", "para_line", "para_fixed", "para_maxmin"] },
+		{ "file": "res://data/solid_basic_levels.json", "ids": ["solid_kinds", "solid_surface", "solid_volume", "solid_diag", "solid_sphere", "solid_axiom", "solid_parallel", "solid_view", "solid_frustum", "solid_par_prop", "solid_perp_prop"] },
+	]
+	for spec in specs:
+		var path := str(spec["file"])
+		_ok(FileAccess.file_exists(path), path + " exists")
+		var data = JSON.parse_string(FileAccess.get_file_as_string(path))
+		_ok(typeof(data) == TYPE_DICTIONARY, path + " parses")
+		var explore_total := 0
+		for id in spec["ids"]:
+			_ok((data as Dictionary).has(id), "lab config has " + id)
+			var cfg: Dictionary = (data as Dictionary).get(id, {})
+			var lv: Array = cfg.get("levels", [])
+			_ok(lv.size() == 3, id + " has 3 rounds")
+			for r in lv:
+				if str((r as Dictionary).get("type", "choice")) == "explore":
+					explore_total += 1
+		var min_explore: int = min(3, (spec["ids"] as Array).size())
+		_ok(explore_total >= min_explore, path + " has >=%d explore rounds" % min_explore)
 
 func _test_wrong_queries() -> void:
 	var saved: Dictionary = GameData.wrong_log

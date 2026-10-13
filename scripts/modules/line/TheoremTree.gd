@@ -8,9 +8,82 @@ extends Control
 ## 各模块主题(单元)名，与关卡名 "N-M xxx" 的 N 对应(1 起)
 const GROUP_TITLES := {
 	"line_eq": ["倾斜角 · 斜率", "直线方程的四种形式", "平行与垂直", "距离公式", "直线系方程", "对称与最值"],
+	"circle_eq": ["圆的方程", "一般方程", "点 · 直线与圆", "切线", "圆与圆的位置关系", "轨迹与最值"],
 	"space":  ["空间向量基础", "方向向量 · 位置关系", "空间角", "距离问题", "三垂线 · 翻折", "球与最值"],
 	"vector": ["基础本源", "共线与线性运算", "基底与坐标", "数量积与夹角", "投影与几何恒等式", "最值与范围"],
 	"ellipse": ["椭圆定义与轨迹", "标准方程与几何性质", "焦半径与焦点三角形", "中点弦 · 点差法", "直线与椭圆 · 硬解定理"],
+	"hyperbola": ["双曲线的定义", "标准方程与 a、b、c", "渐近线", "离心率", "双曲线综合应用", "焦点三角形", "焦半径", "点差法 · 中点弦", "直线与双曲线", "共轭双曲线", "定点定值与最值"],
+	"parabola": ["抛物线的定义", "四种标准方程", "焦点与焦半径", "焦点弦与通径", "抛物线的综合应用", "几何性质", "焦点弦性质", "点差法 · 中点弦", "直线与抛物线", "定点定值", "最值与距离"],
+	"solid_basic": ["认识空间几何体", "表面积与展开", "体积", "体对角线与截面", "球与组合体", "空间点线面位置关系", "平行与垂直的判定", "三视图与直观图", "棱台与圆台", "直线与平面平行的性质", "直线与平面垂直的性质"],
+	"trig": ["三角函数探究"],
+	"functions": ["函数实验探究"],
+	"set_logic": ["集合与逻辑探究"],
+	"inequalities": ["不等式探究"],
+	"vectors": ["平面向量探究"],
+	"sequences": ["数列规律探究"],
+	"conics": ["解析几何探究"],
+	"probability": ["概率与统计探究"],
+	"derivative": ["导数探究"],
+	"complex": ["复数探究"],
+	"counting": ["计数原理探究"],
+	"thinking": ["数学思想探究"],
+	"statistics": ["统计探究"],
+	"random_var": ["随机变量探究"],
+	"corr_data": ["相关与回归探究"],
+}
+
+## 教材分册(顺序即顶部「分册标签」的显示顺序)。
+const BOOKS := [
+	{ "id": "bx1",  "title": "必修一" },
+	{ "id": "bx2",  "title": "必修二" },
+	{ "id": "xb1",  "title": "选必一" },
+	{ "id": "xb2",  "title": "选必二" },
+	{ "id": "idea", "title": "数学思想" },
+]
+
+## 各分册主题色。
+const BOOK_COLORS := {
+	"bx1": "#5B8FF9", "bx2": "#6DC8EC", "xb1": "#F2637B", "xb2": "#FFC53D", "idea": "#9ED0A0",
+}
+
+## 各知识章节所属分册。
+const CHAPTER_BOOK := {
+	"set_logic":    "bx1", "inequalities": "bx1", "functions": "bx1", "trig": "bx1",
+	"vectors":      "bx2", "probability":  "bx2", "complex":   "bx2", "statistics": "bx2",
+	"vector":       "bx2", "solid_basic":  "bx2",
+	"sequences":    "xb1", "conics":       "xb1", "derivative": "xb1", "line_eq": "xb1",
+	"ellipse":      "xb1", "circle_eq":    "xb1", "hyperbola":  "xb1", "parabola": "xb1",
+	"counting":     "xb2", "random_var":   "xb2", "corr_data":  "xb2", "space": "xb2",
+	"thinking":     "idea",
+}
+
+## 各章节在所属分册内的教材章号(卡片左上角显示,如 "第5章")。
+## 分册已区分必修/选修,故不再加前缀。苏教版(2019):必修一 1–8 章、必修二 9–15 章、
+## 选必一 1–5 章、选必二 6–9 章。数学思想综合无教材章号,显示「综合」。
+const CHAPTER_NO := {
+	"set_logic":    "第1–2章",
+	"inequalities": "第3章",
+	"functions":    "第5章",
+	"trig":         "第7章",
+	"vectors":      "第9章",
+	"probability":  "第15章",
+	"complex":      "第12章",
+	"statistics":   "第14章",
+	"vector":       "第9章",
+	"solid_basic":  "第13章",
+	"sequences":    "第4章",
+	"conics":       "第3章",
+	"derivative":   "第5章",
+	"line_eq":      "第1章",
+	"ellipse":      "第3章",
+	"circle_eq":    "第2章",
+	"hyperbola":    "第3章",
+	"parabola":     "第3章",
+	"counting":     "第7章",
+	"random_var":   "第8章",
+	"corr_data":    "第9章",
+	"space":        "第6章",
+	"thinking":     "综合",
 }
 
 const NODE_W := 208.0
@@ -21,6 +94,8 @@ const TOP_MARGIN := 220.0
 const ROW_H := 208.0
 const BOTTOM_MARGIN := 240.0
 const MIN_W := 1120.0
+## 单行节点数上限：超过则折到下一行，保证节点标题之间留出空隙不压字。
+const MAX_ROW_COLS := 5
 
 ## 沿路径流动的脉冲点
 class Pulse extends Control:
@@ -49,6 +124,8 @@ class MapNode extends Control:
 	var stars := 0
 	var max_stars := 3
 	var is_boss := false
+	## 标题/技法文字的最大绘制宽度(由布局按列间距给定，超出则省略号收尾，避免相邻节点压字)
+	var title_max_w := 0.0
 
 	var _hover := false
 	var _t := 0.0
@@ -109,8 +186,22 @@ class MapNode extends Control:
 		if unlocked and _hover:
 			draw_circle(Vector2(cx, cy), R + 16.0, Color(UI.COL_ACCENT.r, UI.COL_ACCENT.g, UI.COL_ACCENT.b, 0.10))
 
+		# HUD 刻度环
+		var tick_col := Color(base_col, 0.55 if unlocked else 0.22)
+		for i in 24:
+			var a := TAU * float(i) / 24.0 - PI / 2.0
+			var ln := 5.0 if i % 6 == 0 else 2.0
+			var d := Vector2(cos(a), sin(a))
+			draw_line(Vector2(cx, cy) + d * (R + 4.0), Vector2(cx, cy) + d * (R + 4.0 + ln), tick_col, 1.2, true)
+
 		draw_circle(Vector2(cx, cy), R, Color(0.05, 0.07, 0.12, 0.82))
 		draw_arc(Vector2(cx, cy), R, 0.0, TAU, 64, Color(base_col, 0.75 if unlocked else 0.30), 2.4, true)
+
+		# 旋转外弧
+		if unlocked:
+			var spin := _t * 0.6 + float(li)
+			draw_arc(Vector2(cx, cy), R + 12.0, spin, spin + PI * 0.45, 14, Color(base_col, 0.55), 1.6, true)
+			draw_arc(Vector2(cx, cy), R + 12.0, spin + PI, spin + PI * 1.45, 14, Color(base_col, 0.55), 1.6, true)
 
 		var prog := 0.0
 		if max_stars > 0:
@@ -120,6 +211,7 @@ class MapNode extends Control:
 
 		if unlocked and _hover:
 			draw_arc(Vector2(cx, cy), R + 5.0, 0.0, TAU, 64, Color(UI.COL_ACCENT, 0.55), 1.5, true)
+			_draw_brackets(cx, cy, R + 6.0, Color(UI.COL_ACCENT, 0.75))
 
 		if is_boss and unlocked:
 			var ph := 0.5 + 0.5 * sin(_t * 3.0)
@@ -134,9 +226,9 @@ class MapNode extends Control:
 			_draw_lock(Vector2(cx + R - 14.0, cy - R + 8.0), Color(1, 1, 1, 0.5))
 
 		var tcol := UI.COL_TEXT if unlocked else Color(UI.COL_TEXT_DIM, 0.75)
-		_center(f, title, cx, cy + R + 24.0, 16, tcol)
+		_center(f, title, cx, cy + R + 24.0, 16, tcol, title_max_w)
 		if sub != "":
-			_center(mf, sub, cx, cy + R + 42.0, 11, Color(UI.COL_TEXT_DIM, 0.85))
+			_center(mf, sub, cx, cy + R + 42.0, 11, Color(UI.COL_TEXT_DIM, 0.85), title_max_w)
 		_draw_stars(cx, size.y - 12.0)
 
 	func _draw_lock(at: Vector2, col: Color) -> void:
@@ -163,12 +255,123 @@ class MapNode extends Control:
 					UI.COL_ACCENT if full else Color("#3c4a66"))
 			x += sz + gap
 
-	func _center(f: Font, text: String, cx: float, by: float, size_px: int, col: Color) -> void:
+	func _center(f: Font, text: String, cx: float, by: float, size_px: int, col: Color, max_w := 0.0) -> void:
 		var px := UI.fs(size_px)
-		var w := f.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, px).x
+		var shown := _fit(f, text, px, max_w)
+		var w := f.get_string_size(shown, HORIZONTAL_ALIGNMENT_LEFT, -1, px).x
 		var pos := Vector2(cx - w * 0.5, by)
-		draw_string_outline(f, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, px, maxi(2, int(px * 0.22)), Color(0, 0, 0, 0.7))
-		draw_string(f, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, px, col)
+		draw_string_outline(f, pos, shown, HORIZONTAL_ALIGNMENT_LEFT, -1, px, maxi(2, int(px * 0.22)), Color(0, 0, 0, 0.7))
+		draw_string(f, pos, shown, HORIZONTAL_ALIGNMENT_LEFT, -1, px, col)
+
+	## 超过 max_w(max_w<=0 视为不限制)时逐字裁掉并以省略号收尾。
+	func _fit(f: Font, text: String, px: int, max_w: float) -> String:
+		if max_w <= 0.0:
+			return text
+		if f.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, px).x <= max_w:
+			return text
+		var t := text
+		while t.length() > 1:
+			t = t.substr(0, t.length() - 1)
+			if f.get_string_size(t + "…", HORIZONTAL_ALIGNMENT_LEFT, -1, px).x <= max_w:
+				return t + "…"
+		return "…"
+
+	func _draw_brackets(cx: float, cy: float, half: float, col: Color) -> void:
+		var L := 12.0
+		draw_polyline(PackedVector2Array([Vector2(cx - half, cy - half + L), Vector2(cx - half, cy - half), Vector2(cx - half + L, cy - half)]), col, 2.0, true)
+		draw_polyline(PackedVector2Array([Vector2(cx + half - L, cy - half), Vector2(cx + half, cy - half), Vector2(cx + half, cy - half + L)]), col, 2.0, true)
+		draw_polyline(PackedVector2Array([Vector2(cx - half, cy + half - L), Vector2(cx - half, cy + half), Vector2(cx - half + L, cy + half)]), col, 2.0, true)
+		draw_polyline(PackedVector2Array([Vector2(cx + half - L, cy + half), Vector2(cx + half, cy + half), Vector2(cx + half, cy + half - L)]), col, 2.0, true)
+
+## 分册标签：HUD 斜切面板(册代码 + 册名 + 进度 + 章节数)。
+class BookTab extends Control:
+	var owner_tree: Control
+	var bi := 0
+	var title := ""
+	var code := ""
+	var color := Color(UI.COL_ACCENT)
+	var active := false
+	var locked := false
+	var stars := 0
+	var max_stars := 0
+	var chapters := 0
+
+	var _hover := false
+	var _t := 0.0
+
+	func _ready() -> void:
+		mouse_filter = Control.MOUSE_FILTER_STOP
+		resized.connect(func() -> void: pivot_offset = size * 0.5)
+		mouse_entered.connect(func() -> void: _hover = true; _lift(true); queue_redraw())
+		mouse_exited.connect(func() -> void: _hover = false; _lift(false); queue_redraw())
+		mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		set_process(true)
+
+	func _process(delta: float) -> void:
+		if not UI.animations:
+			return
+		_t += delta
+		if active:
+			queue_redraw()
+
+	func _lift(on: bool) -> void:
+		var target := Vector2(1.035, 1.035) if on else Vector2.ONE
+		if not UI.animations:
+			scale = target
+			return
+		pivot_offset = size * 0.5
+		create_tween().tween_property(self, "scale", target, 0.13).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+	func _gui_input(e: InputEvent) -> void:
+		if e is InputEventMouseButton:
+			var mb := e as InputEventMouseButton
+			if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed:
+				owner_tree.call("_select_book", bi)
+				accept_event()
+
+	func _draw() -> void:
+		var w := size.x
+		var h := size.y
+		var accent := color if not locked else Color(0.42, 0.45, 0.52)
+		var cut := 13.0
+		var pts := PackedVector2Array([
+			Vector2(cut, 0), Vector2(w, 0), Vector2(w, h - cut),
+			Vector2(w - cut, h), Vector2(0, h), Vector2(0, cut),
+		])
+		var pulse := 0.5 + 0.5 * sin(_t * 2.6)
+
+		var bg := Color(0.04, 0.06, 0.11, 0.9)
+		if active:
+			bg = Color(accent.r, accent.g, accent.b, 0.20)
+		elif _hover:
+			bg = Color(1, 1, 1, 0.10)
+		draw_colored_polygon(pts, bg)
+		if active:
+			draw_colored_polygon(pts, Color(accent.r, accent.g, accent.b, 0.06 + 0.06 * pulse))
+
+		var brd := Color(accent, 0.85 + 0.15 * pulse) if active else Color(1, 1, 1, 0.30 if _hover else 0.14)
+		var closed := pts.duplicate()
+		closed.append(pts[0])
+		draw_polyline(closed, brd, 1.8 if active else 1.0, true)
+		draw_line(Vector2(cut + 2, 1.5), Vector2(w - 2, 1.5), Color(accent, 0.95 if active else 0.35), 2.0)
+
+		var mf := UI.mono_font()
+		var fb := UI.font_bold()
+		draw_string(mf, Vector2(11, 21), code, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(12), Color(accent, 0.95))
+		draw_string(fb, Vector2(cut + 8, 22), title, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(16), UI.COL_TEXT if not locked else Color(UI.COL_TEXT_DIM, 0.85))
+		var ct := "%d章" % chapters
+		var ctw := mf.get_string_size(ct, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(11)).x
+		draw_string(mf, Vector2(w - 10 - ctw, 21), ct, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(11), Color(UI.COL_TEXT_DIM, 0.9))
+
+		var bar := Rect2(11, h - 14, w - 22, 6)
+		draw_rect(bar, Color(0, 0, 0, 0.4), true)
+		var ratio := 0.0
+		if max_stars > 0:
+			ratio = clampf(float(stars) / float(max_stars), 0.0, 1.0)
+		if ratio > 0.001:
+			var fw := maxf(bar.size.x * ratio, 4.0)
+			draw_rect(Rect2(bar.position, Vector2(fw, bar.size.y)), accent, true)
+			draw_circle(Vector2(bar.position.x + fw, bar.position.y + bar.size.y * 0.5), 3.0, Color(1, 1, 1, 0.95))
 
 ## 章节卡片：卡片化外观 + 可拖拽排序 + 悬停/呼吸动画。
 class TabCard extends Control:
@@ -176,11 +379,13 @@ class TabCard extends Control:
 	var mi := 0
 	var num := 0
 	var title := ""
+	var chapter_label := ""
 	var color := Color("#5B8FF9")
 	var active := false
 	var locked := false
 	var stars := 0
 	var max_stars := 0
+	var levels_count := 0
 
 	var _hover := false
 	var _t := 0.0
@@ -248,61 +453,157 @@ class TabCard extends Control:
 		var w := size.x
 		var h := size.y
 		var accent := color if not locked else Color(0.42, 0.45, 0.52)
+		var cut := 12.0
+		var pulse := 0.5 + 0.5 * sin(_t * 2.6)
 
-		var sb := StyleBoxFlat.new()
-		sb.set_corner_radius_all(14)
-		sb.set_border_width_all(2 if active else 1)
-		if locked:
-			sb.bg_color = Color(0.13, 0.15, 0.2, 0.62)
-			sb.border_color = Color(1, 1, 1, 0.10)
-		elif active:
-			sb.bg_color = Color(color.r, color.g, color.b, 0.20)
-			sb.border_color = Color(color.r, color.g, color.b, 0.9)
-			var pulse := 0.5 + 0.5 * sin(_t * 2.6)
-			sb.shadow_color = Color(color.r, color.g, color.b, 0.18 + 0.22 * pulse)
-			sb.shadow_size = int(8 + 6 * pulse)
-			sb.shadow_offset = Vector2.ZERO
-		else:
-			sb.bg_color = Color(1, 1, 1, 0.09 if _hover else 0.05)
-			sb.border_color = Color(1, 1, 1, 0.28 if _hover else 0.14)
-		draw_style_box(sb, Rect2(Vector2.ZERO, size))
-
-		# 左侧色条
-		draw_rect(Rect2(0, 14, 4, h - 28), accent, true)
+		# HUD 斜切面板
+		var pts := PackedVector2Array([
+			Vector2(cut, 0), Vector2(w, 0), Vector2(w, h - cut),
+			Vector2(w - cut, h), Vector2(0, h), Vector2(0, cut),
+		])
+		var bg := Color(0.05, 0.07, 0.12, 0.85)
+		if active:
+			bg = Color(color.r, color.g, color.b, 0.16 + 0.06 * pulse)
+		elif _hover:
+			bg = Color(1, 1, 1, 0.09)
+		draw_colored_polygon(pts, bg)
+		var closed := pts.duplicate()
+		closed.append(pts[0])
+		draw_polyline(closed, Color(accent, 0.9) if active else Color(1, 1, 1, 0.30 if _hover else 0.14), 2.0 if active else 1.0, true)
+		draw_line(Vector2(cut + 2, 1.5), Vector2(w - 2, 1.5), Color(accent, 0.95), 2.0)
 
 		var mf := UI.mono_font()
-		# 章节编号
-		draw_string(mf, Vector2(16, 30), "%02d" % num, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(15), Color(accent, 0.95))
-		# 状态标
+		var fb := UI.font_bold()
+
+		# 章号徽章(左上)
+		var label := chapter_label if chapter_label != "" else "%02d" % num
+		var bw := mf.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(12)).x + 16.0
+		var by := 8.0
+		var bpts := PackedVector2Array([
+			Vector2(12, by), Vector2(12 + bw, by), Vector2(12 + bw + 6, by + 11),
+			Vector2(12 + bw, by + 22), Vector2(12, by + 22), Vector2(12 + 6, by + 11),
+		])
+		draw_colored_polygon(bpts, Color(accent, 0.16))
+		var bclosed := bpts.duplicate()
+		bclosed.append(bpts[0])
+		draw_polyline(bclosed, Color(accent, 0.75), 1.2, true)
+		draw_string(mf, Vector2(12 + 8, by + 16), label, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(12), Color(accent, 0.98))
+
+		# 状态(右上,小圆点 + 文本)
+		var scol := Color(UI.COL_TEXT_DIM, 0.85)
+		var stxt := "已解锁"
 		if active:
-			draw_string(UI.font(), Vector2(w - 76, 30), "正在学习", HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(13), Color(color, 0.98))
+			scol = Color(color, 0.98)
+			stxt = "正在学习"
 		elif locked:
-			draw_string(UI.font(), Vector2(w - 58, 30), "未解锁", HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(12), Color(1, 1, 1, 0.4))
-		else:
-			draw_string(UI.font(), Vector2(w - 58, 30), "已解锁", HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(11), Color(UI.COL_TEXT_DIM, 0.7))
+			scol = Color(1, 1, 1, 0.42)
+			stxt = "未解锁"
+		var sf := UI.fs(12)
+		var sw := UI.font().get_string_size(stxt, HORIZONTAL_ALIGNMENT_LEFT, -1, sf).x
+		draw_circle(Vector2(w - 16 - sw - 8, by + 11), 3.0, scol)
+		draw_string(UI.font(), Vector2(w - 16 - sw, by + 15), stxt, HORIZONTAL_ALIGNMENT_LEFT, -1, sf, scol)
+
 		# 标题
 		var tcol := UI.COL_TEXT if not locked else Color(UI.COL_TEXT_DIM, 0.7)
-		draw_string(UI.font(), Vector2(16, 58), title, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(18), tcol)
-		# 星数
-		draw_string(mf, Vector2(16, h - 18), "★ %d / %d" % [stars, max_stars], HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(12), Color(UI.COL_TEXT_DIM, 0.95))
+		draw_string(fb, Vector2(16, 60), title, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(18), tcol)
+
+		# 副标题(关卡数) + 星数
+		draw_string(mf, Vector2(16, 80), "%d 关" % levels_count, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(11), Color(UI.COL_TEXT_DIM, 0.8))
+		var s := "★ %d / %d" % [stars, max_stars]
+		var sw2 := mf.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(12)).x
+		draw_string(mf, Vector2(w - 16 - sw2, 80), s, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(12), Color(UI.COL_ACCENT if not locked else UI.COL_TEXT_DIM, 0.95))
+
 		# 进度条
-		var bar := Rect2(16, h - 10, w - 32, 6)
-		draw_rect(bar, Color(0, 0, 0, 0.35), true)
+		var bar := Rect2(16, h - 13, w - 32, 6)
+		draw_rect(bar, Color(0, 0, 0, 0.4), true)
 		var ratio := 0.0
 		if max_stars > 0:
 			ratio = clampf(float(stars) / float(max_stars), 0.0, 1.0)
 		if ratio > 0.001:
-			var fb := StyleBoxFlat.new()
-			fb.bg_color = accent
-			fb.set_corner_radius_all(4)
-			draw_style_box(fb, Rect2(bar.position, Vector2(maxf(bar.size.x * ratio, 4.0), bar.size.y)))
+			draw_rect(Rect2(bar.position, Vector2(maxf(bar.size.x * ratio, 4.0), bar.size.y)), accent, true)
+
+		# active 扫描线
+		if active:
+			var sy := fposmod(_t * 26.0, h)
+			draw_line(Vector2(3, sy), Vector2(w - 3, sy), Color(color, 0.18), 2.0)
+
+		# 角标(悬停/激活)
+		if _hover or active:
+			_draw_brackets(w, h, Color(accent, 0.9 if active else 0.6))
 
 		# 拖拽把手
 		for k in 3:
-			draw_circle(Vector2(w - 16, h * 0.5 - 10 + k * 10), 1.8, Color(1, 1, 1, 0.4))
+			draw_circle(Vector2(w - 14, h * 0.5 - 10 + k * 10), 1.6, Color(1, 1, 1, 0.35))
+
+	func _draw_brackets(w: float, h: float, col: Color) -> void:
+		var L := 10.0
+		var o := 4.0
+		draw_polyline(PackedVector2Array([Vector2(o, o + L), Vector2(o, o), Vector2(o + L, o)]), col, 2.0, true)
+		draw_polyline(PackedVector2Array([Vector2(w - o - L, o), Vector2(w - o, o), Vector2(w - o, o + L)]), col, 2.0, true)
+		draw_polyline(PackedVector2Array([Vector2(o, h - o - L), Vector2(o, h - o), Vector2(o + L, h - o)]), col, 2.0, true)
+		draw_polyline(PackedVector2Array([Vector2(w - o - L, h - o), Vector2(w - o, h - o), Vector2(w - o, h - o - L)]), col, 2.0, true)
+
+## 单元标题条：HUD 括号 + 两侧导轨 + 等宽编号。
+class UnitHeader extends Control:
+	var prefix := ""
+	var title := ""
+	var color := Color(UI.COL_ACCENT)
+	var boss := false
+
+	func _ready() -> void:
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		set_meta("unit_label", true)
+		resized.connect(queue_redraw)
+
+	func _draw() -> void:
+		var w := size.x
+		var cy := size.y * 0.5
+		var f := UI.mono_font()
+		var txt := prefix + title
+		var px := UI.fs(15)
+		var tw := f.get_string_size(txt, HORIZONTAL_ALIGNMENT_LEFT, -1, px).x
+		var x0 := (w - tw) * 0.5
+		var lx := x0 - 14.0
+		var rx := x0 + tw + 14.0
+		var rail := Color(color, 0.22)
+		draw_line(Vector2(48, cy), Vector2(lx - 9.0, cy), rail, 1.0)
+		draw_line(Vector2(rx + 9.0, cy), Vector2(w - 48, cy), rail, 1.0)
+		draw_circle(Vector2(48, cy), 2.0, Color(color, 0.55))
+		draw_circle(Vector2(w - 48, cy), 2.0, Color(color, 0.55))
+		var L := 9.0
+		draw_polyline(PackedVector2Array([Vector2(lx, cy - L), Vector2(lx - 8, cy), Vector2(lx, cy + L)]), color, 2.0, true)
+		draw_polyline(PackedVector2Array([Vector2(rx, cy - L), Vector2(rx + 8, cy), Vector2(rx, cy + L)]), color, 2.0, true)
+		draw_string(f, Vector2(x0, cy + px * 0.34), txt, HORIZONTAL_ALIGNMENT_LEFT, -1, px, color)
+
+## 顶栏底部动态扫描线。
+class HudLine extends Control:
+	var color := Color(UI.COL_ACCENT)
+	var _t := 0.0
+
+	func _ready() -> void:
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		resized.connect(queue_redraw)
+		set_process(true)
+
+	func _process(delta: float) -> void:
+		if not UI.animations:
+			return
+		_t += delta
+		queue_redraw()
+
+	func _draw() -> void:
+		var w := size.x
+		var y := size.y * 0.5
+		draw_line(Vector2(0, y), Vector2(w, y), Color(color, 0.16), 1.0)
+		var seg := 110.0
+		var x := fposmod(_t * 150.0, w + seg) - seg
+		draw_line(Vector2(maxf(x, 0.0), y), Vector2(minf(x + seg, w), y), Color(color, 0.85), 2.0)
 
 var _star_lbl: Label
 var _module_idx := 0
+var _book_row: HBoxContainer
+var _book_present: Array = []
+var _book_idx := 0
 var _tabs: HBoxContainer
 var _tab_scroll: ScrollContainer
 var _content: Control
@@ -326,6 +627,7 @@ func _ready() -> void:
 	if ci >= 0 and ci < GameData.chapters.size():
 		var cid := str(GameData.chapters[ci].get("id", ""))
 		_module_idx = maxi(0, _find_module(cid))
+	_compute_books()
 	_build_topbar()
 	if GameData.chapters.is_empty():
 		return
@@ -371,7 +673,6 @@ func _build_modules() -> void:
 			"color": str(ch.get("color", "#5B8FF9")),
 		})
 	_apply_saved_order()
-	_move_current_to_front()
 
 ## 按存档里的自定义顺序重排(未列出的章节按原顺序补在后面)
 func _apply_saved_order() -> void:
@@ -392,24 +693,120 @@ func _apply_saved_order() -> void:
 			out.append(m)
 	_mods = out
 
-## 把当前正在学习的章节卡片移到最前面
-func _move_current_to_front() -> void:
-	var ci := GameData.last_chapter_index()
-	if ci < 0 or ci >= GameData.chapters.size():
-		return
-	var cid := str(GameData.chapters[ci].get("id", ""))
-	for i in _mods.size():
-		if str(_mods[i]["id"]) == cid:
-			var m = _mods[i]
-			_mods.remove_at(i)
-			_mods.insert(0, m)
-			return
-
 func _find_module(id: String) -> int:
 	for i in _mods.size():
 		if str(_mods[i]["id"]) == id:
 			return i
 	return -1
+
+# ---------------------------------------------------------------- 分册
+## 计算存在的分册列表(含知识章节的册),并把当前选中章节所属册设为当前册。
+func _compute_books() -> void:
+	_book_present = []
+	for b in BOOKS:
+		if _count_in_book(str(b["id"])) > 0:
+			_book_present.append(str(b["id"]))
+	_book_idx = maxi(0, _book_present.find(_book_of(_module_idx)))
+
+func _count_in_book(bk: String) -> int:
+	var n := 0
+	for m in _mods:
+		if str(CHAPTER_BOOK.get(str(m["id"]), "")) == bk:
+			n += 1
+	return n
+
+## 某全局模块索引所属的分册 id
+func _book_of(mi: int) -> String:
+	if mi < 0 or mi >= _mods.size():
+		return ""
+	return str(CHAPTER_BOOK.get(str(_mods[mi]["id"]), ""))
+
+## 当前分册下的模块全局索引(按 _mods 顺序)
+func _visible_mis() -> Array:
+	var out: Array = []
+	if _book_idx < 0 or _book_idx >= _book_present.size():
+		return out
+	var bk := str(_book_present[_book_idx])
+	for mi in _mods.size():
+		if _book_of(mi) == bk:
+			out.append(mi)
+	return out
+
+func _build_book_tabs() -> void:
+	if _book_row == null:
+		return
+	for c in _book_row.get_children():
+		c.queue_free()
+	for i in _book_present.size():
+		_book_row.add_child(_book_button(i))
+
+func _book_button(i: int) -> Control:
+	var bk := str(_book_present[i])
+	var title := bk
+	for b in BOOKS:
+		if str(b["id"]) == bk:
+			title = str(b["title"])
+	var code := bk.to_upper()
+	match bk:
+		"bx1": code = "B1"
+		"bx2": code = "B2"
+		"xb1": code = "X1"
+		"xb2": code = "X2"
+		"idea": code = "Σ"
+	var tab := BookTab.new()
+	tab.owner_tree = self
+	tab.bi = i
+	tab.title = title
+	tab.code = code
+	tab.color = _book_color(bk)
+	tab.active = i == _book_idx
+	tab.locked = _book_locked(bk)
+	tab.chapters = _count_in_book(bk)
+	var agg := _book_stars(bk)
+	tab.stars = int(agg[0])
+	tab.max_stars = int(agg[1])
+	tab.custom_minimum_size = Vector2(172, 52)
+	tab.size = Vector2(172, 52)
+	return tab
+
+func _book_color(bk: String) -> Color:
+	return Color(str(BOOK_COLORS.get(bk, "#5ee6ff")))
+
+## 某分册下所有章节的 [累计星数, 累计满星]
+func _book_stars(bk: String) -> Array:
+	var s := 0
+	var m := 0
+	for mi in _mods.size():
+		if _book_of(mi) != bk:
+			continue
+		var ci := _chapter_index_of(str(_mods[mi]["id"]))
+		if ci >= 0:
+			s += GameData.chapter_stars(GameData.chapters[ci])
+			m += GameData.chapter_max_stars(GameData.chapters[ci])
+	return [s, m]
+
+## 分册是否全部未解锁
+func _book_locked(bk: String) -> bool:
+	for mi in _mods.size():
+		if _book_of(mi) != bk:
+			continue
+		var ci := _chapter_index_of(str(_mods[mi]["id"]))
+		if ci >= 0 and GameData.is_chapter_unlocked(ci):
+			return false
+	return true
+
+## 切换分册:若当前选中章节不属于该册,自动选中该册第一张卡片。
+func _select_book(i: int) -> void:
+	if i < 0 or i >= _book_present.size() or i == _book_idx:
+		return
+	_book_idx = i
+	Sound.play("select")
+	var ids := _visible_mis()
+	if not ids.is_empty() and _book_of(_module_idx) != str(_book_present[i]):
+		_module_idx = int(ids[0])
+	_build_book_tabs()
+	_rebuild_tabs()
+	_build_map(true)
 
 # ---------------------------------------------------------------- 顶栏
 func _build_topbar() -> void:
@@ -435,11 +832,32 @@ func _build_topbar() -> void:
 	hb.add_child(_star_lbl)
 	_refresh_star()
 
-	# 模块切换标签(固定在导图上方工具条):左右箭头翻页 + 可横向滑动,兼容鼠标与触摸
+	# 顶栏底部动态扫描线
+	var hl := HudLine.new()
+	hl.color = UI.COL_ACCENT
+	hl.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	hl.offset_top = 62
+	hl.offset_bottom = 64
+	add_child(hl)
+
+	# 第一层:分册选择(必修一/必修二/选必一/选必二/数学思想)
+	var book_bar := PanelContainer.new()
+	book_bar.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	book_bar.offset_top = 64
+	book_bar.offset_bottom = 126
+	book_bar.add_theme_stylebox_override("panel", UI.glass_box(Color(0.03, 0.05, 0.09, 0.9), 0, Color(UI.COL_ACCENT, 0.14), 1, 8))
+	book_bar.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(book_bar)
+	_book_row = HBoxContainer.new()
+	_book_row.add_theme_constant_override("separation", 10)
+	_book_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	book_bar.add_child(_book_row)
+
+	# 第二层:当前分册下的章节卡片(左右箭头翻页 + 可横向滑动,兼容鼠标与触摸)
 	var tab_bar := PanelContainer.new()
 	tab_bar.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	tab_bar.offset_top = 64
-	tab_bar.offset_bottom = 176
+	tab_bar.offset_top = 126
+	tab_bar.offset_bottom = 246
 	tab_bar.add_theme_stylebox_override("panel", UI.glass_box(Color(0.03, 0.05, 0.09, 0.85), 0, Color(UI.COL_ACCENT, 0.2), 1, 8))
 	tab_bar.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(tab_bar)
@@ -462,6 +880,7 @@ func _build_topbar() -> void:
 	_tabs.add_theme_constant_override("separation", 12)
 	_tab_scroll.add_child(_tabs)
 	# 说明：标签条不接管触摸拖动(交给卡片拖拽),横向浏览用左右箭头或鼠标滚轮。
+	_build_book_tabs()
 	_rebuild_tabs()
 
 ## 翻页箭头:手机无鼠标滚轮,靠它切换被遮住的章节标签
@@ -480,12 +899,15 @@ func _scroll_tabs(dir: int) -> void:
 func _rebuild_tabs() -> void:
 	for c in _tabs.get_children():
 		c.queue_free()
-	for mi in _mods.size():
-		_tabs.add_child(_tab_card(mi))
+	var ids := _visible_mis()
+	for mi in ids:
+		_tabs.add_child(_tab_card(int(mi)))
 	_tab_entrance()
 	# 让当前选中的章节卡片自动滚动到可见位置
-	if _tab_scroll != null and _module_idx >= 0 and _module_idx < _tabs.get_child_count():
-		_tab_scroll.call_deferred("ensure_control_visible", _tabs.get_child(_module_idx))
+	if _tab_scroll != null and _module_idx >= 0:
+		var pos := ids.find(_module_idx)
+		if pos >= 0 and pos < _tabs.get_child_count():
+			_tab_scroll.call_deferred("ensure_control_visible", _tabs.get_child(pos))
 
 ## 把某章做成一张可拖拽的卡片(状态: 正在学习 / 已解锁 / 未解锁)
 func _tab_card(mi: int) -> Control:
@@ -494,6 +916,7 @@ func _tab_card(mi: int) -> Control:
 	card.owner_tree = self
 	card.mi = mi
 	card.title = str(mod["title"])
+	card.chapter_label = str(CHAPTER_NO.get(str(mod["id"]), ""))
 	card.color = Color(str(mod["color"]))
 	card.active = mi == _module_idx
 	card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -503,8 +926,9 @@ func _tab_card(mi: int) -> Control:
 		card.locked = not GameData.is_chapter_unlocked(ci)
 		card.stars = GameData.chapter_stars(GameData.chapters[ci])
 		card.max_stars = GameData.chapter_max_stars(GameData.chapters[ci])
-	card.custom_minimum_size = Vector2(210, 96)
-	card.size = Vector2(210, 96)
+		card.levels_count = (GameData.chapters[ci]["levels"] as Array).size()
+	card.custom_minimum_size = Vector2(212, 104)
+	card.size = Vector2(212, 104)
 	return card
 
 ## 选中某章(切换地图)
@@ -516,20 +940,29 @@ func _select_module(mi: int) -> void:
 	_rebuild_tabs()
 	_build_map(true)
 
-## 卡片拖拽排序：把 from 位置的章节移动到 to 位置，并持久化顺序。
+## 卡片拖拽排序：仅在当前分册内调整先后顺序，并把整体顺序持久化。
 func _reorder_cards(from_mi: int, to_mi: int) -> void:
-	if from_mi == to_mi or from_mi < 0 or from_mi >= _mods.size() or to_mi < 0 or to_mi >= _mods.size():
+	var ids := _visible_mis()
+	var pf := ids.find(from_mi)
+	var pt := ids.find(to_mi)
+	if pf < 0 or pt < 0 or pf == pt:
 		return
 	var selected_id := ""
 	if _module_idx >= 0 and _module_idx < _mods.size():
 		selected_id = str(_mods[_module_idx]["id"])
-	var m = _mods[from_mi]
-	_mods.remove_at(from_mi)
-	_mods.insert(to_mi, m)
-	var ids: Array = []
+	var ordered: Array = []
+	for mi in ids:
+		ordered.append(_mods[int(mi)])
+	var moving = ordered[pf]
+	ordered.remove_at(pf)
+	ordered.insert(pt, moving)
+	# ids 为升序索引，直接回填到原有位置，保持其它分册条目不动
+	for k in ids.size():
+		_mods[int(ids[k])] = ordered[k]
+	var out_ids: Array = []
 	for x in _mods:
-		ids.append(str(x["id"]))
-	GameData.set_chapter_order(ids)
+		out_ids.append(str(x["id"]))
+	GameData.set_chapter_order(out_ids)
 	_module_idx = maxi(0, _find_module(selected_id))
 	Sound.play("click")
 	_rebuild_tabs()
@@ -560,7 +993,7 @@ func _refresh_star() -> void:
 func _build_scroll() -> void:
 	_scroll = ScrollContainer.new()
 	_scroll.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_scroll.offset_top = 176
+	_scroll.offset_top = 246
 	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	add_child(_scroll)
@@ -590,8 +1023,23 @@ func _build_map(recenter_map: bool) -> void:
 
 	var vp := get_viewport_rect().size
 	var content_w := maxf(MIN_W, vp.x)
-	var pad := clampf(content_w * 0.12, 96.0, 220.0)
-	var rows := _groups.size()
+	var edge_pad := clampf(content_w * 0.045, 44.0, 96.0)
+	var avail := maxf(240.0, content_w - 2.0 * edge_pad)
+	# 一行放不下太多节点(会互相压字)，按可用宽度估算单行上限。
+	var max_cols := clampi(int(floor(avail / 205.0)), 3, MAX_ROW_COLS)
+
+	# 把各单元按单行上限切成"行段"：同一单元可能占多行，仅首行显示单元标题条。
+	var rows_def: Array = []
+	for gi in _groups.size():
+		var items: Array = _groups[gi]["items"]
+		var from := 0
+		var first := true
+		while from < items.size():
+			var to := mini(from + max_cols, items.size())
+			rows_def.append({ "gi": gi, "items": items.slice(from, to), "first": first })
+			first = false
+			from = to
+	var rows := rows_def.size()
 	var content_h := TOP_MARGIN + maxf(0.0, float(rows - 1)) * ROW_H + BOTTOM_MARGIN
 	_content.custom_minimum_size = Vector2(content_w, content_h)
 
@@ -603,21 +1051,28 @@ func _build_map(recenter_map: bool) -> void:
 
 	var centers := PackedVector2Array()
 	var infos: Array = []
-	for gi in _groups.size():
-		var g: Dictionary = _groups[gi]
-		var items: Array = g["items"]
+	for ri in rows:
+		var rd: Dictionary = rows_def[ri]
+		var g: Dictionary = _groups[int(rd["gi"])]
+		var items: Array = rd["items"]
 		var m := items.size()
-		var y := TOP_MARGIN + float(gi) * ROW_H
-		var reverse := (gi % 2) == 1
-		_content.add_child(_unit_header(g, gi, content_w, y))
+		var y := TOP_MARGIN + float(ri) * ROW_H
+		var reverse := (ri % 2) == 1
+		if bool(rd["first"]):
+			_content.add_child(_unit_header(g, int(rd["gi"]), content_w, y))
+		var col_gap := avail / float(m + 1)
+		var title_w := maxf(96.0, col_gap - 14.0)
 		for j in m:
 			var it: Dictionary = items[j]
 			var t := (float(j) + 1.0) / (float(m) + 1.0)
 			if reverse:
 				t = 1.0 - t
-			var x := pad + t * (content_w - 2.0 * pad)
+			var x := edge_pad + t * avail
 			centers.append(Vector2(x, y))
-			infos.append({ "c": Vector2(x, y), "it": it, "boss": bool(g.get("boss", false)) })
+			infos.append({
+				"c": Vector2(x, y), "it": it,
+				"boss": bool(g.get("boss", false)), "title_w": title_w,
+			})
 
 	if centers.size() >= 2:
 		var smooth := _catmull_rom(centers, 12)
@@ -636,7 +1091,7 @@ func _build_map(recenter_map: bool) -> void:
 	for info in infos:
 		var c0: Vector2 = info["c"]
 		var it0: Dictionary = info["it"]
-		_add_level_node(c0, it0, int(it0["li"]), bool(info["boss"]))
+		_add_level_node(c0, it0, int(it0["li"]), bool(info["boss"]), float(info["title_w"]))
 
 	if UI.animations and recenter_map:
 		_stagger_entrance(_content)
@@ -647,23 +1102,24 @@ func _build_map(recenter_map: bool) -> void:
 
 func _unit_header(g: Dictionary, gi: int, content_w: float, y: float) -> Control:
 	var boss := bool(g.get("boss", false))
-	var title := str(g["title"])
-	var prefix := "HIDDEN BOSS · " if boss else "UNIT %02d · " % (gi + 1)
-	var col := Color("#fb7185") if boss else _mod_col
-	var l := UI.mono_label(prefix + title, 15, Color(col, 0.92), HORIZONTAL_ALIGNMENT_CENTER)
-	l.position = Vector2(0, y - NODE_H * 0.5 - 30.0)
-	l.size = Vector2(content_w, 22)
-	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	l.set_meta("unit_label", true)
-	return l
+	var h := UnitHeader.new()
+	h.prefix = "HIDDEN BOSS · " if boss else "UNIT %02d · " % (gi + 1)
+	h.title = str(g["title"])
+	h.boss = boss
+	h.color = Color("#fb7185") if boss else Color(_mod_col, 0.92)
+	h.position = Vector2(0, y - NODE_H * 0.5 - 34.0)
+	h.size = Vector2(content_w, 24)
+	h.custom_minimum_size = Vector2(content_w, 24)
+	return h
 
-func _add_level_node(c: Vector2, it: Dictionary, li: int, boss: bool) -> void:
+func _add_level_node(c: Vector2, it: Dictionary, li: int, boss: bool, title_w: float = 0.0) -> void:
 	var n := MapNode.new()
 	n.li = li
 	n.is_boss = boss
 	n.code = str(it["code"])
 	n.title = str(it["title"])
 	n.sub = str(it["technique"])
+	n.title_max_w = title_w
 	n.color = _mod_col
 	n.unlocked = _level_unlocked(li)
 	n.stars = int(GameData.stars.get(str(_levels[li]["id"]), 0))

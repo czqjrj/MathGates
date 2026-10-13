@@ -115,11 +115,29 @@ func _draw() -> void:
 	if unlocked and _hover:
 		draw_arc(c, 61.0, 0.0, TAU, 96, Color(acc, 0.55), 1.5, true)
 
+	# HUD 刻度环
+	var tick_col := Color(base, 0.5 if unlocked else 0.22)
+	for i in 24:
+		var ta := TAU * float(i) / 24.0 - PI / 2.0
+		var ln := 5.0 if i % 6 == 0 else 2.0
+		var d := Vector2(cos(ta), sin(ta))
+		draw_line(c + d * 61.0, c + d * (61.0 + ln), tick_col, 1.2, true)
+
+	# 解锁后环绕旋转外弧
+	if unlocked and UI.animations:
+		var ra := _t * 0.5
+		draw_arc(c, 70.0, ra, ra + PI * 0.45, 48, Color(acc, 0.5), 2.0, true)
+		draw_arc(c, 70.0, ra + PI, ra + PI * 1.45, 48, Color(acc, 0.5), 2.0, true)
+
 	# 选中涟漪：一圈快速扩散的光环
 	if _pop > 0.0:
 		var p := 1.0 - _pop / 0.45
 		var rr := 56.0 + 46.0 * (1.0 - pow(1.0 - p, 3.0))
 		draw_arc(c, rr, 0.0, TAU, 96, Color(acc.r, acc.g, acc.b, (1.0 - p) * 0.7), 3.0 * (1.0 - p) + 1.0, true)
+
+	# HUD 四角括号(悬停)
+	if unlocked and _hover:
+		_draw_brackets(c, 74.0, Color(acc, 0.62))
 
 	# 等宽序号
 	var num := str(chapter_index + 1)
@@ -149,6 +167,17 @@ func _draw_lock(at: Vector2, col: Color) -> void:
 	draw_arc(at + Vector2(0, -4), 5.0, PI, TAU, 20, col, 2.0, true)
 	# 锁体
 	draw_rect(Rect2(at + Vector2(-7, -4), Vector2(14, 10)), col, true)
+
+func _draw_brackets(c: Vector2, half: float, col: Color) -> void:
+	var L := 12.0
+	var x0 := c.x - half
+	var x1 := c.x + half
+	var y0 := c.y - half
+	var y1 := c.y + half
+	draw_polyline(PackedVector2Array([Vector2(x0, y0 + L), Vector2(x0, y0), Vector2(x0 + L, y0)]), col, 2.0, true)
+	draw_polyline(PackedVector2Array([Vector2(x1 - L, y0), Vector2(x1, y0), Vector2(x1, y0 + L)]), col, 2.0, true)
+	draw_polyline(PackedVector2Array([Vector2(x0, y1 - L), Vector2(x0, y1), Vector2(x0 + L, y1)]), col, 2.0, true)
+	draw_polyline(PackedVector2Array([Vector2(x1 - L, y1), Vector2(x1, y1), Vector2(x1, y1 - L)]), col, 2.0, true)
 
 func _draw_stars(cx: float, baseline_y: float) -> void:
 	# 章节星级总数 = 关卡数 × 3，可能远超节点宽度；过多时改用紧凑读数，避免溢成一条长条

@@ -49,11 +49,11 @@
       "subtitle": "档案 03 · 归类与秩序",
       "color": "#5B8FF9",
       "levels": [
-        { "id": "set_ops",        "name": "集合的交并补",   "technique": "数轴法 / Venn图法", "archetype": "MATCH",  "manim": "set_venn" },
-        { "id": "set_interval",   "name": "区间与集合互化", "technique": "端点取舍",         "archetype": "CALC",   "manim": "interval" },
-        { "id": "logic_cond",     "name": "充要条件",       "technique": "充分必要判定",     "archetype": "DETECT", "manim": "condition_arrows" },
-        { "id": "logic_neg",      "name": "命题与量词",     "technique": "正难则反 / 补集思想", "archetype": "SORT",   "manim": "negation" },
-        { "id": "logic_special",  "name": "特殊值检验",     "technique": "排除法",           "archetype": "DETECT", "manim": "special_value" }
+        { "id": "set_ops",        "name": "1-1 集合的交并补",   "technique": "文氏图 · 交集并集补集", "archetype": "LAB", "lab": "set_logic", "lab_ref": "set_ops",       "scene": "res://scenes/LabStage.tscn" },
+        { "id": "set_interval",   "name": "1-2 区间与集合互化", "technique": "数轴法 · 端点取舍",     "archetype": "LAB", "lab": "set_logic", "lab_ref": "set_interval",  "scene": "res://scenes/LabStage.tscn" },
+        { "id": "logic_cond",     "name": "1-3 充分与必要",     "technique": "集合包含 · 小圈推大圈", "archetype": "LAB", "lab": "set_logic", "lab_ref": "logic_cond",    "scene": "res://scenes/LabStage.tscn" },
+        { "id": "logic_neg",      "name": "1-4 命题与量词",     "technique": "全称存在 · 命题否定",   "archetype": "LAB", "lab": "set_logic", "lab_ref": "logic_neg",     "scene": "res://scenes/LabStage.tscn" },
+        { "id": "logic_special",  "name": "1-5 特殊值检验",     "technique": "特值代入 · 排除法",     "archetype": "LAB", "lab": "set_logic", "lab_ref": "logic_special", "scene": "res://scenes/LabStage.tscn" }
       ]
     },
     {
@@ -63,11 +63,8 @@
       "subtitle": "档案 04 · 不等与平衡",
       "color": "#F6BD16",
       "levels": [
-        { "id": "ineq_quad",      "name": "一元二次不等式", "technique": "因式分解 / 标根法", "archetype": "MATCH", "manim": "ineq_parabola" },
-        { "id": "ineq_abs",       "name": "绝对值不等式",   "technique": "几何意义 / 分类讨论", "archetype": "DETECT", "manim": "ineq_abs" },
-        { "id": "ineq_basic",     "name": "基本不等式",     "technique": "1的代换 / 配凑",   "archetype": "CHAIN",  "manim": "am_gm" },
-        { "id": "ineq_cauchy",    "name": "柯西不等式",     "technique": "构造向量",         "archetype": "CHAIN",  "manim": "cauchy" },
-        { "id": "ineq_linear",    "name": "线性规划",       "technique": "可行域寻优",       "archetype": "CARDS",  "manim": "linear_program" }
+        { "id": "ineq_quad",      "name": "1-1 一元二次不等式", "technique": "抛物线图像 · 标根法", "archetype": "LAB", "lab": "inequalities", "lab_ref": "ineq_quad",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "ineq_basic",     "name": "1-2 基本不等式",     "technique": "均值 · 1 的代换",     "archetype": "LAB", "lab": "inequalities", "lab_ref": "ineq_basic",  "scene": "res://scenes/LabStage.tscn" }
       ]
     },
     {
@@ -77,12 +74,15 @@
       "subtitle": "档案 05 · 变化律",
       "color": "#5AD8A6",
       "levels": [
-        { "id": "func_domain",    "name": "定义域优先",     "technique": "三要素",           "archetype": "MATCH",  "manim": "domain" },
-        { "id": "func_mono",      "name": "单调性与奇偶性", "technique": "定义法 / 图像法",  "archetype": "DETECT", "manim": "monotonic" },
-        { "id": "func_period",    "name": "周期与对称",     "technique": "对称性转化",       "archetype": "DETECT", "manim": "period_symmetry" },
-        { "id": "func_exp_log",   "name": "指数与对数",     "technique": "运算性质 / 比较大小", "archetype": "CALC", "manim": "exp_log" },
-        { "id": "func_abstract",  "name": "抽象函数",       "technique": "赋值法",           "archetype": "DETECT", "manim": "abstract_func" },
-        { "id": "func_zeros",     "name": "函数零点",       "technique": "数形结合 / 分离参数", "archetype": "SLIDER", "manim": "zeros" }
+        { "id": "func_domain",    "name": "1-1 定义域优先",     "technique": "图像限制 · 三要素",     "archetype": "LAB", "lab": "functions", "lab_ref": "func_domain",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "func_mono",      "name": "1-2 单调性与奇偶性", "technique": "开口方向 · 奇偶判定",   "archetype": "LAB", "lab": "functions", "lab_ref": "func_mono",     "scene": "res://scenes/LabStage.tscn" },
+        { "id": "func_period",    "name": "1-3 周期与对称",     "technique": "重复节拍 · 关系转化",   "archetype": "LAB", "lab": "functions", "lab_ref": "func_period",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "func_exp_log",   "name": "1-4 指数与对数",     "technique": "底数影响 · 比较大小",   "archetype": "LAB", "lab": "functions", "lab_ref": "func_exp_log",  "scene": "res://scenes/LabStage.tscn" },
+        { "id": "func_abstract",  "name": "1-5 抽象函数",       "technique": "赋值法 · 加性函数",     "archetype": "LAB", "lab": "functions", "lab_ref": "func_abstract", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "func_zeros",     "name": "1-6 函数零点",       "technique": "数形结合 · 参数讨论",   "archetype": "LAB", "lab": "functions", "lab_ref": "func_zeros",    "scene": "res://scenes/LabStage.tscn" },
+        { "id": "func_power",     "name": "1-7 幂函数",         "technique": "五个幂函数 · 图像性质",  "archetype": "LAB", "lab": "functions", "lab_ref": "func_power",    "scene": "res://scenes/LabStage.tscn" },
+        { "id": "func_apply",     "name": "1-8 函数的应用（一）", "technique": "一次/二次/分段建模",   "archetype": "LAB", "lab": "functions", "lab_ref": "func_apply",    "scene": "res://scenes/LabStage.tscn" },
+        { "id": "func_bisect",    "name": "1-9 用二分法求近似解", "technique": "零点存在 · 逐步逼近",  "archetype": "LAB", "lab": "functions", "lab_ref": "func_bisect",   "scene": "res://scenes/LabStage.tscn" }
       ]
     },
     {
@@ -92,11 +92,15 @@
       "subtitle": "档案 06 · 圆周律动",
       "color": "#FF9D4D",
       "levels": [
-        { "id": "trig_induce",    "name": "诱导公式",       "technique": "单位圆法",         "archetype": "MATCH",  "manim": "unit_circle" },
-        { "id": "trig_identity",  "name": "恒等变换",       "technique": "辅助角 / 二倍角 / 降幂", "archetype": "MATCH", "manim": "identity" },
-        { "id": "trig_graph",     "name": "图像与性质",     "technique": "五点法 / 求参",    "archetype": "SLIDER", "manim": "sin_graph" },
-        { "id": "trig_solve",     "name": "解三角形",       "technique": "正余弦定理 / 射影定理", "archetype": "AIM", "manim": "solve_triangle" },
-        { "id": "trig_apply",     "name": "测量应用",       "technique": "建模 / 仰角俯角",  "archetype": "AIM",    "manim": "measure" }
+        { "id": "trig_induce",    "name": "1-1 诱导公式",   "technique": "单位圆对称 · 诱导公式", "archetype": "LAB", "lab": "trig", "lab_ref": "trig_induce",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "trig_identity",  "name": "1-2 恒等变换",   "technique": "同角关系 · 齐次式",     "archetype": "LAB", "lab": "trig", "lab_ref": "trig_identity", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "trig_graph",     "name": "1-3 图像与性质", "technique": "参数 A·ω · 图像变换",   "archetype": "LAB", "lab": "trig", "lab_ref": "trig_graph",    "scene": "res://scenes/LabStage.tscn" },
+        { "id": "trig_solve",     "name": "1-4 解三角形",   "technique": "正弦定理 · 余弦定理",   "archetype": "LAB", "lab": "trig", "lab_ref": "trig_solve",    "scene": "res://scenes/LabStage.tscn" },
+        { "id": "trig_apply",     "name": "1-5 测量应用",   "technique": "简谐运动 · 辅助角最值", "archetype": "LAB", "lab": "trig", "lab_ref": "trig_apply",    "scene": "res://scenes/LabStage.tscn" },
+        { "id": "trig_radian",    "name": "1-6 弧度制与任意角", "technique": "弧度定义 · 弧长公式", "archetype": "LAB", "lab": "trig", "lab_ref": "trig_radian", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "trig_tan",       "name": "1-7 正切函数图象与性质", "technique": "正切曲线 · 周期与定义域", "archetype": "LAB", "lab": "trig", "lab_ref": "trig_tan", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "trig_concept",   "name": "1-8 三角函数的概念",  "technique": "单位圆定义 · 象限符号", "archetype": "LAB", "lab": "trig", "lab_ref": "trig_concept", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "trig_sincos",    "name": "1-9 正弦、余弦函数图象与性质", "technique": "图象变换 · 周期值域", "archetype": "LAB", "lab": "trig", "lab_ref": "trig_sincos", "scene": "res://scenes/LabStage.tscn" }
       ]
     },
     {
@@ -106,10 +110,10 @@
       "subtitle": "档案 07 · 方向与场",
       "color": "#9270CA",
       "levels": [
-        { "id": "vec_ops",        "name": "向量线性运算",   "technique": "三角形 / 平行四边形法则", "archetype": "AIM", "manim": "vector_add" },
-        { "id": "vec_coord",      "name": "坐标运算",       "technique": "基底法 / 坐标法",  "archetype": "MATCH",  "manim": "vector_coord" },
-        { "id": "vec_dot",        "name": "数量积与夹角",   "technique": "投影 / 极化恒等式", "archetype": "CALC",  "manim": "dot_product" },
-        { "id": "vec_collinear",  "name": "共线与垂直",     "technique": "等和线 / 奔驰定理", "archetype": "DETECT", "manim": "collinear" }
+        { "id": "vec_ops",        "name": "1-1 向量线性运算",   "technique": "三角形法则 · 平行四边形", "archetype": "LAB", "lab": "vectors", "lab_ref": "vec_ops",       "scene": "res://scenes/LabStage.tscn" },
+        { "id": "vec_coord",      "name": "1-2 坐标运算",       "technique": "终点减起点 · 坐标法", "archetype": "LAB", "lab": "vectors", "lab_ref": "vec_coord",     "scene": "res://scenes/LabStage.tscn" },
+        { "id": "vec_dot",        "name": "1-3 数量积与夹角",   "technique": "投影 · 坐标数量积",   "archetype": "LAB", "lab": "vectors", "lab_ref": "vec_dot",       "scene": "res://scenes/LabStage.tscn" },
+        { "id": "vec_collinear",  "name": "1-4 共线与垂直",     "technique": "共线垂直判定 · 求参", "archetype": "LAB", "lab": "vectors", "lab_ref": "vec_collinear", "scene": "res://scenes/LabStage.tscn" }
       ]
     },
     {
@@ -119,12 +123,13 @@
       "subtitle": "档案 08 · 离散序列",
       "color": "#FF99C3",
       "levels": [
-        { "id": "seq_basic",      "name": "等差等比",       "technique": "通项公式",         "archetype": "LOCK",   "manim": "ap_gp" },
-        { "id": "seq_recur",      "name": "递推数列",       "technique": "累加 / 累乘",      "archetype": "LOCK",   "manim": "recurrence" },
-        { "id": "seq_construct",  "name": "构造法",         "technique": "待定系数构造等比", "archetype": "CHAIN",  "manim": "construct_seq" },
-        { "id": "seq_displace",   "name": "错位相减",       "technique": "等差×等比求和",    "archetype": "SORT",   "manim": "dislocation" },
-        { "id": "seq_split",      "name": "裂项相消",       "technique": "通项拆分",         "archetype": "SORT",   "manim": "telescoping" },
-        { "id": "seq_sn",         "name": "Sn 与 an",       "technique": "作差法",           "archetype": "DETECT", "manim": "sn_an" }
+        { "id": "seq_basic",      "name": "1-1 等差等比",     "technique": "散点规律 · 通项公式", "archetype": "LAB", "lab": "sequences", "lab_ref": "seq_basic",     "scene": "res://scenes/LabStage.tscn" },
+        { "id": "seq_recur",      "name": "1-2 递推数列",     "technique": "逐项计算 · 累加",     "archetype": "LAB", "lab": "sequences", "lab_ref": "seq_recur",     "scene": "res://scenes/LabStage.tscn" },
+        { "id": "seq_construct",  "name": "1-3 构造法",       "technique": "待定系数 · 构造等比", "archetype": "LAB", "lab": "sequences", "lab_ref": "seq_construct", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "seq_displace",   "name": "1-4 错位相减",     "technique": "等差×等比求和",       "archetype": "LAB", "lab": "sequences", "lab_ref": "seq_displace",  "scene": "res://scenes/LabStage.tscn" },
+        { "id": "seq_split",      "name": "1-5 裂项相消",     "technique": "通项拆分 · 中间抵消", "archetype": "LAB", "lab": "sequences", "lab_ref": "seq_split",     "scene": "res://scenes/LabStage.tscn" },
+        { "id": "seq_sn",         "name": "1-6 Sₙ 与 aₙ",     "technique": "作差法 · 反推通项",   "archetype": "LAB", "lab": "sequences", "lab_ref": "seq_sn",        "scene": "res://scenes/LabStage.tscn" },
+        { "id": "seq_concept",    "name": "1-7 数列的概念",   "technique": "项与序号 · 通项公式", "archetype": "LAB", "lab": "sequences", "lab_ref": "seq_concept",   "scene": "res://scenes/LabStage.tscn" }
       ]
     },
     {
@@ -134,12 +139,12 @@
       "subtitle": "档案 09 · 曲线轨迹",
       "color": "#F2637B",
       "levels": [
-        { "id": "conic_line_circle", "name": "直线与圆",     "technique": "待定系数 / 点到直线距离", "archetype": "MATCH", "manim": "line_circle" },
-        { "id": "conic_def",      "name": "圆锥曲线定义",   "technique": "焦点性质",         "archetype": "SLIDER", "manim": "conic_def" },
-        { "id": "conic_pointdiff","name": "点差法",         "technique": "设而不求",         "archetype": "CHAIN",  "manim": "point_diff" },
-        { "id": "conic_tangent",  "name": "切线问题",       "technique": "隐函数求导 / 判别式", "archetype": "DETECT", "manim": "conic_tangent" },
-        { "id": "conic_fixed",    "name": "定点与定值",     "technique": "联立 / 韦达定理",  "archetype": "AIM",    "manim": "fixed_point" },
-        { "id": "conic_range",    "name": "最值与范围",     "technique": "参数法",           "archetype": "SLIDER", "manim": "conic_range" }
+        { "id": "conic_line_circle", "name": "1-1 直线与圆",     "technique": "位置关系 · 圆心距",   "archetype": "LAB", "lab": "conics", "lab_ref": "conic_line_circle", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "conic_def",      "name": "1-2 圆锥曲线定义",   "technique": "距离和差 · 定义",     "archetype": "LAB", "lab": "conics", "lab_ref": "conic_def",       "scene": "res://scenes/LabStage.tscn" },
+        { "id": "conic_pointdiff","name": "1-3 点差法",         "technique": "设而不求 · 中点弦",   "archetype": "LAB", "lab": "conics", "lab_ref": "conic_pointdiff", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "conic_tangent",  "name": "1-4 切线问题",       "technique": "导数或判别式 · 切斜", "archetype": "LAB", "lab": "conics", "lab_ref": "conic_tangent",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "conic_fixed",    "name": "1-5 定点与定值",     "technique": "参数分离 · 直线系",   "archetype": "LAB", "lab": "conics", "lab_ref": "conic_fixed",     "scene": "res://scenes/LabStage.tscn" },
+        { "id": "conic_range",    "name": "1-6 最值与范围",     "technique": "圆心距 · 半径转化",   "archetype": "LAB", "lab": "conics", "lab_ref": "conic_range",     "scene": "res://scenes/LabStage.tscn" }
       ]
     },
     {
@@ -149,11 +154,17 @@
       "subtitle": "档案 10 · 随机与统计",
       "color": "#6DC8EC",
       "levels": [
-        { "id": "prob_classic",   "name": "古典与几何概型", "technique": "枚举 / 度量比",    "archetype": "DETECT", "manim": "classic_prob" },
-        { "id": "prob_cond",      "name": "条件概率",       "technique": "全概率 / 贝叶斯",  "archetype": "SORT",   "manim": "bayes" },
-        { "id": "prob_dist",      "name": "分布列与期望",   "technique": "随机变量建模",     "archetype": "CARDS",  "manim": "distribution" },
-        { "id": "prob_binom",     "name": "二项与正态",     "technique": "模型识别",         "archetype": "CARDS",  "manim": "binomial_normal" },
-        { "id": "prob_stats",     "name": "统计与回归",     "technique": "最小二乘 / 独立性检验", "archetype": "DETECT", "manim": "regression" }
+        { "id": "prob_classic",   "name": "1-1 古典与几何概型", "technique": "等可能 · 条形图",      "archetype": "LAB", "lab": "probability", "lab_ref": "prob_classic", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "prob_cond",      "name": "1-2 条件概率",       "technique": "缩小样本空间 · 公式",  "archetype": "LAB", "lab": "probability", "lab_ref": "prob_cond",    "scene": "res://scenes/LabStage.tscn" },
+        { "id": "prob_dist",      "name": "1-3 分布列与期望",   "technique": "分布列 · 期望方差",    "archetype": "LAB", "lab": "probability", "lab_ref": "prob_dist",    "scene": "res://scenes/LabStage.tscn" },
+        { "id": "prob_binom",     "name": "1-4 二项与正态",     "technique": "模型识别 · E=np",      "archetype": "LAB", "lab": "probability", "lab_ref": "prob_binom",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "prob_stats",     "name": "1-5 统计与回归",     "technique": "散点相关 · 最小二乘",  "archetype": "LAB", "lab": "probability", "lab_ref": "prob_stats",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "prob_total",     "name": "1-6 全概率与贝叶斯",  "technique": "完备事件组 · 条件概率", "archetype": "LAB", "lab": "probability", "lab_ref": "prob_total",  "scene": "res://scenes/LabStage.tscn" },
+        { "id": "prob_hypergeo",  "name": "1-7 超几何分布",    "technique": "不放回抽样 · 组合计数", "archetype": "LAB", "lab": "probability", "lab_ref": "prob_hypergeo", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "prob_event",     "name": "1-8 事件的关系与运算", "technique": "并交互斥 · 集合语言", "archetype": "LAB", "lab": "probability", "lab_ref": "prob_event",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "prob_props",     "name": "1-9 概率的基本性质",  "technique": "取值范围 · 加法公式", "archetype": "LAB", "lab": "probability", "lab_ref": "prob_props",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "prob_indep",     "name": "1-10 事件的相互独立性", "technique": "P(AB)=P(A)P(B)",     "archetype": "LAB", "lab": "probability", "lab_ref": "prob_indep",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "prob_freq",      "name": "1-11 频率与概率",     "technique": "频率稳定 · 估计概率", "archetype": "LAB", "lab": "probability", "lab_ref": "prob_freq",    "scene": "res://scenes/LabStage.tscn" }
       ]
     },
     {
@@ -163,12 +174,12 @@
       "subtitle": "档案 11 · 瞬时变化",
       "color": "#E8684A",
       "levels": [
-        { "id": "deriv_formula",  "name": "求导公式",       "technique": "运算法则",         "archetype": "MATCH",  "manim": "deriv_rules" },
-        { "id": "deriv_tangent",  "name": "导数的几何意义", "technique": "切线方程",         "archetype": "SLIDER", "manim": "tangent_line" },
-        { "id": "deriv_mono",     "name": "单调性与极值",   "technique": "含参分类讨论",     "archetype": "SLIDER", "manim": "mono_extreme" },
-        { "id": "deriv_param",    "name": "恒成立与分离参数", "technique": "必要性探路",     "archetype": "SLIDER", "manim": "separate_param" },
-        { "id": "deriv_prove",    "name": "不等式证明",     "technique": "构造函数 / 切线放缩", "archetype": "CHAIN", "manim": "ineq_proof" },
-        { "id": "deriv_zero",     "name": "零点与隐零点",   "technique": "极值点偏移 / 二次求导", "archetype": "CHAIN", "manim": "hidden_zero" }
+        { "id": "deriv_formula",  "name": "1-1 求导公式",       "technique": "幂函数 · 运算法则",   "archetype": "LAB", "lab": "derivative", "lab_ref": "deriv_formula", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "deriv_tangent",  "name": "1-2 导数的几何意义", "technique": "切线斜率 · 滑块",     "archetype": "LAB", "lab": "derivative", "lab_ref": "deriv_tangent", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "deriv_mono",     "name": "1-3 单调性与极值",   "technique": "导数符号 · 极值点",   "archetype": "LAB", "lab": "derivative", "lab_ref": "deriv_mono",    "scene": "res://scenes/LabStage.tscn" },
+        { "id": "deriv_param",    "name": "1-4 恒成立与分离参数", "technique": "最值转化 · 分离参数", "archetype": "LAB", "lab": "derivative", "lab_ref": "deriv_param",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "deriv_prove",    "name": "1-5 不等式证明",     "technique": "作差构造 · 切线放缩", "archetype": "LAB", "lab": "derivative", "lab_ref": "deriv_prove",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "deriv_zero",     "name": "1-6 零点与隐零点",   "technique": "零点定理 · 分离参数", "archetype": "LAB", "lab": "derivative", "lab_ref": "deriv_zero",    "scene": "res://scenes/LabStage.tscn" }
       ]
     },
     {
@@ -178,9 +189,9 @@
       "subtitle": "档案 12 · 复平面",
       "color": "#B37FEB",
       "levels": [
-        { "id": "cplx_calc",      "name": "复数的运算",     "technique": "四则 / 共轭 / 模",  "archetype": "CALC",   "manim": "complex_calc" },
-        { "id": "cplx_geo",       "name": "复数的几何意义", "technique": "距离 / 轨迹",      "archetype": "DETECT", "manim": "complex_plane" },
-        { "id": "cplx_period",    "name": "i 的周期性",     "technique": "幂运算规律",       "archetype": "LOCK",   "manim": "i_cycle" }
+        { "id": "cplx_calc",      "name": "1-1 复数的运算",     "technique": "复平面 · 加减乘模", "archetype": "LAB", "lab": "complex", "lab_ref": "cplx_calc",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "cplx_geo",       "name": "1-2 复数的几何意义", "technique": "模 · 距离轨迹",     "archetype": "LAB", "lab": "complex", "lab_ref": "cplx_geo",    "scene": "res://scenes/LabStage.tscn" },
+        { "id": "cplx_period",    "name": "1-3 i 的周期性",     "technique": "单位圆 · 幂运算",   "archetype": "LAB", "lab": "complex", "lab_ref": "cplx_period", "scene": "res://scenes/LabStage.tscn" }
       ]
     },
     {
@@ -190,10 +201,10 @@
       "subtitle": "档案 13 · 计数原理",
       "color": "#FFC53D",
       "levels": [
-        { "id": "count_rule",     "name": "两个基本原理",   "technique": "分类加法 / 分步乘法", "archetype": "BUILD", "manim": "count_rule" },
-        { "id": "count_comb",     "name": "排列组合",       "technique": "捆绑 / 插空 / 隔板", "archetype": "MATCH", "manim": "perm_comb" },
-        { "id": "count_indirect", "name": "间接法",         "technique": "正难则反",         "archetype": "SORT",   "manim": "indirect" },
-        { "id": "count_binomial", "name": "二项式定理",     "technique": "通项 / 赋值法",    "archetype": "CALC",   "manim": "binomial" }
+        { "id": "count_rule",     "name": "1-1 两个基本原理", "technique": "树状图 · 分类分步", "archetype": "LAB", "lab": "counting", "lab_ref": "count_rule",     "scene": "res://scenes/LabStage.tscn" },
+        { "id": "count_comb",     "name": "1-2 排列组合",     "technique": "捆绑 · 插空",       "archetype": "LAB", "lab": "counting", "lab_ref": "count_comb",     "scene": "res://scenes/LabStage.tscn" },
+        { "id": "count_indirect", "name": "1-3 间接法",       "technique": "正难则反 · 总数减反面", "archetype": "LAB", "lab": "counting", "lab_ref": "count_indirect", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "count_binomial", "name": "1-4 二项式定理",   "technique": "杨辉三角 · 通项赋值", "archetype": "LAB", "lab": "counting", "lab_ref": "count_binomial", "scene": "res://scenes/LabStage.tscn" }
       ]
     },
     {
@@ -203,10 +214,47 @@
       "subtitle": "隐藏档案 · 思想统合",
       "color": "#9ED0A0",
       "levels": [
-        { "id": "think_func_eq",  "name": "函数与方程",     "technique": "思想融合",         "archetype": "DETECT", "manim": "func_equation" },
-        { "id": "think_geo",      "name": "数形结合",       "technique": "图像辅助",         "archetype": "SLIDER", "manim": "number_shape" },
-        { "id": "think_classify", "name": "分类讨论",       "technique": "不重不漏",         "archetype": "SORT",   "manim": "classification" },
-        { "id": "think_convert",  "name": "转化与化归",     "technique": "陌生化熟悉",       "archetype": "CHAIN",  "manim": "reduction" }
+        { "id": "think_func_eq",  "name": "1-1 函数与方程", "technique": "交点横坐标 · 零点", "archetype": "LAB", "lab": "thinking", "lab_ref": "think_func_eq",  "scene": "res://scenes/LabStage.tscn" },
+        { "id": "think_geo",      "name": "1-2 数形结合",   "technique": "距离 · 图像辅助",   "archetype": "LAB", "lab": "thinking", "lab_ref": "think_geo",      "scene": "res://scenes/LabStage.tscn" },
+        { "id": "think_classify", "name": "1-3 分类讨论",   "technique": "参数分类 · 不重不漏", "archetype": "LAB", "lab": "thinking", "lab_ref": "think_classify", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "think_convert",  "name": "1-4 转化与化归", "technique": "陌生化熟悉 · 化归",   "archetype": "LAB", "lab": "thinking", "lab_ref": "think_convert",  "scene": "res://scenes/LabStage.tscn" }
+      ]
+    },
+    {
+      "id": "statistics",
+      "kind": "knowledge",
+      "title": "统计",
+      "subtitle": "档案 15 · 统计",
+      "color": "#6DC8EC",
+      "levels": [
+        { "id": "stat_sample", "name": "1-1 抽样方法",       "technique": "简单随机 · 分层抽样", "archetype": "LAB", "lab": "statistics", "lab_ref": "stat_sample", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "stat_freq",   "name": "1-2 频率分布直方图", "technique": "面积代表频率",       "archetype": "LAB", "lab": "statistics", "lab_ref": "stat_freq",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "stat_avg",    "name": "1-3 平均数与方差",   "technique": "集中趋势 · 离散程度", "archetype": "LAB", "lab": "statistics", "lab_ref": "stat_avg",    "scene": "res://scenes/LabStage.tscn" },
+        { "id": "stat_percentile", "name": "1-4 百分位数",  "technique": "数据排序 · 相对位置", "archetype": "LAB", "lab": "statistics", "lab_ref": "stat_percentile", "scene": "res://scenes/LabStage.tscn" }
+      ]
+    },
+    {
+      "id": "random_var",
+      "kind": "knowledge",
+      "title": "随机变量及其分布",
+      "subtitle": "档案 16 · 随机变量",
+      "color": "#5CC8D7",
+      "levels": [
+        { "id": "rv_dist",   "name": "1-1 分布列",         "technique": "概率和为一 · 期望方差", "archetype": "LAB", "lab": "random_var", "lab_ref": "rv_dist",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "rv_binom",  "name": "1-2 二项分布",       "technique": "n 次重复 · E=np",       "archetype": "LAB", "lab": "random_var", "lab_ref": "rv_binom",  "scene": "res://scenes/LabStage.tscn" },
+        { "id": "rv_normal", "name": "1-3 正态分布",       "technique": "钟形对称 · 3σ 原则",    "archetype": "LAB", "lab": "random_var", "lab_ref": "rv_normal", "scene": "res://scenes/LabStage.tscn" }
+      ]
+    },
+    {
+      "id": "corr_data",
+      "kind": "knowledge",
+      "title": "成对数据的统计分析",
+      "subtitle": "档案 17 · 相关与回归",
+      "color": "#7FB5D6",
+      "levels": [
+        { "id": "cd_scatter", "name": "1-1 相关关系",     "technique": "散点图 · 相关方向",       "archetype": "LAB", "lab": "corr_data", "lab_ref": "cd_scatter",  "scene": "res://scenes/LabStage.tscn" },
+        { "id": "cd_regress", "name": "1-2 一元线性回归", "technique": "最小二乘 · 样本中心",     "archetype": "LAB", "lab": "corr_data", "lab_ref": "cd_regress",  "scene": "res://scenes/LabStage.tscn" },
+        { "id": "cd_indep",   "name": "1-3 列联表与独立性检验", "technique": "2×2 列联表 · χ² 检验", "archetype": "LAB", "lab": "corr_data", "lab_ref": "cd_indep", "scene": "res://scenes/LabStage.tscn" }
       ]
     },
     {
@@ -319,6 +367,98 @@
         { "id": "ellipse_5_2", "name": "5-2 直线的四种设法",               "technique": "x = ty + m 优先",               "archetype": "ELLIPSE", "ellipse": "ellipse_5_2", "scene": "res://scenes/EllipseStage.tscn" },
         { "id": "ellipse_5_3", "name": "5-3 陷阱 · 硬解适用范围",           "technique": "焦点在 x 轴 + 斜率存在",       "archetype": "ELLIPSE", "ellipse": "ellipse_5_3", "scene": "res://scenes/EllipseStage.tscn" },
         { "id": "ellipse_boss", "name": "隐藏Boss · 椭圆综合试炼",           "technique": "焦点三角 · 离心率 · 硬解综合", "archetype": "BOSS",   "ellipse": "ellipse_boss", "scene": "res://scenes/EllipseStage.tscn" }
+      ]
+    },
+    {
+      "id": "circle_eq",
+      "kind": "knowledge",
+      "title": "圆的方程",
+      "subtitle": "知识体系 · 直线与圆 · 圆",
+      "color": "#FFB35C",
+      "hidden": true,
+      "levels": [
+        { "id": "circle_1_1", "name": "1-1 圆的定义与标准方程", "technique": "到定点距离等于定长 / (x−a)²+(y−b)²=r²", "archetype": "CIRCLE", "circle": "circle_1_1", "scene": "res://scenes/CircleStage.tscn" },
+        { "id": "circle_1_2", "name": "1-2 由方程读圆心与半径", "technique": "标准式直读 / 一般式配方",             "archetype": "CIRCLE", "circle": "circle_1_2", "scene": "res://scenes/CircleStage.tscn" },
+        { "id": "circle_1_3", "name": "1-3 待定系数求圆的方程", "technique": "设标准式或一般式 / 过三点",           "archetype": "CIRCLE", "circle": "circle_1_3", "scene": "res://scenes/CircleStage.tscn" },
+        { "id": "circle_2_1", "name": "2-1 一般方程与配方",     "technique": "x²+y²+Dx+Ey+F=0 → 标准式",         "archetype": "CIRCLE", "circle": "circle_2_1", "scene": "res://scenes/CircleStage.tscn" },
+        { "id": "circle_2_2", "name": "2-2 表示圆的条件",       "technique": "D²+E²−4F>0",                        "archetype": "CIRCLE", "circle": "circle_2_2", "scene": "res://scenes/CircleStage.tscn" },
+        { "id": "circle_2_3", "name": "2-3 三种形式互化",       "technique": "标准式↔一般式 / 识别判断",           "archetype": "CIRCLE", "circle": "circle_2_3", "scene": "res://scenes/CircleStage.tscn" },
+        { "id": "circle_3_1", "name": "3-1 点与圆的位置关系",   "technique": "距离比较 d 与 r / 代入符号",         "archetype": "CIRCLE", "circle": "circle_3_1", "scene": "res://scenes/CircleStage.tscn" },
+        { "id": "circle_3_2", "name": "3-2 直线与圆的位置关系", "technique": "几何法(圆心距−半径) / 代数法(Δ)",     "archetype": "CIRCLE", "circle": "circle_3_2", "scene": "res://scenes/CircleStage.tscn" },
+        { "id": "circle_3_3", "name": "3-3 弦长与弦心距",       "technique": "|AB|=2√(r²−d²) / 垂径定理",          "archetype": "CIRCLE", "circle": "circle_3_3", "scene": "res://scenes/CircleStage.tscn" },
+        { "id": "circle_4_1", "name": "4-1 过圆上一点的切线",   "technique": "垂直半径 / x₀x+y₀y=r²",             "archetype": "CIRCLE", "circle": "circle_4_1", "scene": "res://scenes/CircleStage.tscn" },
+        { "id": "circle_4_2", "name": "4-2 过圆外一点的切线",   "technique": "两条切线 / 切线长 √(d²−r²)",        "archetype": "CIRCLE", "circle": "circle_4_2", "scene": "res://scenes/CircleStage.tscn" },
+        { "id": "circle_4_3", "name": "4-3 切点弦与切线性质",   "technique": "切点弦方程 / 直角三角形",            "archetype": "CIRCLE", "circle": "circle_4_3", "scene": "res://scenes/CircleStage.tscn" },
+        { "id": "circle_5_1", "name": "5-1 两圆位置关系",       "technique": "d 与 r₁±r₂ 比较",                  "archetype": "CIRCLE", "circle": "circle_5_1", "scene": "res://scenes/CircleStage.tscn" },
+        { "id": "circle_5_2", "name": "5-2 公共弦与根轴",       "technique": "两方程相减 / 公共弦长",             "archetype": "CIRCLE", "circle": "circle_5_2", "scene": "res://scenes/CircleStage.tscn" },
+        { "id": "circle_5_3", "name": "5-3 圆系方程",           "technique": "过交点的圆系 λ",                    "archetype": "CIRCLE", "circle": "circle_5_3", "scene": "res://scenes/CircleStage.tscn" },
+        { "id": "circle_6_1", "name": "6-1 与圆有关的最值 I",   "technique": "定点距离 / x²+y² 型",               "archetype": "CIRCLE", "circle": "circle_6_1", "scene": "res://scenes/CircleStage.tscn" },
+        { "id": "circle_6_2", "name": "6-2 与圆有关的最值 II",  "technique": "斜率型 / 截距型转直线",             "archetype": "CIRCLE", "circle": "circle_6_2", "scene": "res://scenes/CircleStage.tscn" },
+        { "id": "circle_6_3", "name": "6-3 轨迹与阿波罗尼斯圆", "technique": "定距比 / 定义求轨迹",               "archetype": "CIRCLE", "circle": "circle_6_3", "scene": "res://scenes/CircleStage.tscn" },
+        { "id": "circle_boss", "name": "隐藏Boss · 圆综合试炼", "technique": "位置关系 · 切线 · 最值综合",         "archetype": "BOSS",   "circle": "circle_boss", "scene": "res://scenes/CircleStage.tscn" }
+      ]
+    },
+    {
+      "id": "hyperbola",
+      "kind": "knowledge",
+      "title": "双曲线",
+      "subtitle": "知识体系 · 圆锥曲线 · 双曲线",
+      "color": "#C77DFF",
+      "hidden": true,
+      "levels": [
+        { "id": "hypo_def",   "name": "1-1 双曲线的定义 · 距离之差", "technique": "|PF₁|−|PF₂| = 2a",        "archetype": "LAB", "lab": "hyperbola", "lab_ref": "hypo_def",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "hypo_std",   "name": "2-1 标准方程 · a、b、c",     "technique": "x²/a²−y²/b²=1，c²=a²+b²", "archetype": "LAB", "lab": "hyperbola", "lab_ref": "hypo_std",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "hypo_asym",  "name": "3-1 渐近线",                 "technique": "y = ±(b/a)x",            "archetype": "LAB", "lab": "hyperbola", "lab_ref": "hypo_asym",  "scene": "res://scenes/LabStage.tscn" },
+        { "id": "hypo_ecc",   "name": "4-1 离心率 · e=c/a",         "technique": "e = c/a，且 e>1",         "archetype": "LAB", "lab": "hyperbola", "lab_ref": "hypo_ecc",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "hypo_apply", "name": "5-1 综合应用 · 焦点与距离",   "technique": "共焦点 · 焦点到渐近线",    "archetype": "LAB", "lab": "hyperbola", "lab_ref": "hypo_apply", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "hypo_focal_tri",     "name": "6-1 焦点三角形",       "technique": "S = b²/tan(θ/2)",       "archetype": "LAB", "lab": "hyperbola", "lab_ref": "hypo_focal_tri",     "scene": "res://scenes/LabStage.tscn" },
+        { "id": "hypo_focal_radius",  "name": "7-1 焦半径",           "technique": "右支 |PF₁|=ex₀+a",       "archetype": "LAB", "lab": "hyperbola", "lab_ref": "hypo_focal_radius",  "scene": "res://scenes/LabStage.tscn" },
+        { "id": "hypo_pointdiff",     "name": "8-1 点差法 · 中点弦",   "technique": "k_AB·k_OM = b²/a²",      "archetype": "LAB", "lab": "hyperbola", "lab_ref": "hypo_pointdiff",     "scene": "res://scenes/LabStage.tscn" },
+        { "id": "hypo_line",          "name": "9-1 直线与双曲线",       "technique": "联立 · 判别式 · 弦长",   "archetype": "LAB", "lab": "hyperbola", "lab_ref": "hypo_line",          "scene": "res://scenes/LabStage.tscn" },
+        { "id": "hypo_conjugate",     "name": "10-1 共轭双曲线",        "technique": "同渐近线 · 1/e₁²+1/e₂²=1", "archetype": "LAB", "lab": "hyperbola", "lab_ref": "hypo_conjugate",     "scene": "res://scenes/LabStage.tscn" },
+        { "id": "hypo_fixed",         "name": "11-1 定点定值与最值",    "technique": "到渐近线距离之积为定值", "archetype": "LAB", "lab": "hyperbola", "lab_ref": "hypo_fixed",         "scene": "res://scenes/LabStage.tscn" }
+      ]
+    },
+    {
+      "id": "parabola",
+      "kind": "knowledge",
+      "title": "抛物线",
+      "subtitle": "知识体系 · 圆锥曲线 · 抛物线",
+      "color": "#6BE3A8",
+      "hidden": true,
+      "levels": [
+        { "id": "para_def",   "name": "1-1 抛物线的定义 · 距离相等", "technique": "到焦点 = 到准线",     "archetype": "LAB", "lab": "parabola", "lab_ref": "para_def",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "para_std",   "name": "2-1 四种标准方程",           "technique": "y²=±2px / x²=±2py",   "archetype": "LAB", "lab": "parabola", "lab_ref": "para_std",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "para_geo",   "name": "3-1 焦点 · 焦半径",           "technique": "|PF| = x₀ + p/2",      "archetype": "LAB", "lab": "parabola", "lab_ref": "para_geo",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "para_chord", "name": "4-1 焦点弦 · 通径",           "technique": "通径长 = 2p",          "archetype": "LAB", "lab": "parabola", "lab_ref": "para_chord", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "para_apply", "name": "5-1 综合应用 · 距离问题",     "technique": "定义转化 · 最短距离",  "archetype": "LAB", "lab": "parabola", "lab_ref": "para_apply", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "para_props",        "name": "6-1 几何性质",          "technique": "顶点 · 对称轴 · e=1",   "archetype": "LAB", "lab": "parabola", "lab_ref": "para_props",        "scene": "res://scenes/LabStage.tscn" },
+        { "id": "para_focal_chord",  "name": "7-1 焦点弦性质",        "technique": "x₁x₂=p²/4，y₁y₂=−p²",  "archetype": "LAB", "lab": "parabola", "lab_ref": "para_focal_chord",  "scene": "res://scenes/LabStage.tscn" },
+        { "id": "para_pointdiff",    "name": "8-1 点差法 · 中点弦",    "technique": "k_AB = p/y₀",          "archetype": "LAB", "lab": "parabola", "lab_ref": "para_pointdiff",    "scene": "res://scenes/LabStage.tscn" },
+        { "id": "para_line",         "name": "9-1 直线与抛物线",       "technique": "x=ty+m · 弦长公式",    "archetype": "LAB", "lab": "parabola", "lab_ref": "para_line",         "scene": "res://scenes/LabStage.tscn" },
+        { "id": "para_fixed",        "name": "10-1 定点定值",          "technique": "OA⊥OB ⇒ 过 (2p,0)",    "archetype": "LAB", "lab": "parabola", "lab_ref": "para_fixed",        "scene": "res://scenes/LabStage.tscn" },
+        { "id": "para_maxmin",       "name": "11-1 最值与距离",        "technique": "定义转化 · 距离最值",   "archetype": "LAB", "lab": "parabola", "lab_ref": "para_maxmin",       "scene": "res://scenes/LabStage.tscn" }
+      ]
+    },
+    {
+      "id": "solid_basic",
+      "kind": "knowledge",
+      "title": "立体几何初步",
+      "subtitle": "知识体系 · 立体几何初步",
+      "color": "#7EC8FF",
+      "hidden": true,
+      "levels": [
+        { "id": "solid_kinds",   "name": "1-1 认识空间几何体 · 棱", "technique": "顶点 · 棱 · 面 / 欧拉公式", "archetype": "LAB", "lab": "solid_basic", "lab_ref": "solid_kinds",   "scene": "res://scenes/LabStage.tscn" },
+        { "id": "solid_surface", "name": "2-1 表面积与展开",        "technique": "侧面展开 · S=2πrh",       "archetype": "LAB", "lab": "solid_basic", "lab_ref": "solid_surface", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "solid_volume",  "name": "3-1 体积",                "technique": "V=Sh / V=⅓Sh",            "archetype": "LAB", "lab": "solid_basic", "lab_ref": "solid_volume",  "scene": "res://scenes/LabStage.tscn" },
+        { "id": "solid_diag",    "name": "4-1 体对角线与截面",      "technique": "体对角线 √3a",            "archetype": "LAB", "lab": "solid_basic", "lab_ref": "solid_diag",    "scene": "res://scenes/LabStage.tscn" },
+        { "id": "solid_sphere",  "name": "5-1 球与组合体",          "technique": "S=4πr²  V=4πr³/3",        "archetype": "LAB", "lab": "solid_basic", "lab_ref": "solid_sphere",  "scene": "res://scenes/LabStage.tscn" },
+        { "id": "solid_axiom",    "name": "6-1 空间点线面位置关系",   "technique": "基本事实 · 异面直线",      "archetype": "LAB", "lab": "solid_basic", "lab_ref": "solid_axiom",    "scene": "res://scenes/LabStage.tscn" },
+        { "id": "solid_parallel", "name": "7-1 平行与垂直的判定",     "technique": "线面 · 面面 判定定理",     "archetype": "LAB", "lab": "solid_basic", "lab_ref": "solid_parallel", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "solid_view",     "name": "8-1 三视图与直观图",       "technique": "三视图 · 斜二测画法",      "archetype": "LAB", "lab": "solid_basic", "lab_ref": "solid_view",     "scene": "res://scenes/LabStage.tscn" },
+        { "id": "solid_frustum",  "name": "9-1 棱台与圆台",           "technique": "相似底面 · 母线 l",        "archetype": "LAB", "lab": "solid_basic", "lab_ref": "solid_frustum",  "scene": "res://scenes/LabStage.tscn" },
+        { "id": "solid_par_prop", "name": "10-1 直线与平面平行的性质", "technique": "线面平行 ⇒ 线线平行",    "archetype": "LAB", "lab": "solid_basic", "lab_ref": "solid_par_prop", "scene": "res://scenes/LabStage.tscn" },
+        { "id": "solid_perp_prop","name": "11-1 直线与平面垂直的性质", "technique": "同垂直一平面 ⇒ 平行",    "archetype": "LAB", "lab": "solid_basic", "lab_ref": "solid_perp_prop", "scene": "res://scenes/LabStage.tscn" }
       ]
     }
   ]

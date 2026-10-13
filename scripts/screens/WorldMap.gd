@@ -18,6 +18,120 @@ class Pulse extends Control:
 		draw_circle(c, 5.0, Color("#5ee6ff", 0.9))
 		draw_circle(c, 2.2, Color(1, 1, 1, 0.95))
 
+## 顶栏底部动态扫描线。
+class HudLine extends Control:
+	var color := Color(UI.COL_ACCENT)
+	var _t := 0.0
+
+	func _ready() -> void:
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		resized.connect(queue_redraw)
+		set_process(true)
+
+	func _process(delta: float) -> void:
+		if not UI.animations:
+			return
+		_t += delta
+		queue_redraw()
+
+	func _draw() -> void:
+		var w := size.x
+		var y := size.y * 0.5
+		draw_line(Vector2(0, y), Vector2(w, y), Color(color, 0.16), 1.0)
+		var seg := 110.0
+		var x := fposmod(_t * 150.0, w + seg) - seg
+		draw_line(Vector2(maxf(x, 0.0), y), Vector2(minf(x + seg, w), y), Color(color, 0.85), 2.0)
+
+## 方法关卡卡片的 HUD 斜切外观。
+class MethodCard extends Control:
+	var title := ""
+	var sub := ""
+	var code := ""
+	var color := Color("#5B8FF9")
+	var unlocked := true
+	var stars := 0
+	var max_stars := 3
+	var hover := false
+	var _t := 0.0
+
+	func _ready() -> void:
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		resized.connect(queue_redraw)
+		set_process(true)
+
+	func _process(delta: float) -> void:
+		if not UI.animations:
+			return
+		_t += delta
+		queue_redraw()
+
+	func _draw() -> void:
+		var w := size.x
+		var h := size.y
+		var accent := color if unlocked else Color(0.42, 0.45, 0.52)
+		var cut := 12.0
+
+		var pts := PackedVector2Array([
+			Vector2(cut, 0), Vector2(w, 0), Vector2(w, h - cut),
+			Vector2(w - cut, h), Vector2(0, h), Vector2(0, cut),
+		])
+		var bg := Color(1, 1, 1, 0.045) if unlocked else Color(0, 0, 0, 0.22)
+		if hover and unlocked:
+			bg = Color(1, 1, 1, 0.085)
+		draw_colored_polygon(pts, bg)
+		var closed := pts.duplicate()
+		closed.append(pts[0])
+		var brd := Color(accent, 0.55 if unlocked else 0.10)
+		if hover and unlocked:
+			brd = Color(UI.COL_ACCENT, 0.8)
+		draw_polyline(closed, brd, 1.0, true)
+		draw_line(Vector2(cut + 2, 1.5), Vector2(w - 2, 1.5), Color(accent, 0.9 if unlocked else 0.2), 2.0)
+
+		var mf := UI.mono_font()
+		# 关卡序号徽章(左上)
+		var bw := mf.get_string_size(code, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(12)).x + 16.0
+		var by := 8.0
+		var bpts := PackedVector2Array([
+			Vector2(14, by), Vector2(14 + bw, by), Vector2(14 + bw + 6, by + 11),
+			Vector2(14 + bw, by + 22), Vector2(14, by + 22), Vector2(14 + 6, by + 11),
+		])
+		draw_colored_polygon(bpts, Color(accent, 0.16))
+		var bclosed := bpts.duplicate()
+		bclosed.append(bpts[0])
+		draw_polyline(bclosed, Color(accent, 0.75), 1.2, true)
+		draw_string(mf, Vector2(14 + 8, by + 16), code, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(12), Color(accent, 0.98))
+
+		# 右上星数
+		var ss := "★".repeat(stars) + "☆".repeat(maxi(0, 3 - stars))
+		var sw := mf.get_string_size(ss, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(14)).x
+		draw_string(mf, Vector2(w - 16 - sw, 26), ss, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(14),
+			UI.COL_ACCENT if unlocked else Color(1, 1, 1, 0.25))
+
+		# 关卡名
+		var tcol := UI.COL_TEXT if unlocked else Color(1, 1, 1, 0.35)
+		draw_string(UI.font(), Vector2(16, 54), title, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(17), tcol)
+		# 方法/技法
+		if sub != "":
+			draw_string(mf, Vector2(16, 74), sub, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(12),
+				Color(UI.COL_TEXT_DIM, 0.85) if unlocked else Color(1, 1, 1, 0.25))
+
+		# 底部进度条
+		var bar := Rect2(16, h - 11, w - 32, 5)
+		draw_rect(bar, Color(0, 0, 0, 0.4), true)
+		if unlocked and max_stars > 0:
+			var ratio := clampf(float(stars) / float(max_stars), 0.0, 1.0)
+			if ratio > 0.001:
+				draw_rect(Rect2(bar.position, Vector2(maxf(bar.size.x * ratio, 4.0), bar.size.y)), accent, true)
+
+		# 悬停角标
+		if hover and unlocked:
+			var L := 10.0
+			var o := 4.0
+			draw_polyline(PackedVector2Array([Vector2(o, o + L), Vector2(o, o), Vector2(o + L, o)]), Color(accent, 0.9), 2.0, true)
+			draw_polyline(PackedVector2Array([Vector2(w - o - L, o), Vector2(w - o, o), Vector2(w - o, o + L)]), Color(accent, 0.9), 2.0, true)
+			draw_polyline(PackedVector2Array([Vector2(o, h - o - L), Vector2(o, h - o), Vector2(o + L, h - o)]), Color(accent, 0.9), 2.0, true)
+			draw_polyline(PackedVector2Array([Vector2(w - o - L, h - o), Vector2(w - o, h - o), Vector2(w - o, h - o - L)]), Color(accent, 0.9), 2.0, true)
+
 var _content: Control
 var _scroll: ScrollContainer
 var _panel_layer: CanvasLayer
@@ -59,6 +173,12 @@ func _build_topbar() -> void:
 	_star_lbl = UI.mono_label("", 17, UI.COL_ACCENT)
 	hb.add_child(_star_lbl)
 	_refresh_topbar()
+	var hl := HudLine.new()
+	hl.color = UI.COL_ACCENT
+	hl.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	hl.offset_top = 62
+	hl.offset_bottom = 64
+	add_child(hl)
 
 func _refresh_topbar() -> void:
 	if _star_lbl != null:
@@ -275,68 +395,39 @@ func _level_entry(ch_i: int, li: int, lv: Dictionary, chapter_color: Color) -> C
 	var unlocked := GameData.is_level_unlocked(ch_i, li)
 	var s := int(GameData.stars.get(lv["id"], 0))
 
-	var box := Control.new()
-	box.custom_minimum_size = Vector2(272, 92)
-
-	var fill := Color(1, 1, 1, 0.045) if unlocked else Color(0, 0, 0, 0.22)
-	var border := Color(chapter_color, 0.5) if unlocked else Color(1, 1, 1, 0.07)
-	var p := PanelContainer.new()
-	p.add_theme_stylebox_override("panel", UI.glass_box(fill, 12, border, 1, 14))
-	p.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	box.add_child(p)
-
-	var vb := VBoxContainer.new()
-	vb.add_theme_constant_override("separation", 4)
-	p.add_child(vb)
-
-	var name_col := UI.COL_TEXT if unlocked else Color(1, 1, 1, 0.35)
-	vb.add_child(UI.make_label(str(lv["name"]), 17, name_col))
-
+	var card := MethodCard.new()
+	card.custom_minimum_size = Vector2(272, 92)
+	card.color = chapter_color
+	card.unlocked = unlocked
+	card.stars = s
+	card.max_stars = 3
+	card.code = "%02d" % (li + 1)
+	card.title = str(lv["name"])
 	var arch := str(lv.get("archetype", ""))
 	var tech := str(lv.get("technique", ""))
-	var sub := arch + (" · " if arch != "" and tech != "" else "") + tech
-	if sub != "":
-		vb.add_child(UI.mono_label(sub, 12, Color(UI.COL_TEXT_DIM, 0.85) if unlocked else Color(1, 1, 1, 0.25)))
-
-	# 左侧章节色竖条
-	var bar := ColorRect.new()
-	bar.color = chapter_color if unlocked else Color(1, 1, 1, 0.15)
-	bar.set_anchors_and_offsets_preset(Control.PRESET_LEFT_WIDE)
-	bar.offset_right = 3
-	bar.offset_top = 8
-	bar.offset_bottom = -8
-	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	box.add_child(bar)
-
-	# 右上角星级
-	var star := UI.mono_label(_stars_str(s), 13,
-		UI.COL_ACCENT if unlocked else Color(1, 1, 1, 0.25),
-		HORIZONTAL_ALIGNMENT_RIGHT)
-	star.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	star.offset_left = -92
-	star.offset_right = -14
-	star.offset_top = 10
-	star.offset_bottom = 30
-	star.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	box.add_child(star)
-
-	# 角标
-	var mark_col := Color(chapter_color, 0.6) if unlocked else Color(1, 1, 1, 0.18)
-	UI.corner_marks(box, 6, 10, 2, mark_col)
+	card.sub = arch + (" · " if arch != "" and tech != "" else "") + tech
 
 	# 覆盖热区按钮
 	var btn := Button.new()
 	btn.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	btn.disabled = not unlocked
 	btn.add_theme_stylebox_override("normal", UI.stylebox(Color(0, 0, 0, 0), 12, Color(0, 0, 0, 0), 0, 0))
-	btn.add_theme_stylebox_override("hover", UI.glass_box(Color(1, 1, 1, 0.07), 12, Color(UI.COL_ACCENT, 0.55), 1, 0))
-	btn.add_theme_stylebox_override("pressed", UI.glass_box(Color(0, 0, 0, 0.28), 12, Color(UI.COL_ACCENT, 0.8), 1, 0))
-	btn.add_theme_stylebox_override("focus", UI.stylebox(Color(0, 0, 0, 0), 12, Color(UI.COL_ACCENT, 0.3), 1, 0))
+	btn.add_theme_stylebox_override("hover", UI.stylebox(Color(0, 0, 0, 0), 12, Color(0, 0, 0, 0), 0, 0))
+	btn.add_theme_stylebox_override("pressed", UI.stylebox(Color(0, 0, 0, 0.18), 12, Color(0, 0, 0, 0), 0, 0))
+	btn.add_theme_stylebox_override("focus", UI.stylebox(Color(0, 0, 0, 0), 12, Color(0, 0, 0, 0), 0, 0))
 	btn.add_theme_stylebox_override("disabled", UI.stylebox(Color(0, 0, 0, 0), 12, Color(0, 0, 0, 0), 0, 0))
+	btn.mouse_entered.connect(func() -> void:
+		card.hover = true
+		card.queue_redraw()
+	)
+	btn.mouse_exited.connect(func() -> void:
+		card.hover = false
+		card.queue_redraw()
+	)
 	if unlocked:
 		btn.pressed.connect(func() -> void: _on_level_pressed(ch_i, li, lv))
-	box.add_child(btn)
-	return box
+	card.add_child(btn)
+	return card
 
 func _on_level_pressed(chapter_index: int, level_index: int, lv: Dictionary) -> void:
 	if not GameData.start_level(chapter_index, level_index):

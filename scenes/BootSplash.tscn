@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=2 format=3 uid="uid://hsobjj3gqrfk"]
 
-[ext_resource type="Script" path="res://scripts/screens/BootSplash.gd" id="1_bootsplash"]
+[ext_resource type="Script" uid="uid://dj47pbr1ldhpc" path="res://scripts/screens/BootSplash.gd" id="1_bootsplash"]
 
 [node name="BootSplash" type="Control"]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_bootsplash")

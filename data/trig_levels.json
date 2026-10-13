@@ -1,0 +1,439 @@
+{
+  "trig_induce": {
+    "title": "三角函数",
+    "method": "单位圆 · 诱导公式",
+    "color": "#FF9D4D",
+    "summary": "借助单位圆的对称性理解并推导诱导公式。",
+    "levels": [
+      {
+        "name": "1-1 实验：单位圆上的对称",
+        "type": "explore",
+        "q": "拖动滑块改变角 θ，观察终边绕原点旋转时，点 P 的坐标如何变化。",
+        "scene": {
+          "x": [-1.8, 1.8],
+          "y": [-1.4, 1.4],
+          "unit_circle": { "angle": "theta", "label": "P", "show_sin": true, "show_cos": true },
+          "sliders": [{ "name": "theta", "label": "θ°", "min": 0, "max": 360, "value": 30, "step": 1 }],
+          "slider_color": "#ffd479",
+          "gate": false
+        },
+        "ask": "当 180°−θ 的终边与 θ 的终边关于 y 轴对称时，sin(180°−θ) 与 sinθ 的关系是？",
+        "opts": ["sin(180°−θ)=sinθ", "sin(180°−θ)=−sinθ", "sin(180°−θ)=cosθ", "sin(180°−θ)=−cosθ"],
+        "ans": 0,
+        "hint": "关于 y 轴对称：纵坐标不变，横坐标变号。",
+        "explain": "sin 对应纵坐标，关于 y 轴对称时纵坐标不变，所以 sin(180°−θ)=sinθ。",
+        "success": "观察到位！下面用坐标关系总结诱导公式。"
+      },
+      {
+        "name": "1-2 建构：诱导公式",
+        "type": "choice",
+        "q": "根据单位圆，cos(180°+θ) 等于？",
+        "scene": {
+          "x": [-1.8, 1.8],
+          "y": [-1.4, 1.4],
+          "unit_circle": { "angle": 210, "label": "P", "show_sin": true, "show_cos": true }
+        },
+        "opts": ["−cosθ", "cosθ", "sinθ", "−sinθ"],
+        "ans": 0,
+        "hint": "180°+θ 的终边与 θ 的终边关于原点对称。",
+        "explain": "关于原点对称：cos(180°+θ)=−cosθ，sin(180°+θ)=−sinθ。"
+      },
+      {
+        "name": "1-3 迁移：化简求值",
+        "type": "choice",
+        "q": "已知 sinα=3/5，α∈(π/2, π)，则 sin(π+α)=?",
+        "scene": {
+          "x": [-1.8, 1.8],
+          "y": [-1.4, 1.4],
+          "unit_circle": { "angle": 143, "label": "P", "show_sin": true, "show_cos": true }
+        },
+        "opts": ["−3/5", "3/5", "4/5", "−4/5"],
+        "ans": 0,
+        "hint": "sin(π+α)=−sinα。",
+        "explain": "sin(π+α)=−sinα=−3/5。"
+      }
+    ]
+  },
+  "trig_identity": {
+    "title": "三角函数",
+    "method": "单位圆 · 同角关系",
+    "color": "#FF9D4D",
+    "summary": "在单位圆上发现平方关系，并用于齐次式求值。",
+    "levels": [
+      {
+        "name": "2-1 实验：平方关系",
+        "type": "explore",
+        "q": "拖动 θ，观察单位圆上点 P(x, y) 的横、纵坐标的平方和。",
+        "scene": {
+          "x": [-1.8, 1.8],
+          "y": [-1.4, 1.4],
+          "unit_circle": { "angle": "theta", "label": "P", "show_sin": true, "show_cos": true },
+          "sliders": [{ "name": "theta", "label": "θ°", "min": 0, "max": 360, "value": 50, "step": 1 }],
+          "slider_color": "#ffd479",
+          "gate": false
+        },
+        "ask": "无论 θ 怎样变化，cos²θ+sin²θ 的值恒等于？",
+        "opts": ["1", "0", "2", "随 θ 变化"],
+        "ans": 0,
+        "hint": "P 在单位圆上，故 x²+y²=1。",
+        "explain": "P 在单位圆上：x²+y²=1，即 cos²θ+sin²θ=1。",
+        "success": "很好！这就是同角三角函数的平方关系。"
+      },
+      {
+        "name": "2-2 建构：sinθcosθ",
+        "type": "choice",
+        "q": "已知 sinθ+cosθ=1/2，则 sinθcosθ=?",
+        "opts": ["−3/8", "3/8", "−1/2", "1/4"],
+        "ans": 0,
+        "hint": "把 sinθ+cosθ=1/2 两边平方。",
+        "explain": "(sinθ+cosθ)²=1+2sinθcosθ=1/4，解得 sinθcosθ=−3/8。"
+      },
+      {
+        "name": "2-3 迁移：齐次式",
+        "type": "choice",
+        "q": "已知 tanθ=2，则 (sinθ+cosθ)/(sinθ−cosθ)=?",
+        "opts": ["3", "1/3", "−3", "2"],
+        "ans": 0,
+        "hint": "分子分母同除以 cosθ。",
+        "explain": "原式=(tanθ+1)/(tanθ−1)=3/1=3。"
+      }
+    ]
+  },
+  "trig_graph": {
+    "title": "三角函数",
+    "method": "图像变换 · 参数 A、ω",
+    "color": "#FF9D4D",
+    "summary": "用滑块观察 A、ω 对正弦曲线振幅与周期的影响。",
+    "levels": [
+      {
+        "name": "3-1 实验：振幅与周期",
+        "type": "explore",
+        "q": "拖动 A、ω，观察曲线 y=A·sin(ωx) 的高低与疏密如何改变。",
+        "scene": {
+          "x": [-6.5, 6.5],
+          "y": [-3.5, 3.5],
+          "pi_ticks": true,
+          "curves": [{ "fn": "sin", "a": "A", "b": "W", "color": "#FF9D4D", "label": "y=A·sin(ωx)" }],
+          "sliders": [
+            { "name": "A", "label": "A", "min": 0.2, "max": 3, "value": 1, "step": 0.1 },
+            { "name": "W", "label": "ω", "min": 0.5, "max": 3, "value": 1, "step": 0.1 }
+          ],
+          "slider_color": "#ffd479",
+          "gate": false
+        },
+        "ask": "y=A·sin(ωx) 的最小正周期 T 等于？",
+        "opts": ["2π/ω", "2π·ω", "2π/A", "π/ω"],
+        "ans": 0,
+        "hint": "周期只与 ω 有关，A 只决定振幅。",
+        "explain": "T=2π/ω；A 决定振幅，ω 决定周期，二者互不影响。",
+        "success": "很好！下面用参数读出振幅与周期。"
+      },
+      {
+        "name": "3-2 建构：读参数",
+        "type": "choice",
+        "q": "函数 y=2sin(3x) 的振幅与最小正周期分别是？",
+        "scene": {
+          "x": [-6.5, 6.5],
+          "y": [-3.5, 3.5],
+          "pi_ticks": true,
+          "curves": [{ "fn": "sin", "a": 2, "b": 3, "color": "#FF9D4D", "label": "y=2sin(3x)" }]
+        },
+        "opts": ["振幅 2，周期 2π/3", "振幅 3，周期 2π/2", "振幅 2，周期 3", "振幅 1/2，周期 2π/3"],
+        "ans": 0,
+        "explain": "振幅 |A|=2，最小正周期 T=2π/ω=2π/3。"
+      },
+      {
+        "name": "3-3 迁移：图像变换",
+        "type": "choice",
+        "q": "把 y=sinx 图像上每点横坐标缩短为原来的 1/2（纵坐标不变），所得函数是？",
+        "opts": ["y=sin2x", "y=2sinx", "y=sin(x/2)", "y=sinx+2"],
+        "ans": 0,
+        "hint": "横坐标缩短为 1/2 ⇒ 周期减半。",
+        "explain": "横坐标缩短为 1/2 即周期变为 π，故 y=sin2x。"
+      }
+    ]
+  },
+  "trig_solve": {
+    "title": "三角函数",
+    "method": "正弦定理 · 余弦定理",
+    "color": "#FF9D4D",
+    "summary": "在三角形中灵活使用正、余弦定理与面积公式。",
+    "levels": [
+      {
+        "name": "4-1 建构：余弦定理",
+        "type": "choice",
+        "q": "在△ABC中，a=3，b=4，C=60°，则 c=?",
+        "scene": {
+          "x": [-1.0, 4.4],
+          "y": [-1.0, 4.4],
+          "segments": [
+            { "p1": [0, 0], "p2": [3, 0], "color": "#5ee6ff", "label": "a=3" },
+            { "p1": [0, 0], "p2": [2, 3.464], "color": "#5ee6ff", "label": "b=4" },
+            { "p1": [3, 0], "p2": [2, 3.464], "color": "#ffd479", "label": "c=?" }
+          ],
+          "points": [
+            { "p": [0, 0], "color": "#5ee6ff", "label": "C" },
+            { "p": [3, 0], "color": "#5ee6ff", "label": "B" },
+            { "p": [2, 3.464], "color": "#5ee6ff", "label": "A" }
+          ],
+          "labels": [{ "p": [0.6, 0.35], "text": "60°", "color": "#ffd479", "size": 14 }]
+        },
+        "opts": ["√13", "√37", "7", "5"],
+        "ans": 0,
+        "hint": "用余弦定理 c²=a²+b²−2ab·cosC。",
+        "explain": "c²=9+16−2·3·4·cos60°=25−12=13，故 c=√13。"
+      },
+      {
+        "name": "4-2 建构：正弦定理",
+        "type": "choice",
+        "q": "在△ABC中，A=60°，a=√3，b=1，则 B=?",
+        "opts": ["30°", "60°", "45°", "90°"],
+        "ans": 0,
+        "hint": "a/sinA=b/sinB；再由 b<a 判断 B<A。",
+        "explain": "sinB=(b·sinA)/a=(1·(√3/2))/√3=1/2，又 b<a 故 B<A=60°，所以 B=30°。"
+      },
+      {
+        "name": "4-3 迁移：面积",
+        "type": "choice",
+        "q": "在△ABC中，a=2，b=2，C=60°，则△ABC 的面积是？",
+        "opts": ["√3", "1", "2√3", "3/2"],
+        "ans": 0,
+        "hint": "面积公式 S=½ab·sinC。",
+        "explain": "S=½×2×2×sin60°=√3。"
+      }
+    ]
+  },
+  "trig_apply": {
+    "title": "三角函数",
+    "method": "建模应用 · 辅助角",
+    "color": "#FF9D4D",
+    "summary": "把三角函数用于简谐运动与最值问题。",
+    "levels": [
+      {
+        "name": "5-1 建构：简谐运动",
+        "type": "choice",
+        "q": "简谐运动位移 y=3sin(2t+π/6) 的初相是？",
+        "scene": {
+          "x": [-6.5, 6.5],
+          "y": [-4.0, 4.0],
+          "pi_ticks": true,
+          "curves": [{ "fn": "sin", "a": 3, "b": 2, "c": 0.5236, "color": "#FF9D4D", "label": "y=3sin(2t+π/6)" }]
+        },
+        "opts": ["π/6", "2", "3", "π/3"],
+        "ans": 0,
+        "explain": "y=A·sin(ωt+φ) 中 φ=π/6 为初相，A=3 为振幅，ω=2 决定周期。"
+      },
+      {
+        "name": "5-2 实验：纵向平移",
+        "type": "explore",
+        "q": "拖动 A、b，观察 y=A·sinx + b 的波峰、波谷高度如何改变。",
+        "scene": {
+          "x": [-6.5, 6.5],
+          "y": [-4.0, 6.0],
+          "pi_ticks": true,
+          "curves": [{ "fn": "sin", "a": "A", "b": 1, "d": "b", "color": "#FF9D4D", "label": "y=A·sinx+b" }],
+          "sliders": [
+            { "name": "A", "label": "A", "min": 0.2, "max": 4, "value": 1, "step": 0.1 },
+            { "name": "b", "label": "b", "min": -2, "max": 3, "value": 0, "step": 0.1 }
+          ],
+          "slider_color": "#ffd479",
+          "gate": false
+        },
+        "ask": "若 y=A·sinx+b 的最大值为 5、最小值为 1，则 A、b 分别是？",
+        "opts": ["A=2，b=3", "A=3，b=2", "A=4，b=1", "A=2，b=4"],
+        "ans": 0,
+        "hint": "最大值=A+b，最小值=−A+b。",
+        "explain": "由 A+b=5、−A+b=1 解得 A=2，b=3。",
+        "success": "到位！波峰波谷正好由 A、b 决定。"
+      },
+      {
+        "name": "5-3 迁移：合成最值",
+        "type": "choice",
+        "q": "函数 y=sinx+cosx 的最大值是？",
+        "opts": ["√2", "2", "1", "√3"],
+        "ans": 0,
+        "hint": "用辅助角公式：sinx+cosx=√2·sin(x+π/4)。",
+        "explain": "y=√2·sin(x+π/4)，最大值为 √2。"
+      }
+    ]
+  },
+  "trig_radian": {
+    "title": "三角函数",
+    "method": "弧度制 · 任意角",
+    "color": "#FF9D4D",
+    "summary": "用弧度度量角，使角与实数建立一一对应。",
+    "levels": [
+      {
+        "name": "6-1 实验：角与弧度",
+        "type": "explore",
+        "q": "拖动 θ，点 P 在单位圆上旋转。把半径转过的弧长与半径之比作为角的弧度数。",
+        "scene": {
+          "x": [-1.8, 1.8],
+          "y": [-1.4, 1.4],
+          "unit_circle": { "angle": "theta", "label": "P", "show_sin": false, "show_cos": false },
+          "sliders": [{ "name": "theta", "label": "θ°", "min": 0, "max": 360, "value": 180, "step": 1 }],
+          "slider_color": "#ffd479",
+          "gate": false
+        },
+        "ask": "在半径为 r 的圆中，弧长等于半径的弧所对的圆心角是？",
+        "opts": ["1 弧度", "1 度", "π 弧度", "2π 弧度"],
+        "ans": 0,
+        "hint": "弧长与半径之比等于 1。",
+        "explain": "弧长 l=r 时，α=l/r=1，称为 1 弧度的角。",
+        "success": "对！弧度数是弧长与半径之比，是无量纲的实数。"
+      },
+      {
+        "name": "6-2 建构：角度与弧度互化",
+        "type": "choice",
+        "q": "180° 等于多少弧度？",
+        "opts": ["π", "2π", "π/2", "360"],
+        "ans": 0,
+        "hint": "π 弧度 = 180°。",
+        "explain": "π 弧度与 180° 相等，故 180°=π。"
+      },
+      {
+        "name": "6-3 迁移：弧长公式",
+        "type": "choice",
+        "q": "半径 r=6、圆心角 α=π/3 的扇形，其弧长 l =?",
+        "opts": ["2π", "π", "6π", "3π"],
+        "ans": 0,
+        "hint": "弧长 l=αr（α 用弧度）。",
+        "explain": "l=αr=(π/3)×6=2π。"
+      }
+    ]
+  },
+  "trig_tan": {
+    "title": "三角函数",
+    "method": "正切函数 · 图象与性质",
+    "color": "#FF9D4D",
+    "summary": "观察正切曲线，理解它的周期、定义域与单调性。",
+    "levels": [
+      {
+        "name": "7-1 实验：正切曲线",
+        "type": "explore",
+        "q": "观察 y=tanx 的图象：它由一段段上升的曲线组成，每隔 π 重复一次。",
+        "scene": {
+          "x": [-6.5, 6.5],
+          "y": [-3.5, 3.5],
+          "pi_ticks": true,
+          "curves": [{ "fn": "tan", "a": 1, "b": 1, "color": "#FF9D4D", "label": "y=tanx" }]
+        },
+        "ask": "正切函数 y=tanx 的最小正周期是？",
+        "opts": ["π", "2π", "π/2", "4π"],
+        "ans": 0,
+        "hint": "π/2 到 3π/2 图像重复出现。",
+        "explain": "y=tanx 的最小正周期为 π（正弦、余弦是 2π）。",
+        "success": "对！正切函数的周期是 π。"
+      },
+      {
+        "name": "7-2 建构：定义域与奇偶性",
+        "type": "choice",
+        "q": "正切函数 y=tanx 是？",
+        "opts": ["奇函数", "偶函数", "既奇又偶", "非奇非偶"],
+        "ans": 0,
+        "hint": "tan(−x)=−tanx。",
+        "explain": "tan(−x)=−tanx，且定义域关于原点对称，故为奇函数。"
+      },
+      {
+        "name": "7-3 迁移：定义域",
+        "type": "choice",
+        "q": "正切函数 y=tanx 的定义域是？",
+        "opts": ["x≠π/2+kπ (k∈Z)", "x≠kπ (k∈Z)", "全体实数", "x>0"],
+        "ans": 0,
+        "hint": "在 x=π/2+kπ 处无定义。",
+        "explain": "正切函数在 x=π/2+kπ 处无意义，定义域为 {x|x≠π/2+kπ, k∈Z}。"
+      }
+    ]
+  },
+  "trig_concept": {
+    "title": "三角函数",
+    "method": "三角函数的概念 · 单位圆",
+    "color": "#FF9D4D",
+    "summary": "用单位圆上点的坐标定义正弦、余弦，并判断各象限的符号。",
+    "levels": [
+      {
+        "name": "8-1 实验：单位圆定义",
+        "type": "explore",
+        "q": "在单位圆中，角 θ 的终边与单位圆交于点 P，则 P 的坐标由 θ 决定。",
+        "scene": {
+          "x": [-1.6, 1.6],
+          "y": [-1.6, 1.6],
+          "unit_circle": { "angle": "theta", "label": "P", "show_sin": true, "show_cos": true },
+          "sliders": [{ "name": "theta", "label": "θ°", "min": 0, "max": 360, "value": 50, "step": 1 }],
+          "slider_color": "#FF9D4D",
+          "gate": false
+        },
+        "ask": "单位圆上角 θ 的终边与圆的交点 P 的坐标是？",
+        "opts": ["(cosθ, sinθ)", "(sinθ, cosθ)", "(cosθ, −sinθ)", "(tanθ, 1)"],
+        "ans": 0,
+        "hint": "横坐标是余弦，纵坐标是正弦。",
+        "explain": "单位圆上点 P 的坐标为 (cosθ, sinθ)，即 cosθ 是横坐标、sinθ 是纵坐标。",
+        "success": "对！这正是正弦、余弦的“单位圆定义”。"
+      },
+      {
+        "name": "8-2 建构：由点求值",
+        "type": "choice",
+        "q": "已知角 α 的终边经过点 P(3,4)，则 sinα =?",
+        "opts": ["4/5", "3/5", "3/4", "4/3"],
+        "ans": 0,
+        "hint": "先求 r=√(3²+4²)，sinα=y/r。",
+        "explain": "r=√(3²+4²)=5，故 sinα=y/r=4/5，cosα=x/r=3/5。"
+      },
+      {
+        "name": "8-3 迁移：各象限符号",
+        "type": "choice",
+        "q": "若 α 是第二象限角，则 sinα 与 cosα 的符号是？",
+        "opts": ["sinα>0, cosα<0", "sinα<0, cosα>0", "都为正", "都为负"],
+        "ans": 0,
+        "hint": "第二象限的点横坐标为负、纵坐标为正。",
+        "explain": "第二象限 x<0、y>0，故 cosα<0、sinα>0。"
+      }
+    ]
+  },
+  "trig_sincos": {
+    "title": "三角函数",
+    "method": "正弦、余弦函数 · 图象与性质",
+    "color": "#FF9D4D",
+    "summary": "观察正弦、余弦函数的图象，理解周期、值域与平移关系。",
+    "levels": [
+      {
+        "name": "9-1 实验：正弦与余弦图象",
+        "type": "explore",
+        "q": "y=sinx 与 y=cosx 的图象都呈波浪形，向左右无限重复。",
+        "scene": {
+          "x": [-6.5, 6.5],
+          "y": [-1.6, 1.6],
+          "pi_ticks": true,
+          "curves": [
+            { "fn": "sin", "a": 1, "b": 1, "color": "#5ee6ff", "label": "y=sinx" },
+            { "fn": "cos", "a": 1, "b": 1, "color": "#ffd479", "label": "y=cosx" }
+          ]
+        },
+        "ask": "正弦函数 y=sinx 的最小正周期是？",
+        "opts": ["2π", "π", "4π", "π/2"],
+        "ans": 0,
+        "hint": "图象每隔 2π 重复出现。",
+        "explain": "y=sinx 的图象每隔 2π 重复一次，最小正周期为 2π（余弦也是 2π）。",
+        "success": "对！正弦、余弦函数的周期都是 2π。"
+      },
+      {
+        "name": "9-2 建构：图象平移",
+        "type": "choice",
+        "q": "y=cosx 的图象可由 y=sinx 的图象向左平移多少个单位得到？",
+        "opts": ["π/2", "π", "π/4", "2π"],
+        "ans": 0,
+        "hint": "cosx=sin(x+π/2)。",
+        "explain": "因为 cosx=sin(x+π/2)，把 y=sinx 向左平移 π/2 即得 y=cosx。"
+      },
+      {
+        "name": "9-3 迁移：值域",
+        "type": "choice",
+        "q": "正弦函数 y=sinx 的值域是？",
+        "opts": ["[−1,1]", "[0,1]", "R", "[0,2π]"],
+        "ans": 0,
+        "hint": "图象在 y=−1 与 y=1 之间上下波动。",
+        "explain": "y=sinx 的最大值为 1、最小值为 −1，故值域为 [−1,1]。"
+      }
+    ]
+  }
+}
