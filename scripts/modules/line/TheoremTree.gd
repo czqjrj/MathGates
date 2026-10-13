@@ -1,9 +1,17 @@
 extends Control
-## 知识体系 · 地图方式：以「单元」为区域、知识点为地图节点，沿蜿蜒路径逐点点亮。
-## 只展示知识体系章节(curriculum.json 中 "kind":"knowledge")；
-## 方法推演(专题方法实验)在「方法推演」地图 WorldMap 中,两边不混排。
+## 双层导航学习地图：第一层「分册」标签，第二层当前分册下的「章节」卡片，点章节进入知识点节点地图。
+## 同一套 UI 同时服务两条线，由 kind 区分：
+##   kind="knowledge" → 知识体系(TheoremTree.tscn)
+##   kind="method"    → 方法推演(WorldMap.tscn)，章节为「专题方法实验」
+## 章节按 curriculum.json 的 "kind" 过滤，分册归属/章号由 data/textbooks.json 决定；
 ## 有独立 scene 的关卡走对应场景,其余进入通用战斗场景 Battle;新增章节只需写进 curriculum.json 即会自动出现。
-## 顶部标签切换模块，点击节点弹出关卡面板进入。
+
+## 展示哪一类章节（knowledge / method）
+@export var kind := "knowledge"
+## 顶栏标题与副标题（按场景覆盖）
+@export var header_title := "知识体系"
+@export var header_sub := "KNOWLEDGE MAP"
+
 
 ## 各模块主题(单元)名，与关卡名 "N-M xxx" 的 N 对应(1 起)
 const GROUP_TITLES := {
@@ -455,7 +463,8 @@ class TabCard extends Control:
 
 		# 标题
 		var tcol := UI.COL_TEXT if not locked else Color(UI.COL_TEXT_DIM, 0.7)
-		draw_string(fb, Vector2(16, 60), title, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(18), tcol)
+		var tfit := _fit_title(fb, title, w - 32.0)
+		draw_string(fb, Vector2(16, 60), str(tfit[1]), HORIZONTAL_ALIGNMENT_LEFT, -1, int(tfit[0]), tcol)
 
 		# 副标题(关卡数) + 星数
 		draw_string(mf, Vector2(16, 80), "%d 关" % levels_count, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(11), Color(UI.COL_TEXT_DIM, 0.8))
@@ -484,6 +493,20 @@ class TabCard extends Control:
 		# 拖拽把手
 		for k in 3:
 			draw_circle(Vector2(w - 14, h * 0.5 - 10 + k * 10), 1.6, Color(1, 1, 1, 0.35))
+
+	## 标题过长时先缩小字号，仍放不下则省略号收尾，避免撑破卡片。
+	func _fit_title(f: Font, text: String, max_w: float) -> Array:
+		for base in [18, 16, 14, 13]:
+			var px := UI.fs(base)
+			if f.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, px).x <= max_w:
+				return [px, text]
+		var px2 := UI.fs(13)
+		var t := text
+		while t.length() > 1:
+			t = t.substr(0, t.length() - 1)
+			if f.get_string_size(t + "…", HORIZONTAL_ALIGNMENT_LEFT, -1, px2).x <= max_w:
+				return [px2, t + "…"]
+		return [px2, "…"]
 
 	func _draw_brackets(w: float, h: float, col: Color) -> void:
 		var L := 10.0
@@ -609,13 +632,13 @@ func _chapter_index_of(module_id: String) -> int:
 			return i
 	return -1
 
-## 由课程表生成知识体系各模块(高中数学各章节),新增章节无需改代码。
+## 由课程表生成当前体系(kind)各模块(章节),新增章节无需改代码。
 ## 顺序：自定义拖拽顺序优先；随后把「正在学习」的章节提到最前。
 func _build_modules() -> void:
 	_mods.clear()
 	for ci in GameData.chapters.size():
 		var ch: Dictionary = GameData.chapters[ci]
-		if GameData.chapter_kind(ci) != "knowledge":
+		if GameData.chapter_kind(ci) != kind:
 			continue
 		_mods.append({
 			"id": str(ch.get("id", "")),
@@ -778,8 +801,8 @@ func _build_topbar() -> void:
 		Scene.goto("res://scenes/MainHub.tscn")
 	))
 	hb.add_child(UI.hairline(Vector2(1, 18)))
-	hb.add_child(UI.make_label("知识体系", 22))
-	hb.add_child(UI.mono_label("KNOWLEDGE MAP", 13, Color(UI.COL_TEXT_DIM, 0.7)))
+	hb.add_child(UI.make_label(header_title, 22))
+	hb.add_child(UI.mono_label(header_sub, 13, Color(UI.COL_TEXT_DIM, 0.7)))
 	var sp := Control.new()
 	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hb.add_child(sp)
@@ -961,7 +984,7 @@ func _build_scroll() -> void:
 
 # ---------------------------------------------------------------- 地图
 func _build_map(recenter_map: bool) -> void:
-	if _content == null:
+	if _content == null or _mods.is_empty():
 		return
 	for c in _content.get_children():
 		c.queue_free()

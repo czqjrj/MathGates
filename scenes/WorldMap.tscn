@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://scripts/screens/WorldMap.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/modules/line/TheoremTree.gd" id="1"]
 
 [node name="WorldMap" type="Control"]
 layout_mode = 3
@@ -10,3 +10,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
+kind = "method"
+header_title = "方法推演"
+header_sub = "METHOD SECTOR"

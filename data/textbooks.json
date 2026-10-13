@@ -21,6 +21,7 @@
         "solid_basic"
       ],
       "chapter_book": {
+        "recurrence_methods": "xb1", "solid": "bx2", "conic": "xb1", "function_methods": "bx1",
         "set_logic": "bx1", "inequalities": "bx1", "functions": "bx1", "trig": "bx1",
         "vectors": "bx2", "probability": "bx2", "complex": "bx2", "statistics": "bx2",
         "vector": "bx2", "solid_basic": "bx2",
@@ -61,6 +62,7 @@
         "thinking"
       ],
       "chapter_book": {
+        "recurrence_methods": "xb2", "solid": "bx2", "conic": "xb1", "function_methods": "bx1",
         "set_logic": "bx1", "inequalities": "bx1", "functions": "bx1", "trig": "bx1",
         "vectors": "bx2", "vector": "bx2", "complex": "bx2", "solid_basic": "bx2",
         "statistics": "bx2", "probability": "bx2",
@@ -102,6 +104,7 @@
         "thinking"
       ],
       "chapter_book": {
+        "recurrence_methods": "xb2", "solid": "bx2", "conic": "xb1", "function_methods": "bx1",
         "set_logic": "bx1", "inequalities": "bx1", "functions": "bx1",
         "statistics": "bx1", "probability": "bx1",
         "trig": "bx2", "vectors": "bx2", "vector": "bx2", "complex": "bx2", "solid_basic": "bx2",
@@ -148,6 +151,7 @@
         "thinking"
       ],
       "chapter_book": {
+        "recurrence_methods": "xb3", "solid": "bx4", "conic": "xb1", "function_methods": "bx1",
         "set_logic": "bx1", "inequalities": "bx1", "functions": "bx1",
         "statistics": "bx2", "probability": "bx2", "vectors": "bx2",
         "trig": "bx3", "vector": "bx3",
@@ -190,6 +194,7 @@
         "thinking"
       ],
       "chapter_book": {
+        "recurrence_methods": "xb1", "solid": "bx2", "conic": "xb1", "function_methods": "bx1",
         "set_logic": "bx1", "inequalities": "bx1", "functions": "bx1", "trig": "bx1", "statistics": "bx1",
         "vectors": "bx2", "vector": "bx2", "complex": "bx2", "solid_basic": "bx2", "probability": "bx2",
         "sequences": "xb1", "line_eq": "xb1", "circle_eq": "xb1", "conics": "xb1",
@@ -228,6 +233,7 @@
         "thinking"
       ],
       "chapter_book": {
+        "recurrence_methods": "xb1", "solid": "bx3", "conic": "xb1", "function_methods": "bx1",
         "set_logic": "bx1", "inequalities": "bx1", "functions": "bx1",
         "trig": "bx2", "vectors": "bx2", "vector": "bx2", "complex": "bx2",
         "solid_basic": "bx3", "probability": "bx3", "statistics": "bx3",

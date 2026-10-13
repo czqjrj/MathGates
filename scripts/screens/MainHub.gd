@@ -210,7 +210,7 @@ func _build_center() -> void:
 	row.add_theme_constant_override("separation", 20)
 	vb.add_child(row)
 	row.add_child(_card("知识体系", "思维导图统整知识，逐点点亮", Color("#a878ff"), "icon_tree", _on_theorem_tree, true))
-	row.add_child(_card("方法推演", "进入区域，逐层解析命题", Color("#5b8cff"), "icon_map", _on_adventure, false, true))
+	row.add_child(_card("方法推演", "按教材分册，逐章攻克方法与题型", Color("#5b8cff"), "icon_map", _on_adventure, false, true))
 	row.add_child(_card("档案库", "用户档案与学情诊断", Color("#ffa64d"), "icon_book", _on_archive, false, true))
 	row.add_child(_card("错题笔记", "逐题回看错题，一键重练", Color("#4dd6a8"), "icon_train", _on_wrong_notebook, false, true))
 	row.add_child(_card("星辉市集", "金币兑换头像与道具", Color("#ffd479"), "icon_star_full", _on_shop, false, true))
