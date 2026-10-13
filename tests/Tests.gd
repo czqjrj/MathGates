@@ -291,8 +291,15 @@ func _test_textbook() -> void:
 				k_ids.append(cid)
 				_ok(GameData.book_of_chapter(cid) != "", "%s book of %s" % [vid, cid])
 				_ok(GameData.chapter_no(cid) != "", "%s chapter_no of %s" % [vid, cid])
-		_eq(k_ids.size(), 23, "%s knowledge count" % vid)
-		_eq(m_ids.size(), 3, "%s method count" % vid)
+		var raw_k := 0
+		var raw_m := 0
+		for ch in GameData._chapters_raw:
+			if str(ch.get("kind", "knowledge")) == "method":
+				raw_m += 1
+			else:
+				raw_k += 1
+		_eq(k_ids.size(), raw_k, "%s knowledge count" % vid)
+		_eq(m_ids.size(), raw_m, "%s method count" % vid)
 		var k_want: Array = []
 		for id in v.get("knowledge_order", []):
 			if seen.has(str(id)):

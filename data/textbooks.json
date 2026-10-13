@@ -12,7 +12,7 @@
         { "id": "xb2",  "title": "选必二",   "color": "#FFC53D" },
         { "id": "idea", "title": "数学思想", "color": "#9ED0A0" }
       ],
-      "method_order": ["recurrence_methods", "solid", "conic"],
+      "method_order": ["recurrence_methods", "solid", "conic", "function_methods"],
       "knowledge_order": [
         "set_logic", "inequalities", "functions", "trig",
         "vectors", "sequences", "conics", "probability", "derivative",
@@ -51,7 +51,7 @@
         { "id": "xb3",  "title": "选必三",   "color": "#B37FEB" },
         { "id": "idea", "title": "数学思想", "color": "#9ED0A0" }
       ],
-      "method_order": ["recurrence_methods", "solid", "conic"],
+      "method_order": ["recurrence_methods", "solid", "conic", "function_methods"],
       "knowledge_order": [
         "set_logic", "inequalities", "functions", "trig",
         "vectors", "vector", "complex", "solid_basic", "statistics", "probability",
@@ -92,7 +92,7 @@
         { "id": "xb2",  "title": "选必二",   "color": "#FFC53D" },
         { "id": "idea", "title": "数学思想", "color": "#9ED0A0" }
       ],
-      "method_order": ["recurrence_methods", "solid", "conic"],
+      "method_order": ["recurrence_methods", "solid", "conic", "function_methods"],
       "knowledge_order": [
         "set_logic", "inequalities", "functions", "statistics", "probability",
         "trig", "vectors", "vector", "complex", "solid_basic",
@@ -136,7 +136,7 @@
         { "id": "xb3",  "title": "选必三",   "color": "#73D13D" },
         { "id": "idea", "title": "数学思想", "color": "#9ED0A0" }
       ],
-      "method_order": ["recurrence_methods", "solid", "conic"],
+      "method_order": ["recurrence_methods", "solid", "conic", "function_methods"],
       "knowledge_order": [
         "set_logic", "inequalities", "functions",
         "statistics", "probability", "vectors",
@@ -181,7 +181,7 @@
         { "id": "xb2",  "title": "选必二",   "color": "#FFC53D" },
         { "id": "idea", "title": "数学思想", "color": "#9ED0A0" }
       ],
-      "method_order": ["recurrence_methods", "solid", "conic"],
+      "method_order": ["recurrence_methods", "solid", "conic", "function_methods"],
       "knowledge_order": [
         "set_logic", "inequalities", "functions", "trig", "statistics",
         "vectors", "vector", "complex", "solid_basic", "probability",
@@ -218,7 +218,7 @@
         { "id": "xb2",  "title": "选必二",   "color": "#FFC53D" },
         { "id": "idea", "title": "数学思想", "color": "#9ED0A0" }
       ],
-      "method_order": ["recurrence_methods", "solid", "conic"],
+      "method_order": ["recurrence_methods", "solid", "conic", "function_methods"],
       "knowledge_order": [
         "set_logic", "inequalities", "functions",
         "trig", "vectors", "vector", "complex",
