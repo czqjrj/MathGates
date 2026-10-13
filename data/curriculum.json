@@ -460,6 +460,16 @@
         { "id": "solid_par_prop", "name": "10-1 直线与平面平行的性质", "technique": "线面平行 ⇒ 线线平行",    "archetype": "LAB", "lab": "solid_basic", "lab_ref": "solid_par_prop", "scene": "res://scenes/LabStage.tscn" },
         { "id": "solid_perp_prop","name": "11-1 直线与平面垂直的性质", "technique": "同垂直一平面 ⇒ 平行",    "archetype": "LAB", "lab": "solid_basic", "lab_ref": "solid_perp_prop", "scene": "res://scenes/LabStage.tscn" }
       ]
+    },
+    {
+      "id": "function_methods",
+      "kind": "method",
+      "title": "函数与分段",
+      "subtitle": "专题 03 · 动态分段值域",
+      "color": "#F2A93B",
+      "levels": [
+        { "id": "func_piecewise_range", "name": "分段函数的值域实验", "technique": "实验探究 · 建构知识 · 迁移应用", "archetype": "LAB", "lab": "function_lab", "lab_ref": "piecewise_range", "scene": "res://scenes/LabStage.tscn" }
+      ]
     }
   ]
 }

@@ -97,6 +97,12 @@ var _explain_lbl: Label
 var _next_btn: Button
 var _hp: HpBar
 
+## 多选题(题面 ans 为数组):选项可多选，需点「确认作答」结算。
+var _multi := false
+var _selected: Dictionary = {}
+var _confirm_row: CenterContainer
+var _confirm_btn: Button
+
 func _ready() -> void:
 	theme = UI.make_theme()
 	add_child(TechBg.new())
@@ -267,6 +273,18 @@ func _build_ui() -> void:
 	_opts_box.add_theme_constant_override("separation", 8)
 	vb.add_child(_opts_box)
 
+	# 多选确认(仅多选题显示)
+	_confirm_row = CenterContainer.new()
+	_confirm_row.visible = false
+	vb.add_child(_confirm_row)
+	_confirm_btn = Button.new()
+	_confirm_btn.text = "确认作答"
+	_confirm_btn.custom_minimum_size = Vector2(220, 48)
+	_confirm_btn.disabled = true
+	UI.primary_button(_confirm_btn)
+	_confirm_btn.pressed.connect(_on_confirm_multi)
+	_confirm_row.add_child(_confirm_btn)
+
 	# 解析
 	_explain_panel = UI.card(false, UI.COL_ACCENT, Color(1, 1, 1, 0.04), UI.COL_LINE, 12, 12)
 	_explain_panel.visible = false
@@ -333,6 +351,14 @@ func _load_question() -> void:
 	_explain_lbl.text = ""
 	_explain_panel.visible = false
 	_next_btn.visible = false
+
+	# 多选题:ans 为数组 -> 可多选 + 确认作答
+	_multi = q.get("ans") is Array
+	_selected.clear()
+	if _confirm_row != null:
+		_confirm_row.visible = false
+	if _confirm_btn != null:
+		_confirm_btn.disabled = true
 
 	var opts: Array = q.get("opts", [])
 	for k in range(opts.size()):
@@ -413,7 +439,7 @@ func _option_row(k: int, text: String) -> Control:
 	btn.add_theme_stylebox_override("pressed", UI.glass_box(Color(0, 0, 0, 0.28), 12, Color(UI.COL_ACCENT, 0.8), 1, 0))
 	btn.add_theme_stylebox_override("focus", UI.stylebox(Color(0, 0, 0, 0), 12, Color(UI.COL_ACCENT, 0.3), 1, 0))
 	btn.add_theme_stylebox_override("disabled", UI.stylebox(Color(0, 0, 0, 0), 12, Color(0, 0, 0, 0), 0, 0))
-	btn.pressed.connect(_on_answer.bind(k))
+	btn.pressed.connect(_on_option.bind(k))
 	box.add_child(btn)
 
 	_rows.append(box)
@@ -425,16 +451,42 @@ func _option_row(k: int, text: String) -> Control:
 	return box
 
 # ---------------------------------------------------------------- 作答
+func _on_option(k: int) -> void:
+	if _answered:
+		return
+	if _multi:
+		if _selected.has(k):
+			_selected.erase(k)
+		else:
+			_selected[k] = true
+		_refresh_multi_highlight()
+		if _confirm_btn != null:
+			_confirm_btn.disabled = _selected.is_empty()
+		if _confirm_row != null:
+			_confirm_row.visible = true
+	else:
+		_on_answer(k)
+
+## 多选:选中态高亮(青边)，未选恢复常态
+func _refresh_multi_highlight() -> void:
+	for i in range(_panels.size()):
+		if _selected.has(i):
+			_panels[i].add_theme_stylebox_override("panel",
+				UI.glass_box(Color(UI.COL_ACCENT, 0.16), 12, UI.COL_ACCENT, 1, 14))
+			_badges[i].add_theme_stylebox_override("panel",
+				UI.glass_box(Color(UI.COL_ACCENT, 0.30), 8, UI.COL_ACCENT, 1, 0))
+		else:
+			_panels[i].add_theme_stylebox_override("panel",
+				UI.glass_box(Color(1, 1, 1, 0.04), 12, Color(1, 1, 1, 0.13), 1, 14))
+			_badges[i].add_theme_stylebox_override("panel",
+				UI.glass_box(Color(1, 1, 1, 0.05), 8, Color(UI.COL_ACCENT, 0.5), 1, 0))
+
 func _on_answer(k: int) -> void:
 	if _answered:
 		return
 	_answered = true
 	var q: Dictionary = _questions[_idx]
 	var correct := int(q.get("ans", -1))
-	var qname := str(q.get("q", ""))
-	if qname.length() > 30:
-		qname = qname.substr(0, 30) + "…"
-	GameData.record_answer(GameData.current_level_id(), _q_index(), qname, k == correct, k, correct, _module_id())
 	for i in range(_btns.size()):
 		_btns[i].disabled = true
 		if i == correct:
@@ -450,19 +502,83 @@ func _on_answer(k: int) -> void:
 				UI.glass_box(Color(UI.COL_DANGER, 0.35), 8, UI.COL_DANGER, 1, 0))
 			_apply_content_state(i, Color("#ffe0e5"), false)
 		else:
-			_panels[i].add_theme_stylebox_override("panel",
-				UI.glass_box(Color(0, 0, 0, 0.18), 12, Color(1, 1, 1, 0.06), 1, 14))
-			_badges[i].add_theme_stylebox_override("panel",
-				UI.glass_box(Color(0, 0, 0, 0.2), 8, Color(1, 1, 1, 0.1), 1, 0))
-			if _contents[i] is Label:
-				(_contents[i] as Label).add_theme_color_override("font_color", Color(1, 1, 1, 0.3))
-			elif _contents[i] is TextureRect:
-				(_contents[i] as TextureRect).modulate = Color(1, 1, 1, 0.3)
+			_dim_option(i)
 
 	var pos: Vector2 = size * 0.5
 	if k >= 0 and k < _panels.size():
 		pos = Vfx.center_of(_panels[k], pos)
-	if k == correct:
+	if k != correct and k < _panels.size():
+		Vfx.wobble(_panels[k])
+	_after_resolve(k == correct, q, pos, _letter(correct), k, correct)
+
+## 多选结算:所选集合与答案集合完全一致才算对
+func _on_confirm_multi() -> void:
+	if _answered:
+		return
+	_answered = true
+	var q: Dictionary = _questions[_idx]
+	var ans_arr: Array = q.get("ans", [])
+	var correct_set: Dictionary = {}
+	var idxs: Array = []
+	for a in ans_arr:
+		var ai := int(a)
+		correct_set[ai] = true
+		idxs.append(ai)
+	idxs.sort()
+	var labels := ""
+	for ai in idxs:
+		labels += _letter(int(ai))
+	var ok := _selected.size() == correct_set.size()
+	if ok:
+		for kk in _selected.keys():
+			if not correct_set.has(kk):
+				ok = false
+				break
+	for i in range(_btns.size()):
+		_btns[i].disabled = true
+		var is_correct := correct_set.has(i)
+		var picked := _selected.has(i)
+		if is_correct:
+			_panels[i].add_theme_stylebox_override("panel",
+				UI.glass_box(Color(UI.COL_SUCCESS, 0.15), 12, UI.COL_SUCCESS, 1, 14))
+			_badges[i].add_theme_stylebox_override("panel",
+				UI.glass_box(Color(UI.COL_SUCCESS, 0.35), 8, UI.COL_SUCCESS, 1, 0))
+			_apply_content_state(i, Color("#d8ffec"), true)
+		elif picked:
+			_panels[i].add_theme_stylebox_override("panel",
+				UI.glass_box(Color(UI.COL_DANGER, 0.15), 12, UI.COL_DANGER, 1, 14))
+			_badges[i].add_theme_stylebox_override("panel",
+				UI.glass_box(Color(UI.COL_DANGER, 0.35), 8, UI.COL_DANGER, 1, 0))
+			_apply_content_state(i, Color("#ffe0e5"), false)
+		else:
+			_dim_option(i)
+	if _confirm_row != null:
+		_confirm_row.visible = false
+	var pos: Vector2 = size * 0.5
+	var chose0 := -1
+	for kk in _selected.keys():
+		chose0 = int(kk)
+		break
+	var ans0 := int(ans_arr[0]) if ans_arr.size() > 0 else -1
+	_after_resolve(ok, q, pos, labels, chose0, ans0)
+
+func _dim_option(i: int) -> void:
+	_panels[i].add_theme_stylebox_override("panel",
+		UI.glass_box(Color(0, 0, 0, 0.18), 12, Color(1, 1, 1, 0.06), 1, 14))
+	_badges[i].add_theme_stylebox_override("panel",
+		UI.glass_box(Color(0, 0, 0, 0.2), 8, Color(1, 1, 1, 0.1), 1, 0))
+	if _contents[i] is Label:
+		(_contents[i] as Label).add_theme_color_override("font_color", Color(1, 1, 1, 0.3))
+	elif _contents[i] is TextureRect:
+		(_contents[i] as TextureRect).modulate = Color(1, 1, 1, 0.3)
+
+## 结算公共尾部:记录、解析、血量、进度、下一题
+func _after_resolve(ok: bool, q: Dictionary, pos: Vector2, correct_label: String, chose0: int, ans0: int) -> void:
+	var qname := str(q.get("q", ""))
+	if qname.length() > 30:
+		qname = qname.substr(0, 30) + "…"
+	GameData.record_answer(GameData.current_level_id(), _q_index(), qname, ok, chose0, ans0, _module_id())
+	if ok:
 		_correct += 1
 		Sound.play("correct")
 		_explain_lbl.text = "推演正确！" + str(q.get("explain", ""))
@@ -473,11 +589,9 @@ func _on_answer(k: int) -> void:
 		Vfx.screen_flash(self, UI.COL_SUCCESS, 0.10, 0.38)
 	else:
 		Sound.play("wrong")
-		_explain_lbl.text = "推演偏差 · 正解为 %s。" % _letter(correct) + str(q.get("explain", ""))
+		_explain_lbl.text = "推演偏差 · 正解为 %s。" % correct_label + str(q.get("explain", ""))
 		_explain_panel.add_theme_stylebox_override("panel",
 			_bar_box(Color(UI.COL_DANGER, 0.10), UI.COL_DANGER))
-		if k < _panels.size():
-			Vfx.wobble(_panels[k])
 		Vfx.ring(self, pos, UI.COL_DANGER, 96.0, 0.55)
 		Vfx.float_text(self, pos, "偏差", UI.COL_DANGER, 24)
 		Vfx.screen_flash(self, UI.COL_DANGER, 0.14, 0.4)

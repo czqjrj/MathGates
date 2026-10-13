@@ -47,6 +47,10 @@ var _opt_panels: Array[PanelContainer] = []
 var _opt_badges: Array[PanelContainer] = []
 var _opt_contents: Array[Control] = []
 var _opt_marks: Array[Label] = []
+## 多选(题面 ans 为数组):可多选 + 确认作答(固定在选项与反馈之间，始终可见)。
+var _multi_sel: Dictionary = {}
+var _multi_row: CenterContainer
+var _multi_btn: Button
 
 # ---------------------------------------------------------------- 状态
 var _idx := 0
@@ -210,11 +214,20 @@ func _clear_opts() -> void:
 	_opt_badges.clear()
 	_opt_contents.clear()
 	_opt_marks.clear()
+	_multi_sel.clear()
+	if _multi_row != null:
+		_multi_row.visible = false
 
 func _build_choices(s: Dictionary) -> void:
 	var opts: Array = s.get("opts", [])
 	for k in opts.size():
 		_ans.add_child(_choice_row(k, str(opts[k])))
+	# 多选题:ans 为数组 -> 显示「确认作答」
+	_multi_sel.clear()
+	if _multi_row != null:
+		_multi_row.visible = s.get("ans") is Array
+	if _multi_btn != null:
+		_multi_btn.disabled = true
 
 func _choice_row(k: int, opt: String) -> Control:
 	var p := PanelContainer.new()
@@ -300,10 +313,71 @@ func _choice_row(k: int, opt: String) -> Control:
 func _on_choice(k: int) -> void:
 	if _solved or _done or _stages.is_empty():
 		return
+	if _current().get("ans") is Array:
+		_multi_toggle(k)
+		return
 	_last_picked = k
 	var correct := int(_current().get("ans", -1))
 	_reveal_choices(k, correct)
 	if k == correct:
+		_level_ok()
+	else:
+		_wrong(_wrong_text())
+
+## 多选:切换某选项的选中态(青边高亮)，由「确认作答」结算。
+func _multi_toggle(k: int) -> void:
+	if _multi_sel.has(k):
+		_multi_sel.erase(k)
+	else:
+		_multi_sel[k] = true
+	for i in _opt_panels.size():
+		if _multi_sel.has(i):
+			_opt_panels[i].add_theme_stylebox_override("panel", UI.glass_box(Color(UI.COL_ACCENT, 0.16), 12, UI.COL_ACCENT, 1, 12))
+			_opt_badges[i].add_theme_stylebox_override("panel", UI.glass_box(Color(UI.COL_ACCENT, 0.30), 8, UI.COL_ACCENT, 1, 0))
+		else:
+			_opt_panels[i].add_theme_stylebox_override("panel", UI.glass_box(Color(1, 1, 1, 0.04), 12, Color(1, 1, 1, 0.13), 1, 12))
+			_opt_badges[i].add_theme_stylebox_override("panel", UI.glass_box(Color(1, 1, 1, 0.05), 8, Color(UI.COL_ACCENT, 0.5), 1, 0))
+	if _multi_btn != null:
+		_multi_btn.disabled = _multi_sel.is_empty()
+
+## 多选结算:所选集合与答案集合完全一致才算对。
+func _multi_confirm() -> void:
+	if _solved or _done or _stages.is_empty():
+		return
+	_last_picked = -1
+	var s := _current()
+	var arr: Array = s.get("ans", [])
+	var correct_set: Dictionary = {}
+	for a in arr:
+		correct_set[int(a)] = true
+	var ok := _multi_sel.size() == correct_set.size()
+	if ok:
+		for kk in _multi_sel.keys():
+			if not correct_set.has(kk):
+				ok = false
+				break
+	for i in _opt_btns.size():
+		_opt_btns[i].disabled = true
+		var is_c := correct_set.has(i)
+		var picked := _multi_sel.has(i)
+		if is_c:
+			_opt_panels[i].add_theme_stylebox_override("panel", UI.glass_box(Color(UI.COL_SUCCESS, 0.15), 12, UI.COL_SUCCESS, 1, 12))
+			_opt_badges[i].add_theme_stylebox_override("panel", UI.glass_box(Color(UI.COL_SUCCESS, 0.35), 8, UI.COL_SUCCESS, 1, 0))
+			_opt_marks[i].text = "✓"
+			_opt_marks[i].add_theme_color_override("font_color", UI.COL_SUCCESS)
+			if _opt_contents[i] is Label:
+				(_opt_contents[i] as Label).add_theme_color_override("font_color", UI.COL_TEXT)
+		elif picked:
+			_opt_panels[i].add_theme_stylebox_override("panel", UI.glass_box(Color(UI.COL_DANGER, 0.15), 12, UI.COL_DANGER, 1, 12))
+			_opt_badges[i].add_theme_stylebox_override("panel", UI.glass_box(Color(UI.COL_DANGER, 0.35), 8, UI.COL_DANGER, 1, 0))
+			_opt_marks[i].text = "✗"
+			_opt_marks[i].add_theme_color_override("font_color", UI.COL_DANGER)
+		else:
+			_opt_panels[i].add_theme_stylebox_override("panel", UI.glass_box(Color(0, 0, 0, 0.18), 12, Color(1, 1, 1, 0.06), 1, 12))
+			_opt_marks[i].modulate.a = 0.0
+	if _multi_btn != null:
+		_multi_btn.disabled = true
+	if ok:
 		_level_ok()
 	else:
 		_wrong(_wrong_text())
@@ -381,7 +455,9 @@ func _wrong(msg: String) -> void:
 		_trap_missed = true
 	if not _q_recorded:
 		_q_recorded = true
-		GameData.record_answer(GameData.current_level_id(), _q_index(), str(_current().get("name", "")), false, _last_picked, int(_current().get("ans", -1)), _module())
+		var ansv: Variant = _current().get("ans", -1)
+		var ansi: int = -1 if ansv is Array else int(ansv)
+		GameData.record_answer(GameData.current_level_id(), _q_index(), str(_current().get("name", "")), false, _last_picked, ansi, _module())
 	Sound.play("wrong")
 	if _pet != null:
 		_pet.comfort()
@@ -713,6 +789,17 @@ func _build_ui() -> void:
 	_ans.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	ans_scroll.add_child(_ans)
 	UI.enable_touch_scroll(ans_scroll)
+	# 多选确认条：固定在“选项区”与“反馈区”之间，不随选项滚动，始终可见。
+	_multi_row = CenterContainer.new()
+	_multi_row.visible = false
+	_multi_btn = Button.new()
+	_multi_btn.text = "确认作答"
+	_multi_btn.custom_minimum_size = Vector2(180, 46)
+	_multi_btn.disabled = true
+	UI.primary_button(_multi_btn)
+	_multi_btn.pressed.connect(_multi_confirm)
+	_multi_row.add_child(_multi_btn)
+	pv.add_child(_multi_row)
 	if _use_rich_text():
 		var fr := RichTextLabel.new()
 		fr.bbcode_enabled = true
