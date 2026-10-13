@@ -23,6 +23,8 @@ var _coins: Label
 var _panel: PanelContainer
 var _title: Label
 var _q: RichTextLabel
+## 题干可朗读文案(公式转口播，供「朗读」按钮使用)。
+var _q_speak := ""
 var _ans: VBoxContainer
 var _feed: RichTextLabel
 var _next: Button
@@ -168,7 +170,8 @@ func _load_q() -> void:
 	_title.text = str(s.get("name", ""))
 	var qraw := str(s.get("q", ""))
 	_q.text = UI.inline_formulas(qraw)
-	UI.tts_say(UI.strip_formulas(qraw))
+	_q_speak = UI.strip_formulas(qraw)
+	UI.tts_say(_q_speak)
 	_feed.text = ""
 	_hint.disabled = false
 	_next.disabled = true
@@ -326,7 +329,8 @@ func _set_followup_question(s: Dictionary) -> void:
 		ask = "根据刚才的实验观察，选出正确结论："
 	_title.text = "追问"
 	_q.text = UI.inline_formulas(ask)
-	UI.tts_say(UI.strip_formulas(ask))
+	_q_speak = UI.strip_formulas(ask)
+	UI.tts_say(_q_speak)
 
 func _on_confirm() -> void:
 	if _solved or _done or _stages.is_empty():
@@ -682,7 +686,7 @@ func _build_ui() -> void:
 	_hint = UI.ghost_button("提示 (−评分)", _use_hint, 16)
 	bh.add_child(_hint)
 	bh.add_child(UI.ghost_button("问萌宠", _ask_pet, 16))
-	bh.add_child(UI.voice_button(func() -> void: UI.tts_say(_q.text), 16))
+	bh.add_child(UI.voice_button(func() -> void: UI.tts_say(_q_speak if _q_speak != "" else _q.text), 16))
 	bh.add_child(UI.ghost_button("重新实验", func() -> void: _reset(), 16))
 	_next = Button.new()
 	_next.text = "下一关 →"

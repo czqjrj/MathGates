@@ -60,7 +60,7 @@ func _load_q() -> void:
 	var s := _current()
 	_title.text = str(s.get("name", ""))
 	var qraw := str(s.get("q", ""))
-	_q.text = UI.inline_formulas(qraw)
+	_set_q(qraw)
 	UI.tts_say(UI.strip_formulas(qraw))
 	_feed_clear()
 	_hint.disabled = false

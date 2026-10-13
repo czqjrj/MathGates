@@ -40,6 +40,8 @@ var _dim: ColorRect
 var _nav_prev: Button
 var _nav_next: Button
 var _live: Label
+## 题干的可朗读文案(与显示文本对应，但公式转成口播而非图片标记)。
+var _q_speak := ""
 
 # ---------------------------------------------------------------- 选项
 var _opt_btns: Array[Button] = []
@@ -140,6 +142,11 @@ func _load() -> void: pass
 func _build_view() -> void: pass
 func _load_q() -> void: pass
 
+## 设置题干：显示走内联公式，另存一份可朗读文案供「朗读」按钮使用（公式念内容，不念“公式”）。
+func _set_q(raw: String) -> void:
+	_q.text = UI.inline_formulas(raw)
+	_q_speak = UI.strip_formulas(raw)
+
 ## 进入追问阶段：把标题/题干切换为追问问题(可选字段 ask，缺省给通用提示)。
 func _set_followup_question(s: Dictionary) -> void:
 	var ask := str(s.get("ask", ""))
@@ -147,11 +154,11 @@ func _set_followup_question(s: Dictionary) -> void:
 		ask = "根据刚才的观察，选出正确结论："
 	_title.text = "追问"
 	if _use_rich_text():
-		_q.text = UI.inline_formulas(ask)
-		UI.tts_say(UI.strip_formulas(ask))
+		_set_q(ask)
 	else:
 		_q.text = ask
-		UI.tts_say(ask)
+		_q_speak = ask
+	UI.tts_say(_q_speak)
 
 # ================================================================ 萌宠
 func _add_pet() -> void:
@@ -839,7 +846,7 @@ func _build_ui() -> void:
 	_hint = UI.ghost_button("提示 (−评分)", _use_hint, 16)
 	bh.add_child(_hint)
 	bh.add_child(UI.ghost_button("问萌宠", _ask_pet, 16))
-	bh.add_child(UI.voice_button(func() -> void: UI.tts_say(_q.text), 16))
+	bh.add_child(UI.voice_button(func() -> void: UI.tts_say(_q_speak if _q_speak != "" else _q.text), 16))
 	bh.add_child(UI.ghost_button("重新挑战", func() -> void: _reset(), 16))
 	_next = Button.new()
 	_next.text = "下一关 →"

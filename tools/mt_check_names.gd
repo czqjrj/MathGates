@@ -16,5 +16,6 @@ func _initialize() -> void:
 		print("%s  mt=%s png=%s  %s" % [name, is_mt, is_png, bb.substr(0, bb.find("]") + 1)])
 		if is_mt:
 			ok += 1
+		print("     语音：", InlineMath.strip_formulas("{f:%s}" % name))
 	print("mt-ok %d / %d" % [ok, InlineMath.FORMULA_LATEX.size()])
 	quit(0)

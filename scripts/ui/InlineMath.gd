@@ -117,14 +117,62 @@ static func inline_formulas(text: String, h: int = 26) -> String:
 	out += text.substr(last)
 	return out
 
-## 去掉 {f:名称} 标记(用于朗读)，替换为"公式"
+## 去掉 {f:名称} 标记(用于朗读)，替换为可朗读的口播文案(而非笼统的「公式」)。
 static func strip_formulas(text: String) -> String:
 	if text.find("{f:") < 0:
 		return text
 	if _inline_re == null:
 		_inline_re = RegEx.new()
 		_inline_re.compile("\\{f:([A-Za-z0-9_]+)\\}")
-	return _inline_re.sub(text, "公式", true)
+	var out := ""
+	var last := 0
+	for m in _inline_re.search_all(text):
+		out += text.substr(last, m.get_start() - last)
+		out += _formula_speech(m.get_string(1))
+		last = m.get_end()
+	out += text.substr(last)
+	return out
+
+## {f:名称} → 口播文案：优先 FORMULA_SPEECH；否则用 FORMULA_LATEX 通用转换；再否则「公式」。
+static func _formula_speech(name: String) -> String:
+	if FORMULA_SPEECH.has(name):
+		return str(FORMULA_SPEECH[name])
+	if FORMULA_LATEX.has(name):
+		return _latex_to_speech(str(FORMULA_LATEX[name]))
+	return "公式"
+
+## 通用 LaTeX → 可朗读中文(覆盖常见命令/幂/根号/分式/绝对值)。
+static func _latex_to_speech(tex: String) -> String:
+	var t := tex
+	var frac := RegEx.new()
+	frac.compile("\\\\frac\\{([^{}]+)\\}\\{([^{}]+)\\}")
+	for _i in 3:
+		t = frac.sub(t, "$2分之$1", true)
+	var sq := RegEx.new()
+	sq.compile("\\\\sqrt\\{([^{}]+)\\}")
+	t = sq.sub(t, "根号$1", true)
+	var pw := RegEx.new()
+	pw.compile("\\^\\{([^{}]+)\\}")
+	t = pw.sub(t, "的$1次方", true)
+	var absre := RegEx.new()
+	absre.compile("\\|([^|]+)\\|")
+	t = absre.sub(t, "$1的绝对值", true)
+	var cmd := {
+		"\\geq": "大于等于", "\\ge": "大于等于", "\\leq": "小于等于", "\\le": "小于等于",
+		"\\neq": "不等于", "\\ne": "不等于", "\\approx": "约等于",
+		"\\to": "到", "\\rightarrow": "到", "\\infty": "无穷",
+		"\\cup": "并", "\\cap": "交", "\\cdot": "点", "\\times": "乘以",
+		"\\div": "除以", "\\pm": "正负", "\\in": "属于", "\\sum": "求和",
+		"\\alpha": "阿尔法", "\\beta": "贝塔", "\\theta": "西塔", "\\pi": "派",
+		"\\Delta": "德尔塔", "\\lambda": "兰姆达",
+	}
+	for k in cmd:
+		t = t.replace(k, cmd[k])
+	t = t.replace("^2", "的平方").replace("^3", "的立方").replace("^", "的")
+	t = t.replace("=-", "等于负").replace("(-", "负括号").replace("(", "").replace(")", "")
+	t = t.replace("=", "等于").replace("+", "加").replace("-", "减")
+	t = t.replace("{", "").replace("}", "").replace("\\", "")
+	return t
 
 ## {f:名称} 直挂公式的 name→LaTeX 映射（迁移到运行时渲染）。
 ## 缺失的 name 仍回退 art/line/formulas/<name>.png。
@@ -137,6 +185,53 @@ const FORMULA_LATEX := {
 	"l6_sum_formula": "|PA|+|PB|\\ge|A'B|",
 	"l6_xaxis_sym": "P(x,y)\\to P'(x,-y)",
 	"l6_yx_sym": "P(a,b)\\to P'(b,a)",
+	# 分段函数值域实验
+	"pw_left": "f(x)=-(x-1)^2+1",
+	"pw_right": "f(x)=|x-3|-1",
+	"pw_g": "g(a)=-(a-1)^2+1",
+	"pw_xlt_a": "x<a",
+	"pw_xge_a": "x\\ge a",
+	"pw2_left": "f(x)=(1-2a)x+3a",
+	"pw2_right": "f(x)=x-\\frac{1}{x}",
+	"pw_xlt_1": "x<1",
+	"pw_xge_1": "x\\ge 1",
+	"opt_pw_a": "(-\\infty,\\,1-\\sqrt{2})\\cup(5,\\,+\\infty)",
+	"opt_pw_b": "[1-\\sqrt{2},\\,5)",
+	"opt_pw_c": "(-\\infty,\\,1-\\sqrt{2})\\cup[5,\\,+\\infty)",
+	"opt_pw_d": "[1-\\sqrt{2},\\,5]",
+	"av_0": "a=0",
+	"av_neg1": "a=-1",
+	"av_1": "a=1",
+	"av_half": "a=\\frac{1}{2}",
+}
+
+## {f:名称} 的口播文案（朗读用）。缺失时回退到 FORMULA_LATEX 的通用 LaTeX→口播转换。
+const FORMULA_SPEECH := {
+	"l6_diff_formula": "PA 的绝对值减 PB 的绝对值的差，取绝对值，小于等于 AB 的绝对值",
+	"l6_mid_tpl": "A 乘 二分之 x 加 x 撇，加 B 乘 二分之 y 加 y 撇，加 C 等于 0",
+	"l6_origin_sym": "点 P，x y，关于原点对称到 P 撇，负 x 负 y",
+	"l6_perp_tpl": "A 分之 x 撇减 x，等于 B 分之 y 撇减 y",
+	"l6_reflect_formula": "x 撇等于 x 减 A 方加 B 方 分之 2A 乘 括号 Ax 加 By 加 C；y 撇同理",
+	"l6_sum_formula": "PA 的绝对值加 PB 的绝对值，大于等于 A 撇 B 的绝对值",
+	"l6_xaxis_sym": "点 P，x y，关于 x 轴对称到 P 撇，x 负 y",
+	"l6_yx_sym": "点 P，a b，关于直线 y 等于 x 对称到 P 撇，b a",
+	"pw_left": "f x 等于 负的括号 x 减 1 的平方，再加 1",
+	"pw_right": "f x 等于 x 减 3 的绝对值，再减 1",
+	"pw_g": "g a 等于 负的括号 a 减 1 的平方，再加 1",
+	"pw_xlt_a": "x 小于 a",
+	"pw_xge_a": "x 大于等于 a",
+	"pw2_left": "f x 等于 括号 1 减 2a 乘 x，再加 3a",
+	"pw2_right": "f x 等于 x 减 x 分之一",
+	"pw_xlt_1": "x 小于 1",
+	"pw_xge_1": "x 大于等于 1",
+	"opt_pw_a": "小于 1 减根号 2 的全体，或大于 5 的全体",
+	"opt_pw_b": "大于等于 1 减根号 2，且小于 5",
+	"opt_pw_c": "小于 1 减根号 2 的全体，或大于等于 5",
+	"opt_pw_d": "大于等于 1 减根号 2，且小于等于 5",
+	"av_0": "a 等于 0",
+	"av_neg1": "a 等于 负 1",
+	"av_1": "a 等于 1",
+	"av_half": "a 等于 二分之一",
 }
 
 ## 生成单个公式的内联图片 bbcode（优先运行时渲染，缺失/失败回退预烘焙 PNG）
