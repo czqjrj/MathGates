@@ -126,8 +126,26 @@ static func strip_formulas(text: String) -> String:
 		_inline_re.compile("\\{f:([A-Za-z0-9_]+)\\}")
 	return _inline_re.sub(text, "公式", true)
 
-## 生成单个公式的内联图片 bbcode
+## {f:名称} 直挂公式的 name→LaTeX 映射（迁移到运行时渲染）。
+## 缺失的 name 仍回退 art/line/formulas/<name>.png。
+const FORMULA_LATEX := {
+	"l6_diff_formula": "||PA|-|PB|| \\le |AB|",
+	"l6_mid_tpl": "A\\cdot\\frac{x+x'}{2}+B\\cdot\\frac{y+y'}{2}+C=0",
+	"l6_origin_sym": "P(x,y)\\to P'(-x,-y)",
+	"l6_perp_tpl": "\\frac{x'-x}{A}=\\frac{y'-y}{B}",
+	"l6_reflect_formula": "x'=x-\\frac{2A(Ax+By+C)}{A^2+B^2},\\quad y'=y-\\frac{2B(Ax+By+C)}{A^2+B^2}",
+	"l6_sum_formula": "|PA|+|PB|\\ge|A'B|",
+	"l6_xaxis_sym": "P(x,y)\\to P'(x,-y)",
+	"l6_yx_sym": "P(a,b)\\to P'(b,a)",
+}
+
+## 生成单个公式的内联图片 bbcode（优先运行时渲染，缺失/失败回退预烘焙 PNG）
 static func formula_img(name: String, h: int = 26) -> String:
+	var latex := str(FORMULA_LATEX.get(name, ""))
+	if latex != "" and _mt_ready():
+		var bb := _mt_inline_bbcode(latex, h, MT_COLOR)
+		if bb != "":
+			return bb
 	var path := "res://art/line/formulas/%s.png" % name
 	var sz: Vector2i = _formula_size_cache.get(name, Vector2i.ZERO)
 	if sz == Vector2i.ZERO:

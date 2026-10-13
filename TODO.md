@@ -83,12 +83,12 @@
 - [x] `strip_formulas()`（朗读用）继续去标记；TTS 路径未改动。
 - [x] UI 回退策略：扩展不可用或无 `latex` 时退回旧 PNG，逐片段降级不会崩。
 - [x] 灰度迁移 `data/inline_math.json`：已加 `latex` 字段，全部内联片段走 LaTeX。
-- [ ] 仍走旧 PNG 的：`{f:名称}` 直挂图（`formula_img()` → `art/line/formulas/*.png`）暂无 `name→latex` 表，保持回退。
+- [x] `{f:名称}` 直挂图迁移：`InlineMath.FORMULA_LATEX` 补全 8 个 name→LaTeX（line 模块 l6_*），`formula_img()` 优先运行时渲染，缺失/失败回退旧 PNG。
 - 验收：题干/选项/标题中的内联公式全部走 LaTeX 渲染（实测 824/824 命中 `mt_cache`，0 回退到 PNG）。✅
 - 备注：主工程根目录 `math_tex.gdextension` + `gdextension/{bin,res}` 已就位；`project.godot` features 已由 4.7 改回 **4.4**。验证见 `tests/mathtex_test/`（扩展加载 + 8 公式渲染 + LaTeX→bbcode→ImageTexture 全链路）。
 - 关键修复：`_mt_ready()` 原用 `ResourceLoader.exists("res://gdextension/res")` 判断，而该路径是**目录**，恒为 false → `configure()` 从未调用 → `is_ready()` 为 false，全部退回 PNG。改为直接 `configure()`。
 
-### [~] 7. Android arm64 交叉编译 .so 并集成
+### [x] 7. Android arm64 交叉编译 .so 并集成
 - [x] 配置 NDK 交叉编译（arm64-v8a），产出 `gdextension/bin/libgodot_math_tex.android.release.arm64.so`（约 8.6MB，`build-android/` 为构造目录，不入库）。
       - ⚠️ Godot 安卓导出**强制要求原生库名以 `lib` 开头**，故 `CMakeLists.txt` 的 OUTPUT_NAME 改为 `libgodot_math_tex...`。
 - [x] 在 `.gdextension` 增加 Android aarch64 条目（debug/release，均带 `lib` 前缀）。
