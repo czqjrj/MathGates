@@ -63,5 +63,6 @@ build/           导出产物(APK,git 忽略)
 ## 改内容
 
 - 课程/章节/解锁关系:`data/curriculum.json`
+- 教材版本(苏教/人教A/人教B/北师大/湘教/沪教):分册、章节排序与章号:`data/textbooks.json`
 - 通用题库:`data/questions.json`;各模块关卡:`line_levels.json / conic_levels.json / ellipse_levels.json / space_levels.json / vector_levels.json`
 - 立体几何方法讲解:`data/solid_methods.json` + `scripts/modules/solid/topics/*.gd`

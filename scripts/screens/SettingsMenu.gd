@@ -52,6 +52,8 @@ func _build_body() -> void:
 
 	vb.add_child(UI.mono_label("可配置项", 13, Color(UI.COL_ACCENT, 0.8)))
 	vb.add_child(_divider())
+	vb.add_child(_textbook_row())
+	vb.add_child(_divider())
 	vb.add_child(_font_row())
 	vb.add_child(_divider())
 	vb.add_child(_volume_row())
@@ -69,6 +71,25 @@ func _build_body() -> void:
 	vb.add_child(pad)
 
 	UI.stagger_in(vb, 0.03, 0.24, 12)
+
+func _textbook_row() -> Control:
+	var items: Array = []
+	for v in GameData.textbook_list():
+		items.append([str(v.get("id", "")), str(v.get("title", ""))])
+	if items.is_empty():
+		items = [["sujiao", "苏教版"]]
+	var box := _opt_row("教材版本", items, Settings.textbook, func(v: String) -> void:
+		Settings.set_textbook(v)
+		Sound.play("select")
+		Toast.show_toast("已切换教材版本 · %s" % GameData.textbook_title(v))
+		get_tree().reload_current_scene()
+	)
+	var sub := "调整知识体系与方法推演的章节顺序、分册与章号，并重置自定义排序。"
+	var d := GameData.textbook_def(Settings.textbook)
+	if not d.is_empty() and str(d.get("subtitle", "")) != "":
+		sub = str(d["subtitle"]) + " · " + sub
+	box.add_child(UI.make_label(sub, 13, UI.COL_TEXT_DIM))
+	return box
 
 func _font_row() -> Control:
 	var box := VBoxContainer.new()
@@ -313,7 +334,7 @@ func _go_back() -> void:
 	Scene.goto(back)
 
 func _on_reset() -> void:
-	UI.confirm(self, "恢复默认设置", "字号、音效、语音、萌宠、全屏、动效将重置为默认值。", func() -> void:
+	UI.confirm(self, "恢复默认设置", "教材版本、字号、音效、语音、萌宠、全屏、动效将重置为默认值。", func() -> void:
 		Settings.reset_defaults()
 		Sound.play("select")
 		get_tree().reload_current_scene()

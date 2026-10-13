@@ -1,0 +1,250 @@
+{
+  "default": "sujiao",
+  "versions": [
+    {
+      "id": "sujiao",
+      "title": "苏教版",
+      "subtitle": "2019 · 江苏凤凰教育出版社",
+      "books": [
+        { "id": "bx1",  "title": "必修一",   "color": "#5B8FF9" },
+        { "id": "bx2",  "title": "必修二",   "color": "#6DC8EC" },
+        { "id": "xb1",  "title": "选必一",   "color": "#F2637B" },
+        { "id": "xb2",  "title": "选必二",   "color": "#FFC53D" },
+        { "id": "idea", "title": "数学思想", "color": "#9ED0A0" }
+      ],
+      "method_order": ["recurrence_methods", "solid", "conic"],
+      "knowledge_order": [
+        "set_logic", "inequalities", "functions", "trig",
+        "vectors", "sequences", "conics", "probability", "derivative",
+        "complex", "counting", "thinking", "statistics", "random_var", "corr_data",
+        "line_eq", "space", "vector", "ellipse", "circle_eq", "hyperbola", "parabola",
+        "solid_basic"
+      ],
+      "chapter_book": {
+        "set_logic": "bx1", "inequalities": "bx1", "functions": "bx1", "trig": "bx1",
+        "vectors": "bx2", "probability": "bx2", "complex": "bx2", "statistics": "bx2",
+        "vector": "bx2", "solid_basic": "bx2",
+        "sequences": "xb1", "conics": "xb1", "derivative": "xb1", "line_eq": "xb1",
+        "ellipse": "xb1", "circle_eq": "xb1", "hyperbola": "xb1", "parabola": "xb1",
+        "counting": "xb2", "random_var": "xb2", "corr_data": "xb2", "space": "xb2",
+        "thinking": "idea"
+      },
+      "chapter_no": {
+        "set_logic": "第1–2章", "inequalities": "第3章", "functions": "第5章", "trig": "第7章",
+        "vectors": "第9章", "probability": "第15章", "complex": "第12章", "statistics": "第14章",
+        "vector": "第9章", "solid_basic": "第13章",
+        "sequences": "第4章", "conics": "第3章", "derivative": "第5章", "line_eq": "第1章",
+        "ellipse": "第3章", "circle_eq": "第2章", "hyperbola": "第3章", "parabola": "第3章",
+        "counting": "第7章", "random_var": "第8章", "corr_data": "第9章", "space": "第6章",
+        "thinking": "综合"
+      }
+    },
+    {
+      "id": "renjiao",
+      "title": "人教A版",
+      "subtitle": "2019 · 人民教育出版社",
+      "books": [
+        { "id": "bx1",  "title": "必修一",   "color": "#5B8FF9" },
+        { "id": "bx2",  "title": "必修二",   "color": "#6DC8EC" },
+        { "id": "xb1",  "title": "选必一",   "color": "#F2637B" },
+        { "id": "xb2",  "title": "选必二",   "color": "#FFC53D" },
+        { "id": "xb3",  "title": "选必三",   "color": "#B37FEB" },
+        { "id": "idea", "title": "数学思想", "color": "#9ED0A0" }
+      ],
+      "method_order": ["recurrence_methods", "solid", "conic"],
+      "knowledge_order": [
+        "set_logic", "inequalities", "functions", "trig",
+        "vectors", "vector", "complex", "solid_basic", "statistics", "probability",
+        "space", "line_eq", "circle_eq", "conics", "ellipse", "hyperbola", "parabola",
+        "sequences", "derivative",
+        "counting", "random_var", "corr_data",
+        "thinking"
+      ],
+      "chapter_book": {
+        "set_logic": "bx1", "inequalities": "bx1", "functions": "bx1", "trig": "bx1",
+        "vectors": "bx2", "vector": "bx2", "complex": "bx2", "solid_basic": "bx2",
+        "statistics": "bx2", "probability": "bx2",
+        "space": "xb1", "line_eq": "xb1", "circle_eq": "xb1",
+        "conics": "xb1", "ellipse": "xb1", "hyperbola": "xb1", "parabola": "xb1",
+        "sequences": "xb2", "derivative": "xb2",
+        "counting": "xb3", "random_var": "xb3", "corr_data": "xb3",
+        "thinking": "idea"
+      },
+      "chapter_no": {
+        "set_logic": "第1章", "inequalities": "第2章", "functions": "第3–4章", "trig": "第5章",
+        "vectors": "第6章", "vector": "第6章", "complex": "第7章", "solid_basic": "第8章",
+        "statistics": "第9章", "probability": "第10章",
+        "space": "第1章", "line_eq": "第2章", "circle_eq": "第2章",
+        "conics": "第3章", "ellipse": "第3章", "hyperbola": "第3章", "parabola": "第3章",
+        "sequences": "第4章", "derivative": "第5章",
+        "counting": "第6章", "random_var": "第7章", "corr_data": "第8章",
+        "thinking": "综合"
+      }
+    },
+    {
+      "id": "bsd",
+      "title": "北师大版",
+      "subtitle": "2019 · 北京师范大学出版社",
+      "books": [
+        { "id": "bx1",  "title": "必修一",   "color": "#5B8FF9" },
+        { "id": "bx2",  "title": "必修二",   "color": "#6DC8EC" },
+        { "id": "xb1",  "title": "选必一",   "color": "#F2637B" },
+        { "id": "xb2",  "title": "选必二",   "color": "#FFC53D" },
+        { "id": "idea", "title": "数学思想", "color": "#9ED0A0" }
+      ],
+      "method_order": ["recurrence_methods", "solid", "conic"],
+      "knowledge_order": [
+        "set_logic", "inequalities", "functions", "statistics", "probability",
+        "trig", "vectors", "vector", "complex", "solid_basic",
+        "line_eq", "circle_eq", "conics", "ellipse", "hyperbola", "parabola",
+        "space", "counting", "random_var", "corr_data",
+        "sequences", "derivative",
+        "thinking"
+      ],
+      "chapter_book": {
+        "set_logic": "bx1", "inequalities": "bx1", "functions": "bx1",
+        "statistics": "bx1", "probability": "bx1",
+        "trig": "bx2", "vectors": "bx2", "vector": "bx2", "complex": "bx2", "solid_basic": "bx2",
+        "line_eq": "xb1", "circle_eq": "xb1",
+        "conics": "xb1", "ellipse": "xb1", "hyperbola": "xb1", "parabola": "xb1",
+        "space": "xb1", "counting": "xb1", "random_var": "xb1", "corr_data": "xb1",
+        "sequences": "xb2", "derivative": "xb2",
+        "thinking": "idea"
+      },
+      "chapter_no": {
+        "set_logic": "第1章", "inequalities": "第1章", "functions": "第2–5章",
+        "statistics": "第6章", "probability": "第7章",
+        "trig": "第1、4章", "vectors": "第2章", "vector": "第2章", "complex": "第5章", "solid_basic": "第6章",
+        "line_eq": "第1章", "circle_eq": "第1章",
+        "conics": "第2章", "ellipse": "第2章", "hyperbola": "第2章", "parabola": "第2章",
+        "space": "第3章",         "counting": "第5章", "random_var": "第6章", "corr_data": "第7章",
+        "sequences": "第1章", "derivative": "第2章",
+        "thinking": "综合"
+      }
+    },
+    {
+      "id": "renjiao_b",
+      "title": "人教B版",
+      "subtitle": "2019 · 人民教育出版社",
+      "books": [
+        { "id": "bx1",  "title": "必修一",   "color": "#5B8FF9" },
+        { "id": "bx2",  "title": "必修二",   "color": "#6DC8EC" },
+        { "id": "bx3",  "title": "必修三",   "color": "#B37FEB" },
+        { "id": "bx4",  "title": "必修四",   "color": "#FFA39E" },
+        { "id": "xb1",  "title": "选必一",   "color": "#F2637B" },
+        { "id": "xb2",  "title": "选必二",   "color": "#FFC53D" },
+        { "id": "xb3",  "title": "选必三",   "color": "#73D13D" },
+        { "id": "idea", "title": "数学思想", "color": "#9ED0A0" }
+      ],
+      "method_order": ["recurrence_methods", "solid", "conic"],
+      "knowledge_order": [
+        "set_logic", "inequalities", "functions",
+        "statistics", "probability", "vectors",
+        "trig", "vector",
+        "complex", "solid_basic",
+        "space", "line_eq", "circle_eq", "conics", "ellipse", "hyperbola", "parabola",
+        "counting", "random_var", "corr_data",
+        "sequences", "derivative",
+        "thinking"
+      ],
+      "chapter_book": {
+        "set_logic": "bx1", "inequalities": "bx1", "functions": "bx1",
+        "statistics": "bx2", "probability": "bx2", "vectors": "bx2",
+        "trig": "bx3", "vector": "bx3",
+        "complex": "bx4", "solid_basic": "bx4",
+        "space": "xb1", "line_eq": "xb1", "circle_eq": "xb1", "conics": "xb1",
+        "ellipse": "xb1", "hyperbola": "xb1", "parabola": "xb1",
+        "counting": "xb2", "random_var": "xb2", "corr_data": "xb2",
+        "sequences": "xb3", "derivative": "xb3",
+        "thinking": "idea"
+      },
+      "chapter_no": {
+        "set_logic": "第1章", "inequalities": "第2章", "functions": "第3–4章",
+        "statistics": "第5章", "probability": "第5章", "vectors": "第6章",
+        "trig": "第7–8章", "vector": "第8章",
+        "complex": "第10章", "solid_basic": "第11章",
+        "space": "第1章", "line_eq": "第2章", "circle_eq": "第2章", "conics": "第2章",
+        "ellipse": "第2章", "hyperbola": "第2章", "parabola": "第2章",
+        "counting": "第3章", "random_var": "第4章", "corr_data": "第4章",
+        "sequences": "第5章", "derivative": "第6章",
+        "thinking": "综合"
+      }
+    },
+    {
+      "id": "xiangjiao",
+      "title": "湘教版",
+      "subtitle": "2019 · 湖南教育出版社",
+      "books": [
+        { "id": "bx1",  "title": "必修一",   "color": "#5B8FF9" },
+        { "id": "bx2",  "title": "必修二",   "color": "#6DC8EC" },
+        { "id": "xb1",  "title": "选必一",   "color": "#F2637B" },
+        { "id": "xb2",  "title": "选必二",   "color": "#FFC53D" },
+        { "id": "idea", "title": "数学思想", "color": "#9ED0A0" }
+      ],
+      "method_order": ["recurrence_methods", "solid", "conic"],
+      "knowledge_order": [
+        "set_logic", "inequalities", "functions", "trig", "statistics",
+        "vectors", "vector", "complex", "solid_basic", "probability",
+        "sequences", "line_eq", "circle_eq", "conics", "ellipse", "hyperbola", "parabola", "counting",
+        "derivative", "space", "random_var", "corr_data",
+        "thinking"
+      ],
+      "chapter_book": {
+        "set_logic": "bx1", "inequalities": "bx1", "functions": "bx1", "trig": "bx1", "statistics": "bx1",
+        "vectors": "bx2", "vector": "bx2", "complex": "bx2", "solid_basic": "bx2", "probability": "bx2",
+        "sequences": "xb1", "line_eq": "xb1", "circle_eq": "xb1", "conics": "xb1",
+        "ellipse": "xb1", "hyperbola": "xb1", "parabola": "xb1", "counting": "xb1",
+        "derivative": "xb2", "space": "xb2", "random_var": "xb2", "corr_data": "xb2",
+        "thinking": "idea"
+      },
+      "chapter_no": {
+        "set_logic": "第1章", "inequalities": "第2章", "functions": "第3–4章", "trig": "第5章", "statistics": "第6章",
+        "vectors": "第1章", "vector": "第1章", "complex": "第3章", "solid_basic": "第4章", "probability": "第5章",
+        "sequences": "第1章", "line_eq": "第2章", "circle_eq": "第2章", "conics": "第3章",
+        "ellipse": "第3章", "hyperbola": "第3章", "parabola": "第3章", "counting": "第4章",
+        "derivative": "第1章", "space": "第2章", "random_var": "第3章", "corr_data": "第4章",
+        "thinking": "综合"
+      }
+    },
+    {
+      "id": "hujiao",
+      "title": "沪教版",
+      "subtitle": "2019/2020 · 上海教育出版社",
+      "books": [
+        { "id": "bx1",  "title": "必修一",   "color": "#5B8FF9" },
+        { "id": "bx2",  "title": "必修二",   "color": "#6DC8EC" },
+        { "id": "bx3",  "title": "必修三",   "color": "#B37FEB" },
+        { "id": "xb1",  "title": "选必一",   "color": "#F2637B" },
+        { "id": "xb2",  "title": "选必二",   "color": "#FFC53D" },
+        { "id": "idea", "title": "数学思想", "color": "#9ED0A0" }
+      ],
+      "method_order": ["recurrence_methods", "solid", "conic"],
+      "knowledge_order": [
+        "set_logic", "inequalities", "functions",
+        "trig", "vectors", "vector", "complex",
+        "solid_basic", "probability", "statistics",
+        "line_eq", "circle_eq", "conics", "ellipse", "hyperbola", "parabola", "space", "sequences", "derivative",
+        "counting", "random_var", "corr_data",
+        "thinking"
+      ],
+      "chapter_book": {
+        "set_logic": "bx1", "inequalities": "bx1", "functions": "bx1",
+        "trig": "bx2", "vectors": "bx2", "vector": "bx2", "complex": "bx2",
+        "solid_basic": "bx3", "probability": "bx3", "statistics": "bx3",
+        "line_eq": "xb1", "circle_eq": "xb1", "conics": "xb1", "ellipse": "xb1",
+        "hyperbola": "xb1", "parabola": "xb1", "space": "xb1", "sequences": "xb1", "derivative": "xb1",
+        "counting": "xb2", "random_var": "xb2", "corr_data": "xb2",
+        "thinking": "idea"
+      },
+      "chapter_no": {
+        "set_logic": "第1章", "inequalities": "第2章", "functions": "第3–5章",
+        "trig": "第6–7章", "vectors": "第8章", "vector": "第8章", "complex": "第9章",
+        "solid_basic": "第10–11章", "probability": "第12章", "statistics": "第13章",
+        "line_eq": "第1章", "circle_eq": "第2章", "conics": "第2章", "ellipse": "第2章",
+        "hyperbola": "第2章", "parabola": "第2章", "space": "第3章", "sequences": "第4章", "derivative": "第5章",
+        "counting": "第6章", "random_var": "第7章", "corr_data": "第8章",
+        "thinking": "综合"
+      }
+    }
+  ]
+}

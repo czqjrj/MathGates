@@ -22,6 +22,7 @@ const DEFAULTS := {
 	"voice_id": "",
 	"tts_engine": "online",
 	"tts_provider": "baidu",
+	"textbook": "sujiao",
 }
 
 var font_scale: float = 1.4
@@ -34,6 +35,8 @@ var voice_rate: float = 1.0
 var voice_id: String = ""
 var tts_engine: String = "online"
 var tts_provider: String = "baidu"
+## 高中数学教材版本(苏教/人教A/北师大…)：决定知识体系与方法推演的章节排序与分册归属。
+var textbook: String = "sujiao"
 
 func _ready() -> void:
 	load_settings()
@@ -55,6 +58,7 @@ func load_settings() -> void:
 	voice_id = str(data.get("voice_id", DEFAULTS["voice_id"]))
 	tts_engine = str(data.get("tts_engine", DEFAULTS["tts_engine"]))
 	tts_provider = str(data.get("tts_provider", DEFAULTS["tts_provider"]))
+	textbook = str(data.get("textbook", DEFAULTS["textbook"]))
 
 func save() -> void:
 	var f := FileAccess.open(PATH, FileAccess.WRITE)
@@ -144,8 +148,18 @@ func set_tts_provider(v: String) -> void:
 	save()
 	changed.emit()
 
+## 切换教材版本：同步给 GameData(重排章节、清空自定义排序)，再持久化。
+func set_textbook(v: String) -> void:
+	textbook = v
+	if GameData != null:
+		GameData.set_textbook(v)
+	save()
+	changed.emit()
+
 func reset_defaults() -> void:
 	for k in DEFAULTS.keys():
 		set(k, DEFAULTS[k])
+	if GameData != null:
+		GameData.set_textbook(str(DEFAULTS["textbook"]))
 	apply()
 	save()

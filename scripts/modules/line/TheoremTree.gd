@@ -32,59 +32,9 @@ const GROUP_TITLES := {
 	"corr_data": ["相关与回归探究"],
 }
 
-## 教材分册(顺序即顶部「分册标签」的显示顺序)。
-const BOOKS := [
-	{ "id": "bx1",  "title": "必修一" },
-	{ "id": "bx2",  "title": "必修二" },
-	{ "id": "xb1",  "title": "选必一" },
-	{ "id": "xb2",  "title": "选必二" },
-	{ "id": "idea", "title": "数学思想" },
-]
-
-## 各分册主题色。
-const BOOK_COLORS := {
-	"bx1": "#5B8FF9", "bx2": "#6DC8EC", "xb1": "#F2637B", "xb2": "#FFC53D", "idea": "#9ED0A0",
-}
-
-## 各知识章节所属分册。
-const CHAPTER_BOOK := {
-	"set_logic":    "bx1", "inequalities": "bx1", "functions": "bx1", "trig": "bx1",
-	"vectors":      "bx2", "probability":  "bx2", "complex":   "bx2", "statistics": "bx2",
-	"vector":       "bx2", "solid_basic":  "bx2",
-	"sequences":    "xb1", "conics":       "xb1", "derivative": "xb1", "line_eq": "xb1",
-	"ellipse":      "xb1", "circle_eq":    "xb1", "hyperbola":  "xb1", "parabola": "xb1",
-	"counting":     "xb2", "random_var":   "xb2", "corr_data":  "xb2", "space": "xb2",
-	"thinking":     "idea",
-}
-
-## 各章节在所属分册内的教材章号(卡片左上角显示,如 "第5章")。
-## 分册已区分必修/选修,故不再加前缀。苏教版(2019):必修一 1–8 章、必修二 9–15 章、
-## 选必一 1–5 章、选必二 6–9 章。数学思想综合无教材章号,显示「综合」。
-const CHAPTER_NO := {
-	"set_logic":    "第1–2章",
-	"inequalities": "第3章",
-	"functions":    "第5章",
-	"trig":         "第7章",
-	"vectors":      "第9章",
-	"probability":  "第15章",
-	"complex":      "第12章",
-	"statistics":   "第14章",
-	"vector":       "第9章",
-	"solid_basic":  "第13章",
-	"sequences":    "第4章",
-	"conics":       "第3章",
-	"derivative":   "第5章",
-	"line_eq":      "第1章",
-	"ellipse":      "第3章",
-	"circle_eq":    "第2章",
-	"hyperbola":    "第3章",
-	"parabola":     "第3章",
-	"counting":     "第7章",
-	"random_var":   "第8章",
-	"corr_data":    "第9章",
-	"space":        "第6章",
-	"thinking":     "综合",
-}
+## 教材分册、章节分册归属、教材章号均由「教材版本」决定(见 data/textbooks.json)，
+## 运行期通过 GameData.book_defs() / book_of_chapter() / chapter_no() 读取，
+## 切换版本后章节排序与分册自动跟随。数学思想综合无教材章号，显示「综合」。
 
 const NODE_W := 208.0
 const NODE_H := 182.0
@@ -703,7 +653,7 @@ func _find_module(id: String) -> int:
 ## 计算存在的分册列表(含知识章节的册),并把当前选中章节所属册设为当前册。
 func _compute_books() -> void:
 	_book_present = []
-	for b in BOOKS:
+	for b in GameData.book_defs():
 		if _count_in_book(str(b["id"])) > 0:
 			_book_present.append(str(b["id"]))
 	_book_idx = maxi(0, _book_present.find(_book_of(_module_idx)))
@@ -711,7 +661,7 @@ func _compute_books() -> void:
 func _count_in_book(bk: String) -> int:
 	var n := 0
 	for m in _mods:
-		if str(CHAPTER_BOOK.get(str(m["id"]), "")) == bk:
+		if GameData.book_of_chapter(str(m["id"])) == bk:
 			n += 1
 	return n
 
@@ -719,7 +669,7 @@ func _count_in_book(bk: String) -> int:
 func _book_of(mi: int) -> String:
 	if mi < 0 or mi >= _mods.size():
 		return ""
-	return str(CHAPTER_BOOK.get(str(_mods[mi]["id"]), ""))
+	return GameData.book_of_chapter(str(_mods[mi]["id"]))
 
 ## 当前分册下的模块全局索引(按 _mods 顺序)
 func _visible_mis() -> Array:
@@ -743,15 +693,17 @@ func _build_book_tabs() -> void:
 func _book_button(i: int) -> Control:
 	var bk := str(_book_present[i])
 	var title := bk
-	for b in BOOKS:
+	for b in GameData.book_defs():
 		if str(b["id"]) == bk:
 			title = str(b["title"])
 	var code := bk.to_upper()
 	match bk:
 		"bx1": code = "B1"
 		"bx2": code = "B2"
+		"bx3": code = "B3"
 		"xb1": code = "X1"
 		"xb2": code = "X2"
+		"xb3": code = "X3"
 		"idea": code = "Σ"
 	var tab := BookTab.new()
 	tab.owner_tree = self
@@ -770,7 +722,10 @@ func _book_button(i: int) -> Control:
 	return tab
 
 func _book_color(bk: String) -> Color:
-	return Color(str(BOOK_COLORS.get(bk, "#5ee6ff")))
+	for b in GameData.book_defs():
+		if str(b["id"]) == bk:
+			return Color(str(b.get("color", "#5ee6ff")))
+	return Color("#5ee6ff")
 
 ## 某分册下所有章节的 [累计星数, 累计满星]
 func _book_stars(bk: String) -> Array:
@@ -916,7 +871,7 @@ func _tab_card(mi: int) -> Control:
 	card.owner_tree = self
 	card.mi = mi
 	card.title = str(mod["title"])
-	card.chapter_label = str(CHAPTER_NO.get(str(mod["id"]), ""))
+	card.chapter_label = GameData.chapter_no(str(mod["id"]))
 	card.color = Color(str(mod["color"]))
 	card.active = mi == _module_idx
 	card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND

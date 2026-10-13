@@ -10,6 +10,8 @@ signal pet_evolved(stage: int, domain: Dictionary)
 signal wrong_cleared(level_id: String, qi: int)
 
 const CURRICULUM_PATH := "res://data/curriculum.json"
+const TEXTBOOK_PATH := "res://data/textbooks.json"
+const SETTINGS_PATH := "user://settings.json"   # 与 Settings 共用，仅读取教材版本
 const QUESTIONS_PATH := "res://data/questions.json"
 const SAVE_PATH := "user://save.json"
 const USERS_PATH := "user://users.json"
@@ -108,6 +110,10 @@ const LORE := [
 ]
 
 var chapters: Array = []
+var textbook: String = "sujiao"          # 当前教材版本(苏教/人教A/北师大…)
+var _chapters_raw: Array = []            # curriculum.json 原始章节(未按版本重排)
+var _textbooks: Array = []               # 教材版本定义(见 data/textbooks.json)
+var _textbook_default: String = "sujiao"
 var stars: Dictionary = {}      # level_id -> int(0..3)
 var player_exp: int = 0
 var coins: int = 0
@@ -158,9 +164,98 @@ var daily_peak_streak: int = 0         # 今日最高连击
 var daily_claimed: Dictionary = {}     # 已领取的每日任务 id
 
 func _ready() -> void:
+	_load_textbooks()
 	_load_curriculum()
 	_load_questions()
 	_load_users()
+
+# ---------------------------------------------------------------- 教材版本
+func _load_textbooks() -> void:
+	if not FileAccess.file_exists(TEXTBOOK_PATH):
+		return
+	var data = JSON.parse_string(FileAccess.get_file_as_string(TEXTBOOK_PATH))
+	if typeof(data) != TYPE_DICTIONARY:
+		return
+	var vs = data.get("versions", [])
+	if typeof(vs) == TYPE_ARRAY:
+		_textbooks = vs
+	_textbook_default = str(data.get("default", "sujiao"))
+
+## 可选教材版本列表：[{id,title,subtitle,...}]
+func textbook_list() -> Array:
+	return _textbooks
+
+## 某版本定义；未知返回 {}
+func textbook_def(id: String) -> Dictionary:
+	for v in _textbooks:
+		if str(v.get("id", "")) == id:
+			return v
+	return {}
+
+## 版本显示名(用于 UI)
+func textbook_title(id: String) -> String:
+	var d := textbook_def(id)
+	return str(d.get("title", id)) if not d.is_empty() else id
+
+## 当前版本的分册列表(有序)；[{id,title,color}]
+func book_defs() -> Array:
+	var arr = textbook_def(textbook).get("books", [])
+	return arr if typeof(arr) == TYPE_ARRAY else []
+
+## 章节所属分册 id；未定义返回 ""
+func book_of_chapter(chapter_id: String) -> String:
+	var m = textbook_def(textbook).get("chapter_book", {})
+	return str(m.get(chapter_id, "")) if typeof(m) == TYPE_DICTIONARY else ""
+
+## 章节的教材章号文案(如 "第5章")；未定义返回 ""
+func chapter_no(chapter_id: String) -> String:
+	var m = textbook_def(textbook).get("chapter_no", {})
+	return str(m.get(chapter_id, "")) if typeof(m) == TYPE_DICTIONARY else ""
+
+## 切换教材版本：按新版本重排章节，清空用户自定义排序并落盘/广播。
+func set_textbook(id: String) -> void:
+	textbook = id
+	_apply_curriculum_order()
+	chapter_order = []
+	_save()
+	progress_changed.emit()
+
+## 从 settings.json 读取教材版本(避免依赖 Settings 自加载顺序)
+func _read_textbook_setting() -> String:
+	if not FileAccess.file_exists(SETTINGS_PATH):
+		return _textbook_default
+	var data = JSON.parse_string(FileAccess.get_file_as_string(SETTINGS_PATH))
+	if typeof(data) == TYPE_DICTIONARY:
+		return str(data.get("textbook", _textbook_default))
+	return _textbook_default
+
+## 按当前版本重排 chapters：方法推演在前、知识体系在后，各自遵循版本顺序；
+## 未在版本配置中列出的章节按原始顺序补齐(新增章节不会丢失)。
+func _apply_curriculum_order() -> void:
+	var cfg := textbook_def(textbook)
+	if cfg.is_empty():
+		chapters = _chapters_raw.duplicate()
+		return
+	var by_id: Dictionary = {}
+	for ch in _chapters_raw:
+		by_id[str(ch.get("id", ""))] = ch
+	var out: Array = []
+	var used: Dictionary = {}
+	for key in ["method_order", "knowledge_order"]:
+		var ids = cfg.get(key, [])
+		if typeof(ids) != TYPE_ARRAY:
+			continue
+		for id in ids:
+			var sid := str(id)
+			if by_id.has(sid) and not used.has(sid):
+				out.append(by_id[sid])
+				used[sid] = true
+	for ch in _chapters_raw:
+		var sid := str(ch.get("id", ""))
+		if not used.has(sid):
+			out.append(ch)
+			used[sid] = true
+	chapters = out
 
 # ---------------------------------------------------------------- 课程
 func _load_curriculum() -> void:
@@ -172,7 +267,9 @@ func _load_curriculum() -> void:
 	if typeof(data) != TYPE_DICTIONARY or not data.has("chapters"):
 		push_error("curriculum.json 格式错误")
 		return
-	chapters = data["chapters"]
+	_chapters_raw = data["chapters"]
+	textbook = _read_textbook_setting()
+	_apply_curriculum_order()
 	for ch in chapters:
 		for lv in ch.get("levels", []):
 			if not stars.has(lv["id"]):

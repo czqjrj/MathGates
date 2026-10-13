@@ -28,6 +28,7 @@ func _run() -> void:
 	_test_accuracy()
 	_test_economy()
 	_test_daily()
+	_test_textbook()
 	print("TESTS: %d passed, %d failed" % [_pass, _fail])
 	get_tree().quit(1 if _fail > 0 else 0)
 
@@ -269,3 +270,54 @@ func _test_daily() -> void:
 	GameData.daily_peak_streak = s_peak
 	GameData.daily_claimed = s_claimed
 	GameData.current_user = saved_user
+
+## 校验教材版本切换：章节重排、分册归属与章号齐备，方法章节在前。
+func _test_textbook() -> void:
+	var saved := GameData.textbook
+	_ok(GameData.textbook_list().size() >= 3, "textbook_list has >=3 versions")
+	for v in GameData.textbook_list():
+		var vid := str(v["id"])
+		GameData.set_textbook(vid)
+		var seen := {}
+		var k_ids: Array = []
+		var m_ids: Array = []
+		for ch in GameData.chapters:
+			var cid := str(ch["id"])
+			_ok(not seen.has(cid), "%s no dup %s" % [vid, cid])
+			seen[cid] = true
+			if str(ch.get("kind", "knowledge")) == "method":
+				m_ids.append(cid)
+			else:
+				k_ids.append(cid)
+				_ok(GameData.book_of_chapter(cid) != "", "%s book of %s" % [vid, cid])
+				_ok(GameData.chapter_no(cid) != "", "%s chapter_no of %s" % [vid, cid])
+		_eq(k_ids.size(), 23, "%s knowledge count" % vid)
+		_eq(m_ids.size(), 3, "%s method count" % vid)
+		var k_want: Array = []
+		for id in v.get("knowledge_order", []):
+			if seen.has(str(id)):
+				k_want.append(str(id))
+		_eq(str(k_ids), str(k_want), "%s knowledge order" % vid)
+		var m_want: Array = []
+		for id in v.get("method_order", []):
+			if seen.has(str(id)):
+				m_want.append(str(id))
+		_eq(str(m_ids), str(m_want), "%s method order" % vid)
+		# 方法章节整体排在知识章节之前(方法推演地图与知识体系地图各自连续)
+		if not m_ids.is_empty() and not k_ids.is_empty():
+			var first_k: int = k_ids.size()
+			var last_m := -1
+			for i in GameData.chapters.size():
+				var cid2 := str(GameData.chapters[i]["id"])
+				if cid2 in m_ids:
+					last_m = i
+			for i in GameData.chapters.size():
+				if str(GameData.chapters[i]["id"]) == str(k_ids[0]):
+					first_k = i
+					break
+			_ok(last_m < first_k, "%s method chapters before knowledge" % vid)
+		_ok(GameData.book_defs().size() > 0, "%s has books" % vid)
+	# 未知版本回退为原始顺序且不报错
+	GameData.set_textbook("__nope__")
+	_eq(GameData.chapters.size(), GameData._chapters_raw.size(), "unknown version keeps raw chapters")
+	GameData.set_textbook(saved)
