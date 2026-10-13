@@ -40,6 +40,12 @@ var drag_tol := 0.3
 var drag_constraint: Dictionary = {}
 var drag_point_label := "P"
 
+## 分界点交互(分段函数实验室)：拖动竖线 x=name，复用滑块通道让 _num(name) 生效。
+var _break: Dictionary = {}
+## 值域色带：{lo,hi} 用 INF 哨兵表示向 ±∞ 延伸。
+const _INF := 1e18
+const _BIG := 1e17
+
 var _t := 0.0
 var _anim_t := 0.0
 
@@ -101,6 +107,40 @@ func begin_drag(cfg: Dictionary) -> void:
 	drag_pos = _apply_constraint(drag_pos)
 	queue_redraw()
 
+func begin_break(cfg: Dictionary) -> void:
+	_break = cfg
+	mode = "break"
+	var lo := float(cfg.get("min", domain.x))
+	var hi := float(cfg.get("max", domain.y))
+	var val := clampf(float(cfg.get("value", (lo + hi) * 0.5)), lo, hi)
+	_sliders.clear()
+	_sliders.append({
+		"name": str(cfg.get("name", "a")), "min": lo, "max": hi,
+		"value": val, "step": float(cfg.get("step", 0.0)),
+		"label": str(cfg.get("label", cfg.get("name", "a"))),
+	})
+	queue_redraw()
+
+func is_break_correct() -> bool:
+	if _sliders.is_empty():
+		return true
+	var v := float(_sliders[0]["value"])
+	if _break.has("lo") or _break.has("hi"):
+		return v >= float(_break.get("lo", -1e9)) - 1e-6 and v <= float(_break.get("hi", 1e9)) + 1e-6
+	return absf(v - float(_break.get("answer", v))) <= float(_break.get("tol", 0.1))
+
+func _set_break(x: float) -> void:
+	if _sliders.is_empty():
+		return
+	var s: Dictionary = _sliders[0]
+	var v := clampf(x, float(s["min"]), float(s["max"]))
+	var step := float(s["step"])
+	if step > 0.0:
+		v = roundf(v / step) * step
+	s["value"] = v
+	slider_changed.emit(str(s["name"]), v)
+	queue_redraw()
+
 func slider_value(name: String) -> float:
 	for s in _sliders:
 		if str(s["name"]) == name:
@@ -125,6 +165,109 @@ func is_sliders_correct() -> bool:
 			if absf(float(s["value"]) - float(_answers[nm])) > float(_tol.get(nm, 0.06)):
 				return false
 	return checked
+
+# ---- 值域分析（分段函数实验：各分支值域 + 是否拼接为 R）
+## 采样某条曲线在其定义域上的 [min,max]。
+func _curve_range(cu: Dictionary) -> Array:
+	var kind := str(cu.get("fn", "sin"))
+	var a := _num(cu.get("a", 1.0), 1.0)
+	var b := _num(cu.get("b", 1.0), 1.0)
+	var c := _num(cu.get("c", 0.0), 0.0)
+	var d := _num(cu.get("d", 0.0), 0.0)
+	var mir := bool(cu.get("mirror", false))
+	var x0 := _num(cu.get("from", domain.x), domain.x)
+	var x1 := _num(cu.get("to", domain.y), domain.y)
+	var lo := INF
+	var hi := -INF
+	var steps := 480
+	for i in steps + 1:
+		var x := lerpf(x0, x1, float(i) / float(steps))
+		var y := _f_y(kind, x, a, b, c, d)
+		if mir:
+			y = -y
+		if not is_finite(y):
+			continue
+		lo = minf(lo, y)
+		hi = maxf(hi, y)
+	if lo > hi:
+		lo = 0.0
+		hi = 0.0
+	return [lo, hi]
+
+## 各曲线值域区间 [{lo,hi,color,label}]；cover="down"/"up"/"both" 表示向 ±∞ 延伸。
+func _range_intervals() -> Array:
+	var out: Array = []
+	for cu in _as_array(_scene.get("curves", [])):
+		var r := _curve_range(cu)
+		var cover := str(cu.get("cover", ""))
+		var lo := float(r[0])
+		var hi := float(r[1])
+		if cover == "down":
+			lo = -_INF
+		elif cover == "up":
+			hi = _INF
+		elif cover == "both":
+			lo = -_INF
+			hi = _INF
+		out.append({
+			"lo": lo, "hi": hi,
+			"color": _c(cu.get("color"), COL_ACCENT),
+			"label": str(cu.get("range_label", cu.get("label", ""))),
+		})
+	return out
+
+## 合并后的覆盖情况：{covered: bool, gap_lo, gap_hi}
+func _coverage() -> Dictionary:
+	var ivs := _range_intervals()
+	ivs.sort_custom(func(x, y): return float(x["lo"]) < float(y["lo"]))
+	var merged: Array = []
+	for iv in ivs:
+		if merged.is_empty() or float(iv["lo"]) > float((merged[-1] as Dictionary)["hi"]) + 1e-6:
+			merged.append({"lo": float(iv["lo"]), "hi": float(iv["hi"])})
+		else:
+			(merged[-1] as Dictionary)["hi"] = maxf(float((merged[-1] as Dictionary)["hi"]), float(iv["hi"]))
+	var covered := merged.size() == 1 and float(merged[0]["lo"]) <= -_BIG and float(merged[0]["hi"]) >= _BIG
+	var g_lo := 0.0
+	var g_hi := 0.0
+	if not covered and merged.size() >= 2:
+		g_lo = float(merged[0]["hi"])
+		g_hi = float(merged[1]["lo"])
+	return {"covered": covered, "gap_lo": g_lo, "gap_hi": g_hi}
+
+## 供关卡面板显示的值域状态文本。
+func coverage_status() -> String:
+	if not bool(_scene.get("range_bands", false)):
+		return ""
+	var cv := _coverage()
+	if bool(cv["covered"]):
+		return "两段值域拼接 = R ✓"
+	return "两段值域之间有缝隙：未覆盖 (%s, %s)" % [_fmt(float(cv["gap_lo"])), _fmt(float(cv["gap_hi"]))]
+
+func _draw_range_bands() -> void:
+	var ivs := _range_intervals()
+	if ivs.is_empty():
+		return
+	var x := size.x - 15.0
+	var w := 10.0
+	var y_top := pad
+	var y_bot := size.y - pad
+	for iv in ivs:
+		var lo := maxf(float(iv["lo"]), range_y.x)
+		var hi := minf(float(iv["hi"]), range_y.y)
+		var sy_hi := _to_screen(Vector2(0.0, hi)).y
+		var sy_lo := _to_screen(Vector2(0.0, lo)).y
+		var top := clampf(sy_hi, y_top, y_bot)
+		var bot := clampf(sy_lo, y_top, y_bot)
+		var col: Color = iv["color"]
+		draw_rect(Rect2(x, top, w, maxf(bot - top, 2.0)), Color(col, 0.30))
+		draw_rect(Rect2(x, top, w, maxf(bot - top, 2.0)), Color(col, 0.9), false, 1.4)
+		var lbl := str(iv["label"])
+		if lbl != "":
+			_draw_label(Vector2(x - 6.0 - UI.font().get_string_size(lbl, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(12)).x, clampf((top + bot) * 0.5, y_top + 8.0, y_bot - 4.0)), lbl, col, 12)
+	var cv := _coverage()
+	var txt := "值域 = R ✓" if bool(cv["covered"]) else "值域 ≠ R（有缝隙）"
+	var col2 := COL_SUCCESS if bool(cv["covered"]) else COL_GOLD
+	_draw_label(Vector2(12.0, 20.0), txt, col2, 15)
 
 # ---------------------------------------------------------------- 坐标换算
 func _scale() -> float:
@@ -210,10 +353,14 @@ func _draw() -> void:
 	_draw_scene()
 	if not _scene.is_empty() and _scene.has("unit_circle"):
 		_draw_unit_circle()
+	if bool(_scene.get("range_bands", false)):
+		_draw_range_bands()
 	if mode == "sliders":
 		_draw_sliders()
 	elif mode == "drag":
 		_draw_drag()
+	elif mode == "break":
+		_draw_break()
 
 func _draw_grid() -> void:
 	var o := _origin()
@@ -323,6 +470,7 @@ func _f_y(kind: String, x: float, a: float, b: float, c: float, d: float) -> flo
 		"recip": return a / maxf(absf(x), 1e-3) * signf(x) + b if absf(x) > 1e-4 else c
 		"quad": return a * x * x + b * x + c
 		"linear": return a * x + b
+		"linrecip": return a * x - b / maxf(absf(x), 1e-3)
 		"abs": return a * absf(x - b) + c
 		"const": return a
 		"hyp": return b * sqrt(x * x / (a * a) - 1.0) + d
@@ -601,6 +749,19 @@ func _draw_drag() -> void:
 	draw_circle(sp, 8.0 * pulse, COL_GOLD)
 	_draw_label(sp + Vector2(14.0, -12.0), "%s(%s, %s)" % [drag_point_label, _fmt(drag_pos.x), _fmt(drag_pos.y)], COL_TEXT, 15)
 
+## 分界点把手(绘制在 x 轴上，可直接拖动)。
+func _draw_break() -> void:
+	if _sliders.is_empty():
+		return
+	var v := float(_sliders[0]["value"])
+	var base := _to_screen(Vector2(v, 0.0))
+	draw_line(Vector2(base.x, 0.0), Vector2(base.x, size.y), Color(COL_GOLD, 0.10), 8.0)
+	var pulse := 1.0 + 0.12 * sin(_t * 3.0)
+	draw_circle(base, 13.0 * pulse, Color(COL_GOLD, 0.18))
+	draw_circle(base, 9.0, Color(0.02, 0.04, 0.08, 0.92))
+	draw_circle(base, 6.0, COL_GOLD)
+	_draw_label(base + Vector2(12.0, -14.0), "%s = %s" % [str(_sliders[0]["label"]), _fmt(v)], COL_TEXT, 15)
+
 # ---------------------------------------------------------------- 交互
 func _apply_constraint(p: Vector2) -> Vector2:
 	var q := Vector2(clampf(p.x, domain.x, domain.y), clampf(p.y, range_y.x, range_y.y))
@@ -627,6 +788,10 @@ func _gui_input(event: InputEvent) -> void:
 				if event.position.distance_to(_to_screen(drag_pos)) < 40.0:
 					_point_drag = true
 					accept_event()
+			elif mode == "break":
+				_point_drag = true
+				_set_break(_to_math(event.position).x)
+				accept_event()
 		else:
 			if _slider_drag >= 0 or _point_drag:
 				accept_event()
@@ -639,6 +804,9 @@ func _gui_input(event: InputEvent) -> void:
 		elif _point_drag and mode == "drag":
 			drag_pos = _apply_constraint(_to_math(event.position))
 			point_moved.emit(drag_pos)
+			accept_event()
+		elif _point_drag and mode == "break":
+			_set_break(_to_math(event.position).x)
 			accept_event()
 
 func _set_slider_from_x(i: int, x: float, x0: float, x1: float) -> void:

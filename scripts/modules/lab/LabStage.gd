@@ -63,7 +63,10 @@ func _build_view() -> void:
 func _refresh_live() -> void:
 	if _live == null:
 		return
-	if _plane.mode == "sliders":
+	if _plane.mode == "break":
+		var st := _plane.coverage_status()
+		_live.text = _plane.slider_summary() + ("    " + st if st != "" else "")
+	elif _plane.mode == "sliders":
 		_live.text = _plane.slider_summary()
 	elif _plane.mode == "drag":
 		_live.text = "P(%s, %s)" % [_fmt(_plane.drag_pos.x), _fmt(_plane.drag_pos.y)]
@@ -80,7 +83,7 @@ func _load_q() -> void:
 	var s := _current()
 	_title.text = str(s.get("name", ""))
 	var qraw := str(s.get("q", ""))
-	_q.text = UI.inline_formulas(qraw)
+	_set_q(qraw)
 	UI.tts_say(UI.strip_formulas(qraw))
 	_feed_clear()
 	_hint.disabled = false
@@ -94,7 +97,7 @@ func _load_q() -> void:
 	var sc: Dictionary = s.get("scene", {})
 	_plane.set_scene(sc)
 	var t := str(s.get("type", "choice"))
-	var has_interactive := sc.has("sliders") or sc.has("drag")
+	var has_interactive := sc.has("sliders") or sc.has("drag") or sc.has("break")
 	if t == "explore" and has_interactive:
 		_begin_interactive(sc)
 		_build_explore(s)
@@ -114,7 +117,9 @@ func _load_q() -> void:
 	_update_hud()
 
 func _begin_interactive(sc: Dictionary) -> void:
-	if sc.has("sliders"):
+	if sc.has("break"):
+		_plane.begin_break(sc["break"])
+	elif sc.has("sliders"):
 		_plane.begin_sliders(sc["sliders"], sc.get("answers", {}), sc.get("tol", {}))
 	elif sc.has("drag"):
 		_plane.begin_drag(sc["drag"])
@@ -126,6 +131,18 @@ func _build_explore(s: Dictionary) -> void:
 	_live = UI.mono_label("", 16, Color("#ffd479"))
 	box.add_child(_live)
 	_refresh_live()
+	var goal := str(s.get("goal", ""))
+	if goal != "":
+		var gl := UI.make_label("目标：" + goal, 15, Color(UI.COL_ACCENT, 0.95))
+		gl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		box.add_child(gl)
+	var steps: Array = s.get("steps", [])
+	if not steps.is_empty():
+		box.add_child(UI.mono_label("实验步骤", 13, Color(UI.COL_ACCENT, 0.9)))
+		for i in steps.size():
+			var step := UI.make_label(str(steps[i]), 14, Color(UI.COL_TEXT_DIM, 0.95))
+			step.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			box.add_child(step)
 	var tip_text := str(s.get("tip", "拖动下方滑块，观察图形随参数如何变化，再点击确认。"))
 	var tip := UI.make_label(tip_text, 15, UI.COL_TEXT_DIM)
 	tip.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -157,6 +174,8 @@ func _build_interact(s: Dictionary) -> void:
 func _interactive_ok() -> bool:
 	if _plane.mode == "drag":
 		return _plane.is_point_correct()
+	if _plane.mode == "break":
+		return _plane.is_break_correct()
 	if _plane.mode == "sliders":
 		return _plane.is_sliders_correct()
 	return true
