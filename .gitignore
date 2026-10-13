@@ -16,3 +16,34 @@ android/
 # 系统
 .DS_Store
 Thumbs.db
+
+# C++/GDExtension 构建依赖与产物（不入库）
+third_party/
+godot-cpp/
+gdextension/bin/
+.sconsign.dblite
+*.o
+*.obj
+*.dll
+*.so
+*.dylib
+*.a
+compile_commands.json
+CMakeCache.txt
+CMakeFiles/
+
+gdextension/build/
+gdextension/build-android/
+
+# mathtex_test 验证子工程的构建产物与重复运行库（不入库；res/bin 由主工程 gdextension/ 提供）
+tests/mathtex_test/.godot/
+tests/mathtex_test/gdextension/
+tests/mathtex_test/*.png
+tests/mathtex_test/*.png.import
+
+# MicroTeX 本地构建目录与日志（不入库）
+build_microtex/
+*.log
+
+# MicroTeX 资源目录整体 .gdignore（编辑器不导入），排除历史遗留的 .import
+gdextension/res/**/*.import

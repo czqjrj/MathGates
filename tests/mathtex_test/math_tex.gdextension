@@ -1,0 +1,10 @@
+[configuration]
+
+entry_symbol = "gdextension_initialize"
+compatibility_minimum = "4.4"
+android_min_api = 21
+
+[libraries]
+
+windows.x86_64.debug = "res://gdextension/bin/godot_math_tex.windows.debug.x86_64.dll"
+windows.x86_64.release = "res://gdextension/bin/godot_math_tex.windows.release.x86_64.dll"
