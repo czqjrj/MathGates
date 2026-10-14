@@ -1,8 +1,0 @@
-[configuration]
-entry_symbol = "latexmath_library_init"
-compatibility_minimum = "4.4"
-
-[libraries]
-windows.editor.x86_64 = "res://addons/latexmath/bin/latexmath.windows.template_release.x86_64.dll"
-windows.release.x86_64 = "res://addons/latexmath/bin/latexmath.windows.template_release.x86_64.dll"
-windows.debug.x86_64 = "res://addons/latexmath/bin/latexmath.windows.template_release.x86_64.dll"
