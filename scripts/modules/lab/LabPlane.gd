@@ -264,6 +264,12 @@ func _draw_range_bands() -> void:
 		var lbl := str(iv["label"])
 		if lbl != "":
 			_draw_label(Vector2(x - 6.0 - UI.font().get_string_size(lbl, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.fs(12)).x, clampf((top + bot) * 0.5, y_top + 8.0, y_bot - 4.0)), lbl, col, 12)
+	if _scene.has("range_caption"):
+		# 自定义值域说明（非分段拼接场景时使用）。
+		var cap := str(_scene.get("range_caption", ""))
+		if cap != "":
+			_draw_label(Vector2(12.0, 20.0), cap, COL_GOLD, 15)
+		return
 	var cv := _coverage()
 	var txt := "值域 = R ✓" if bool(cv["covered"]) else "值域 ≠ R（有缝隙）"
 	var col2 := COL_SUCCESS if bool(cv["covered"]) else COL_GOLD
@@ -463,10 +469,19 @@ func _f_y(kind: String, x: float, a: float, b: float, c: float, d: float) -> flo
 		"cos": return a * cos(b * x + c) + d
 		"tan": return a * tan(b * x + c) + d
 		"exp": return a * pow(maxf(b, 0.01), x) + d
-		"log": return a * log(maxf(x, 1e-6)) / log(maxf(b, 1.01)) + d
-		"ln": return a * log(maxf(x, 1e-6)) + d
+		"log":
+			if x <= 1e-6:
+				return NAN
+			return a * log(x) / log(maxf(b, 1.01)) + d
+		"ln":
+			if x <= 1e-6:
+				return NAN
+			return a * log(x) + d
 		"pow": return a * pow(x, b) + c
-		"sqrt": return a * sqrt(maxf(x, 0.0)) + b
+		"sqrt":
+			if x < 0.0:
+				return NAN
+			return a * sqrt(x) + b
 		"recip": return a / maxf(absf(x), 1e-3) * signf(x) + b if absf(x) > 1e-4 else c
 		"quad": return a * x * x + b * x + c
 		"linear": return a * x + b
