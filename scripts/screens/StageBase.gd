@@ -49,6 +49,8 @@ var _opt_panels: Array[PanelContainer] = []
 var _opt_badges: Array[PanelContainer] = []
 var _opt_contents: Array[Control] = []
 var _opt_marks: Array[Label] = []
+## 选项显示顺序(乱序)：_opt_order[显示位置] = 原始下标，用于防止学生靠位置记答案。
+var _opt_order: Array[int] = []
 ## 多选(题面 ans 为数组):可多选 + 确认作答(固定在选项与反馈之间，始终可见)。
 var _multi_sel: Dictionary = {}
 var _multi_row: CenterContainer
@@ -221,20 +223,54 @@ func _clear_opts() -> void:
 	_opt_badges.clear()
 	_opt_contents.clear()
 	_opt_marks.clear()
+	_opt_order.clear()
 	_multi_sel.clear()
 	if _multi_row != null:
 		_multi_row.visible = false
 
 func _build_choices(s: Dictionary) -> void:
 	var opts: Array = s.get("opts", [])
+	_opt_order = _opt_order_for(s, opts)
 	for k in opts.size():
-		_ans.add_child(_choice_row(k, str(opts[k])))
+		_ans.add_child(_choice_row(k, str(opts[_opt_order[k]])))
 	# 多选题:ans 为数组 -> 显示「确认作答」
 	_multi_sel.clear()
 	if _multi_row != null:
 		_multi_row.visible = s.get("ans") is Array
 	if _multi_btn != null:
 		_multi_btn.disabled = true
+
+## 选项乱序：默认打乱，防止学生记住答案位置；题面写 "shuffle": false 或 "fixed": true
+## 可关闭，含「以上都对」等顺序相关选项时也自动关闭。返回 [显示位置 -> 原始下标]。
+func _opt_order_for(s: Dictionary, opts: Array) -> Array:
+	var order: Array[int] = []
+	for i in opts.size():
+		order.append(i)
+	if _shuffle_allowed(s, opts):
+		order.shuffle()
+	return order
+
+func _shuffle_allowed(s: Dictionary, opts: Array) -> bool:
+	if not bool(s.get("shuffle", true)) or bool(s.get("fixed", false)):
+		return false
+	if opts.size() < 2:
+		return false
+	for o in opts:
+		var t := str(o)
+		for marker in ["以上", "都对", "都错", "都正确", "都不正确", "上述", "以下"]:
+			if t.find(marker) >= 0:
+				return false
+	return true
+
+## 显示位置 -> 原始下标(乱序关闭时恒等)。
+func _orig_of(k: int) -> int:
+	if k >= 0 and k < _opt_order.size():
+		return _opt_order[k]
+	return k
+
+## 原始下标 -> 显示位置(找不到返回 -1)。
+func _disp_of(orig: int) -> int:
+	return _opt_order.find(orig)
 
 func _choice_row(k: int, opt: String) -> Control:
 	var p := PanelContainer.new()
@@ -325,8 +361,8 @@ func _on_choice(k: int) -> void:
 		return
 	_last_picked = k
 	var correct := int(_current().get("ans", -1))
-	_reveal_choices(k, correct)
-	if k == correct:
+	_reveal_choices(k, _disp_of(correct))
+	if _orig_of(k) == correct:
 		_level_ok()
 	else:
 		_wrong(_wrong_text())
@@ -357,15 +393,21 @@ func _multi_confirm() -> void:
 	var correct_set: Dictionary = {}
 	for a in arr:
 		correct_set[int(a)] = true
-	var ok := _multi_sel.size() == correct_set.size()
+	var picked_set: Dictionary = {}
+	for kk in _multi_sel.keys():
+		picked_set[_orig_of(int(kk))] = true
+	var ok := picked_set.size() == correct_set.size()
 	if ok:
-		for kk in _multi_sel.keys():
+		for kk in picked_set.keys():
 			if not correct_set.has(kk):
 				ok = false
 				break
+	var correct_disp: Dictionary = {}
+	for o in correct_set.keys():
+		correct_disp[_disp_of(int(o))] = true
 	for i in _opt_btns.size():
 		_opt_btns[i].disabled = true
-		var is_c := correct_set.has(i)
+		var is_c := correct_disp.has(i)
 		var picked := _multi_sel.has(i)
 		if is_c:
 			_opt_panels[i].add_theme_stylebox_override("panel", UI.glass_box(Color(UI.COL_SUCCESS, 0.15), 12, UI.COL_SUCCESS, 1, 12))
@@ -464,7 +506,7 @@ func _wrong(msg: String) -> void:
 		_q_recorded = true
 		var ansv: Variant = _current().get("ans", -1)
 		var ansi: int = -1 if ansv is Array else int(ansv)
-		GameData.record_answer(GameData.current_level_id(), _q_index(), str(_current().get("name", "")), false, _last_picked, ansi, _module())
+		GameData.record_answer(GameData.current_level_id(), _q_index(), str(_current().get("name", "")), false, _orig_of(_last_picked), ansi, _module())
 	Sound.play("wrong")
 	if _pet != null:
 		_pet.comfort()
