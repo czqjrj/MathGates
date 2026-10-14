@@ -54,7 +54,7 @@ func _test_domain_mapping() -> void:
 func _test_lab_data() -> void:
 	var specs := [
 		{ "file": "res://data/trig_levels.json", "ids": ["trig_induce", "trig_identity", "trig_graph", "trig_solve", "trig_apply", "trig_radian", "trig_tan", "trig_concept", "trig_sincos"] },
-		{ "file": "res://data/functions_levels.json", "ids": ["func_concept", "func_domain", "func_range", "func_corr", "func_mono", "func_period", "func_exp_log", "func_abstract", "func_zeros", "func_power", "func_apply", "func_bisect"] },
+		{ "file": "res://data/functions_levels.json", "ids": ["func_concept", "func_domain", "func_range", "func_corr", "func_mono", "func_parity", "func_period", "func_exp_log", "func_abstract", "func_zeros", "func_power", "func_apply", "func_bisect"] },
 		{ "file": "res://data/set_logic_levels.json", "ids": ["set_ops", "set_interval", "logic_cond", "logic_neg", "logic_special"] },
 		{ "file": "res://data/inequalities_levels.json", "ids": ["ineq_quad", "ineq_basic"] },
 		{ "file": "res://data/vectors_levels.json", "ids": ["vec_ops", "vec_coord", "vec_dot", "vec_collinear"] },
