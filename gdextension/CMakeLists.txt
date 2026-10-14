@@ -30,6 +30,13 @@ if(ANDROID)
 	include_directories(${MT_ANDROID_PREFIX}/include)
 endif()
 
+# MicroTeX 的 CMakeLists 只有 QT/SKIA/WIN32/UNIX 四个平台分支，没有 ANDROID；
+# NDK 交叉编译时 CMake 会把 UNIX 置为真，MicroTeX 便会 require GTK/Fontconfig 而配置失败。
+# Android 下把 UNIX 置假，让它落到「unknown platform」中性分支（不引入任何平台源码）。
+if(ANDROID)
+	set(UNIX OFF)
+endif()
+
 # MicroTeX builds the LaTeX static library.
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../third_party/MicroTeX MicroTeX)
 # The WIN32 sample executable is not needed; only build LaTeX.
