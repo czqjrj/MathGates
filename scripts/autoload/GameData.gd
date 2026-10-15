@@ -223,12 +223,21 @@ func set_textbook(id: String) -> void:
 	_save()
 	progress_changed.emit()
 
+## 调试模式：以编辑器/调试方式运行(OS.is_debug_build())时恒为真。
+## 此时自动放开全部关卡锁(无需手动开编辑模式)，方便测试与编辑。
+func debug_mode() -> bool:
+	return OS.is_debug_build()
+
 func set_free_roam(v: bool) -> void:
-	free_roam = v
+	# 调试模式下保持全解锁，不允许被关闭
+	free_roam = v or debug_mode()
 	progress_changed.emit()
 
-## 从 settings.json 同步自由/编辑模式
+## 从 settings.json 同步自由/编辑模式；调试模式直接全解锁
 func _sync_free_roam_from_settings() -> void:
+	if debug_mode():
+		free_roam = true
+		return
 	if not FileAccess.file_exists(SETTINGS_PATH):
 		return
 	var data = JSON.parse_string(FileAccess.get_file_as_string(SETTINGS_PATH))
