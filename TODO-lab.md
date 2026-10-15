@@ -9,22 +9,21 @@
 - [x] 圆的方程 `circle_eq`：`data/circle_levels.json`（19 关 × 3 轮）；`data/curriculum.json` 已改 `archetype:LAB, lab:"circle", scene:LabStage`。
 - [x] 椭圆 `ellipse`：`data/ellipse_levels.json`（16 关）；curriculum 已改 `lab:"ellipse"`。
 - [x] 平面向量 `vector`：`data/vector_levels.json`（19 关）；curriculum 已改 `lab:"vector"`。
-- [x] 回归测试 `tests/Tests.tscn` 986 passed / 0 failed；运行期冒烟 `tests/LabSmoke.tscn` 无脚本错误。
-
-## 待完成
-- [ ] **直线 `line_eq`**：把 `data/line_levels.json` 改成 lab 三阶段格式；`data/curriculum.json` 中 line_eq 的 18 个关卡改为 `archetype:LAB`（boss 保留 `BOSS`）、`lab:"line"`、`lab_ref:"line_X_Y"`、`scene:res://scenes/LabStage.tscn`。
-      需映射的专属探索器 → lab 滑块/读数：`tilt_explorer`、`slope_explorer`、`lineeq_explorer`、`slope_curve`、`distance_explorer`、`dual_explorer`、旧 `drag(constraint:line)`、`interact(param/target/tol)`。
-- [ ] 在 `tests/Tests.gd` 的 `_test_lab_data` 加入 `line_levels.json` 的 19 个 id；`tests/LabSmoke.gd` 加入直线用例。
-- [ ] **删除迁移后闲置的专属关卡代码/场景**（确认无引用后）：
+- [x] **直线 `line_eq`**：`data/line_levels.json` 已改为 lab 三阶段格式（18 关：`line_1_1`…`line_6_3` + `line_boss`，每关 3~4 轮）；`data/curriculum.json` 中 line_eq 的 18 个关卡改为 `archetype:LAB`（boss 保留 `BOSS`）、`lab:"line"`、`lab_ref:"line_X_Y"`、`scene:res://scenes/LabStage.tscn`。
+      专属探索器（`tilt_explorer`、`slope_explorer`、`lineeq_explorer`、`slope_curve`、`distance_explorer`、`dual_explorer`、旧 `drag(constraint:line)`、`interact(param/target/tol)`）统一映射为 lab 滑块 + 表达式 + 实时读数。
+- [x] 在 `tests/Tests.gd` 的 `_test_lab_data` 加入 `line_levels.json` 的 18 个 id；`tests/LabSmoke.gd` 加入直线用例。
+- [x] **删除迁移后闲置的专属关卡代码/场景**（确认无引用后）：
       - `scripts/modules/circle/{CircleStage,CirclePlane}.gd(+.uid)`、`scenes/CircleStage.tscn`
       - `scripts/modules/ellipse/{EllipseStage,EllipsePlane}.gd(+.uid)`、`scenes/EllipseStage.tscn`
       - `scripts/modules/line/{LineStage,LinePlane,TiltExplorer,SlopeExplorer,LineEqExplorer,SlopeCurve,DistanceExplorer,DualLineExplorer}.gd(+.uid)`、`scenes/LineStage.tscn`
       - `scripts/modules/vector/{VectorStage,VectorPlane}.gd(+.uid)`、`scenes/VectorStage.tscn`
       - ⚠️ 保留 `scripts/modules/line/TheoremTree.gd`（被知识树共用）。
-- [ ] 更新 `README.md` 中对各 `*_levels.json` / 旧 Stage 的描述。
-- [ ] 发布前关闭编辑模式：`scripts/autoload/Settings.gd` 的 `DEFAULTS["editor_mode"]` 与 `var editor_mode` 改为 `false`。
+- [x] 更新 `README.md` 中对各 `*_levels.json` / 旧 Stage 的描述。
+- [x] 发布前关闭编辑模式：`scripts/autoload/Settings.gd` 的 `DEFAULTS["editor_mode"]` 与 `var editor_mode` 改为 `false`。
+
+## 待完成
 - [ ] （可选）GUI 下逐章目视复核交互与排版。
 
 ## 验证命令
-- 回归测试：`godot --headless --path . res://tests/Tests.tscn`（退出码 0 = 全通过）
+- 回归测试：`godot --headless --path . res://tests/Tests.tscn`（退出码 0 = 全通过，当前 **1025 passed / 0 failed**）
 - 运行期冒烟：`godot --headless --path . res://tests/LabSmoke.tscn`（打印 `TMP_OK` 即正常）

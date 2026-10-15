@@ -22,8 +22,10 @@ scripts/         总控与共享逻辑(按职责分目录)
   screens/         BootSplash.gd(品牌启动屏,规避引擎启动屏缩放 bug)、Login.gd、MainHub.gd、
 				   WorldMap.gd、UserProfile.gd、SettingsMenu.gd、ChapterNode.gd、
 				   Battle.gd(通用战斗/占位关卡)、StageBase.gd(2D 闯关共享骨架:
-				   HUD/答题面板/选项/结算/上下关导航;line·ellipse·vector 三关继承)
-  modules/         六大知识模块:conic/ ellipse/ line/ sequence/ solid/ space/ vector/
+				   HUD/答题面板/选项/结算/上下关导航;由 LabStage 继承,服务于圆/椭圆/向量/直线及各 LAB 章节)
+  modules/         知识模块:conic/ lab/ line/ sequence/ solid/ space/
+				   lab/ 为通用三阶段闯关(LabStage + LabPlane:滑块/拖动实时重绘 + 读数),
+				   承载圆/椭圆/向量/直线等章节;line/ 仅余 TheoremTree.gd(被知识树共用)
 data/            课程表与题库 JSON(curriculum/questions + 各模块 *_levels.json)
 art/             美术 PNG/WebP + 公式小图 + Android 图标 + 标题字体(art/fonts/,放入行书 ttf 即自动启用)
 audio/           音效 wav
@@ -64,5 +66,5 @@ build/           导出产物(APK,git 忽略)
 
 - 课程/章节/解锁关系:`data/curriculum.json`
 - 教材版本(苏教/人教A/人教B/北师大/湘教/沪教):分册、章节排序与章号:`data/textbooks.json`
-- 通用题库:`data/questions.json`;各模块关卡:`line_levels.json / conic_levels.json / ellipse_levels.json / space_levels.json / vector_levels.json`
+- 通用题库:`data/questions.json`;各模块关卡:`data/*_levels.json`。几何类章节(圆/椭圆/向量/直线)已统一为 `lab` 三阶段格式,对应 `circle_levels.json / ellipse_levels.json / vector_levels.json / line_levels.json`,场景统一为 `res://scenes/LabStage.tscn`
 - 立体几何方法讲解:`data/solid_methods.json` + `scripts/modules/solid/topics/*.gd`

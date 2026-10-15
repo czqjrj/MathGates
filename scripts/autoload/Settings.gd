@@ -23,7 +23,7 @@ const DEFAULTS := {
 	"tts_engine": "online",
 	"tts_provider": "baidu",
 	"textbook": "sujiao",
-	"editor_mode": true,
+	"editor_mode": false,
 }
 
 var font_scale: float = 1.4
@@ -39,7 +39,7 @@ var tts_provider: String = "baidu"
 ## 高中数学教材版本(苏教/人教A/北师大…)：决定知识体系与方法推演的章节排序与分册归属。
 var textbook: String = "sujiao"
 ## 编辑模式：开启后可无条件解锁所有关卡，方便测试与编辑
-var editor_mode: bool = true
+var editor_mode: bool = false
 
 func _ready() -> void:
 	load_settings()
