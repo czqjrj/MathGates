@@ -10837,5 +10837,17 @@
 },
 "ω": {
 "latex": "\\omega "
+},
+"P(A)+P(B)": {
+"latex": "P(A)+P(B)"
+},
+"P(A)·P(B)": {
+"latex": "P(A)\\cdot P(B)"
+},
+"2·2ⁿ": {
+"latex": "2\\cdot 2^{n}"
+},
+"n·(1/2)ⁿ": {
+"latex": "n\\cdot (1/2)^{n}"
 }
 }

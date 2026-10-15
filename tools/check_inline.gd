@@ -13,7 +13,8 @@ func _initialize() -> void:
 	var files: Array[String] = []
 	if dir != null:
 		for f in dir.get_files():
-			if f.ends_with(".json"):
+			# inline_math.json 是「覆盖表」本身，不是展示文本；扫它只会产生自反伪影。
+			if f.ends_with(".json") and f != "inline_math.json":
 				files.append(f)
 	files.sort()
 	var grand := {}
@@ -86,6 +87,13 @@ func _gap(gap: String, miss: Dictionary) -> void:
 
 func _has_math_char(s: String) -> bool:
 	for i in s.length():
-		if MATH_CHARS.find(s[i]) >= 0:
+		var c := s[i]
+		# 「·」两侧任一侧是空白时视为标题分隔符（如「Boss ·」「· 01」「· a」），不计入数学符号。
+		if c == "·":
+			var prev_ws := i == 0 or s[i - 1] == " "
+			var next_ws := i == s.length() - 1 or s[i + 1] == " "
+			if prev_ws or next_ws:
+				continue
+		if MATH_CHARS.find(c) >= 0:
 			return true
 	return false
