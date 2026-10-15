@@ -1449,7 +1449,41 @@
             "pitch": 42,
             "zoom": 1
           },
-          "gate": false
+          "gate": false,
+          "anim": [
+            {
+              "a": "reveal",
+              "dur": 0.5
+            },
+            {
+              "a": "view",
+              "to": "top",
+              "dur": 1,
+              "hold": 0.8
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "orig"
+              ],
+              "dur": 0.2,
+              "hold": 0.8
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "iso"
+              ],
+              "dur": 0.2,
+              "hold": 0.8
+            },
+            {
+              "a": "view",
+              "to": "iso",
+              "dur": 0.9,
+              "hold": 0.5
+            }
+          ]
         },
         "steps": [
           "对比正方形与平行四边形的形状：平行于 x 轴的边长度不变",
@@ -1547,6 +1581,38 @@
           },
           "highlight": [
             "alpha"
+          ],
+          "anim": [
+            {
+              "a": "reveal",
+              "dur": 0.5
+            },
+            {
+              "a": "view",
+              "to": "iso",
+              "dur": 0.7,
+              "hold": 0.5
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "ab"
+              ],
+              "dur": 0.2,
+              "hold": 0.8
+            },
+            {
+              "a": "view",
+              "to": "top",
+              "dur": 0.9,
+              "hold": 0.9
+            },
+            {
+              "a": "view",
+              "to": "iso",
+              "dur": 0.8,
+              "hold": 0.4
+            }
           ]
         },
         "steps": [
@@ -1683,7 +1749,43 @@
             "pitch": 22,
             "zoom": 0.95
           },
-          "gate": false
+          "gate": false,
+          "anim": [
+            {
+              "a": "reveal",
+              "dur": 0.5
+            },
+            {
+              "a": "view",
+              "to": "iso",
+              "dur": 0.7,
+              "hold": 0.4
+            },
+            {
+              "a": "vars",
+              "to": {
+                "t": 2.3
+              },
+              "dur": 1.2,
+              "hold": 0.4
+            },
+            {
+              "a": "vars",
+              "to": {
+                "t": 0.15
+              },
+              "dur": 1.2,
+              "hold": 0.4
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "plane"
+              ],
+              "dur": 0.2,
+              "hold": 0.8
+            }
+          ]
         },
         "steps": [
           "旋转模型，从背面确认平面恰好经过 A、B、C 三点",
@@ -1782,6 +1884,32 @@
           },
           "highlight": [
             "line_l"
+          ],
+          "anim": [
+            {
+              "a": "reveal",
+              "dur": 0.5
+            },
+            {
+              "a": "view",
+              "to": "iso",
+              "dur": 0.7,
+              "hold": 0.4
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "line_l"
+              ],
+              "dur": 0.2,
+              "hold": 0.6
+            },
+            {
+              "a": "rotate",
+              "turns": 0.55,
+              "dur": 1.4,
+              "hold": 0.4
+            }
           ]
         },
         "steps": [
@@ -1863,6 +1991,52 @@
           },
           "highlight": [
             "b"
+          ],
+          "anim": [
+            {
+              "a": "reveal",
+              "dur": 0.5
+            },
+            {
+              "a": "view",
+              "to": "top",
+              "dur": 0.9,
+              "hold": 0.6
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "a"
+              ],
+              "dur": 0.2,
+              "hold": 0.7
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "b"
+              ],
+              "dur": 0.2,
+              "hold": 0.7
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "c"
+              ],
+              "dur": 0.2,
+              "hold": 0.7
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "a",
+                "b",
+                "c"
+              ],
+              "dur": 0.2,
+              "hold": 0.9
+            }
           ]
         },
         "steps": [
@@ -1985,7 +2159,35 @@
             "pitch": 24,
             "zoom": 0.95
           },
-          "gate": false
+          "gate": false,
+          "anim": [
+            {
+              "a": "reveal",
+              "dur": 0.5
+            },
+            {
+              "a": "view",
+              "to": "iso",
+              "dur": 0.7,
+              "hold": 0.3
+            },
+            {
+              "a": "vars",
+              "to": {
+                "a": 3
+              },
+              "dur": 1,
+              "hold": 0.4
+            },
+            {
+              "a": "vars",
+              "to": {
+                "a": 1.6
+              },
+              "dur": 1,
+              "hold": 0.4
+            }
+          ]
         },
         "steps": [
           "旋转模型，确认 AB ∥ A₁B₁、AC ∥ A₁C₁",
@@ -2113,7 +2315,43 @@
             "pitch": 22,
             "zoom": 1
           },
-          "gate": false
+          "gate": false,
+          "anim": [
+            {
+              "a": "reveal",
+              "dur": 0.5
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "in"
+              ],
+              "dur": 0.2,
+              "hold": 0.8
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "cross"
+              ],
+              "dur": 0.2,
+              "hold": 0.8
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "par"
+              ],
+              "dur": 0.2,
+              "hold": 0.8
+            },
+            {
+              "a": "view",
+              "to": "side",
+              "dur": 0.9,
+              "hold": 0.8
+            }
+          ]
         },
         "steps": [
           "旋转模型，观察三条直线与平面 α 的公共点个数",
@@ -2249,7 +2487,43 @@
             "pitch": 20,
             "zoom": 0.92
           },
-          "gate": false
+          "gate": false,
+          "anim": [
+            {
+              "a": "reveal",
+              "dur": 0.5
+            },
+            {
+              "a": "view",
+              "to": "iso",
+              "dur": 0.7,
+              "hold": 0.3
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "p1",
+                "p2"
+              ],
+              "dur": 0.2,
+              "hold": 0.8
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "p3",
+                "p4"
+              ],
+              "dur": 0.2,
+              "hold": 0.8
+            },
+            {
+              "a": "rotate",
+              "turns": 0.5,
+              "dur": 1.3,
+              "hold": 0.4
+            }
+          ]
         },
         "steps": [
           "观察左侧两个平面的公共点情况（无公共点）",
@@ -2325,6 +2599,33 @@
           "highlight": [
             "ab",
             "cc1"
+          ],
+          "anim": [
+            {
+              "a": "reveal",
+              "dur": 0.5
+            },
+            {
+              "a": "view",
+              "to": "iso",
+              "dur": 0.7,
+              "hold": 0.5
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "ab",
+                "cc1"
+              ],
+              "dur": 0.2,
+              "hold": 0.7
+            },
+            {
+              "a": "rotate",
+              "turns": 0.5,
+              "dur": 1.4,
+              "hold": 0.4
+            }
           ]
         },
         "opts": [

@@ -32,6 +32,7 @@
         **平行关系**(线面/面面的判定+性质+推论，5 轮)、**垂直关系**(线面垂直定义/判定/性质①② + 面面垂直定义(直二面角)/判定/性质，7 轮)、
         空间角(异面角/线面角/二面角)、空间距离(垂线段最短/等体积法)。
         旗舰关 `solid_axiom` 用 10 轮逐条演示基本事实、等角定理与空间位置关系。
+        每个基本事实/位置关系与 `solid_view` 的斜二测均配「▶ 演示」自动播放动画(scene.anim：视角切换/参数动画/高亮/环视/生长)。
       - `data/space_levels.json`：19 关(`space_1_1…space_boss`)重写为三阶段 3D。
       - `data/curriculum.json`：`solid_basic`(12 关)与 `space`(19 关)改为 `archetype:LAB, lab:..., lab_ref:..., scene:res://scenes/Lab3DStage.tscn`。
       - `tests/Tests.gd` `_test_lab_data` 含 `solid_basic`+`space_levels.json`；`tests/LabSmoke.gd` `_smoke_3d()` 覆盖全部 3D 关卡。
