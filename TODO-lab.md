@@ -28,16 +28,16 @@
         `Lab3DStage` 继承 `StageBase`，沿用「实验探究 → 建构知识 → 迁移应用」三阶段契约(explore/choice)。
       - `data/solid_basic_levels.json`：12 关(知识顺序)，按教材「必修二 立体几何初步」对齐——
         基本立体图形、棱台与圆台、表面积与体积、体对角线与截面、球与组合体、
-        直观图(斜二测，面积比 √2/4)与三视图、四个基本事实(1 线在面内 / 2 三点定面 / 3 两平面交线 / 4 平行传递)+等角定理、
-        **平行关系**(线面/面面的判定+性质+推论，5 轮)、**垂直关系**(线面垂直定义/判定/性质①② + 面面垂直判定/性质，6 轮)、
+        直观图(斜二测，面积比 √2/4)与三视图、四个基本事实(1 线在面内 / 2 三点定面 / 3 两平面交线 / 4 平行传递)+等角定理+两直线/线面/面面位置关系、
+        **平行关系**(线面/面面的判定+性质+推论，5 轮)、**垂直关系**(线面垂直定义/判定/性质①② + 面面垂直定义(直二面角)/判定/性质，7 轮)、
         空间角(异面角/线面角/二面角)、空间距离(垂线段最短/等体积法)。
-        旗舰关 `solid_axiom` 用 8 轮逐条演示基本事实与等角定理。
+        旗舰关 `solid_axiom` 用 10 轮逐条演示基本事实、等角定理与空间位置关系。
       - `data/space_levels.json`：19 关(`space_1_1…space_boss`)重写为三阶段 3D。
       - `data/curriculum.json`：`solid_basic`(12 关)与 `space`(19 关)改为 `archetype:LAB, lab:..., lab_ref:..., scene:res://scenes/Lab3DStage.tscn`。
       - `tests/Tests.gd` `_test_lab_data` 含 `solid_basic`+`space_levels.json`；`tests/LabSmoke.gd` `_smoke_3d()` 覆盖全部 3D 关卡。
       - [x] 删除迁移后闲置的专属关卡代码/场景(确认无引用后)：`scripts/modules/space/{SpaceStage,Space3DView}.gd(+.uid)`、`scenes/SpaceStage.tscn`(`space/` 目录已空)。
       - 回归：`tests/Tests.tscn` **1068 passed / 0 failed**；`LabSmoke` 打印 `TMP_OK` 且 3D 关 `view3d=true`；
-        `tools/check_all.gd` 77 scripts / 0 failures；`tools/lab3d_render_check` 61 场景 / 0 空白。
+        `tools/check_all.gd` 77 scripts / 0 failures；`tools/lab3d_render_check` 64 场景 / 0 空白。
         （历史上曾记 `smoke_scene` 234 ok / 0 fail。）
 
 ## 待完成
