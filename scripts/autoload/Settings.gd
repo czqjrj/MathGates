@@ -23,6 +23,7 @@ const DEFAULTS := {
 	"tts_engine": "online",
 	"tts_provider": "baidu",
 	"textbook": "sujiao",
+	"editor_mode": true,
 }
 
 var font_scale: float = 1.4
@@ -37,6 +38,8 @@ var tts_engine: String = "online"
 var tts_provider: String = "baidu"
 ## 高中数学教材版本(苏教/人教A/北师大…)：决定知识体系与方法推演的章节排序与分册归属。
 var textbook: String = "sujiao"
+## 编辑模式：开启后可无条件解锁所有关卡，方便测试与编辑
+var editor_mode: bool = true
 
 func _ready() -> void:
 	load_settings()
@@ -59,6 +62,7 @@ func load_settings() -> void:
 	tts_engine = str(data.get("tts_engine", DEFAULTS["tts_engine"]))
 	tts_provider = str(data.get("tts_provider", DEFAULTS["tts_provider"]))
 	textbook = str(data.get("textbook", DEFAULTS["textbook"]))
+	editor_mode = bool(data.get("editor_mode", DEFAULTS["editor_mode"]))
 
 func save() -> void:
 	var f := FileAccess.open(PATH, FileAccess.WRITE)
@@ -77,6 +81,8 @@ func apply(notify: bool = true) -> void:
 		Sound.volume_scale = sfx_volume
 	UI.tts_configure(voice, voice_rate, 1.0, voice_id, tts_engine, tts_provider)
 	_apply_fullscreen()
+	if GameData != null:
+		GameData.set_free_roam(editor_mode)
 	if notify:
 		changed.emit()
 
@@ -153,6 +159,13 @@ func set_textbook(v: String) -> void:
 	textbook = v
 	if GameData != null:
 		GameData.set_textbook(v)
+	save()
+	changed.emit()
+
+func set_editor_mode(v: bool) -> void:
+	editor_mode = v
+	if GameData != null:
+		GameData.set_free_roam(v)
 	save()
 	changed.emit()
 

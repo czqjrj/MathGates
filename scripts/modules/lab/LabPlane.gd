@@ -66,12 +66,18 @@ func set_scene(s: Dictionary) -> void:
 	_scene = s if s != null else {}
 	mode = ""
 	_anim_t = 0.0
+	var has_range := _scene.has("x") or _scene.has("y")
 	if _scene.has("x"):
 		var xr: Array = _scene["x"]
 		domain = Vector2(float(xr[0]), float(xr[1]))
 	if _scene.has("y"):
 		var yr: Array = _scene["y"]
 		range_y = Vector2(float(yr[0]), float(yr[1]))
+	# 兼容几何章节常用的对称视野 "range": R（等价 x/y = [−R, R]）
+	if not has_range and _scene.has("range"):
+		var rr := maxf(float(_scene["range"]), 1.0)
+		domain = Vector2(-rr, rr)
+		range_y = Vector2(-rr, rr)
 	queue_redraw()
 
 func begin_sliders(list: Array, answers: Dictionary = {}, tol: Dictionary = {}) -> void:
@@ -320,33 +326,142 @@ func _vec(a: Variant) -> Vector2:
 		return Vector2(_num((a as Array)[0], 0.0), _num((a as Array)[1], 0.0))
 	return Vector2.ZERO
 
-## 参数取值：数字直接取；字符串取同名滑块当前值(支持前导 "−" 与 "滑块*数"/"滑块/数" 形式)；缺省用默认。
+## 参数取值：支持数字、滑块名、算术表达式(+ − * / ^ 括号)与函数 sqrt/abs/sin/cos/tan、
+## 常量 pi/e(三角函数按角度制)；缺省用 dflt。使几何图形可随滑块实时重绘。
+var _ex_s := ""
+var _ex_i := 0
+var _ex_ok := true
+var _ex_dflt := 0.0
+
 func _num(v: Variant, dflt: float) -> float:
 	if v == null:
 		return dflt
+	if v is float or v is int or v is bool:
+		return float(v)
 	if v is String:
 		var s := str(v).strip_edges()
+		if s.is_empty():
+			return dflt
 		if s.is_valid_float():
 			return s.to_float()
-		var sign := 1.0
-		if s.begins_with("-"):
-			sign = -1.0
-			s = s.substr(1)
-		elif s.begins_with("+"):
-			s = s.substr(1)
-		for op in ["*", "/"]:
-			var idx := s.find(op)
-			if idx > 0:
-				var left := _num(s.substr(0, idx), dflt)
-				var right := s.substr(idx + 1).to_float()
-				if op == "*":
-					return sign * left * right
-				return sign * left / (right if absf(right) > 1e-9 else 1.0)
-		for sl in _sliders:
-			if str(sl["name"]) == s:
-				return sign * float(sl["value"])
-		return dflt
-	return float(v)
+		_ex_s = s.replace(" ", "")
+		_ex_i = 0
+		_ex_ok = true
+		_ex_dflt = dflt
+		var r := _ex_expr()
+		if not _ex_ok or _ex_i < _ex_s.length():
+			return dflt
+		return r
+	return dflt
+
+func _ex_peek() -> String:
+	return _ex_s[_ex_i] if _ex_i < _ex_s.length() else ""
+
+func _ex_next() -> String:
+	var c := _ex_peek()
+	_ex_i += 1
+	return c
+
+func _ex_expr() -> float:
+	var v := _ex_term()
+	while _ex_ok:
+		var c := _ex_peek()
+		if c == "+":
+			_ex_next()
+			v += _ex_term()
+		elif c == "-":
+			_ex_next()
+			v -= _ex_term()
+		else:
+			break
+	return v
+
+func _ex_term() -> float:
+	var v := _ex_unary()
+	while _ex_ok:
+		var c := _ex_peek()
+		if c == "*":
+			_ex_next()
+			v *= _ex_unary()
+		elif c == "/":
+			_ex_next()
+			var d := _ex_unary()
+			v = v / d if absf(d) > 1e-12 else 0.0
+		else:
+			break
+	return v
+
+func _ex_unary() -> float:
+	var c := _ex_peek()
+	if c == "-":
+		_ex_next()
+		return -_ex_unary()
+	if c == "+":
+		_ex_next()
+		return _ex_unary()
+	return _ex_power()
+
+func _ex_power() -> float:
+	var base := _ex_primary()
+	if _ex_peek() == "^":
+		_ex_next()
+		return pow(base, _ex_unary())
+	return base
+
+func _ex_primary() -> float:
+	var c := _ex_peek()
+	if c == "(":
+		_ex_next()
+		var v := _ex_expr()
+		if _ex_peek() == ")":
+			_ex_next()
+		else:
+			_ex_ok = false
+		return v
+	if c.is_valid_float() or c == ".":
+		var st := _ex_i
+		while _ex_i < _ex_s.length() and (_ex_s[_ex_i].is_valid_float() or _ex_s[_ex_i] == "."):
+			_ex_i += 1
+		return _ex_s.substr(st, _ex_i - st).to_float()
+	if _ex_is_ident_start(c):
+		var st2 := _ex_i
+		while _ex_i < _ex_s.length() and _ex_is_ident_char(_ex_s[_ex_i]):
+			_ex_i += 1
+		var name := _ex_s.substr(st2, _ex_i - st2)
+		if _ex_peek() == "(":
+			_ex_next()
+			var arg := _ex_expr()
+			if _ex_peek() == ")":
+				_ex_next()
+			else:
+				_ex_ok = false
+			return _ex_func(name, arg)
+		return _ex_var(name)
+	_ex_ok = false
+	return 0.0
+
+func _ex_is_ident_start(c: String) -> bool:
+	return not c.is_empty() and c.is_valid_identifier()
+
+func _ex_is_ident_char(c: String) -> bool:
+	return c.is_valid_identifier() or c.is_valid_int()
+
+func _ex_func(name: String, arg: float) -> float:
+	match name:
+		"sqrt": return sqrt(maxf(arg, 0.0))
+		"abs": return absf(arg)
+		"sin": return sin(deg_to_rad(arg))
+		"cos": return cos(deg_to_rad(arg))
+		"tan": return tan(deg_to_rad(arg))
+	return 0.0
+
+func _ex_var(name: String) -> float:
+	for sl in _sliders:
+		if str(sl["name"]) == name:
+			return float(sl["value"])
+	if name == "pi": return PI
+	if name == "e": return 2.718281828459045
+	return _ex_dflt
 
 func _fmt_num(v: float) -> String:
 	if absf(v - roundf(v)) < 0.0005:
@@ -357,6 +472,7 @@ func _fmt_num(v: float) -> String:
 func _draw() -> void:
 	_draw_grid()
 	_draw_scene()
+	_draw_readouts()
 	if not _scene.is_empty() and _scene.has("unit_circle"):
 		_draw_unit_circle()
 	if bool(_scene.get("range_bands", false)):
@@ -444,10 +560,18 @@ func _draw_scene() -> void:
 		_draw_segment_def(sg, _rev(i)); i += 1
 	for ci in _as_array(_scene.get("circles", [])):
 		_draw_circle_def(ci, _rev(i)); i += 1
+	for el in _as_array(_scene.get("ellipses", [])):
+		_draw_ellipse_def(el, _rev(i)); i += 1
+	for fo in _as_array(_scene.get("foci", [])):
+		_draw_foci_def(fo, _rev(i)); i += 1
 	for b in _as_array(_scene.get("bars", [])):
 		_draw_bar_def(b, _rev(i)); i += 1
 	for rg in _as_array(_scene.get("regions", [])):
 		_draw_region_def(rg, _rev(i)); i += 1
+	for ar in _as_array(_scene.get("arcs", [])):
+		_draw_arc_def(ar, _rev(i)); i += 1
+	for ra in _as_array(_scene.get("right_angles", [])):
+		_draw_right_angle_def(ra, _rev(i)); i += 1
 	_draw_vectors()
 	_draw_scatter(_rev(i)); i += 1
 	for p in _as_array(_scene.get("points", [])):
@@ -551,6 +675,67 @@ func _draw_circle_def(def: Dictionary, rev: float) -> void:
 	if def.has("label") and rev > 0.6:
 		_draw_label(center + Vector2(0.0, -r - 6.0), str(def["label"]), Color(col, (rev - 0.6) / 0.4), 15)
 
+# ---- 椭圆：{a,b,axis,color,label}（axis="y" 时长轴在 y 轴，a 为 y 向半轴）
+func _draw_ellipse_def(def: Dictionary, rev: float) -> void:
+	if rev <= 0.001:
+		return
+	var a := maxf(absf(_num(def.get("a", 1.0), 1.0)), 1e-3)
+	var b := maxf(absf(_num(def.get("b", 1.0), 1.0)), 1e-3)
+	var axis := str(def.get("axis", "x"))
+	var rx := a if axis != "y" else b
+	var ry := b if axis != "y" else a
+	var col := _c(def.get("color"), COL_INDIGO)
+	if bool(def.get("fill", false)):
+		var poly := PackedVector2Array()
+		for k in 96:
+			var tf := TAU * float(k) / 96.0
+			poly.append(_to_screen(Vector2(rx * cos(tf), ry * sin(tf))))
+		draw_colored_polygon(poly, Color(col, 0.10 * rev))
+	var n := 144
+	var lim := maxi(2, int(round(float(n) * clampf(rev, 0.0, 1.0))))
+	var pts := PackedVector2Array()
+	for k in lim + 1:
+		var tt := TAU * float(k) / float(n)
+		pts.append(_to_screen(Vector2(rx * cos(tt), ry * sin(tt))))
+	if pts.size() >= 2:
+		draw_polyline(pts, col, 2.0, true)
+	if def.has("label") and rev > 0.6:
+		_draw_label(_to_screen(Vector2(0.0, ry)) + Vector2(6.0, -6.0),
+			str(def["label"]), Color(col, (rev - 0.6) / 0.4), 14)
+
+# ---- 焦点：{c,axis,color} 在长轴两端 ±c 处画焦点
+func _draw_foci_def(def: Dictionary, rev: float) -> void:
+	if rev <= 0.001:
+		return
+	var c := absf(_num(def.get("c", 0.0), 0.0))
+	var axis := str(def.get("axis", "x"))
+	var col := _c(def.get("color"), COL_GOLD)
+	var xs := [Vector2(-c, 0.0), Vector2(c, 0.0)]
+	if axis == "y":
+		xs = [Vector2(0.0, -c), Vector2(0.0, c)]
+	var names := ["F₁", "F₂"]
+	for k in 2:
+		var sp := _to_screen(xs[k])
+		draw_circle(sp, 6.0 * rev, Color(0.02, 0.03, 0.06, 0.92 * rev))
+		draw_circle(sp, 4.2 * rev, Color(col, rev))
+		if rev > 0.5:
+			_draw_label(sp + Vector2(10.0, -10.0), names[k], Color(col, (rev - 0.5) / 0.5), 15)
+
+# ---- 实时读数：场景 readouts = [{label, expr, color?}]，expr 可用滑块名与函数
+func _draw_readouts() -> void:
+	var list := _as_array(_scene.get("readouts", []))
+	if list.is_empty():
+		return
+	var y := 10.0
+	for rd in list:
+		if not (rd is Dictionary):
+			continue
+		var d: Dictionary = rd
+		var col := _c(d.get("color"), COL_GOLD)
+		var txt := "%s = %s" % [str(d.get("label", "值")), _fmt(_num(d.get("expr", 0.0), 0.0))]
+		_draw_label(Vector2(12.0, y + 16.0), txt, col, 15)
+		y += 27.0
+
 func _resolve_line(def: Dictionary) -> Array:
 	if def.has("k"):
 		return [-_num(def["k"], 0.0), 1.0, -_num(def.get("b", 0.0), 0.0)]
@@ -605,6 +790,47 @@ func _draw_segment_def(def: Dictionary, rev: float) -> void:
 		draw_line(p0, e, col, float(def.get("width", 1.8)))
 	if def.has("label") and rev > 0.6:
 		_draw_label(p0.lerp(p1, 0.5) + Vector2(6.0, -6.0), str(def["label"]), Color(col, (rev - 0.6) / 0.4), 14)
+
+# ---- 角弧：以 at 为顶点、介于方向 a 与 b 之间、半径 r 的圆弧
+func _draw_arc_def(def: Dictionary, rev: float) -> void:
+	if rev <= 0.001:
+		return
+	var at := _vec(def.get("at", [0, 0]))
+	var va := _vec(def.get("a", [1, 0]))
+	var vb := _vec(def.get("b", [0, 1]))
+	var rr := maxf(_num(def.get("r", 1.0), 1.0), 0.05) * _scale()
+	var col := _c(def.get("color"), COL_ACCENT)
+	var o := _to_screen(at)
+	var ang_a := atan2(-va.y, va.x)
+	var ang_b := atan2(-vb.y, vb.x)
+	var d := ang_b - ang_a
+	while d > PI:
+		d -= TAU
+	while d < -PI:
+		d += TAU
+	draw_arc(o, rr, ang_a, ang_a + d * rev, 40, Color(col, rev), 2.0, true)
+	if def.has("label") and rev > 0.6:
+		var mid := ang_a + d * 0.5
+		_draw_label(o + Vector2(cos(mid), sin(mid)) * (rr + 16.0),
+			str(def["label"]), Color(col, (rev - 0.6) / 0.4), 15)
+
+# ---- 直角标记：以 at 为顶点、夹在方向 a 与 b 之间的小方角
+func _draw_right_angle_def(def: Dictionary, rev: float) -> void:
+	if rev <= 0.001:
+		return
+	var at := _vec(def.get("at", [0, 0]))
+	var va := _vec(def.get("a", [1, 0]))
+	var vb := _vec(def.get("b", [0, 1]))
+	if va.length() < 1e-4 or vb.length() < 1e-4:
+		return
+	va = va.normalized()
+	vb = vb.normalized()
+	var col := _c(def.get("color"), COL_ACCENT)
+	var sz := float(def.get("size", 0.32))
+	var p0 := _to_screen(at + va * sz)
+	var p1 := _to_screen(at + (va + vb) * sz)
+	var p2 := _to_screen(at + vb * sz)
+	draw_polyline(PackedVector2Array([p0, p1, p2]), Color(col, rev), 2.0, true)
 
 func _draw_vectors() -> void:
 	for vv in _as_array(_scene.get("vectors", [])):

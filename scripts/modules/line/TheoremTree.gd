@@ -901,7 +901,7 @@ func _tab_card(mi: int) -> Control:
 	var ci := _chapter_index_of(str(mod["id"]))
 	if ci >= 0:
 		card.num = ci + 1
-		card.locked = not GameData.is_chapter_unlocked(ci)
+		card.locked = (not GameData.is_chapter_unlocked(ci)) and (not GameData.free_roam)
 		card.stars = GameData.chapter_stars(GameData.chapters[ci])
 		card.max_stars = GameData.chapter_max_stars(GameData.chapters[ci])
 		card.levels_count = (GameData.chapters[ci]["levels"] as Array).size()
@@ -1180,10 +1180,17 @@ func _recenter() -> void:
 	_scroll.scroll_vertical = 0
 
 func _disasm_groups() -> Array:
+	var explicit := false
+	for lv in _levels:
+		if str((lv as Dictionary).get("group", "")) != "":
+			explicit = true
+			break
 	var gmap: Dictionary = {}
 	var order: Array = []
+	var gtitle: Dictionary = {}
 	for li in _levels.size():
-		var nm := str(_levels[li].get("name", ""))
+		var lv: Dictionary = _levels[li]
+		var nm := str(lv.get("name", ""))
 		var is_boss := nm.contains("Boss") or nm.contains("隐藏")
 		var key := ""
 		var code := ""
@@ -1196,31 +1203,44 @@ func _disasm_groups() -> Array:
 			var parts := nm.split(" ", false)
 			var first := parts[0] if parts.size() > 0 else ""
 			var np := first.split("-", false)
-			if np.size() == 2 and np[0].is_valid_int() and np[1].is_valid_int():
+			var has_num := np.size() == 2 and np[0].is_valid_int() and np[1].is_valid_int()
+			if has_num:
 				code = first
-				key = str(int(np[0]) - 1)
 			else:
 				code = "%02d" % (li + 1)
-				key = "0"
+			# 合并章节各关卡自带 group(原章节标题) → 按该字段分单元；
+			# 普通章节沿用 "N-M" 的 N 分组。
+			var grp := str(lv.get("group", ""))
+			if explicit and grp != "":
+				key = "g:" + grp
+				gtitle[key] = grp
+			else:
+				key = "n:" + (str(int(np[0]) - 1) if has_num else "0")
 		if not gmap.has(key):
 			gmap[key] = { "items": [] }
-			order.append(key)
+			if not is_boss:
+				order.append(key)
 		var item_title := str(nm)
 		if is_boss:
 			item_title = nm.replace("隐藏Boss · ", "").strip_edges()
 		gmap[key]["items"].append({
 			"li": li, "code": code,
 			"title": item_title,
-			"technique": str(_levels[li].get("technique", "")),
+			"technique": str(lv.get("technique", "")),
 		})
+	# 隐藏挑战(Boss)始终排在所有单元之后
+	if gmap.has("b"):
+		order.append("b")
 
 	var group_names: Array = GROUP_TITLES.get(str(_mods[_module_idx]["id"]), [])
 	var out: Array = []
 	for key in order:
 		var boss: bool = key == "b"
 		var title := "隐藏挑战"
-		if not boss:
-			var gidx := int(key)
+		if not boss and gtitle.has(key):
+			title = str(gtitle[key])
+		elif not boss:
+			var gidx := int(str(key).substr(2))
 			if gidx < group_names.size():
 				title = str(group_names[gidx])
 			elif order.size() == 1:
@@ -1232,6 +1252,8 @@ func _disasm_groups() -> Array:
 
 # ---------------------------------------------------------------- 解锁与面板
 func _level_unlocked(li: int) -> bool:
+	if GameData.free_roam:
+		return true
 	if li <= 0:
 		return true
 	if li - 1 >= _levels.size():

@@ -99,14 +99,14 @@ func _load_q() -> void:
 	var t := str(s.get("type", "choice"))
 	var has_interactive := sc.has("sliders") or sc.has("drag") or sc.has("break")
 	if t == "explore" and has_interactive:
-		_begin_interactive(sc)
+		_begin_interactive(s)
 		_build_explore(s)
 	elif t == "interact" and has_interactive:
-		_begin_interactive(sc)
+		_begin_interactive(s)
 		_build_interact(s)
 	else:
 		if has_interactive:
-			_begin_interactive(sc)
+			_begin_interactive(s)
 		_build_choices(s)
 
 	_ans.modulate.a = 0.0
@@ -116,11 +116,12 @@ func _load_q() -> void:
 	tw.tween_property(_q, "modulate:a", 1.0, 0.22)
 	_update_hud()
 
-func _begin_interactive(sc: Dictionary) -> void:
+func _begin_interactive(s: Dictionary) -> void:
+	var sc: Dictionary = s.get("scene", {})
 	if sc.has("break"):
 		_plane.begin_break(sc["break"])
 	elif sc.has("sliders"):
-		_plane.begin_sliders(sc["sliders"], sc.get("answers", {}), sc.get("tol", {}))
+		_plane.begin_sliders(sc["sliders"], s.get("answers", sc.get("answers", {})), s.get("tol", sc.get("tol", {})))
 	elif sc.has("drag"):
 		_plane.begin_drag(sc["drag"])
 
@@ -188,7 +189,7 @@ func _on_confirm() -> void:
 	var sc: Dictionary = s.get("scene", {})
 	# 两段式：先动手完成实验，再回答追问(建构知识)
 	if str(s.get("type", "")) == "explore" and not _explore_done:
-		var gate := bool(sc.get("gate", false))
+		var gate := bool(s.get("gate", sc.get("gate", false)))
 		var ok := _interactive_ok()
 		if (not gate) or ok:
 			_explore_done = true

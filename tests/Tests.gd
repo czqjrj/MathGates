@@ -22,6 +22,7 @@ func _eq(a, b, name: String) -> void:
 func _run() -> void:
 	_test_domain_mapping()
 	_test_lab_data()
+	_test_lab_plane()
 	_test_wrong_queries()
 	_test_review_order()
 	_test_focus()
@@ -57,6 +58,9 @@ func _test_lab_data() -> void:
 		{ "file": "res://data/functions_levels.json", "ids": ["func_concept", "func_domain", "func_range", "func_corr", "func_mono", "func_parity", "func_period", "func_exp_log", "func_abstract", "func_zeros", "func_power", "func_apply", "func_bisect"] },
 		{ "file": "res://data/set_logic_levels.json", "ids": ["set_ops", "set_interval", "logic_cond", "logic_neg", "logic_special"] },
 		{ "file": "res://data/inequalities_levels.json", "ids": ["ineq_quad", "ineq_basic"] },
+		{ "file": "res://data/circle_levels.json", "ids": ["circle_1_1", "circle_1_2", "circle_1_3", "circle_2_1", "circle_2_2", "circle_2_3", "circle_3_1", "circle_3_2", "circle_3_3", "circle_4_1", "circle_4_2", "circle_4_3", "circle_5_1", "circle_5_2", "circle_5_3", "circle_6_1", "circle_6_2", "circle_6_3", "circle_boss"] },
+		{ "file": "res://data/ellipse_levels.json", "ids": ["ellipse_1_1", "ellipse_1_2", "ellipse_1_3", "ellipse_2_1", "ellipse_2_2", "ellipse_2_3", "ellipse_3_1", "ellipse_3_2", "ellipse_3_3", "ellipse_4_1", "ellipse_4_2", "ellipse_4_3", "ellipse_5_1", "ellipse_5_2", "ellipse_5_3", "ellipse_boss"] },
+		{ "file": "res://data/vector_levels.json", "ids": ["vector_1_1", "vector_1_2", "vector_1_3", "vector_2_1", "vector_2_2", "vector_2_3", "vector_3_1", "vector_3_2", "vector_3_3", "vector_4_1", "vector_4_2", "vector_4_3", "vector_5_1", "vector_5_2", "vector_5_3", "vector_6_1", "vector_6_2", "vector_6_3", "vector_boss"] },
 		{ "file": "res://data/vectors_levels.json", "ids": ["vec_ops", "vec_coord", "vec_dot", "vec_collinear"] },
 		{ "file": "res://data/sequences_levels.json", "ids": ["seq_basic", "seq_recur", "seq_construct", "seq_displace", "seq_split", "seq_sn", "seq_concept"] },
 		{ "file": "res://data/conics_levels.json", "ids": ["conic_line_circle", "conic_def", "conic_pointdiff", "conic_tangent", "conic_fixed", "conic_range"] },
@@ -88,6 +92,49 @@ func _test_lab_data() -> void:
 					explore_total += 1
 		var min_explore: int = min(3, (spec["ids"] as Array).size())
 		_ok(explore_total >= min_explore, path + " has >=%d explore rounds" % min_explore)
+
+## 校验 LabPlane 的参数表达式求值与圆场景加载(圆/直线/向量等几何章节复用)。
+func _test_lab_plane() -> void:
+	_ok(load("res://scripts/modules/lab/LabStage.gd") != null, "LabStage loads")
+	var plane = load("res://scripts/modules/lab/LabPlane.gd").new()
+	add_child(plane)
+	plane.set_scene({
+		"range": 7,
+		"sliders": [
+			{ "name": "a", "min": -5, "max": 5, "value": 2, "step": 1 },
+			{ "name": "r", "min": 1, "max": 6, "value": 3, "step": 1 },
+		],
+		"circles": [ { "c": ["a", 0], "r": "r" } ],
+		"segments": [ { "p1": ["a", 0], "p2": ["a+r", 0] } ],
+	})
+	plane.begin_sliders([
+		{ "name": "a", "min": -5, "max": 5, "value": 2, "step": 1 },
+		{ "name": "r", "min": 1, "max": 6, "value": 3, "step": 1 },
+	])
+	_eq(plane._num("a+r", 0.0), 5.0, "expr a+r")
+	_eq(plane._num("-r", 0.0), -3.0, "expr -r")
+	_eq(plane._num("2*r", 0.0), 6.0, "expr 2*r")
+	_eq(plane._num("3-r", 0.0), 0.0, "expr 3-r")
+	_eq(plane._num("7", 0.0), 7.0, "expr literal")
+	_eq(plane._num("sqrt(16)", 0.0), 4.0, "expr sqrt")
+	_eq(plane._num("3*(a+r)-1", 0.0), 14.0, "expr nested")
+	_ok(absf(plane._num("cos(60)", 0.0) - 0.5) < 1e-6, "expr cos deg")
+	_ok(not plane.slider_summary().is_empty(), "slider summary non-empty")
+	plane.set_scene({
+		"range": 7,
+		"ellipses": [ { "a": 5, "b": 3, "axis": "x" } ],
+		"foci": [ { "c": 4, "axis": "x" } ],
+		"readouts": [ { "label": "S", "expr": "4*abs(3*sin(t))" } ],
+	})
+	plane.begin_sliders([ { "name": "t", "min": 0, "max": 360, "value": 60, "step": 5 } ])
+	_ok(absf(plane._num("sqrt((5*cos(t)+3)^2+(4*sin(t))^2)+sqrt((5*cos(t)-3)^2+(4*sin(t))^2)", 0.0) - 10.0) < 1e-6, "ellipse def_sum readout = 2a")
+	plane.begin_sliders([ { "name": "t", "min": 0, "max": 360, "value": 90, "step": 5 } ])
+	_ok(absf(plane._num("4*abs(3*sin(t))", 0.0) - 12.0) < 1e-6, "ellipse focal-tri area max")
+	plane.begin_sliders([ { "name": "e", "min": 0.01, "max": 0.99, "value": 0.6, "step": 0.01 } ])
+	_ok(absf(plane._num("sqrt(25-(5*e)^2)", 0.0) - 4.0) < 1e-6, "ellipse b from e")
+	plane.begin_sliders([ { "name": "b", "min": 1, "max": 5, "value": 4, "step": 0.25 } ])
+	_ok(absf(plane._num("sqrt(1-b*b/25)", 0.0) - 0.6) < 1e-6, "ecc from b")
+	plane.queue_free()
 
 func _test_wrong_queries() -> void:
 	var saved: Dictionary = GameData.wrong_log
@@ -271,7 +318,7 @@ func _test_daily() -> void:
 	GameData.daily_claimed = s_claimed
 	GameData.current_user = saved_user
 
-## 校验教材版本切换：章节重排、分册归属与章号齐备，方法章节在前。
+## 校验教材版本切换：章节重排、按教材章号合并、分册归属与章号齐备，方法章节在前。
 func _test_textbook() -> void:
 	var saved := GameData.textbook
 	_ok(GameData.textbook_list().size() >= 3, "textbook_list has >=3 versions")
@@ -291,20 +338,18 @@ func _test_textbook() -> void:
 				k_ids.append(cid)
 				_ok(GameData.book_of_chapter(cid) != "", "%s book of %s" % [vid, cid])
 				_ok(GameData.chapter_no(cid) != "", "%s chapter_no of %s" % [vid, cid])
-		var raw_k := 0
-		var raw_m := 0
+		# 知识章节按 (分册, 教材章号) 合并：展示章节数 = 去重后的分组数
+		var groups := {}
+		var listed := {}
+		for id in v.get("knowledge_order", []):
+			listed[str(id)] = true
 		for ch in GameData._chapters_raw:
 			if str(ch.get("kind", "knowledge")) == "method":
-				raw_m += 1
-			else:
-				raw_k += 1
-		_eq(k_ids.size(), raw_k, "%s knowledge count" % vid)
-		_eq(m_ids.size(), raw_m, "%s method count" % vid)
-		var k_want: Array = []
-		for id in v.get("knowledge_order", []):
-			if seen.has(str(id)):
-				k_want.append(str(id))
-		_eq(str(k_ids), str(k_want), "%s knowledge order" % vid)
+				continue
+			var cid := str(ch["id"])
+			_ok(listed.has(cid), "%s knowledge_order lists %s" % [vid, cid])
+			groups[GameData.book_of_chapter(cid) + "|" + GameData.chapter_no(cid)] = true
+		_eq(k_ids.size(), groups.size(), "%s merged knowledge count" % vid)
 		var m_want: Array = []
 		for id in v.get("method_order", []):
 			if seen.has(str(id)):

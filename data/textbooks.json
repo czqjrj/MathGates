@@ -15,11 +15,16 @@
       "method_order": ["recurrence_methods", "solid", "conic", "function_methods"],
       "knowledge_order": [
         "set_logic", "inequalities", "functions", "trig",
-        "vectors", "sequences", "conics", "probability", "derivative",
-        "complex", "counting", "thinking", "statistics", "random_var", "corr_data",
-        "line_eq", "space", "vector", "ellipse", "circle_eq", "hyperbola", "parabola",
-        "solid_basic"
+        "vector", "vectors", "complex", "solid_basic",
+        "statistics", "probability",
+        "line_eq", "circle_eq", "ellipse", "hyperbola", "parabola", "conics",
+        "sequences", "derivative", "space",
+        "counting", "random_var", "corr_data", "thinking"
       ],
+      "unit_titles": {
+        "bx2|第9章": "平面向量",
+        "xb1|第3章": "圆锥曲线与方程"
+      },
       "chapter_book": {
         "recurrence_methods": "xb1", "solid": "bx2", "conic": "xb1", "function_methods": "bx1",
         "set_logic": "bx1", "inequalities": "bx1", "functions": "bx1", "trig": "bx1",
@@ -55,12 +60,17 @@
       "method_order": ["recurrence_methods", "solid", "conic", "function_methods"],
       "knowledge_order": [
         "set_logic", "inequalities", "functions", "trig",
-        "vectors", "vector", "complex", "solid_basic", "statistics", "probability",
-        "space", "line_eq", "circle_eq", "conics", "ellipse", "hyperbola", "parabola",
+        "vector", "vectors", "complex", "solid_basic", "statistics", "probability",
+        "space", "line_eq", "circle_eq", "ellipse", "hyperbola", "parabola", "conics",
         "sequences", "derivative",
         "counting", "random_var", "corr_data",
         "thinking"
       ],
+      "unit_titles": {
+        "bx2|第6章": "平面向量",
+        "xb1|第2章": "直线和圆的方程",
+        "xb1|第3章": "圆锥曲线的方程"
+      },
       "chapter_book": {
         "recurrence_methods": "xb2", "solid": "bx2", "conic": "xb1", "function_methods": "bx1",
         "set_logic": "bx1", "inequalities": "bx1", "functions": "bx1", "trig": "bx1",
@@ -97,12 +107,18 @@
       "method_order": ["recurrence_methods", "solid", "conic", "function_methods"],
       "knowledge_order": [
         "set_logic", "inequalities", "functions", "statistics", "probability",
-        "trig", "vectors", "vector", "complex", "solid_basic",
-        "line_eq", "circle_eq", "conics", "ellipse", "hyperbola", "parabola",
+        "trig", "vector", "vectors", "complex", "solid_basic",
+        "line_eq", "circle_eq", "ellipse", "hyperbola", "parabola", "conics",
         "space", "counting", "random_var", "corr_data",
         "sequences", "derivative",
         "thinking"
       ],
+      "unit_titles": {
+        "bx1|第1章": "预备知识",
+        "bx2|第2章": "平面向量",
+        "xb1|第1章": "直线与圆",
+        "xb1|第2章": "圆锥曲线"
+      },
       "chapter_book": {
         "recurrence_methods": "xb2", "solid": "bx2", "conic": "xb1", "function_methods": "bx1",
         "set_logic": "bx1", "inequalities": "bx1", "functions": "bx1",
@@ -145,11 +161,16 @@
         "statistics", "probability", "vectors",
         "trig", "vector",
         "complex", "solid_basic",
-        "space", "line_eq", "circle_eq", "conics", "ellipse", "hyperbola", "parabola",
+        "space", "line_eq", "circle_eq", "ellipse", "hyperbola", "parabola", "conics",
         "counting", "random_var", "corr_data",
         "sequences", "derivative",
         "thinking"
       ],
+      "unit_titles": {
+        "xb1|第2章": "平面解析几何",
+        "bx2|第5章": "统计与概率",
+        "xb2|第4章": "随机变量与统计分析"
+      },
       "chapter_book": {
         "recurrence_methods": "xb3", "solid": "bx4", "conic": "xb1", "function_methods": "bx1",
         "set_logic": "bx1", "inequalities": "bx1", "functions": "bx1",
@@ -188,11 +209,16 @@
       "method_order": ["recurrence_methods", "solid", "conic", "function_methods"],
       "knowledge_order": [
         "set_logic", "inequalities", "functions", "trig", "statistics",
-        "vectors", "vector", "complex", "solid_basic", "probability",
-        "sequences", "line_eq", "circle_eq", "conics", "ellipse", "hyperbola", "parabola", "counting",
+        "vector", "vectors", "complex", "solid_basic", "probability",
+        "sequences", "line_eq", "circle_eq", "ellipse", "hyperbola", "parabola", "conics", "counting",
         "derivative", "space", "random_var", "corr_data",
         "thinking"
       ],
+      "unit_titles": {
+        "bx2|第1章": "平面向量",
+        "xb1|第2章": "平面解析几何初步",
+        "xb1|第3章": "圆锥曲线与方程"
+      },
       "chapter_book": {
         "recurrence_methods": "xb1", "solid": "bx2", "conic": "xb1", "function_methods": "bx1",
         "set_logic": "bx1", "inequalities": "bx1", "functions": "bx1", "trig": "bx1", "statistics": "bx1",
@@ -226,12 +252,16 @@
       "method_order": ["recurrence_methods", "solid", "conic", "function_methods"],
       "knowledge_order": [
         "set_logic", "inequalities", "functions",
-        "trig", "vectors", "vector", "complex",
+        "trig", "vector", "vectors", "complex",
         "solid_basic", "probability", "statistics",
-        "line_eq", "circle_eq", "conics", "ellipse", "hyperbola", "parabola", "space", "sequences", "derivative",
+        "line_eq", "circle_eq", "ellipse", "hyperbola", "parabola", "conics", "space", "sequences", "derivative",
         "counting", "random_var", "corr_data",
         "thinking"
       ],
+      "unit_titles": {
+        "bx2|第8章": "平面向量",
+        "xb1|第2章": "圆锥曲线"
+      },
       "chapter_book": {
         "recurrence_methods": "xb1", "solid": "bx3", "conic": "xb1", "function_methods": "bx1",
         "set_logic": "bx1", "inequalities": "bx1", "functions": "bx1",

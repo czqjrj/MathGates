@@ -114,6 +114,7 @@ var textbook: String = "sujiao"          # 当前教材版本(苏教/人教A/北
 var _chapters_raw: Array = []            # curriculum.json 原始章节(未按版本重排)
 var _textbooks: Array = []               # 教材版本定义(见 data/textbooks.json)
 var _textbook_default: String = "sujiao"
+var _chapter_members: Dictionary = {}    # 合并章节 id -> 成员原始章节 id 数组(仅合并章节存在)
 var stars: Dictionary = {}      # level_id -> int(0..3)
 var player_exp: int = 0
 var coins: int = 0
@@ -140,6 +141,7 @@ var pet_away_days: float = 0.0          # 本次登录距上次互动天数(不�
 var regions_seen: int = 0               # 已见过的解锁区域数(用于"解锁新区域"庆祝)
 var pet_greeted_session: bool = false   # 本次运行是否已让萌宠撒娇(不存档)
 var chapter_order: Array = []           # 知识体系首页章节卡片的自定义顺序(章节 id 列表)
+var free_roam: bool = false               # 编辑/自由模式：解锁全部关卡
 
 # 当前进入的关卡(供战斗场景读取)
 var current_chapter_index: int = -1
@@ -168,6 +170,7 @@ func _ready() -> void:
 	_load_curriculum()
 	_load_questions()
 	_load_users()
+	_sync_free_roam_from_settings()
 
 # ---------------------------------------------------------------- 教材版本
 func _load_textbooks() -> void:
@@ -220,6 +223,18 @@ func set_textbook(id: String) -> void:
 	_save()
 	progress_changed.emit()
 
+func set_free_roam(v: bool) -> void:
+	free_roam = v
+	progress_changed.emit()
+
+## 从 settings.json 同步自由/编辑模式
+func _sync_free_roam_from_settings() -> void:
+	if not FileAccess.file_exists(SETTINGS_PATH):
+		return
+	var data = JSON.parse_string(FileAccess.get_file_as_string(SETTINGS_PATH))
+	if typeof(data) == TYPE_DICTIONARY:
+		free_roam = bool(data.get("editor_mode", free_roam))
+
 ## 从 settings.json 读取教材版本(避免依赖 Settings 自加载顺序)
 func _read_textbook_setting() -> String:
 	if not FileAccess.file_exists(SETTINGS_PATH):
@@ -235,6 +250,7 @@ func _apply_curriculum_order() -> void:
 	var cfg := textbook_def(textbook)
 	if cfg.is_empty():
 		chapters = _chapters_raw.duplicate()
+		_chapter_members.clear()
 		return
 	var by_id: Dictionary = {}
 	for ch in _chapters_raw:
@@ -256,6 +272,78 @@ func _apply_curriculum_order() -> void:
 			out.append(ch)
 			used[sid] = true
 	chapters = out
+	_apply_chapter_grouping()
+
+## 按教材章号合并知识章节：同「分册 + 章号」的知识章节合并为一张章节卡片，
+## 关卡数据全部保留，仅调整归类。例如人教A选必一：
+##   第2章 直线和圆的方程 = 直线方程 + 圆的方程；
+##   第3章 圆锥曲线的方程 = 椭圆 + 双曲线 + 抛物线 + 解析几何。
+## 合并后每关的 "group" 记为其原章节标题，供知识地图按「单元」分组显示。
+## 方法推演章节不参与合并。
+func _apply_chapter_grouping() -> void:
+	_chapter_members.clear()
+	if textbook_def(textbook).is_empty():
+		return
+	var counts: Dictionary = {}
+	for ch in chapters:
+		var info := _group_key_of(ch)
+		if not info.is_empty():
+			var k := str(info["key"])
+			counts[k] = int(counts.get(k, 0)) + 1
+	var out: Array = []
+	var pos: Dictionary = {}
+	for ch in chapters:
+		var info := _group_key_of(ch)
+		if info.is_empty() or int(counts.get(str(info["key"]), 0)) <= 1:
+			out.append(ch)
+			continue
+		var key := str(info["key"])
+		if pos.has(key):
+			var g: Dictionary = out[int(pos[key])]
+			var lvs: Array = g["levels"]
+			for lv in ch.get("levels", []):
+				var lv2: Dictionary = (lv as Dictionary).duplicate(true)
+				lv2["group"] = str(ch.get("title", ""))
+				lvs.append(lv2)
+			g["levels"] = lvs
+			(_chapter_members[str(g["id"])] as Array).append(str(ch.get("id", "")))
+		else:
+			var g2: Dictionary = ch.duplicate(true)
+			var lvarr: Array = g2.get("levels", [])
+			for i in lvarr.size():
+				(lvarr[i] as Dictionary)["group"] = str(ch.get("title", ""))
+			g2["levels"] = lvarr
+			g2["title"] = _unit_title(str(info["bk"]), str(info["no"]), str(ch.get("title", "")))
+			pos[key] = out.size()
+			out.append(g2)
+			_chapter_members[str(g2["id"])] = [str(ch.get("id", ""))]
+	chapters = out
+
+## 章节的合并键(分册 + 章号)；非知识章节或缺少分册/章号时返回 {}。
+func _group_key_of(ch: Dictionary) -> Dictionary:
+	if str(ch.get("kind", "knowledge")) == "method":
+		return {}
+	var cid := str(ch.get("id", ""))
+	var no := chapter_no(cid)
+	var bk := book_of_chapter(cid)
+	if no == "" or bk == "":
+		return {}
+	return { "key": bk + "|" + no, "bk": bk, "no": no }
+
+## 合并章节的显示标题：优先取教材版本的 unit_titles 覆盖，否则沿用首个成员标题。
+func _unit_title(bk: String, no: String, fallback: String) -> String:
+	var m = textbook_def(textbook).get("unit_titles", {})
+	if typeof(m) == TYPE_DICTIONARY and m.has(bk + "|" + no):
+		return str(m[bk + "|" + no])
+	return fallback
+
+## 章节(可能是合并章节)是否归属于某知识领域。
+func _chapter_in_domain(chapter_id: String, d: Dictionary) -> bool:
+	var members: Array = _chapter_members.get(chapter_id, [chapter_id])
+	for m in members:
+		if str(m) in d["chapters"]:
+			return true
+	return false
 
 # ---------------------------------------------------------------- 课程
 func _load_curriculum() -> void:
@@ -404,6 +492,8 @@ func _chapter_playable(ch: Dictionary) -> bool:
 	return false
 
 func is_chapter_unlocked(index: int) -> bool:
+	if free_roam:
+		return true
 	if index <= 0:
 		return true
 	# 只找「同体系」里上一个可进入的章节作为解锁门槛,方法推演与知识体系互不干扰
@@ -428,6 +518,10 @@ func chapter_max_stars(chapter: Dictionary) -> int:
 func is_level_unlocked(chapter_index: int, level_index: int) -> bool:
 	if chapter_index < 0 or chapter_index >= chapters.size():
 		return false
+	if level_index < 0 or level_index >= (chapters[chapter_index]["levels"] as Array).size():
+		return false
+	if free_roam:
+		return true
 	if not is_chapter_unlocked(chapter_index):
 		return false
 	if level_index <= 0:
@@ -941,7 +1035,7 @@ func _recompute_mastery() -> void:
 		var sum := 0.0
 		var cnt := 0
 		for ch in chapters:
-			if not (str(ch.get("id", "")) in d["chapters"]):
+			if not _chapter_in_domain(str(ch.get("id", "")), d):
 				continue
 			for lv in ch.get("levels", []):
 				sum += level_mastery(str(lv["id"]))
@@ -1079,7 +1173,7 @@ func _domain_of_level(level_id: String) -> Dictionary:
 		if cid != "":
 			break
 	for d in DOMAINS:
-		if cid in d["chapters"]:
+		if _chapter_in_domain(cid, d):
 			return d
 	return {}
 
@@ -1222,7 +1316,7 @@ func _weakest_level_in_domain(domain_id: String) -> Dictionary:
 	var best: Dictionary = {}
 	var best_key := INF
 	for ci in chapters.size():
-		if not (str(chapters[ci].get("id", "")) in d["chapters"]):
+		if not _chapter_in_domain(str(chapters[ci].get("id", "")), d):
 			continue
 		var levels: Array = chapters[ci].get("levels", [])
 		for li in levels.size():

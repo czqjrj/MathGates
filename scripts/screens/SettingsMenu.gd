@@ -64,6 +64,8 @@ func _build_body() -> void:
 	vb.add_child(_toggle_row("全屏显示", "以全屏方式运行(移动端忽略此项)", Settings.fullscreen, Settings.set_fullscreen))
 	vb.add_child(_toggle_row("界面动效", "卡片入场、按钮回弹等过渡动画", Settings.animations, Settings.set_animations))
 	vb.add_child(_divider())
+	vb.add_child(_toggle_row("编辑模式（全解锁）", "无需通关也可选择任意关卡（测试/编辑用）", Settings.editor_mode, Settings.set_editor_mode))
+	vb.add_child(_divider())
 	vb.add_child(UI.make_label("提示：调整字号后会自动重建当前页面以应用新的整体布局。", 13, UI.COL_TEXT_DIM))
 
 	var pad := Control.new()
