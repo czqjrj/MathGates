@@ -36,7 +36,7 @@ func _ready() -> void:
 ## 立体几何 / 空间向量章节：真实 3D 关卡冒烟。
 func _smoke_3d() -> void:
 	var cases := [
-		["solid_basic", ["solid_kinds", "solid_surface", "solid_volume", "solid_diag", "solid_sphere", "solid_axiom", "solid_parallel", "solid_view", "solid_frustum", "solid_par_prop", "solid_perp_prop", "solid_angle", "solid_distance"]],
+		["solid_basic", ["solid_kinds", "solid_frustum", "solid_surface", "solid_volume", "solid_diag", "solid_sphere", "solid_view", "solid_axiom", "solid_parallel", "solid_perp_prop", "solid_angle", "solid_distance"]],
 		["space", ["space_1_1", "space_1_2", "space_1_3", "space_2_1", "space_2_2", "space_2_3", "space_3_1", "space_3_2", "space_3_3", "space_4_1", "space_4_2", "space_4_3", "space_5_1", "space_5_2", "space_5_3", "space_6_1", "space_6_2", "space_6_3", "space_boss"]],
 	]
 	for c in cases:
