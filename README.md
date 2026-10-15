@@ -21,16 +21,21 @@ scripts/         总控与共享逻辑(按职责分目录)
   save/            SaveIO.gd(存档原子读写:临时文件校验 + 备份 + 替换;GameData 存档 IO 委托于此)
   screens/         BootSplash.gd(品牌启动屏,规避引擎启动屏缩放 bug)、Login.gd、MainHub.gd、
 				   WorldMap.gd、UserProfile.gd、SettingsMenu.gd、ChapterNode.gd、
-				   Battle.gd(通用战斗/占位关卡)、StageBase.gd(2D 闯关共享骨架:
-				   HUD/答题面板/选项/结算/上下关导航;由 LabStage 继承,服务于圆/椭圆/向量/直线及各 LAB 章节)
-  modules/         知识模块:conic/ lab/ line/ sequence/ solid/ space/
-				   lab/ 为通用三阶段闯关(LabStage + LabPlane:滑块/拖动实时重绘 + 读数),
-				   承载圆/椭圆/向量/直线等章节;line/ 仅余 TheoremTree.gd(被知识树共用)
+				   Battle.gd(通用战斗/占位关卡)、StageBase.gd(闯关共享骨架:
+				   HUD/答题面板/选项/结算/上下关导航;由 LabStage、Lab3DStage 继承,
+				   服务于圆/椭圆/向量/直线及各 LAB 章节,以及立体几何/空间向量的 3D 章节)
+  modules/         知识模块:conic/ lab/ lab3d/ line/ sequence/ solid/
+				   lab/ 为通用三阶段 2D 闯关(LabStage + LabPlane:滑块/拖动实时重绘 + 读数),
+				   承载圆/椭圆/向量/直线等章节;line/ 仅余 TheoremTree.gd(被知识树共用);
+				   lab3d/ 为通用三阶段真实网格 3D 闯关(Lab3DStage + Lab3DView + SolidBuilder + NumExpr:
+				   可旋转/缩放 3D 视口 + 参数滑块实时重建 + 生长/演示动画),
+				   承载立体几何初步(solid_basic)与空间向量与立体几何(space)
 data/            课程表与题库 JSON(curriculum/questions + 各模块 *_levels.json)
 art/             美术 PNG/WebP + 公式小图 + Android 图标 + 标题字体(art/fonts/,放入行书 ttf 即自动启用)
 audio/           音效 wav
 tools/           开发/测试脚本:check_all.gd(脚本检查)、smoke_scene(全场景冒烟)、
-				 capture_scene(截图)、dev_seq(单关调试)
+				 capture_scene(截图)、dev_seq(单关调试)、
+				 lab3d_render_check(立体几何/空间向量 3D 场景渲染自检,需真实窗口)
 tests/           回归测试(GameData 纯逻辑)
 build/           导出产物(APK,git 忽略)
 ```
@@ -67,4 +72,5 @@ build/           导出产物(APK,git 忽略)
 - 课程/章节/解锁关系:`data/curriculum.json`
 - 教材版本(苏教/人教A/人教B/北师大/湘教/沪教):分册、章节排序与章号:`data/textbooks.json`
 - 通用题库:`data/questions.json`;各模块关卡:`data/*_levels.json`。几何类章节(圆/椭圆/向量/直线)已统一为 `lab` 三阶段格式,对应 `circle_levels.json / ellipse_levels.json / vector_levels.json / line_levels.json`,场景统一为 `res://scenes/LabStage.tscn`
+- 立体几何 / 空间向量章节已统一为 `lab3d` 三阶段真实 3D 格式,对应 `solid_basic_levels.json`(立体几何初步,含「基本事实(公理)」旗舰关 `solid_axiom`)与 `space_levels.json`(空间向量与立体几何),场景统一为 `res://scenes/Lab3DStage.tscn`。3D 场景描述见 `scripts/modules/lab3d/SolidBuilder.gd`
 - 立体几何方法讲解:`data/solid_methods.json` + `scripts/modules/solid/topics/*.gd`

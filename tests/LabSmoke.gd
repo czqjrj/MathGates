@@ -1,8 +1,8 @@
 extends Node
 ## 几何章节「实验探究」运行期冒烟测试（headless）。
 ## 运行： godot --headless --path <项目> res://tests/LabSmoke.tscn
-## 作用：为各几何章节的关键关卡实例化 LabStage，确认数据可被载入、
-##       平面控件创建成功、无脚本错误（打印 TMP_OK 即正常）。
+## 作用：为各几何章节的关键关卡实例化 LabStage（2D）/ Lab3DStage（真实 3D），
+##       确认数据可被载入、视图控件创建成功、无脚本错误（打印 TMP_OK 即正常）。
 
 func _ready() -> void:
 	var cases := [
@@ -29,5 +29,32 @@ func _ready() -> void:
 			print("TMP %s/%s rounds=%d type0=%s plane=%s" % [lab, id, stages.size(), t0, str(st._plane != null)])
 			st.queue_free()
 			await get_tree().process_frame
+	await _smoke_3d()
 	print("TMP_OK")
 	get_tree().quit(0)
+
+## 立体几何 / 空间向量章节：真实 3D 关卡冒烟。
+func _smoke_3d() -> void:
+	var cases := [
+		["solid_basic", ["solid_kinds", "solid_surface", "solid_volume", "solid_diag", "solid_sphere", "solid_axiom", "solid_parallel", "solid_view", "solid_frustum", "solid_par_prop", "solid_perp_prop"]],
+		["space", ["space_1_1", "space_1_2", "space_1_3", "space_2_1", "space_2_2", "space_2_3", "space_3_1", "space_3_2", "space_3_3", "space_4_1", "space_4_2", "space_4_3", "space_5_1", "space_5_2", "space_5_3", "space_6_1", "space_6_2", "space_6_3", "space_boss"]],
+	]
+	for c in cases:
+		var lab: String = c[0]
+		for id in c[1]:
+			GameData.current_level = {
+				"id": id, "lab": lab, "lab_ref": id,
+				"scene": "res://scenes/Lab3DStage.tscn",
+			}
+			var st = load("res://scenes/Lab3DStage.tscn").instantiate()
+			add_child(st)
+			await get_tree().process_frame
+			await get_tree().process_frame
+			await get_tree().process_frame
+			var stages: Array = st._stages
+			var t0 := "choice"
+			if stages.size() > 0:
+				t0 = str((stages[0] as Dictionary).get("type", "choice"))
+			print("TMP3D %s/%s rounds=%d type0=%s view3d=%s" % [lab, id, stages.size(), t0, str(st._view3d != null)])
+			st.queue_free()
+			await get_tree().process_frame
