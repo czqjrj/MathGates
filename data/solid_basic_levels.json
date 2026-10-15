@@ -2762,7 +2762,41 @@
           "highlight": [
             "a1b1"
           ],
-          "gate": false
+          "gate": false,
+          "anim": [
+            {
+              "a": "reveal",
+              "dur": 0.5
+            },
+            {
+              "a": "view",
+              "to": "iso",
+              "dur": 0.7,
+              "hold": 0.4
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "a1b1"
+              ],
+              "dur": 0.2,
+              "hold": 0.7
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "abcd"
+              ],
+              "dur": 0.2,
+              "hold": 0.8
+            },
+            {
+              "a": "view",
+              "to": "front",
+              "dur": 0.8,
+              "hold": 0.5
+            }
+          ]
         },
         "steps": [
           "旋转模型，确认 A₁B₁ 与 AB 平行，且 A₁B₁ 不在平面 ABCD 内",
@@ -2890,7 +2924,50 @@
             "ab",
             "a1b1"
           ],
-          "gate": false
+          "gate": false,
+          "anim": [
+            {
+              "a": "reveal",
+              "dur": 0.5
+            },
+            {
+              "a": "view",
+              "to": "iso",
+              "dur": 0.7,
+              "hold": 0.4
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "ab"
+              ],
+              "dur": 0.2,
+              "hold": 0.6
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "a1b1"
+              ],
+              "dur": 0.2,
+              "hold": 0.6
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "ab",
+                "a1b1"
+              ],
+              "dur": 0.2,
+              "hold": 0.8
+            },
+            {
+              "a": "view",
+              "to": "front",
+              "dur": 0.8,
+              "hold": 0.5
+            }
+          ]
         },
         "steps": [
           "旋转模型，找到过 A₁B₁ 且与平面ABCD 相交的平面 ABB₁A₁",
@@ -3018,7 +3095,51 @@
             "a1b1",
             "a1d1"
           ],
-          "gate": false
+          "gate": false,
+          "anim": [
+            {
+              "a": "reveal",
+              "dur": 0.5
+            },
+            {
+              "a": "view",
+              "to": "iso",
+              "dur": 0.7,
+              "hold": 0.4
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "a1b1"
+              ],
+              "dur": 0.2,
+              "hold": 0.6
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "a1d1"
+              ],
+              "dur": 0.2,
+              "hold": 0.6
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "top"
+              ],
+              "dur": 0.2,
+              "hold": 0.7
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "abcd"
+              ],
+              "dur": 0.2,
+              "hold": 0.8
+            }
+          ]
         },
         "steps": [
           "旋转模型，确认 A₁B₁、A₁D₁ 是上底面内两条相交直线",
@@ -3162,7 +3283,52 @@
             "ab",
             "a1b1"
           ],
-          "gate": false
+          "gate": false,
+          "anim": [
+            {
+              "a": "reveal",
+              "dur": 0.5
+            },
+            {
+              "a": "view",
+              "to": "iso",
+              "dur": 0.7,
+              "hold": 0.4
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "g"
+              ],
+              "dur": 0.2,
+              "hold": 0.7
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "ab"
+              ],
+              "dur": 0.2,
+              "hold": 0.6
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "a1b1"
+              ],
+              "dur": 0.2,
+              "hold": 0.6
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "ab",
+                "a1b1"
+              ],
+              "dur": 0.2,
+              "hold": 0.8
+            }
+          ]
         },
         "steps": [
           "旋转模型，找到与两个平行平面都相交的平面 ABB₁A₁",
@@ -3306,7 +3472,41 @@
           "highlight": [
             "aa1"
           ],
-          "gate": false
+          "gate": false,
+          "anim": [
+            {
+              "a": "reveal",
+              "dur": 0.5
+            },
+            {
+              "a": "view",
+              "to": "iso",
+              "dur": 0.7,
+              "hold": 0.4
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "aa1"
+              ],
+              "dur": 0.2,
+              "hold": 0.6
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "abcd"
+              ],
+              "dur": 0.2,
+              "hold": 0.8
+            },
+            {
+              "a": "view",
+              "to": "front",
+              "dur": 0.8,
+              "hold": 0.5
+            }
+          ]
         },
         "steps": [
           "旋转模型，确认 AA₁ ⊥ AB 且 AA₁ ⊥ AD",
@@ -3418,7 +3618,50 @@
             "aa1",
             "bd"
           ],
-          "gate": false
+          "gate": false,
+          "anim": [
+            {
+              "a": "reveal",
+              "dur": 0.5
+            },
+            {
+              "a": "view",
+              "to": "iso",
+              "dur": 0.7,
+              "hold": 0.4
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "aa1"
+              ],
+              "dur": 0.2,
+              "hold": 0.6
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "bd"
+              ],
+              "dur": 0.2,
+              "hold": 0.6
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "aa1",
+                "bd"
+              ],
+              "dur": 0.2,
+              "hold": 0.9
+            },
+            {
+              "a": "rotate",
+              "turns": 0.4,
+              "dur": 1.2,
+              "hold": 0.4
+            }
+          ]
         },
         "steps": [
           "旋转模型，观察 AA₁ 与底面内的直线 BD",
@@ -3530,7 +3773,50 @@
             "aa1",
             "bb1"
           ],
-          "gate": false
+          "gate": false,
+          "anim": [
+            {
+              "a": "reveal",
+              "dur": 0.5
+            },
+            {
+              "a": "view",
+              "to": "iso",
+              "dur": 0.7,
+              "hold": 0.4
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "aa1"
+              ],
+              "dur": 0.2,
+              "hold": 0.6
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "bb1"
+              ],
+              "dur": 0.2,
+              "hold": 0.6
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "aa1",
+                "bb1"
+              ],
+              "dur": 0.2,
+              "hold": 0.9
+            },
+            {
+              "a": "view",
+              "to": "front",
+              "dur": 0.8,
+              "hold": 0.5
+            }
+          ]
         },
         "steps": [
           "旋转模型，观察两条都垂直于底面的直线 AA₁ 与 BB₁",
@@ -3727,7 +4013,51 @@
             "pitch": 20,
             "zoom": 1
           },
-          "gate": false
+          "gate": false,
+          "anim": [
+            {
+              "a": "reveal",
+              "dur": 0.5
+            },
+            {
+              "a": "view",
+              "to": "iso",
+              "dur": 0.7,
+              "hold": 0.3
+            },
+            {
+              "a": "vars",
+              "to": {
+                "deg": 35
+              },
+              "dur": 1,
+              "hold": 0.5
+            },
+            {
+              "a": "vars",
+              "to": {
+                "deg": 90
+              },
+              "dur": 1,
+              "hold": 0.8
+            },
+            {
+              "a": "vars",
+              "to": {
+                "deg": 140
+              },
+              "dur": 1,
+              "hold": 0.4
+            },
+            {
+              "a": "vars",
+              "to": {
+                "deg": 90
+              },
+              "dur": 1,
+              "hold": 0.6
+            }
+          ]
         },
         "steps": [
           "把 θ 调到 90°，观察两个半平面恰好互相垂直",
@@ -3846,7 +4176,49 @@
           "highlight": [
             "aa1"
           ],
-          "gate": false
+          "gate": false,
+          "anim": [
+            {
+              "a": "reveal",
+              "dur": 0.5
+            },
+            {
+              "a": "view",
+              "to": "iso",
+              "dur": 0.7,
+              "hold": 0.4
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "aa1"
+              ],
+              "dur": 0.2,
+              "hold": 0.6
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "abb1a1"
+              ],
+              "dur": 0.2,
+              "hold": 0.6
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "abcd"
+              ],
+              "dur": 0.2,
+              "hold": 0.8
+            },
+            {
+              "a": "view",
+              "to": "front",
+              "dur": 0.8,
+              "hold": 0.5
+            }
+          ]
         },
         "steps": [
           "旋转模型，观察平面 ABB₁A₁ 与平面 ABCD 所成的二面角",
@@ -3934,7 +4306,7 @@
               ],
               "color": "#ffd479",
               "width": 0.038,
-              "id": "a"
+              "id": "line_a"
             }
           ],
           "right_angles": [
@@ -4008,7 +4380,41 @@
           "highlight": [
             "a"
           ],
-          "gate": false
+          "gate": false,
+          "anim": [
+            {
+              "a": "reveal",
+              "dur": 0.5
+            },
+            {
+              "a": "view",
+              "to": "iso",
+              "dur": 0.7,
+              "hold": 0.5
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "line_a"
+              ],
+              "dur": 0.2,
+              "hold": 0.7
+            },
+            {
+              "a": "highlight",
+              "ids": [
+                "b"
+              ],
+              "dur": 0.2,
+              "hold": 0.7
+            },
+            {
+              "a": "rotate",
+              "turns": 0.4,
+              "dur": 1.2,
+              "hold": 0.4
+            }
+          ]
         },
         "steps": [
           "旋转模型，找到两个互相垂直平面的交线 l",
