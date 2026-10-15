@@ -9,6 +9,7 @@ func _ready() -> void:
 		["circle", ["circle_1_1", "circle_2_2", "circle_3_2", "circle_5_2", "circle_6_3", "circle_boss"]],
 		["ellipse", ["ellipse_1_1", "ellipse_2_1", "ellipse_3_2", "ellipse_4_2", "ellipse_5_1", "ellipse_boss"]],
 		["vector", ["vector_1_1", "vector_1_2", "vector_2_1", "vector_2_2", "vector_2_3", "vector_3_2", "vector_3_3", "vector_4_1", "vector_4_3", "vector_5_1", "vector_5_2", "vector_6_3", "vector_boss"]],
+		["line", ["line_1_1", "line_1_3", "line_2_2", "line_2_3", "line_3_1", "line_3_2", "line_3_3", "line_4_1", "line_4_2", "line_4_3", "line_5_1", "line_5_2", "line_6_1", "line_6_2", "line_6_3", "line_boss"]],
 	]
 	for c in cases:
 		var lab: String = c[0]
