@@ -452,7 +452,7 @@
       "color": "#7EC8FF",
       "hidden": true,
       "levels": [
-        { "id": "solid_kinds",   "name": "1-1 认识空间几何体 · 棱", "technique": "顶点 · 棱 · 面 / 欧拉公式", "archetype": "LAB", "lab": "solid_basic", "lab_ref": "solid_kinds",   "scene": "res://scenes/Lab3DStage.tscn" },
+        { "id": "solid_kinds",   "name": "1-1 认识空间几何体 · 棱", "technique": "顶点 · 棱 · 面", "archetype": "LAB", "lab": "solid_basic", "lab_ref": "solid_kinds",   "scene": "res://scenes/Lab3DStage.tscn" },
         { "id": "solid_surface", "name": "2-1 表面积与展开",        "technique": "侧面展开 · S=2πrh",       "archetype": "LAB", "lab": "solid_basic", "lab_ref": "solid_surface", "scene": "res://scenes/Lab3DStage.tscn" },
         { "id": "solid_volume",  "name": "3-1 体积",                "technique": "V=Sh / V=⅓Sh",            "archetype": "LAB", "lab": "solid_basic", "lab_ref": "solid_volume",  "scene": "res://scenes/Lab3DStage.tscn" },
         { "id": "solid_diag",    "name": "4-1 体对角线与截面",      "technique": "体对角线 √3a",            "archetype": "LAB", "lab": "solid_basic", "lab_ref": "solid_diag",    "scene": "res://scenes/Lab3DStage.tscn" },
