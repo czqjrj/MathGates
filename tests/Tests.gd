@@ -75,7 +75,7 @@ func _test_lab_data() -> void:
 		{ "file": "res://data/corr_data_levels.json", "ids": ["cd_scatter", "cd_regress", "cd_indep"] },
 		{ "file": "res://data/hyperbola_levels.json", "ids": ["hypo_def", "hypo_std", "hypo_asym", "hypo_ecc", "hypo_apply", "hypo_focal_tri", "hypo_focal_radius", "hypo_pointdiff", "hypo_line", "hypo_conjugate", "hypo_fixed"] },
 		{ "file": "res://data/parabola_levels.json", "ids": ["para_def", "para_std", "para_geo", "para_chord", "para_apply", "para_props", "para_focal_chord", "para_pointdiff", "para_line", "para_fixed", "para_maxmin"] },
-		{ "file": "res://data/solid_basic_levels.json", "ids": ["solid_kinds", "solid_surface", "solid_volume", "solid_diag", "solid_sphere", "solid_axiom", "solid_parallel", "solid_view", "solid_frustum", "solid_par_prop", "solid_perp_prop"] },
+		{ "file": "res://data/solid_basic_levels.json", "ids": ["solid_kinds", "solid_surface", "solid_volume", "solid_diag", "solid_sphere", "solid_axiom", "solid_parallel", "solid_view", "solid_frustum", "solid_par_prop", "solid_perp_prop", "solid_angle", "solid_distance"] },
 		{ "file": "res://data/space_levels.json", "ids": ["space_1_1", "space_1_2", "space_1_3", "space_2_1", "space_2_2", "space_2_3", "space_3_1", "space_3_2", "space_3_3", "space_4_1", "space_4_2", "space_4_3", "space_5_1", "space_5_2", "space_5_3", "space_6_1", "space_6_2", "space_6_3", "space_boss"] },
 	]
 	for spec in specs:

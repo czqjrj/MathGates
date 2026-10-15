@@ -2162,30 +2162,30 @@
           "scene": "res://scenes/Lab3DStage.tscn"
         },
         {
-          "id": "solid_kinds_2",
-          "name": "1-2 探究：棱柱的结构",
-          "technique": "底面/侧面/侧棱",
+          "id": "solid_surface",
+          "name": "2-1 表面积与展开",
+          "technique": "侧面展开 · S=2πrh",
           "archetype": "LAB",
           "lab": "solid_basic",
-          "lab_ref": "solid_kinds",
+          "lab_ref": "solid_surface",
           "scene": "res://scenes/Lab3DStage.tscn"
         },
         {
-          "id": "solid_kinds_3",
-          "name": "1-3 探究：棱锥与棱台",
-          "technique": "结构对比",
+          "id": "solid_volume",
+          "name": "3-1 体积",
+          "technique": "V=Sh / V=⅓Sh",
           "archetype": "LAB",
           "lab": "solid_basic",
-          "lab_ref": "solid_kinds",
+          "lab_ref": "solid_volume",
           "scene": "res://scenes/Lab3DStage.tscn"
         },
         {
-          "id": "solid_kinds_4",
-          "name": "1-4 探究：圆柱/圆锥/圆台/球",
-          "technique": "旋转体认识",
+          "id": "solid_diag",
+          "name": "4-1 体对角线与截面",
+          "technique": "体对角线 √3a",
           "archetype": "LAB",
           "lab": "solid_basic",
-          "lab_ref": "solid_kinds",
+          "lab_ref": "solid_diag",
           "scene": "res://scenes/Lab3DStage.tscn"
         },
         {
@@ -2200,7 +2200,7 @@
         {
           "id": "solid_axiom",
           "name": "6-1 空间点线面位置关系",
-          "technique": "基本事实 · 异面直线",
+          "technique": "基本事实 · 等角定理 · 异面直线",
           "archetype": "LAB",
           "lab": "solid_basic",
           "lab_ref": "solid_axiom",
@@ -2217,8 +2217,8 @@
         },
         {
           "id": "solid_view",
-          "name": "8-1 三视图与直观图",
-          "technique": "三视图 · 斜二测画法",
+          "name": "8-1 直观图与三视图",
+          "technique": "斜二测画法 · 三视图",
           "archetype": "LAB",
           "lab": "solid_basic",
           "lab_ref": "solid_view",
@@ -2245,10 +2245,28 @@
         {
           "id": "solid_perp_prop",
           "name": "11-1 直线与平面垂直的性质",
-          "technique": "同垂直一平面 ⇒ 平行",
+          "technique": "线面垂直 ⇒ 线线垂直",
           "archetype": "LAB",
           "lab": "solid_basic",
           "lab_ref": "solid_perp_prop",
+          "scene": "res://scenes/Lab3DStage.tscn"
+        },
+        {
+          "id": "solid_angle",
+          "name": "12-1 空间角（几何法）",
+          "technique": "异面角 · 线面角 · 二面角",
+          "archetype": "LAB",
+          "lab": "solid_basic",
+          "lab_ref": "solid_angle",
+          "scene": "res://scenes/Lab3DStage.tscn"
+        },
+        {
+          "id": "solid_distance",
+          "name": "13-1 空间距离（几何法）",
+          "technique": "点面距 · 等体积法",
+          "archetype": "LAB",
+          "lab": "solid_basic",
+          "lab_ref": "solid_distance",
           "scene": "res://scenes/Lab3DStage.tscn"
         }
       ]
