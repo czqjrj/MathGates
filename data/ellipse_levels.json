@@ -152,8 +152,8 @@
         "scene": {
           "range": 9,
           "sliders": [
-            { "name": "a", "min": 2, "max": 6, "value": 5, "step": 0.5, "label": "长半轴 a" },
-            { "name": "c", "min": 0, "max": 5, "value": 3, "step": 0.5, "label": "半焦距 c" }
+            { "name": "a", "min": 4, "max": 6, "value": 5, "step": 0.5, "label": "长半轴 a" },
+            { "name": "c", "min": 0, "max": 3, "value": 3, "step": 0.5, "label": "半焦距 c" }
           ],
           "ellipses": [ { "a": "a", "b": "sqrt(a*a-c*c)", "axis": "x", "color": "#ff7ea8" } ],
           "foci": [ { "c": "c", "axis": "x", "color": "#fb7185" } ],

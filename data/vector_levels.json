@@ -337,7 +337,7 @@
         "type": "explore",
         "q": "动手实验：a=(2,1) 固定，b 的起点接在 a 的终点上(首尾相接)。拖动滑块改变 b，让 a+b 的终点落到目标 (3,2)。",
         "scene": {
-          "range": 5,
+          "range": 6,
           "sliders": [
             {
               "name": "bx",
@@ -1990,7 +1990,7 @@
         "explain": "a·a=|a|²，所以 |a|=√(a·a)=√(x₁²+y₁²)，而 |a|²=a·a。常见错误是漏掉开方，把 |a| 写成 a·a。",
         "scene": {
           "axes": true,
-          "range": 3,
+          "range": 5,
           "vectors": [
             {
               "from": [
@@ -2733,7 +2733,7 @@
         "explain": "外心是三角形外接圆圆心，故 |OA|=|OB|=|OC|。这是模长相等，不是向量相等(方向可不同);OA+OB+OC=0 是重心的特征。",
         "scene": {
           "axes": true,
-          "range": 4,
+          "range": 5,
           "circles": [
             {
               "c": [
