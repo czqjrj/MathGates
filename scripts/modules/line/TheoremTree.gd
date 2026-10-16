@@ -1089,12 +1089,6 @@ func _build_map(recenter_map: bool) -> void:
 	var content_h := TOP_MARGIN + maxf(0.0, float(rows - 1)) * ROW_H + BOTTOM_MARGIN
 	_content.custom_minimum_size = Vector2(content_w, content_h)
 
-	var tip := UI.mono_label("地图：沿单元路径逐点点亮知识点", 13, Color(UI.COL_TEXT_DIM, 0.8), HORIZONTAL_ALIGNMENT_CENTER)
-	tip.position = Vector2(0, 76)
-	tip.size = Vector2(content_w, 20)
-	tip.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_content.add_child(tip)
-
 	var main_centers := PackedVector2Array()
 	var li_center: Dictionary = {}
 	var infos: Array = []
