@@ -63,7 +63,7 @@ func _test_lab_data() -> void:
 		{ "file": "res://data/vector_levels.json", "ids": ["vector_1_1", "vector_1_2", "vector_1_3", "vector_2_1", "vector_2_2", "vector_2_3", "vector_3_1", "vector_3_2", "vector_3_3", "vector_4_1", "vector_4_2", "vector_4_3", "vector_5_1", "vector_5_2", "vector_5_3", "vector_6_1", "vector_6_2", "vector_6_3", "vector_boss"] },
 		{ "file": "res://data/line_levels.json", "ids": ["line_1_1", "line_1_2", "line_1_3", "line_2_1", "line_2_2", "line_2_3", "line_3_1", "line_3_2", "line_3_3", "line_4_1", "line_4_2", "line_4_3", "line_5_1", "line_5_2", "line_6_1", "line_6_2", "line_6_3", "line_boss"] },
 		{ "file": "res://data/vectors_levels.json", "ids": ["vec_ops", "vec_coord", "vec_dot", "vec_collinear"] },
-		{ "file": "res://data/sequences_levels.json", "ids": ["seq_basic", "seq_recur", "seq_construct", "seq_displace", "seq_split", "seq_sn", "seq_concept"] },
+		{ "file": "res://data/sequences_levels.json", "ids": ["seq_concept", "seq_ap", "seq_ap_sum", "seq_gp", "seq_gp_sum", "seq_recur", "seq_construct", "seq_sn", "seq_displace", "seq_split"] },
 		{ "file": "res://data/conics_levels.json", "ids": ["conic_line_circle", "conic_def", "conic_pointdiff", "conic_tangent", "conic_fixed", "conic_range"] },
 		{ "file": "res://data/probability_levels.json", "ids": ["prob_classic", "prob_cond", "prob_dist", "prob_binom", "prob_stats", "prob_total", "prob_hypergeo", "prob_event", "prob_props", "prob_indep", "prob_freq"] },
 		{ "file": "res://data/derivative_levels.json", "ids": ["deriv_formula", "deriv_tangent", "deriv_mono", "deriv_param", "deriv_prove", "deriv_zero"] },

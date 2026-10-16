@@ -497,17 +497,53 @@
       "color": "#FF99C3",
       "levels": [
         {
-          "id": "seq_basic",
-          "name": "1-1 等差等比",
-          "technique": "散点规律 · 通项公式",
+          "id": "seq_concept",
+          "name": "1-1 数列的概念",
+          "technique": "项与序号 · 通项公式",
           "archetype": "LAB",
           "lab": "sequences",
-          "lab_ref": "seq_basic",
+          "lab_ref": "seq_concept",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "seq_ap",
+          "name": "2-1 等差数列",
+          "technique": "通项公式 · 等差中项 · 下标和",
+          "archetype": "LAB",
+          "lab": "sequences",
+          "lab_ref": "seq_ap",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "seq_ap_sum",
+          "name": "3-1 等差数列的前n项和",
+          "technique": "求和公式 · 片段和 · 最值",
+          "archetype": "LAB",
+          "lab": "sequences",
+          "lab_ref": "seq_ap_sum",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "seq_gp",
+          "name": "4-1 等比数列",
+          "technique": "通项公式 · 等比中项 · 下标积",
+          "archetype": "LAB",
+          "lab": "sequences",
+          "lab_ref": "seq_gp",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "seq_gp_sum",
+          "name": "5-1 等比数列的前n项和",
+          "technique": "求和公式 · 片段和 · 错位相减",
+          "archetype": "LAB",
+          "lab": "sequences",
+          "lab_ref": "seq_gp_sum",
           "scene": "res://scenes/LabStage.tscn"
         },
         {
           "id": "seq_recur",
-          "name": "1-2 递推数列",
+          "name": "6-1 递推数列",
           "technique": "逐项计算 · 累加",
           "archetype": "LAB",
           "lab": "sequences",
@@ -516,7 +552,7 @@
         },
         {
           "id": "seq_construct",
-          "name": "1-3 构造法",
+          "name": "7-1 构造法求通项",
           "technique": "待定系数 · 构造等比",
           "archetype": "LAB",
           "lab": "sequences",
@@ -524,26 +560,8 @@
           "scene": "res://scenes/LabStage.tscn"
         },
         {
-          "id": "seq_displace",
-          "name": "1-4 错位相减",
-          "technique": "等差×等比求和",
-          "archetype": "LAB",
-          "lab": "sequences",
-          "lab_ref": "seq_displace",
-          "scene": "res://scenes/LabStage.tscn"
-        },
-        {
-          "id": "seq_split",
-          "name": "1-5 裂项相消",
-          "technique": "通项拆分 · 中间抵消",
-          "archetype": "LAB",
-          "lab": "sequences",
-          "lab_ref": "seq_split",
-          "scene": "res://scenes/LabStage.tscn"
-        },
-        {
           "id": "seq_sn",
-          "name": "1-6 Sₙ 与 aₙ",
+          "name": "8-1 通项与前n项和的关系",
           "technique": "作差法 · 反推通项",
           "archetype": "LAB",
           "lab": "sequences",
@@ -551,12 +569,21 @@
           "scene": "res://scenes/LabStage.tscn"
         },
         {
-          "id": "seq_concept",
-          "name": "1-7 数列的概念",
-          "technique": "项与序号 · 通项公式",
+          "id": "seq_displace",
+          "name": "9-1 错位相减求和",
+          "technique": "等差与等比相乘型",
           "archetype": "LAB",
           "lab": "sequences",
-          "lab_ref": "seq_concept",
+          "lab_ref": "seq_displace",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "seq_split",
+          "name": "10-1 裂项相消求和",
+          "technique": "通项拆分 · 中间抵消",
+          "archetype": "LAB",
+          "lab": "sequences",
+          "lab_ref": "seq_split",
           "scene": "res://scenes/LabStage.tscn"
         }
       ]
