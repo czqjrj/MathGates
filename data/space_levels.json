@@ -988,6 +988,15 @@
     "method": "空间向量真题试炼",
     "color": "#45C7E5",
     "summary": "综合运用建系、法向量、夹角与距离，完成立体几何的综合推演。",
+    "boss": {
+      "title": "空间向量 · 真题试炼",
+      "name": "空间关守",
+      "avatar": "空",
+      "color": "#45C7E5",
+      "player_hp_bonus": 1,
+      "enrage_at": 0.5,
+      "reward": { "first_clear_coins": 260 }
+    },
     "levels": [
       {
         "name": "Boss-1 综合：建系与法向量",

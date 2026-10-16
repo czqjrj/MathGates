@@ -972,6 +972,15 @@
     "method": "焦点三角形 · 离心率 · 硬解综合",
     "color": "#FF5B7F",
     "summary": "综合运用三个二级结论：焦点三角形面积、离心率、硬解定理，挑战高考压轴级思维。",
+    "boss": {
+      "title": "焦点三角 · 硬解",
+      "name": "椭圆关守",
+      "avatar": "椭",
+      "color": "#FF5B7F",
+      "player_hp_bonus": 1,
+      "enrage_at": 0.5,
+      "reward": { "first_clear_coins": 240 }
+    },
     "levels": [
       {
         "name": "焦点三角 · 面积到 9",

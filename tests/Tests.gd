@@ -22,6 +22,7 @@ func _eq(a, b, name: String) -> void:
 func _run() -> void:
 	_test_domain_mapping()
 	_test_lab_data()
+	_test_boss_data()
 	_test_lab_plane()
 	_test_wrong_queries()
 	_test_review_order()
@@ -94,6 +95,41 @@ func _test_lab_data() -> void:
 					explore_total += 1
 		var min_explore: int = min(3, (spec["ids"] as Array).size())
 		_ok(explore_total >= min_explore, path + " has >=%d explore rounds" % min_explore)
+
+## 校验 BOSS 关战斗层配置：5 个隐藏 Boss 均有 boss{} 元数据，且被 GameData 的 boss 清单覆盖。
+func _test_boss_data() -> void:
+	var specs := [
+		{ "file": "res://data/line_levels.json", "id": "line_boss" },
+		{ "file": "res://data/space_levels.json", "id": "space_boss" },
+		{ "file": "res://data/vector_levels.json", "id": "vector_boss" },
+		{ "file": "res://data/ellipse_levels.json", "id": "ellipse_boss" },
+		{ "file": "res://data/circle_levels.json", "id": "circle_boss" },
+	]
+	var ids: Array = []
+	for spec in specs:
+		var path := str(spec["file"])
+		var lid := str(spec["id"])
+		ids.append(lid)
+		var data = JSON.parse_string(FileAccess.get_file_as_string(path))
+		_ok(typeof(data) == TYPE_DICTIONARY, path + " parses (boss)")
+		var cfg: Dictionary = (data as Dictionary).get(lid, {})
+		_ok(cfg.has("boss"), lid + " has boss{} block")
+		var boss: Dictionary = cfg.get("boss", {})
+		_ok(str(boss.get("title", "")) != "", lid + " boss.title")
+		_ok(str(boss.get("name", "")) != "", lid + " boss.name")
+		_ok(str(boss.get("avatar", "")).length() >= 1, lid + " boss.avatar")
+		var col := str(boss.get("color", ""))
+		_ok(col.begins_with("#") and (col.length() == 7 or col.length() == 9), lid + " boss.color hex")
+		_ok(int(boss.get("player_hp_bonus", 0)) >= 0, lid + " boss.player_hp_bonus >= 0")
+		var ea := float(boss.get("enrage_at", 0.0))
+		_ok(ea > 0.0 and ea <= 1.0, lid + " boss.enrage_at in (0,1]")
+		var rw: Dictionary = boss.get("reward", {})
+		_ok(int(rw.get("first_clear_coins", 0)) > 0, lid + " boss.reward.first_clear_coins > 0")
+	# 勋章 boss_first / boss_all 依赖 GameData._boss_level_ids()：应恰好覆盖这 5 关
+	var meta: Array = GameData._boss_level_ids()
+	_eq(meta.size(), 5, "boss level count == 5")
+	for lid2 in ids:
+		_ok(meta.has(lid2), "_boss_level_ids has " + lid2)
 
 ## 校验 LabPlane 的参数表达式求值与圆场景加载(圆/直线/向量等几何章节复用)。
 func _test_lab_plane() -> void:

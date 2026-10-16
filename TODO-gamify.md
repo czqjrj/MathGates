@@ -33,31 +33,23 @@
   - [x] `scripts/screens/StageBase.gd`：Boss 层——`_boss_enabled()/_boss_config()`；`_level_ok` 扣守关者血、`_wrong` 扣推演者血；半血狂暴；推演者血量归零 → 强制失败结算；通关 → 击败演出 + 首通奖励。
   - [x] `data/circle_levels.json` → `circle_boss` 增加 `boss{}` 配置块（作为示范格式）。
 - [x] 回归全绿（check_all / Tests / smoke_scene / LabSmoke）。
-- [x] 临时探针运行期验证（已删除探针）：
-  - 普通关 `boss_mode=false`、`_boss_hud=null`；BOSS 关 `boss_mode=true`、HUD 正常、`boss_hp=3/3`、`player_hp=4/4`；
-  - 答对 → 守关者掉血；血量过半 → `enraged=true`；连续答错 → 推演者归零 → `_boss_failed=true` 且 `_done=true`。
-
-> ⚠️ 其余 4 个 BOSS 关（`line_boss`/`space_boss`/`vector_boss`/`ellipse_boss`）**已自动启用**战斗层
-> （判定条件含 `archetype==BOSS`），但暂无专属 `boss{}`，当前走**默认皮肤/文案**。
+- [x] **P1-M2 · 5 个 BOSS 关全部成型**
+  - [x] 其余 4 关补 `boss{}`：`line_boss` / `space_boss` / `vector_boss` / `ellipse_boss`（称号/皮肤/首通奖励各异）。
+  - [x] **BOSS 勋章**：`boss_first`(破阵者) / `boss_all`(无冕之王) **本就已存在并接入** `_medal_met()`，无需新增。
+  - [x] `tests/Tests.gd` 增 `_test_boss_data()`：校验 5 个 `boss{}` 结构合法 + `_boss_level_ids()` 恰好覆盖 5 关。
+  - [x] 运行期验证（临时探针，已删除）：5 关均 `mode=true` 且 HUD 数值正确（`space_boss`→`Lab3DStage`）；
+        普通关 `circle_1_1` `mode=false`；**通关(击败)结算路径 D 已跑通**（`done=true, failed=false, stars=3`）。
+- 回归基线更新：`Tests: 1125 passed, 0 failed`（原 1074，+51 为 BOSS 校验）。
 
 ---
 
 ## 2. 待办
 
-### P1-M2 · 5 个 BOSS 关全部成型
-- [ ] 为其余 4 关补 `boss{}`（字段见 §3，示例见 `circle_boss`）：
-  - [ ] `data/line_levels.json` → `line_boss`
-  - [ ] `data/space_levels.json` → `space_boss`
-  - [ ] `data/vector_levels.json` → `vector_boss`
-  - [ ] `data/ellipse_levels.json` → `ellipse_boss`
-- [ ] **BOSS 勋章**：`GameData.MEDALS` 追加「按击败数」成就，补 `_medal_met()` 分支（`_boss_level_ids()` 已存在）。
-- [ ] **3D Boss 层级自检**：确认 `space_boss` 血条不挡 3D 视口交互；跑 `tools/lab3d_render_check.tscn`。
-- [ ] `tests/Tests.gd` 增校验：`boss{}` 结构合法；`_boss_enabled()` 对 5 个 boss 为真、对普通关为假。
-- [ ] **运行时验证未完成项（续接后优先做）**：
-  - [ ] **通关(击败)结算路径 D**：解完全部阶段 → `_finish()` → `boss_defeated()` + `Vfx.burst` + 0.9s 延迟 → 胜利面板。
-        （本次临时探针该段有变量重名 Parse Error，未真正跑到；需重建探针或走真实交互验证。）
-  - [ ] 非 headless 截图确认 HUD 观感（可临时在 `tools/capture_scene.gd` 强制截 `circle_boss`）。
-  - [ ] 移动端窄屏：`view_left..right` 区宽度不足时 HUD 是否挤压（需真机/改窗口尺寸验证）。
+### P1 收尾（仅剩「目视」类验证，需真实窗口）
+- [ ] **HUD 观感**：非 headless 截图确认 5 关战斗 HUD 布局（可临时改 `tools/capture_scene.gd` 强制截 `circle_boss`）。
+- [ ] **3D 视口**：`space_boss` 血条不挡 3D 交互——已**静态确认**（HUD 根/面板/子控件全部 `mouse_filter=IGNORE`，不拦截输入）；
+      仅剩跑一次 `tools/lab3d_render_check.tscn` 目视（**必须真实窗口**，headless 会卡在 `frame_post_draw`）。
+- [ ] 移动端窄屏：`view_left..right` 区过窄时 HUD 是否挤压（真机 / 改窗口尺寸验证）。
 
 ### P2 · 关卡节奏强化（建议默认关闭、逐关开启）
 - [ ] 可见连击条 + 金币倍率（现仅有顶栏小标签 `_combo_lbl`，无进度条/倍率）。
@@ -116,4 +108,5 @@
 
 - 新：`scripts/ui/BossHud.gd`（+`.uid`）、`docs/关卡游戏化方案.md`、`TODO-gamify.md`
 - 改：`scripts/screens/StageBase.gd`、`scripts/screens/Battle.gd`、`data/circle_levels.json`
-- 后续：`data/{line,space,vector,ellipse}_levels.json`、`scripts/autoload/GameData.gd`（勋章）、`tests/Tests.gd`、`scripts/modules/line/TheoremTree.gd`
+- 改（P1-M2）：`data/{line,space,vector,ellipse,circle}_levels.json`（`boss{}`）、`tests/Tests.gd`（`_test_boss_data`）
+- 后续（P3）：`scripts/modules/line/TheoremTree.gd`

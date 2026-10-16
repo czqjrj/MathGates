@@ -3316,6 +3316,15 @@
     "method": "等和线 · 极化恒等式 · 命题利器",
     "color": "#FF6B9D",
     "summary": "等和线(x+y 定值→平行于 AB 的直线)与极化恒等式(a·b=((a+b)²−(a−b)²)/4)是填空压轴的两把秒刀。",
+    "boss": {
+      "title": "等和线 · 极化恒等",
+      "name": "向量关守",
+      "avatar": "向",
+      "color": "#FF6B9D",
+      "player_hp_bonus": 1,
+      "enrage_at": 0.5,
+      "reward": { "first_clear_coins": 260 }
+    },
     "levels": [
       {
         "name": "隐1 等和线：系数和为定值(动手)",
