@@ -24,6 +24,7 @@ const DEFAULTS := {
 	"tts_provider": "baidu",
 	"textbook": "sujiao",
 	"editor_mode": false,
+	"challenge_timer": true,
 }
 
 var font_scale: float = 1.4
@@ -40,6 +41,8 @@ var tts_provider: String = "baidu"
 var textbook: String = "sujiao"
 ## 编辑模式：开启后可无条件解锁所有关卡，方便测试与编辑
 var editor_mode: bool = false
+## 关卡计时：关闭后，带时限的关卡不再计时(不显示计时、无超时/极速奖励)。
+var challenge_timer: bool = true
 
 func _ready() -> void:
 	load_settings()
@@ -63,6 +66,7 @@ func load_settings() -> void:
 	tts_provider = str(data.get("tts_provider", DEFAULTS["tts_provider"]))
 	textbook = str(data.get("textbook", DEFAULTS["textbook"]))
 	editor_mode = bool(data.get("editor_mode", DEFAULTS["editor_mode"]))
+	challenge_timer = bool(data.get("challenge_timer", DEFAULTS["challenge_timer"]))
 
 func save() -> void:
 	var f := FileAccess.open(PATH, FileAccess.WRITE)
@@ -166,6 +170,11 @@ func set_editor_mode(v: bool) -> void:
 	editor_mode = v
 	if GameData != null:
 		GameData.set_free_roam(v)
+	save()
+	changed.emit()
+
+func set_challenge_timer(v: bool) -> void:
+	challenge_timer = v
 	save()
 	changed.emit()
 

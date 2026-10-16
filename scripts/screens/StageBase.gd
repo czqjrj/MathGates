@@ -21,7 +21,9 @@ var _ui: Control
 var _top_fill: ColorRect
 var _prog: Label
 var _coins: Label
-var _combo_lbl: Label
+var _combo_bar: ComboBar
+## 计时读数(P2，仅启用限时的关卡显示)。
+var _time_lbl: Label
 var _panel: PanelContainer
 var _action_bar: PanelContainer
 var _title: Label
@@ -35,6 +37,8 @@ var _v_title: Label
 var _v_star_row: HBoxContainer
 var _v_rate: Label
 var _v_score: Label
+## 「下一星差在哪」引导(P2)。
+var _v_guide: Label
 var _v_coins: Label
 var _dim: ColorRect
 var _nav_prev: Button
@@ -81,17 +85,52 @@ var _boss_hud: BossHud
 ## 推演者血量耗尽 → 强制失败结算。
 var _boss_failed := false
 
+# ---------------------------------------------------------------- 节奏(P2，可选层)
+## 关卡级 rules{}：连击条默认开；限时/星时为可选(见 _apply_rules)。
+var _combo_on := true
+var _rules: Dictionary = {}
+## 计时口径：从 _reset() 起累计，_done 后停止。
+var _elapsed := 0.0
+## 本关是否启用计时(Settings 总开关 ∩ 关卡 rules 含 time_limit/star_time)。
+var _timing := false
+var _time_limit := 0.0
+var _star_time := 0.0
+## 结算读取/写入的最快用时(仅计时关卡)。
+var _prev_best_time := 0.0
+var _new_time_rec := false
+## 超时降星 / 极速奖励金币。
+var _time_capped := false
+var _speed_bonus := 0
+
 func _ready() -> void:
 	_load()
 	_apply_review()
 	_boss_mode = _boss_enabled()
 	_boss_cfg = _boss_config()
+	_apply_rules()
 	add_child(TechBg.new())
 	_build_view()
 	_build_ui()
 	_add_pet()
 	_reset()
 	_enter_fx()
+
+## 读取关卡级节奏配置(全部可选，缺省沿用旧行为：无限时、连击条开启)。
+func _apply_rules() -> void:
+	var r: Variant = _cfg.get("rules")
+	_rules = r if r is Dictionary else {}
+	_combo_on = bool(_rules.get("show_combo_bar", true))
+	_time_limit = maxf(0.0, float(_rules.get("time_limit", 0)))
+	_star_time = maxf(0.0, float(_rules.get("star_time", 0)))
+	_timing = Settings.challenge_timer and (_time_limit > 0.0 or _star_time > 0.0)
+	set_process(_timing)
+
+## 计时累计：仅在启用计时的关卡里推进，结算后停止。
+func _process(delta: float) -> void:
+	if _done or not _timing:
+		return
+	_elapsed += delta
+	_refresh_time()
 
 ## 若本关存在历史错题，则重排题序让错题优先，并记录原始题号映射。
 func _apply_review() -> void:
@@ -218,7 +257,14 @@ func _reset() -> void:
 	_streak = 0
 	_max_streak = 0
 	_boss_failed = false
+	_elapsed = 0.0
+	_time_capped = false
+	_speed_bonus = 0
+	_prev_best_time = 0.0
+	_new_time_rec = false
 	_refresh_combo()
+	_refresh_time()
+	set_process(_timing)
 	if _boss_mode and _boss_hud != null:
 		_boss_hud.reset()
 	_clean.clear()
@@ -550,26 +596,27 @@ func _fx_wrong() -> void:
 	Vfx.float_text(_ui, pos, "再想想", UI.COL_DANGER, 24)
 	Vfx.screen_flash(_ui, UI.COL_DANGER, 0.14, 0.4)
 
-## 顶栏连击徽标：连击≥2 时显示并随档位变色，断连则隐藏。
+## 顶栏连击条：连击≥2 时显示，条越亮、金币倍率越高；断连则隐藏。
 func _refresh_combo() -> void:
-	if _combo_lbl == null or not is_instance_valid(_combo_lbl):
+	if _combo_bar == null or not is_instance_valid(_combo_bar):
 		return
-	if _streak < 2:
-		_combo_lbl.visible = false
+	_combo_bar.visible = _combo_on
+	_combo_bar.set_streak(_streak if _combo_on else 0)
+
+## 顶栏计时读数：超星时转金、超时限转红，提醒节奏。
+func _refresh_time() -> void:
+	if _time_lbl == null or not is_instance_valid(_time_lbl):
 		return
-	_combo_lbl.visible = true
-	_combo_lbl.text = "连击 x%d" % _streak
-	var col := Color("#ffd479")
-	if _streak >= 5:
-		col = Color("#fb7185")
-	elif _streak >= 3:
-		col = Color("#ffa64d")
-	_combo_lbl.add_theme_color_override("font_color", col)
-	if UI.animations:
-		_combo_lbl.pivot_offset = _combo_lbl.size * 0.5
-		_combo_lbl.scale = Vector2(1.3, 1.3)
-		var tw := create_tween()
-		tw.tween_property(_combo_lbl, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_time_lbl.visible = _timing
+	if not _timing:
+		return
+	_time_lbl.text = "计时 %.1fs" % _elapsed
+	var col := UI.COL_TEXT_DIM
+	if _time_limit > 0.0 and _elapsed > _time_limit:
+		col = UI.COL_DANGER
+	elif _star_time > 0.0 and _elapsed > _star_time:
+		col = Color("#ffd479")
+	_time_lbl.add_theme_color_override("font_color", col)
 
 func _use_hint() -> void:
 	if _solved or _done or _hint_used or _stages.is_empty():
@@ -578,6 +625,11 @@ func _use_hint() -> void:
 	_hint.disabled = true
 	if GameData.consume_hint_token():
 		_show_feed("[提示卡] " + str(_current().get("hint", "")), Color("#5ee6ff"))
+		# 道具即时演出：提示卡化为光点在面板上炸开。
+		if _ui != null and is_instance_valid(_ui):
+			var pos := Vfx.center_of(_panel, _ui.size * 0.5)
+			Vfx.burst(_ui, pos, Color("#5ee6ff"), 0.9)
+			Vfx.float_text(_ui, pos, "提示卡", Color("#5ee6ff"), 26)
 	else:
 		_wrongs += 1
 		_show_feed("[提示] " + str(_current().get("hint", "")), Color("#ffd479"))
@@ -636,6 +688,28 @@ func _grade(st: int, clean: int, total: int, trap_missed: bool) -> String:
 		return "B"
 	return "C"
 
+## P2 · 三星条件显式化：结算给出「下一星差在哪」的引导文案(无引导返回空串)。
+func _next_star_hint(st: int, clean: int, total: int) -> String:
+	if _boss_failed:
+		return "推演能量归零 · 补齐一次完整推演即可重新挑战"
+	var msg := ""
+	if st <= 0:
+		var need2 := int(ceil(0.6 * float(total)))
+		msg = "零失误 %d / %d 轮即可拿到 2 星（当前 %d）" % [need2, total, clean]
+	elif st == 2:
+		var need3 := int(ceil(0.8 * float(total)))
+		var lack := maxi(0, need3 - clean)
+		if lack > 0:
+			msg = "再 %d 轮零失误即可升到 3 星（需 %d / %d）" % [lack, need3, total]
+	elif _trap_missed:
+		msg = "不踩陷阱即可拿到 S 评级"
+	elif clean < total:
+		msg = "全程 %d 轮零失误可拿 S 评级" % total
+	if _time_capped:
+		var t := "超时降星：用时压到 %.0f 秒内可升回" % _time_limit
+		msg = t if msg == "" else msg + "  ·  " + t
+	return msg
+
 func _finish() -> void:
 	_done = true
 	var total := _stages.size()
@@ -650,14 +724,25 @@ func _finish() -> void:
 		st = 2
 	if _trap_missed and st > 0:
 		st -= 1
+	# P2 · 限时：超时不判负，只降一级星(最低保底 1 星，避免挫败)。
+	_time_capped = false
+	if st > 0 and _timing and _time_limit > 0.0 and _elapsed > _time_limit:
+		if st > 1:
+			st -= 1
+		_time_capped = true
 	if _boss_failed:
 		st = 0
 	var lv0 := GameData.player_level()
 	var lid := GameData.current_level_id()
 	var prev_best := int(GameData.level_records.get(lid, {}).get("best_stars", 0)) if lid != "" else 0
+	# P2 · 读取历史最快用时(在写入前)，用于结算展示与「新速度纪录」判定。
+	_prev_best_time = GameData.best_time_of(lid) if (lid != "" and _timing) else 0.0
 	if lid != "":
 		GameData.grant_stars(lid, st)
 		GameData.record_level_result(lid, st, clean, total, _trap_missed)
+	if _timing and lid != "" and st > 0:
+		_new_time_rec = _prev_best_time <= 0.0 or _elapsed < _prev_best_time
+		GameData.record_level_time(lid, _elapsed)
 	var lv1 := GameData.player_level()
 	var reward := 30 + clean * 15 + st * 20
 	if st >= 3:
@@ -668,6 +753,17 @@ func _finish() -> void:
 	var first_clear := _boss_mode and st > 0 and prev_best == 0
 	if first_clear:
 		reward += _boss_first_clear_coins()
+	# P2 · 极速奖励：在星时内通关 → 额外金币。
+	_speed_bonus = 0
+	if st > 0 and _timing and _star_time > 0.0 and _elapsed <= _star_time:
+		_speed_bonus = 40
+		reward += _speed_bonus
+	# P2 · 连击倍率：以本关最高连击结算，奖励额外金币(上限 ×1.5)。
+	var combo_mult := ComboBar.multiplier(_max_streak)
+	var combo_bonus := 0
+	if combo_mult > 1.0:
+		combo_bonus = int(round(float(reward) * (combo_mult - 1.0)))
+		reward += combo_bonus
 	var boosted := GameData.consume_coin_boost()
 	if boosted:
 		reward *= 2
@@ -700,6 +796,19 @@ func _finish() -> void:
 	var score_txt := "无失误 %d / %d 关" % [clean, total]
 	if _max_streak >= 2:
 		score_txt += "   ·   最高连击 x%d" % _max_streak
+	if combo_bonus > 0:
+		score_txt += "   ·   连击奖励 +%d (×%.1f)" % [combo_bonus, combo_mult]
+	if _speed_bonus > 0:
+		score_txt += "   ·   极速奖励 +%d" % _speed_bonus
+	if _timing:
+		var t_txt := "用时 %.1fs" % _elapsed
+		if _new_time_rec:
+			t_txt += " · 新速度纪录！"
+		elif _prev_best_time > 0.0:
+			t_txt += "（最快 %.1fs）" % _prev_best_time
+		score_txt += "   ·   " + t_txt
+	if _time_capped:
+		score_txt += "   ·   超时降星"
 	if passed and st > prev_best and prev_best > 0:
 		score_txt += "   ·   新纪录！"
 	if boosted:
@@ -707,6 +816,8 @@ func _finish() -> void:
 	if first_clear:
 		score_txt += "   ·   首通奖励 +%d" % _boss_first_clear_coins()
 	_v_score.text = score_txt
+	_v_guide.text = _next_star_hint(st, clean, total)
+	_v_guide.visible = _v_guide.text != ""
 	for c in _v_star_row.get_children():
 		_v_star_row.remove_child(c)
 		c.free()
@@ -852,10 +963,13 @@ func _build_ui() -> void:
 	var sp := Control.new()
 	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hb.add_child(sp)
-	_combo_lbl = UI.mono_label("", 16, Color("#ffd479"))
-	_combo_lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	_combo_lbl.visible = false
-	hb.add_child(_combo_lbl)
+	_combo_bar = ComboBar.new()
+	_combo_bar.visible = false
+	hb.add_child(_combo_bar)
+	_time_lbl = UI.mono_label("", 15, UI.COL_TEXT_DIM)
+	_time_lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_time_lbl.visible = false
+	hb.add_child(_time_lbl)
 	_coins = UI.mono_label("◆ 0", 16, Color("#ffd479"))
 	_coins.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	hb.add_child(_coins)
@@ -987,8 +1101,8 @@ func _build_ui() -> void:
 	_victory.grow_vertical = Control.GROW_DIRECTION_BOTH
 	_victory.offset_left = -270
 	_victory.offset_right = 270
-	_victory.offset_top = -190
-	_victory.offset_bottom = 190
+	_victory.offset_top = -216
+	_victory.offset_bottom = 216
 	_victory.mouse_filter = Control.MOUSE_FILTER_STOP
 	_ui.add_child(_victory)
 	var vv := VBoxContainer.new()
@@ -1011,6 +1125,9 @@ func _build_ui() -> void:
 	vv.add_child(_v_rate)
 	_v_score = UI.make_label("", 16, UI.COL_TEXT_DIM, HORIZONTAL_ALIGNMENT_CENTER)
 	vv.add_child(_v_score)
+	_v_guide = UI.make_label("", 15, Color("#ffd479"), HORIZONTAL_ALIGNMENT_CENTER)
+	_v_guide.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	vv.add_child(_v_guide)
 	_v_coins = UI.make_label("", 22, Color("#ffd479"), HORIZONTAL_ALIGNMENT_CENTER)
 	vv.add_child(_v_coins)
 	vv.add_child(UI.make_label(str(_cfg.get("summary", "")), 15, UI.COL_TEXT_DIM, HORIZONTAL_ALIGNMENT_CENTER))

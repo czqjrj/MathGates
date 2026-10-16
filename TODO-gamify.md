@@ -13,12 +13,15 @@
   - 用编辑器打开项目一次；或跑一次
     `Godot_console.exe --headless --editor --path . --quit`
     （会向 `.godot/global_script_class_cache.cfg` 写入 `BossHud` 条目）。
-- 引擎：`D:\Godot_v4.4.1-stable_win64.exe\Godot_v4.4.1-stable_win64_console.exe`（Godot 4.4.1，GL Compatibility）。
+- 引擎：**本机已升级到 Godot 4.7.2**（`D:\Program Files\Godot_v4.7.2-stable_win64.exe`，
+  `project.godot` 的 `config/features` 已是 `"4.7"`）。4.4.1 仅存于下载压缩包、未解压。
+  该 exe 无 console 变体：无头运行请用
+  `Start-Process -Wait -RedirectStandardOutput/Error` 重定向取输出（GUI 子系统进程直连控制台会丢输出）。
 - 回归四件套（改完必跑）：
   | 命令 | 期望 |
   |---|---|
-  | `--headless --path . --script res://tools/check_all.gd` | `CHECKED 78 scripts, 0 failures`（仅 `third_party/` 两个历史 Parse Error） |
-  | `--headless --path . res://tests/Tests.tscn` | `TESTS: 1074 passed, 0 failed` |
+  | `--headless --path . --script res://tools/check_all.gd` | `CHECKED 79 scripts, 0 failures`（仅 `third_party/` 两个历史 Parse Error） |
+  | `--headless --path . res://tests/Tests.tscn` | `TESTS: 1170 passed, 0 failed` |
   | `--headless --path . res://tools/smoke_scene.tscn` | `SMOKE: 238 ok, 0 fail` |
   | `--headless --path . res://tests/LabSmoke.tscn` | 末尾 `TMP_OK`（覆盖 `space_boss`） |
 
@@ -41,6 +44,29 @@
         普通关 `circle_1_1` `mode=false`；**通关(击败)结算路径 D 已跑通**（`done=true, failed=false, stars=3`）。
 - 回归基线更新：`Tests: 1125 passed, 0 failed`（原 1074，+51 为 BOSS 校验）。
 
+- [x] **P2-M3 · 关卡节奏强化（普惠所有 LAB 关，默认开、限时按关开）**
+  - [x] `scripts/ui/ComboBar.gd`（新）：顶栏连击进度条 + 金币倍率。
+        `ComboBar.multiplier(2..)=1+0.1*(n-2)`，封顶 `1.5`(MULT_CAP)；
+        档位配色 2+金 / 3+橙 / 5+红；`set_streak(n)` 连击≥2 才显示。
+  - [x] `scripts/screens/StageBase.gd`：`_combo_lbl` → `_combo_bar`；
+        `rules{}` 解析(`_apply_rules`)；计时态 `_timing/_elapsed` + 顶栏计时段
+        (`_process` 推进、`_refresh_time`)；结算时
+        极速奖励(+40，用时≤`star_time`)、超时降星(超 `time_limit` 且 st>1 → st−1，
+        最低保底 1 星)、连击倍率奖励(`round(reward*(mult-1))`)、
+        `best_time` 记录与「新速度纪录」、结算「下一星差在哪」引导(`_next_star_hint`)；
+        提示卡即时演出(`_use_hint` Vfx)。
+  - [x] `scripts/autoload/GameData.gd`：`best_time_of()` / `record_level_time()`
+        （`level_records[].best_time`，旧存档缺字段按 0，天然兼容）。
+  - [x] `scripts/autoload/Settings.gd` + `scripts/screens/SettingsMenu.gd`：
+        新增「关卡计时」总开关 `challenge_timer`（默认开；关闭后一律不计时）。
+  - [x] `data/{line,space,vector,ellipse,circle}_levels.json`：5 个 BOSS 关加
+        `rules{ star_time:150, time_limit:300, show_combo_bar:true }`。
+  - [x] `tests/Tests.gd`：`_test_rhythm()`（倍率映射 / rules 结构 / best_time 读写）。
+  - [x] 运行期探针（已删）验证：BOSS `timing/limit` 正确、连击条可见且倍率 1.1/1.2/1.5、
+        完美通关 `st=3` 奖励 `237+200(首通)+40(极速)+95(连击×1.2)=572`、`best_time=100.0`、
+        普通关不计时且 2/3 零失误给「再 1 轮…升 3 星」引导、关闭计时开关后超时不再降星。
+  - 回归基线更新：`CHECKED 79 scripts` / `Tests: 1170 passed` / `SMOKE: 238 ok` / `LabSmoke TMP_OK`。
+
 ---
 
 ## 2. 待办
@@ -51,11 +77,16 @@
       仅剩跑一次 `tools/lab3d_render_check.tscn` 目视（**必须真实窗口**，headless 会卡在 `frame_post_draw`）。
 - [ ] 移动端窄屏：`view_left..right` 区过窄时 HUD 是否挤压（真机 / 改窗口尺寸验证）。
 
-### P2 · 关卡节奏强化（建议默认关闭、逐关开启）
-- [ ] 可见连击条 + 金币倍率（现仅有顶栏小标签 `_combo_lbl`，无进度条/倍率）。
-- [ ] 可选限时 / 速度奖励；结算显示用时与最快纪录（存档 `level_records[].best_time`）。
-- [ ] 三星条件显式化 + 结算「下一星差在哪」引导。
-- [ ] 设置项：计时开关（`Settings`）。
+### P2 · 关卡节奏强化（已交付，见 §1；仅剩目视）
+- [x] 可见连击条 + 金币倍率（`ComboBar`，顶栏，连击≥2 显示）。
+- [x] 限时 / 极速奖励；结算显示用时与最快纪录（`level_records[].best_time`）。
+- [x] 三星条件显式化 + 结算「下一星差在哪」引导。
+- [x] 道具即时演出：提示卡使用时的 `Vfx` 反馈。
+- [x] 设置项：关卡计时总开关（`Settings.challenge_timer`）。
+- [ ] **目视**：连击条在顶栏的观感 / 移动端窄屏是否需要收起（需真实窗口）。
+- [ ] ℹ️ 范围说明：本层只改 `StageBase`（LAB 2D/3D，含 5 BOSS，覆盖绝大多数关卡）。
+      `SequenceStage` / `SolidChallenge` / `ConicStage` 是**独立实现**（`extends Control`，
+      各带自己的 `_finish`，无 `_streak`），如需同等节奏体验须另行移植（未纳入 P2 范围）。
 
 ### P3 · 地图冒险化（改 `TheoremTree.gd`）
 - [ ] 章节级 `map{}`：分支路线 / 宝箱节点 / 随机事件 / 章节 Boss 门（星数门槛解锁 `*_boss`）。
@@ -78,8 +109,8 @@
   "reward": { "first_clear_coins": 200 }
 }
 
-// data/*_levels.json 关卡/阶段级（P2）
-"rules": { "time_limit": 90, "star_time": 60, "show_combo_bar": true }
+// data/*_levels.json 关卡级（P2；仅关卡级，未做阶段级覆盖）
+"rules": { "time_limit": 300, "star_time": 150, "show_combo_bar": true }
 
 // data/curriculum.json 章节级（P3）
 "map": {
@@ -102,6 +133,18 @@
 - **首通**：`prev_best == 0 and st > 0` → 额外 `reward.first_clear_coins`，结算文案标注。
 - HUD 位置：覆盖在图形区顶部（`UI.stage_layout()["view_left"]..right`，`offset_top=70`，高 92），`mouse_filter=IGNORE`。
 
+### P2 · 节奏层（`ComboBar.gd` + `StageBase`）
+
+- **连击条**：顶栏 `ComboBar`，`_refresh_combo()` 更新；`show_combo_bar`（默认 true）关闭时恒隐藏。倍率 `ComboBar.multiplier(streak)`：≥3 起 +0.1/连击，封顶 1.5。
+- **计时**：`_apply_rules()` 读 `rules{time_limit,star_time}`；仅当 `Settings.challenge_timer` 开且任一 >0 时 `_timing=true`，`_process` 累计 `_elapsed`，顶栏显示 `计时 %.1fs`（超星时转金、超时限转红）。
+- **结算(在既有 `st`/`reward` 管线内叠加，顺序：陷阱→超时→boss)**：
+  - 超时降星：`st>0 且 _elapsed>time_limit` → `st-=1`（保底 1 星），`_time_capped=true`。
+  - 极速奖励：`st>0 且 _elapsed<=star_time` → `+40`。
+  - 连击奖：`+round(reward*(mult-1))`，`mult=ComboBar.multiplier(_max_streak)`。
+  - 最快用时：`st>0` 时 `GameData.record_level_time(lid,_elapsed)`（刷新纪录才写）。
+  - 引导：`_next_star_hint()` → 结算 `_v_guide`「下一星差在哪」。
+- **兼容**：无 `rules{}` 的关卡 `_timing=false`、无超时/极速/用时，连击条照常显示；旧存档 `best_time` 缺省 0。`Settings.challenge_timer=false` 时全部限时行为关闭。
+
 ---
 
 ## 5. 涉及文件
@@ -109,4 +152,8 @@
 - 新：`scripts/ui/BossHud.gd`（+`.uid`）、`docs/关卡游戏化方案.md`、`TODO-gamify.md`
 - 改：`scripts/screens/StageBase.gd`、`scripts/screens/Battle.gd`、`data/circle_levels.json`
 - 改（P1-M2）：`data/{line,space,vector,ellipse,circle}_levels.json`（`boss{}`）、`tests/Tests.gd`（`_test_boss_data`）
+- 新（P2）：`scripts/ui/ComboBar.gd`（+`.uid`）
+- 改（P2）：`scripts/screens/StageBase.gd`、`scripts/autoload/GameData.gd`（`best_time`）、
+  `scripts/autoload/Settings.gd`、`scripts/screens/SettingsMenu.gd`、
+  `data/{line,space,vector,ellipse,circle}_levels.json`（`rules{}`）、`tests/Tests.gd`（`_test_rhythm`）
 - 后续（P3）：`scripts/modules/line/TheoremTree.gd`

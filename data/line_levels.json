@@ -1133,6 +1133,7 @@
       "enrage_at": 0.5,
       "reward": { "first_clear_coins": 260 }
     },
+    "rules": { "star_time": 150, "time_limit": 300, "show_combo_bar": true },
     "levels": [
       {
         "name": "1-1 实验探究 · 光反射路径",

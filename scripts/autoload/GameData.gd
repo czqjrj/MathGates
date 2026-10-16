@@ -1132,6 +1132,26 @@ func record_level_result(level_id: String, level_stars: int, clean: int, total: 
 	_save()
 	progress_changed.emit()
 
+## 关卡最快用时(秒)。无记录或未启用计时的旧存档返回 0。
+func best_time_of(level_id: String) -> float:
+	if level_id == "":
+		return 0.0
+	return float(level_records.get(level_id, {}).get("best_time", 0.0))
+
+## 记录关卡用时：刷新最快纪录(或首次记录)返回 true；更慢则忽略。
+func record_level_time(level_id: String, seconds: float) -> bool:
+	if level_id == "" or seconds <= 0.0:
+		return false
+	var r: Dictionary = level_records.get(level_id, {})
+	var prev := float(r.get("best_time", 0.0))
+	if prev > 0.0 and seconds >= prev:
+		return false
+	r["best_time"] = seconds
+	level_records[level_id] = r
+	_save()
+	progress_changed.emit()
+	return true
+
 func accuracy() -> float:
 	return float(total_correct) / float(maxi(1, total_questions))
 

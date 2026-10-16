@@ -23,6 +23,7 @@ func _run() -> void:
 	_test_domain_mapping()
 	_test_lab_data()
 	_test_boss_data()
+	_test_rhythm()
 	_test_lab_plane()
 	_test_wrong_queries()
 	_test_review_order()
@@ -130,6 +131,55 @@ func _test_boss_data() -> void:
 	_eq(meta.size(), 5, "boss level count == 5")
 	for lid2 in ids:
 		_ok(meta.has(lid2), "_boss_level_ids has " + lid2)
+
+## 校验 P2 关卡节奏：连击倍率映射、5 个 Boss 关的 rules{} 限时块、以及最快用时存档。
+func _test_rhythm() -> void:
+	# 连击 → 金币倍率
+	_eq(ComboBar.multiplier(0), 1.0, "combo mult x0 = 1.0")
+	_eq(ComboBar.multiplier(1), 1.0, "combo mult x1 = 1.0")
+	_eq(ComboBar.multiplier(2), 1.0, "combo mult x2 = 1.0")
+	_ok(absf(ComboBar.multiplier(3) - 1.1) < 1e-6, "combo mult x3 = 1.1")
+	_ok(absf(ComboBar.multiplier(4) - 1.2) < 1e-6, "combo mult x4 = 1.2")
+	_ok(absf(ComboBar.multiplier(5) - 1.3) < 1e-6, "combo mult x5 = 1.3")
+	_ok(absf(ComboBar.multiplier(99) - ComboBar.MULT_CAP) < 1e-6, "combo mult caps at 1.5")
+
+	# Boss 关 rules{}：限时/星时为正且 星时 < 时限；连击条开启。
+	var specs := [
+		{ "file": "res://data/line_levels.json", "id": "line_boss" },
+		{ "file": "res://data/space_levels.json", "id": "space_boss" },
+		{ "file": "res://data/vector_levels.json", "id": "vector_boss" },
+		{ "file": "res://data/ellipse_levels.json", "id": "ellipse_boss" },
+		{ "file": "res://data/circle_levels.json", "id": "circle_boss" },
+	]
+	for spec in specs:
+		var path := str(spec["file"])
+		var lid := str(spec["id"])
+		var data = JSON.parse_string(FileAccess.get_file_as_string(path))
+		_ok(typeof(data) == TYPE_DICTIONARY, path + " parses (rhythm)")
+		var cfg: Dictionary = (data as Dictionary).get(lid, {})
+		_ok(cfg.get("rules") is Dictionary, lid + " has rules{} block")
+		var rules: Dictionary = cfg.get("rules", {})
+		_ok(float(rules.get("time_limit", 0)) > 0.0, lid + " rules.time_limit > 0")
+		_ok(float(rules.get("star_time", 0)) > 0.0, lid + " rules.star_time > 0")
+		_ok(float(rules.get("star_time", 0)) < float(rules.get("time_limit", 0)), lid + " star_time < time_limit")
+		_ok(bool(rules.get("show_combo_bar", false)), lid + " rules.show_combo_bar true")
+
+	# 最快用时存档(用真实函数；置空 current_user 阻止写盘)
+	var saved_user := GameData.current_user
+	var saved_records: Dictionary = GameData.level_records.duplicate(true)
+	GameData.current_user = ""
+	var lid2 := "__test_time__"
+	GameData.level_records.erase(lid2)
+	_eq(GameData.best_time_of(lid2), 0.0, "best_time default 0")
+	_ok(GameData.record_level_time(lid2, 42.5), "first time recorded")
+	_ok(absf(GameData.best_time_of(lid2) - 42.5) < 1e-6, "best_time stored")
+	_ok(not GameData.record_level_time(lid2, 50.0), "slower time ignored")
+	_ok(absf(GameData.best_time_of(lid2) - 42.5) < 1e-6, "best_time unchanged after slower")
+	_ok(GameData.record_level_time(lid2, 30.0), "faster time recorded")
+	_ok(absf(GameData.best_time_of(lid2) - 30.0) < 1e-6, "best_time improved")
+	_ok(not GameData.record_level_time(lid2, 0.0), "non-positive time rejected")
+	GameData.level_records = saved_records
+	GameData.current_user = saved_user
 
 ## 校验 LabPlane 的参数表达式求值与圆场景加载(圆/直线/向量等几何章节复用)。
 func _test_lab_plane() -> void:
