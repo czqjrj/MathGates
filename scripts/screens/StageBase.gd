@@ -73,9 +73,19 @@ var _max_streak := 0
 var _qid: Array[int] = []
 var _review := false
 
+# ---------------------------------------------------------------- BOSS 战(可选层)
+## 仅当关卡 archetype==BOSS 或关卡配置显式含 boss{} 时启用，普通关不创建。
+var _boss_mode := false
+var _boss_cfg: Dictionary = {}
+var _boss_hud: BossHud
+## 推演者血量耗尽 → 强制失败结算。
+var _boss_failed := false
+
 func _ready() -> void:
 	_load()
 	_apply_review()
+	_boss_mode = _boss_enabled()
+	_boss_cfg = _boss_config()
 	add_child(TechBg.new())
 	_build_view()
 	_build_ui()
@@ -207,7 +217,10 @@ func _reset() -> void:
 	_trap_missed = false
 	_streak = 0
 	_max_streak = 0
+	_boss_failed = false
 	_refresh_combo()
+	if _boss_mode and _boss_hud != null:
+		_boss_hud.reset()
 	_clean.clear()
 	for i in _stages.size():
 		_clean.append(0)
@@ -477,6 +490,10 @@ func _level_ok() -> void:
 	_max_streak = maxi(_max_streak, _streak)
 	GameData.note_streak(_streak)
 	_refresh_combo()
+	if _boss_mode and _boss_hud != null:
+		_boss_hud.set_streak(_streak)
+		if _boss_hud.hit_boss():
+			_on_boss_enraged()
 	_fx_correct(_last_picked)
 	_level_ok_fx()
 
@@ -516,6 +533,10 @@ func _wrong(msg: String) -> void:
 	_streak = 0
 	_refresh_combo()
 	_fx_wrong()
+	if _boss_mode and _boss_hud != null:
+		_boss_hud.set_streak(0)
+		if _boss_hud.hit_player():
+			_boss_player_down()
 
 ## 答错动效：所选项旋转摇头 + 红环扩散 + 画面红闪。
 func _fx_wrong() -> void:
@@ -570,6 +591,41 @@ func _next_pressed() -> void:
 	else:
 		_finish()
 
+# ---------------------------------------------------------------- BOSS 战
+## 是否启用战斗层：关卡 archetype==BOSS，或关卡配置显式含 boss{}。
+func _boss_enabled() -> bool:
+	return str(GameData.current_level.get("archetype", "")) == "BOSS" or _cfg.get("boss") is Dictionary
+
+func _boss_config() -> Dictionary:
+	var b: Variant = _cfg.get("boss")
+	return b if b is Dictionary else {}
+
+func _boss_first_clear_coins() -> int:
+	var r: Variant = _boss_cfg.get("reward")
+	if r is Dictionary:
+		return int((r as Dictionary).get("first_clear_coins", 200))
+	return 200
+
+## 守关者血量过半：狂暴反馈(仅视觉，不改题序)。
+func _on_boss_enraged() -> void:
+	if _boss_hud == null or not is_instance_valid(_boss_hud):
+		return
+	var col := _boss_hud.boss_color()
+	Vfx.float_text(_ui, _boss_hud.boss_avatar_center(), "狂暴！", col, 30)
+	Vfx.screen_flash(_ui, Color(col, 0.5), 0.22, 0.5)
+
+## 推演者血量耗尽 → 短暂停顿后强制失败结算。
+func _boss_player_down() -> void:
+	if _done or _boss_failed:
+		return
+	_boss_failed = true
+	if _boss_hud != null:
+		_boss_hud.player_down()
+	_show_feed("推演能量耗尽 · 守关者压制了你。", UI.COL_DANGER)
+	await get_tree().create_timer(0.8).timeout
+	if not _done:
+		_finish()
+
 ## 结算评级：S(全对满分无陷阱) / A(三星) / B(二星) / C(其余)
 func _grade(st: int, clean: int, total: int, trap_missed: bool) -> String:
 	if st >= 3 and clean == total and not trap_missed:
@@ -594,6 +650,8 @@ func _finish() -> void:
 		st = 2
 	if _trap_missed and st > 0:
 		st -= 1
+	if _boss_failed:
+		st = 0
 	var lv0 := GameData.player_level()
 	var lid := GameData.current_level_id()
 	var prev_best := int(GameData.level_records.get(lid, {}).get("best_stars", 0)) if lid != "" else 0
@@ -607,6 +665,9 @@ func _finish() -> void:
 	if not _trap_missed:
 		reward += 30
 	reward += _max_streak * 3
+	var first_clear := _boss_mode and st > 0 and prev_best == 0
+	if first_clear:
+		reward += _boss_first_clear_coins()
 	var boosted := GameData.consume_coin_boost()
 	if boosted:
 		reward *= 2
@@ -624,7 +685,10 @@ func _finish() -> void:
 		_pet.celebrate(inten)
 		if lv1 > lv0:
 			_pet.on_level_up(lv1)
-	_v_title.text = _victory_text(passed)
+	if _boss_mode:
+		_v_title.text = "击败守关者！" if passed else "被守关者压制 · 请复盘"
+	else:
+		_v_title.text = _victory_text(passed)
 	_v_title.add_theme_color_override("font_color", UI.COL_TEXT if passed else UI.COL_DANGER)
 	var grade := _grade(st, clean, total, _trap_missed)
 	if st >= 3:
@@ -640,6 +704,8 @@ func _finish() -> void:
 		score_txt += "   ·   新纪录！"
 	if boosted:
 		score_txt += "   ·   双倍金币"
+	if first_clear:
+		score_txt += "   ·   首通奖励 +%d" % _boss_first_clear_coins()
 	_v_score.text = score_txt
 	for c in _v_star_row.get_children():
 		_v_star_row.remove_child(c)
@@ -668,6 +734,11 @@ func _finish() -> void:
 	_v_coins.text = "金币  +0"
 	Sound.play("complete" if passed else "error")
 	_refresh_nav()
+	if _boss_mode and _boss_hud != null and passed:
+		_boss_hud.boss_defeated()
+		Vfx.burst(_ui, _boss_hud.boss_avatar_center(), _boss_hud.boss_color(), 1.3)
+		Vfx.float_text(_ui, _boss_hud.boss_avatar_center(), "击败！", _boss_hud.boss_color(), 40)
+		await get_tree().create_timer(0.9).timeout
 	_dim.visible = true
 	_victory.visible = true
 	if passed:
@@ -870,6 +941,12 @@ func _build_ui() -> void:
 		fl.custom_minimum_size = Vector2(0, 44)
 		_feed = fl
 	pv.add_child(_feed)
+
+	if _boss_mode:
+		_boss_hud = BossHud.new()
+		_boss_hud.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_ui.add_child(_boss_hud)
+		_boss_hud.configure(_boss_cfg, _stages.size(), str(_cfg.get("method", "守关者")))
 
 	var bottom := PanelContainer.new()
 	bottom.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)

@@ -955,6 +955,15 @@
     "method": "圆综合试炼",
     "color": "#FFB35C",
     "summary": "综合运用圆的方程、位置关系、弦长、切线与最值，完成圆的压轴试炼。",
+    "boss": {
+      "title": "圆之试炼",
+      "name": "圆关守",
+      "avatar": "圆",
+      "color": "#FFB35C",
+      "player_hp_bonus": 1,
+      "enrage_at": 0.5,
+      "reward": { "first_clear_coins": 200 }
+    },
     "levels": [
       {
         "name": "1-1 实验探究 · 综合作图",

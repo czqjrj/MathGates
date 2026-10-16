@@ -1,74 +1,7 @@
 extends Control
 ## 战斗场景 · 极简未来风：六边形头像 + 分段能量条 + 徽章选项 + 玻璃结算
-
-class HexAvatar extends Control:
-	var letter := "?"
-	var col := Color("#5ee6ff")
-	var fs := 30
-
-	func _ready() -> void:
-		mouse_filter = Control.MOUSE_FILTER_IGNORE
-		resized.connect(queue_redraw)
-
-	func _draw() -> void:
-		var c := size * 0.5
-		var r := minf(size.x, size.y) * 0.5 - 3.0
-		if r <= 1.0:
-			return
-		var pts := PackedVector2Array()
-		for i in range(6):
-			var a := -PI / 2.0 + float(i) * TAU / 6.0
-			pts.append(c + Vector2(cos(a), sin(a)) * r)
-		draw_colored_polygon(pts, Color(0.05, 0.07, 0.12, 0.78))
-		var outline := pts.duplicate()
-		outline.append(pts[0])
-		draw_polyline(outline, Color(col, 0.85), 2.0, true)
-		var inner := PackedVector2Array()
-		for i in range(6):
-			var a := -PI / 2.0 + float(i) * TAU / 6.0
-			inner.append(c + Vector2(cos(a), sin(a)) * (r * 0.8))
-		inner.append(inner[0])
-		draw_polyline(inner, Color(col, 0.22), 1.0, true)
-		var f := UI.font()
-		var w := f.get_string_size(letter, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
-		draw_string(f, c + Vector2(-w * 0.5, fs * 0.35), letter, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, UI.COL_TEXT)
-
-class HpBar extends Control:
-	var value := 5
-	var max_value := 5
-
-	func _ready() -> void:
-		mouse_filter = Control.MOUSE_FILTER_IGNORE
-		resized.connect(queue_redraw)
-
-	func set_hp(v: int) -> void:
-		value = v
-		queue_redraw()
-
-	func _draw() -> void:
-		var track := StyleBoxFlat.new()
-		track.bg_color = Color(0, 0, 0, 0.4)
-		track.set_corner_radius_all(4)
-		track.set_border_width_all(1)
-		track.border_color = Color(1, 1, 1, 0.16)
-		draw_style_box(track, Rect2(Vector2.ZERO, size))
-
-		var ratio := clampf(float(value) / float(maxi(1, max_value)), 0.0, 1.0)
-		if ratio > 0.01:
-			var hot := ratio <= 0.34
-			var fc: Color = UI.COL_DANGER if hot else UI.COL_ACCENT
-			var fill := StyleBoxFlat.new()
-			fill.bg_color = fc
-			fill.set_corner_radius_all(4)
-			fill.shadow_color = Color(fc, 0.5)
-			fill.shadow_size = 12
-			fill.shadow_offset = Vector2.ZERO
-			draw_style_box(fill, Rect2(Vector2(2, 2), Vector2(maxf((size.x - 4.0) * ratio, 1.0), size.y - 4.0)))
-
-		if max_value > 1:
-			for i in range(1, max_value):
-				var x := size.x * float(i) / float(max_value)
-				draw_rect(Rect2(x - 1.0, 6.0, 2.0, size.y - 12.0), Color(0, 0, 0, 0.5))
+##
+## 头像/血条的绘制复用 BossHud.HexAvatar / BossHud.HpBar（与 BOSS 关共享单一实现）。
 
 const CHOICE_FORMULA_SCALE := UI.CHOICE_FORMULA_SCALE
 
@@ -95,7 +28,7 @@ var _texts: Array[String] = []
 var _explain_panel: PanelContainer
 var _explain_lbl: Label
 var _next_btn: Button
-var _hp: HpBar
+var _hp: BossHud.HpBar
 
 ## 多选题(题面 ans 为数组):选项可多选，需点「确认作答」结算。
 var _multi := false
@@ -308,7 +241,7 @@ func _make_hp_bar() -> Control:
 	var box := Control.new()
 	box.custom_minimum_size = Vector2(340, 26)
 	box.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	_hp = HpBar.new()
+	_hp = BossHud.HpBar.new()
 	_hp.max_value = _questions.size()
 	_hp.value = _questions.size()
 	UI.full_rect(_hp)
@@ -318,7 +251,7 @@ func _make_hp_bar() -> Control:
 func _hex_avatar(letter: String, col: Color, px: int) -> Control:
 	var box := CenterContainer.new()
 	box.custom_minimum_size = Vector2(px, px)
-	var h := HexAvatar.new()
+	var h := BossHud.HexAvatar.new()
 	h.letter = letter
 	h.col = col
 	h.custom_minimum_size = Vector2(px, px)
