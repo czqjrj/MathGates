@@ -21,7 +21,7 @@
   | 命令 | 期望 |
   |---|---|
   | `--headless --path . --script res://tools/check_all.gd` | `CHECKED 79 scripts, 0 failures`（仅 `third_party/` 两个历史 Parse Error） |
-  | `--headless --path . res://tests/Tests.tscn` | `TESTS: 1170 passed, 0 failed` |
+  | `--headless --path . res://tests/Tests.tscn` | `TESTS: 1220 passed, 0 failed` |
   | `--headless --path . res://tools/smoke_scene.tscn` | `SMOKE: 238 ok, 0 fail` |
   | `--headless --path . res://tests/LabSmoke.tscn` | 末尾 `TMP_OK`（覆盖 `space_boss`） |
 
@@ -67,6 +67,30 @@
         普通关不计时且 2/3 零失误给「再 1 轮…升 3 星」引导、关闭计时开关后超时不再降星。
   - 回归基线更新：`CHECKED 79 scripts` / `Tests: 1170 passed` / `SMOKE: 238 ok` / `LabSmoke TMP_OK`。
 
+- [x] **P3 · 地图冒险化（改 `scripts/modules/line/TheoremTree.gd` + `GameData` + `curriculum.json`，全部为关卡级可选字段、缺省即旧行为）**
+  - [x] **章节 Boss 门**：关卡加 `gate{ need_stars }` → 解锁改判「本单元累计星数」；
+        已通关的关永不回锁；面板显示「Boss 门 · 单元星数 h/n」进度条与「再得 N ★ 即可开启」，未达标时进入按钮置灰。
+  - [x] **宝箱节点**：关卡加 `chest{ need_stars, title, reward }` → 节点右下金箱角标
+        (条件未达=灰 / 可领取=脉冲 / 已领取=绿)；面板内「开启宝箱」→ `GameData.claim_chest()` 发奖落盘，
+        成功后 `Vfx.celebrate` 并重绘地图。
+  - [x] **随机事件节点**：关卡加 `event{ title, reward }` → 节点左上菱形(未触发=青色呼吸环 / 已触发=灰)；
+        面板**首次**打开即 `mark_event_seen()` 触发一次并发放奖励，重复打开不再发奖。
+  - [x] **分支路线**：关卡加 `optional: true` + `after: "<level_id>"` → 该关从主蛇形路径抽离，
+        归入底部「支线探索」行，并画一条二次贝塞尔弧连回 `after` 节点（主路径 Catmull 不再穿过支线点）。
+  - [x] **装饰动效**：可领取宝箱脉冲环、事件菱形呼吸环、「支线」标签、**解锁礼花**
+        （仅进度刷新时对本次**新解锁**的节点放一次；首次/切章重绘只登记不放）。
+  - [x] **存档**：`GameData.chests_claimed{}` / `events_seen{}`（`_blank_user` / `_snapshot` / `_apply` 三处同步，旧档缺字段按空）。
+  - [x] `tests/Tests.gd`：`_test_adventure()` —— 5 个几何章节的 `gate/chest/event/optional` 结构齐全、
+        `optional.after` 指向存在的关卡、`stars_of` / `claim_chest` 去重 / `mark_event_seen` 幂等 / `grant_reward` 发奖。
+  - [x] 运行期探针（临时工具，已删）：`P3 PROBE: 24 passed, 0 failed` —— 12 星时 Boss 锁定（`gate 12/15`）、16 星解锁；
+        宝箱可领→领取后 `+120 金币`且角标转已领；事件面板首开触发 `+1 coin_boost`、二次打开不重复发奖；
+        `line_6_3` 为支线节点且底部存在「支线探索」标题条。
+  - [x] 真实窗口截图（`build/shots_p3/*.png`）：地图顶部 / 底部支线行 / Boss 门面板 / 宝箱面板 / 事件面板。
+  - ⚠️ **范围**：`WorldMap.tscn` == `TheoremTree.gd(kind="method")`，代码同一条路径（两类章节无分支逻辑差异）。
+  - ⚠️ **实现选型**：采用**关卡级**字段而非设计稿的**章节级** `map{}` —— 部分教材会把多章合并成一张卡片
+        （如「圆锥曲线与方程」），章节级数据在合并下无法定位；关卡字段随合并原样保留，天然不受影响。
+  - 回归基线更新：`CHECKED 79 scripts` / `Tests: 1220 passed` / `SMOKE: 238 ok` / `LabSmoke TMP_OK`。
+
 ---
 
 ## 2. 待办
@@ -93,9 +117,11 @@
       各带自己的 `_finish`，无 `_streak`），如需同等节奏体验须另行移植（未纳入 P2 范围）。
 
 ### P3 · 地图冒险化（改 `TheoremTree.gd`）
-- [ ] 章节级 `map{}`：分支路线 / 宝箱节点 / 随机事件 / 章节 Boss 门（星数门槛解锁 `*_boss`）。
-- [ ] 存档 `chests_claimed{}` / `events_seen{}`。
-- [ ] ⚠️ `WorldMap.tscn` == `TheoremTree.gd(kind="method")`，两种 `kind`（method/knowledge）都要回归。
+- [x] 分支路线 / 宝箱节点 / 随机事件 / 章节 Boss 门（星数门槛解锁 `*_boss`）。
+      ⚠️ 实现用**关卡级** `gate/chest/event/optional` 字段，**未**用章节级 `map{}`（多教材章节合并下章节级不可靠）。
+- [x] 存档 `chests_claimed{}` / `events_seen{}`。
+- [x] ⚠️ `WorldMap.tscn` == `TheoremTree.gd(kind="method")`：两者走同一 `_build_map` 路径，P3 逻辑不分 `kind`，两种 `kind` 均已回归。
+- [ ] 剩余目视项：移动端窄屏（地图节点/面板）——与 P1/P2 同项，**未做**。
 
 ---
 
@@ -116,15 +142,18 @@
 // data/*_levels.json 关卡级（P2；仅关卡级，未做阶段级覆盖）
 "rules": { "time_limit": 300, "star_time": 150, "show_combo_bar": true }
 
-// data/curriculum.json 章节级（P3）
-"map": {
-  "layout": "branch",
-  "nodes": [ { "id": "circle_1_1", "type": "level", "x": 0.2, "y": 0.4 },
-             { "id": "chest_1", "type": "chest", "reward": { "coins": 100 } } ],
-  "edges": [ ["circle_1_1", "circle_1_2"] ],
-  "boss_gate": { "level": "circle_boss", "need_stars": 30 }
-}
+// data/curriculum.json 关卡级（P3；挂在每个 level 条目上，随章节合并原样保留）
+"gate":   { "need_stars": 15 },                              // 章节 Boss 门：本单元累计星数门槛
+"chest":  { "need_stars": 9, "title": "斜率补给箱",
+            "reward": { "coins": 120 } },                     // 宝箱：达标可领，一次
+"event":  { "title": "限时金币加成",
+            "reward": { "coin_boost": 1 } },                   // 随机事件：首开触发一次
+"optional": true, "after": "line_6_2"                         // 支线：抽离主路径，弧线连回 after 关
 ```
+
+> P3 全部为可选字段，缺省即旧行为。设计稿里的章节级 `map{ layout/nodes/edges/boss_gate }` **未采用**：
+> 部分教材（如「圆锥曲线与方程」）会把多章合并成一张卡片，章节级数据在合并下无法定位；
+> 关卡字段随 `duplicate(true)` 合并原样保留，天然不受影响。
 
 ---
 
@@ -161,3 +190,8 @@
   `scripts/autoload/Settings.gd`、`scripts/screens/SettingsMenu.gd`、
   `data/{line,space,vector,ellipse,circle}_levels.json`（`rules{}`）、`tests/Tests.gd`（`_test_rhythm`）
 - 后续（P3）：`scripts/modules/line/TheoremTree.gd`
+- 改（P3）：`scripts/modules/line/TheoremTree.gd`（节点类型/布局/面板/解锁/庆祝）、
+  `scripts/autoload/GameData.gd`（`chests_claimed{}`/`events_seen{}`、`stars_of`、`claim_chest`、
+  `is_chest_claimed`、`is_event_seen`/`mark_event_seen`、`grant_reward`）、
+  `data/curriculum.json`（5 个 Boss `gate`、5 组 `chest`/`event`、5 个 `optional`+`after`）、
+  `tests/Tests.gd`（`_test_adventure`）

@@ -1147,6 +1147,7 @@
         },
         {
           "id": "line_3_3",
+          "chest": { "need_stars": 9, "title": "斜率补给箱", "reward": { "coins": 120 } },
           "name": "3-3 交点与含参",
           "technique": "联立 / 含参平行",
           "archetype": "LAB",
@@ -1183,6 +1184,7 @@
         },
         {
           "id": "line_5_1",
+          "event": { "title": "限时金币加成", "reward": { "coin_boost": 1 } },
           "name": "5-1 四大直线系",
           "technique": "定点/交点/平行/垂直",
           "archetype": "LAB",
@@ -1219,6 +1221,7 @@
         },
         {
           "id": "line_6_3",
+          "optional": true, "after": "line_6_2",
           "name": "6-3 距离差最大",
           "technique": "异侧连线 / 同侧对称",
           "archetype": "LAB",
@@ -1228,6 +1231,7 @@
         },
         {
           "id": "line_boss",
+          "gate": { "need_stars": 15 },
           "name": "隐藏Boss · 对称与最值压轴",
           "technique": "光反射 / 周长最小 / 综合对称",
           "archetype": "BOSS",
@@ -1327,6 +1331,7 @@
         },
         {
           "id": "space_3_3",
+          "chest": { "need_stars": 9, "title": "空间补给箱", "reward": { "coins": 140 } },
           "name": "3-3 二面角",
           "technique": "看图判原角/补角",
           "archetype": "LAB",
@@ -1367,6 +1372,7 @@
         },
         {
           "id": "space_5_1",
+          "event": { "title": "遗落的提示卡", "reward": { "hint_tokens": 1 } },
           "name": "5-1 三垂线定理与等体积",
           "technique": "证垂直 / 换顶点",
           "archetype": "LAB",
@@ -1417,6 +1423,7 @@
         },
         {
           "id": "space_6_3",
+          "optional": true, "after": "space_6_2",
           "name": "6-3 内切球与球截面",
           "technique": "R² = d² + r²",
           "archetype": "LAB",
@@ -1427,6 +1434,7 @@
         },
         {
           "id": "space_boss",
+          "gate": { "need_stars": 15 },
           "name": "隐藏Boss · 空间向量真题试炼",
           "technique": "综合真题 / 全考点",
           "archetype": "BOSS",
@@ -1546,6 +1554,7 @@
         },
         {
           "id": "vector_4_3",
+          "chest": { "need_stars": 9, "title": "向量补给箱", "reward": { "coins": 140 } },
           "name": "4-3 垂直判定与陷阱",
           "technique": "点积为零 / 零向量特例",
           "archetype": "LAB",
@@ -1555,6 +1564,7 @@
         },
         {
           "id": "vector_5_1",
+          "event": { "title": "遍历奖励", "reward": { "coins": 160 } },
           "name": "5-1 数量投影",
           "technique": "|b|cosθ 有正负",
           "archetype": "LAB",
@@ -1600,6 +1610,7 @@
         },
         {
           "id": "vector_6_3",
+          "optional": true, "after": "vector_6_2",
           "name": "6-3 动点轨迹模型",
           "technique": "圆 / 直线 / 阿波罗尼斯",
           "archetype": "LAB",
@@ -1609,6 +1620,7 @@
         },
         {
           "id": "vector_boss",
+          "gate": { "need_stars": 15 },
           "name": "隐藏Boss · 平面向量真题试炼",
           "technique": "等和线 / 极化恒等式 / 综合",
           "archetype": "BOSS",
@@ -1700,6 +1712,7 @@
         },
         {
           "id": "ellipse_3_3",
+          "chest": { "need_stars": 6, "title": "焦点补给箱", "reward": { "coins": 120 } },
           "name": "3-3 焦半径的取值范围",
           "technique": "|PF₁| ∈ [a−c, a+c]",
           "archetype": "LAB",
@@ -1709,6 +1722,7 @@
         },
         {
           "id": "ellipse_4_1",
+          "event": { "title": "焦点的赠礼", "reward": { "hint_tokens": 1 } },
           "name": "4-1 点差法 · 中点弦",
           "technique": "k_AB·k_OM = −b²/a²",
           "archetype": "LAB",
@@ -1754,6 +1768,7 @@
         },
         {
           "id": "ellipse_5_3",
+          "optional": true, "after": "ellipse_5_2",
           "name": "5-3 位置关系与最值",
           "technique": "Δ 判定 · 参数方程求最值",
           "archetype": "LAB",
@@ -1763,6 +1778,7 @@
         },
         {
           "id": "ellipse_boss",
+          "gate": { "need_stars": 12 },
           "name": "隐藏Boss · 椭圆综合试炼",
           "technique": "焦点三角 · 离心率 · 硬解综合",
           "archetype": "BOSS",
@@ -1881,6 +1897,7 @@
         },
         {
           "id": "circle_4_3",
+          "chest": { "need_stars": 9, "title": "切线补给箱", "reward": { "coins": 140 } },
           "name": "4-3 切点弦与切线性质",
           "technique": "切点弦方程 / 直角三角形",
           "archetype": "LAB",
@@ -1890,6 +1907,7 @@
         },
         {
           "id": "circle_5_1",
+          "event": { "title": "加时金币", "reward": { "coin_boost": 1 } },
           "name": "5-1 两圆位置关系",
           "technique": "d 与 r₁±r₂ 比较",
           "archetype": "LAB",
@@ -1935,6 +1953,7 @@
         },
         {
           "id": "circle_6_3",
+          "optional": true, "after": "circle_6_2",
           "name": "6-3 轨迹与阿波罗尼斯圆",
           "technique": "定距比 / 定义求轨迹",
           "archetype": "LAB",
@@ -1944,6 +1963,7 @@
         },
         {
           "id": "circle_boss",
+          "gate": { "need_stars": 15 },
           "name": "隐藏Boss · 圆综合试炼",
           "technique": "位置关系 · 切线 · 最值综合",
           "archetype": "BOSS",

@@ -165,6 +165,10 @@ var daily_base: Dictionary = {}        # 每日任务基准(metric -> 当日开�
 var daily_peak_streak: int = 0         # 今日最高连击
 var daily_claimed: Dictionary = {}     # 已领取的每日任务 id
 
+# ---- 地图冒险(P3，可存档) ----
+var chests_claimed: Dictionary = {}    # level_id -> 领取时间戳(宝箱节点，只增不减)
+var events_seen: Dictionary = {}       # level_id -> 触发时间戳(随机事件节点，只增不减)
+
 func _ready() -> void:
 	_load_textbooks()
 	_load_curriculum()
@@ -795,6 +799,56 @@ func consume_coin_boost() -> bool:
 
 func add_coin_boosts(n: int) -> void:
 	coin_boost += n
+	_save()
+	progress_changed.emit()
+
+# ---------------------------------------------------------------- 地图冒险(P3)
+## 一组关卡 id 的星级合计(Boss 门 / 宝箱条件用)。
+func stars_of(level_ids: Array) -> int:
+	var n := 0
+	for id in level_ids:
+		n += int(stars.get(str(id), 0))
+	return n
+
+func is_chest_claimed(level_id: String) -> bool:
+	return chests_claimed.has(level_id)
+
+## 领取关卡宝箱：未领取则发放奖励并落盘，返回 true；已领取或 id 非法返回 false。
+func claim_chest(level_id: String, reward: Dictionary) -> bool:
+	if level_id == "" or chests_claimed.has(level_id):
+		return false
+	chests_claimed[level_id] = Time.get_datetime_string_from_system(false, true)
+	grant_reward(reward)
+	return true
+
+func is_event_seen(level_id: String) -> bool:
+	return events_seen.has(level_id)
+
+## 标记随机事件已触发：首次标记返回 true(供只播一次)，重复返回 false。
+func mark_event_seen(level_id: String) -> bool:
+	if level_id == "" or events_seen.has(level_id):
+		return false
+	events_seen[level_id] = Time.get_datetime_string_from_system(false, true)
+	_save()
+	progress_changed.emit()
+	return true
+
+## 发放一份奖励字典(coins / hint_tokens / coin_boost)，未识别字段忽略；
+## 会落盘并发 progress_changed（宝箱/事件共用）。
+func grant_reward(reward: Dictionary) -> void:
+	if reward.is_empty():
+		return
+	var c := int(reward.get("coins", 0))
+	if c > 0:
+		coins += c
+		coins_earned += c
+	var h := int(reward.get("hint_tokens", 0))
+	if h > 0:
+		hint_tokens += h
+	var b := int(reward.get("coin_boost", 0))
+	if b > 0:
+		coin_boost += b
+	_eval_medals()
 	_save()
 	progress_changed.emit()
 
@@ -1449,6 +1503,7 @@ func _blank_user() -> Dictionary:
 		"hint_tokens": 0, "coin_boost": 0,
 		"best_streak": 0, "last_login_date": "", "login_streak": 0,
 		"daily_date": "", "daily_base": {}, "daily_peak_streak": 0, "daily_claimed": {},
+		"chests_claimed": {}, "events_seen": {},
 		"created": Time.get_datetime_string_from_system(false, true),
 	}
 
@@ -1468,6 +1523,7 @@ func _snapshot() -> Dictionary:
 		"hint_tokens": hint_tokens, "coin_boost": coin_boost,
 		"best_streak": best_streak, "last_login_date": last_login_date, "login_streak": login_streak,
 		"daily_date": daily_date, "daily_base": daily_base, "daily_peak_streak": daily_peak_streak, "daily_claimed": daily_claimed,
+		"chests_claimed": chests_claimed, "events_seen": events_seen,
 		"created": users.get(current_user, {}).get("created", Time.get_datetime_string_from_system(false, true)),
 	}
 
@@ -1498,6 +1554,10 @@ func _apply(d: Dictionary) -> void:
 	daily_base = db if typeof(db) == TYPE_DICTIONARY else {}
 	var dc = d.get("daily_claimed", {})
 	daily_claimed = dc if typeof(dc) == TYPE_DICTIONARY else {}
+	var cc = d.get("chests_claimed", {})
+	chests_claimed = cc if typeof(cc) == TYPE_DICTIONARY else {}
+	var es = d.get("events_seen", {})
+	events_seen = es if typeof(es) == TYPE_DICTIONARY else {}
 	var oa = d.get("owned_avatars", null)
 	if typeof(oa) == TYPE_ARRAY:
 		owned_avatars = oa.duplicate()

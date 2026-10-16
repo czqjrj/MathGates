@@ -32,6 +32,7 @@ func _run() -> void:
 	_test_economy()
 	_test_daily()
 	_test_textbook()
+	_test_adventure()
 	print("TESTS: %d passed, %d failed" % [_pass, _fail])
 	get_tree().quit(1 if _fail > 0 else 0)
 
@@ -461,3 +462,81 @@ func _test_textbook() -> void:
 	GameData.set_textbook("__nope__")
 	_eq(GameData.chapters.size(), GameData._chapters_raw.size(), "unknown version keeps raw chapters")
 	GameData.set_textbook(saved)
+
+## 校验 P3 地图冒险数据(curriculum 的 gate/chest/event/optional)与 GameData 冒险接口。
+func _test_adventure() -> void:
+	var data = JSON.parse_string(FileAccess.get_file_as_string("res://data/curriculum.json"))
+	_ok(typeof(data) == TYPE_DICTIONARY, "curriculum parses (adventure)")
+	var want := {
+		"line_eq": "line_boss", "space": "space_boss", "vector": "vector_boss",
+		"ellipse": "ellipse_boss", "circle_eq": "circle_boss",
+	}
+	for ch in (data as Dictionary).get("chapters", []):
+		var cid := str(ch.get("id", ""))
+		if not want.has(cid):
+			continue
+		var levels: Array = ch.get("levels", [])
+		var boss_id := str(want[cid])
+		var ids := {}
+		for lv in levels:
+			ids[str(lv.get("id", ""))] = true
+		var chests := 0
+		var events := 0
+		var optionals := 0
+		for lv in levels:
+			var lid := str(lv.get("id", ""))
+			if lid == boss_id:
+				_ok(lv.get("gate") is Dictionary, cid + " boss has gate{}")
+				_ok(int((lv.get("gate", {}) as Dictionary).get("need_stars", 0)) > 0, cid + " gate.need_stars > 0")
+			if lv.get("chest") is Dictionary:
+				chests += 1
+				_ok(int((lv.get("chest", {}) as Dictionary).get("need_stars", 0)) >= 0, cid + " chest need_stars >= 0")
+			if lv.get("event") is Dictionary:
+				events += 1
+			if bool(lv.get("optional", false)):
+				optionals += 1
+				var after := str(lv.get("after", ""))
+				_ok(after != "" and ids.has(after), cid + " optional.after exists: " + lid)
+		_ok(chests >= 1, cid + " has >=1 chest")
+		_ok(events >= 1, cid + " has >=1 event")
+		_ok(optionals >= 1, cid + " has >=1 optional branch")
+
+	# GameData 冒险接口(置空 current_user 阻止写盘)
+	var saved_user := GameData.current_user
+	var saved_chests: Dictionary = GameData.chests_claimed.duplicate(true)
+	var saved_events: Dictionary = GameData.events_seen.duplicate(true)
+	var saved_coins := GameData.coins
+	var saved_earned := GameData.coins_earned
+	var saved_hint := GameData.hint_tokens
+	var saved_boost := GameData.coin_boost
+	GameData.current_user = ""
+
+	_eq(GameData.stars_of(["__none_a__", "__none_b__"]), 0, "stars_of unknown = 0")
+	var s_stars: Dictionary = GameData.stars.duplicate()
+	GameData.stars["__adv_a__"] = 2
+	GameData.stars["__adv_b__"] = 3
+	_eq(GameData.stars_of(["__adv_a__", "__adv_b__"]), 5, "stars_of sums")
+	GameData.stars = s_stars
+
+	_ok(not GameData.is_chest_claimed("__adv_chest__"), "chest not claimed initially")
+	_ok(GameData.claim_chest("__adv_chest__", { "coins": 50, "hint_tokens": 1 }), "claim_chest grants")
+	_ok(GameData.is_chest_claimed("__adv_chest__"), "chest claimed after")
+	_eq(GameData.coins, saved_coins + 50, "claim_chest adds coins")
+	_eq(GameData.hint_tokens, saved_hint + 1, "claim_chest adds hint token")
+	_ok(not GameData.claim_chest("__adv_chest__", { "coins": 50 }), "double claim rejected")
+	_eq(GameData.coins, saved_coins + 50, "double claim adds nothing")
+
+	_ok(not GameData.is_event_seen("__adv_evt__"), "event unseen initially")
+	_ok(GameData.mark_event_seen("__adv_evt__"), "mark_event_seen first true")
+	_ok(not GameData.mark_event_seen("__adv_evt__"), "mark_event_seen second false")
+	GameData.grant_reward({ "coins": 10, "coin_boost": 2 })
+	_eq(GameData.coins, saved_coins + 60, "grant_reward adds coins")
+	_eq(GameData.coin_boost, saved_boost + 2, "grant_reward adds coin_boost")
+
+	GameData.chests_claimed = saved_chests
+	GameData.events_seen = saved_events
+	GameData.coins = saved_coins
+	GameData.coins_earned = saved_earned
+	GameData.hint_tokens = saved_hint
+	GameData.coin_boost = saved_boost
+	GameData.current_user = saved_user

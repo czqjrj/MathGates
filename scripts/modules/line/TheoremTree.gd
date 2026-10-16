@@ -85,6 +85,15 @@ class MapNode extends Control:
 	## 标题/技法文字的最大绘制宽度(由布局按列间距给定，超出则省略号收尾，避免相邻节点压字)
 	var title_max_w := 0.0
 
+	# ---- 冒险标记(P3) ----
+	var has_chest := false
+	var chest_state := 0        # 0=无 1=条件未达 2=可领取 3=已领取
+	var has_event := false
+	var event_done := false
+	var gate_need := 0          # >0 表示 Boss 门：需本单元累计星数
+	var gate_have := 0
+	var optional := false       # 支线节点(分支路线)
+
 	var _hover := false
 	var _t := 0.0
 
@@ -188,6 +197,46 @@ class MapNode extends Control:
 		if sub != "":
 			_center(mf, sub, cx, cy + R + 42.0, 11, Color(UI.COL_TEXT_DIM, 0.85), title_max_w)
 		_draw_stars(cx, size.y - 12.0)
+		_draw_adventure(cx, cy, R, mf)
+
+	## 冒险标记：宝箱角标(右下)、随机事件菱形(左上)、Boss 门星数进度(底部)。
+	func _draw_adventure(cx: float, cy: float, R: float, mf: Font) -> void:
+		if has_event:
+			_draw_event(Vector2(cx - R * 0.72, cy - R * 0.72))
+		if has_chest:
+			_draw_chest(Vector2(cx + R * 0.72, cy + R * 0.66))
+		if optional and unlocked:
+			_center(mf, "支线", cx, cy - R - 20.0, 11, Color("#c4b5fd", 0.9))
+		if gate_need > 0 and not unlocked:
+			_center(mf, "★ %d/%d" % [gate_have, gate_need], cx, size.y - 30.0, 12, Color("#ffd479"))
+
+	func _draw_chest(at: Vector2) -> void:
+		var col := Color("#ffd479")
+		if chest_state == 3:
+			col = Color("#5AD8A6")
+		elif chest_state == 1:
+			col = Color(UI.COL_TEXT_DIM, 0.8)
+		var w := 22.0
+		var h := 16.0
+		var r := Rect2(at - Vector2(w * 0.5, h * 0.5), Vector2(w, h))
+		draw_rect(r, Color(0.06, 0.08, 0.13, 0.92), true)
+		draw_rect(r, col, false, 2.0)
+		draw_line(Vector2(r.position.x, r.position.y + h * 0.42), Vector2(r.position.x + w, r.position.y + h * 0.42), col, 1.6, true)
+		draw_circle(Vector2(at.x, r.position.y + h * 0.42), 2.2, col)
+		if chest_state == 2:
+			var ph := 0.5 + 0.5 * sin(_t * 3.5)
+			draw_arc(at, 15.0 + ph * 5.0, 0, TAU, 28, Color(col, 0.5 * (1.0 - ph)), 1.6, true)
+
+	func _draw_event(at: Vector2) -> void:
+		var col := Color("#5ee6ff") if not event_done else Color(UI.COL_TEXT_DIM, 0.7)
+		var s := 7.0
+		var pts := PackedVector2Array([
+			at + Vector2(0, -s), at + Vector2(s, 0), at + Vector2(0, s), at + Vector2(-s, 0),
+		])
+		draw_colored_polygon(pts, Color(col, 0.95 if not event_done else 0.4))
+		if not event_done:
+			var ph := 0.5 + 0.5 * sin(_t * 4.0)
+			draw_arc(at, s + 3.0 + ph * 3.0, 0, TAU, 20, Color(col, 0.5 * (1.0 - ph)), 1.5, true)
 
 	func _draw_lock(at: Vector2, col: Color) -> void:
 		draw_arc(at + Vector2(0, -4), 5.0, PI, TAU, 20, col, 2.0, true)
@@ -590,6 +639,8 @@ var _chapter_index := -1
 var _path_pts := PackedVector2Array()
 var _pulse: Pulse
 var _pulse_t := 0.0
+## 本会话已「记录为已解锁」的关卡 id(供解锁礼花只放一次)
+var _unlocked_seen := {}
 
 func _ready() -> void:
 	theme = UI.make_theme()
@@ -999,6 +1050,23 @@ func _build_map(recenter_map: bool) -> void:
 	_levels = GameData.chapters[_chapter_index]["levels"]
 	_groups = _disasm_groups()
 
+	# 支线节点(optional)从主路径抽离，单独排一行并用连线挂回主节点。
+	var main_groups: Array = []
+	var branch_items: Array = []
+	for g in _groups:
+		var keep: Array = []
+		for it in g["items"]:
+			if bool(it.get("optional", false)):
+				branch_items.append(it)
+			else:
+				keep.append(it)
+		if not keep.is_empty():
+			main_groups.append({ "title": g["title"], "boss": g["boss"], "items": keep })
+	var render_groups: Array = main_groups
+	if not branch_items.is_empty():
+		render_groups = main_groups.duplicate()
+		render_groups.append({ "title": "支线探索", "boss": false, "items": branch_items })
+
 	var vp := get_viewport_rect().size
 	var content_w := maxf(MIN_W, vp.x)
 	var edge_pad := clampf(content_w * 0.045, 44.0, 96.0)
@@ -1008,8 +1076,8 @@ func _build_map(recenter_map: bool) -> void:
 
 	# 把各单元按单行上限切成"行段"：同一单元可能占多行，仅首行显示单元标题条。
 	var rows_def: Array = []
-	for gi in _groups.size():
-		var items: Array = _groups[gi]["items"]
+	for gi in render_groups.size():
+		var items: Array = render_groups[gi]["items"]
 		var from := 0
 		var first := true
 		while from < items.size():
@@ -1027,11 +1095,12 @@ func _build_map(recenter_map: bool) -> void:
 	tip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_content.add_child(tip)
 
-	var centers := PackedVector2Array()
+	var main_centers := PackedVector2Array()
+	var li_center: Dictionary = {}
 	var infos: Array = []
 	for ri in rows:
 		var rd: Dictionary = rows_def[ri]
-		var g: Dictionary = _groups[int(rd["gi"])]
+		var g: Dictionary = render_groups[int(rd["gi"])]
 		var items: Array = rd["items"]
 		var m := items.size()
 		var y := TOP_MARGIN + float(ri) * ROW_H
@@ -1046,14 +1115,19 @@ func _build_map(recenter_map: bool) -> void:
 			if reverse:
 				t = 1.0 - t
 			var x := edge_pad + t * avail
-			centers.append(Vector2(x, y))
+			var c := Vector2(x, y)
+			if bool(it.get("optional", false)):
+				c.y += 42.0
+			else:
+				main_centers.append(c)
+			li_center[int(it["li"])] = c
 			infos.append({
-				"c": Vector2(x, y), "it": it,
+				"c": c, "it": it,
 				"boss": bool(g.get("boss", false)), "title_w": title_w,
 			})
 
-	if centers.size() >= 2:
-		var smooth := _catmull_rom(centers, 12)
+	if main_centers.size() >= 2:
+		var smooth := _catmull_rom(main_centers, 12)
 		_path_pts = smooth
 		_add_path(smooth, 18.0, Color(0, 0, 0, 0.42))
 		_add_path(smooth, 7.0, Color(_mod_col, 0.16))
@@ -1066,10 +1140,28 @@ func _build_map(recenter_map: bool) -> void:
 		flag.position = smooth[0] - Vector2(15, 15)
 		_pulse = flag
 
+	# 支线连线：从 after 主节点弯向支线节点(主路径 Catmull 不含支线点)。
+	for bit in branch_items:
+		var after_id := str(bit.get("after", ""))
+		var parent_li := _level_li_by_id(after_id)
+		var bli := int(bit["li"])
+		if parent_li < 0 or not li_center.has(parent_li) or not li_center.has(bli):
+			continue
+		var a: Vector2 = li_center[parent_li]
+		var b: Vector2 = li_center[bli]
+		var mid := (a + b) * 0.5 + Vector2(0, 26)
+		var pts := PackedVector2Array()
+		for s in 13:
+			var u := float(s) / 12.0
+			var p := a.lerp(mid, u).lerp(mid.lerp(b, u), u)
+			pts.append(p)
+		_add_path(pts, 1.6, Color(_mod_col, 0.32))
+
 	for info in infos:
 		var c0: Vector2 = info["c"]
 		var it0: Dictionary = info["it"]
-		_add_level_node(c0, it0, int(it0["li"]), bool(info["boss"]), float(info["title_w"]))
+		var n0 := _add_level_node(c0, it0, int(it0["li"]), bool(info["boss"]), float(info["title_w"]))
+		_note_unlock(n0, recenter_map)
 
 	if UI.animations and recenter_map:
 		_stagger_entrance(_content)
@@ -1090,7 +1182,7 @@ func _unit_header(g: Dictionary, gi: int, content_w: float, y: float) -> Control
 	h.custom_minimum_size = Vector2(content_w, 24)
 	return h
 
-func _add_level_node(c: Vector2, it: Dictionary, li: int, boss: bool, title_w: float = 0.0) -> void:
+func _add_level_node(c: Vector2, it: Dictionary, li: int, boss: bool, title_w: float = 0.0) -> MapNode:
 	var n := MapNode.new()
 	n.li = li
 	n.is_boss = boss
@@ -1100,8 +1192,27 @@ func _add_level_node(c: Vector2, it: Dictionary, li: int, boss: bool, title_w: f
 	n.title_max_w = title_w
 	n.color = _mod_col
 	n.unlocked = _level_unlocked(li)
-	n.stars = int(GameData.stars.get(str(_levels[li]["id"]), 0))
+	var lv: Dictionary = _levels[li]
+	n.stars = int(GameData.stars.get(str(lv["id"]), 0))
 	n.max_stars = 3
+	var region := _region_stars()
+	if lv.get("chest") is Dictionary:
+		var ch: Dictionary = lv["chest"]
+		n.has_chest = true
+		if GameData.is_chest_claimed(str(lv["id"])):
+			n.chest_state = 3
+		elif region >= int(ch.get("need_stars", 0)):
+			n.chest_state = 2
+		else:
+			n.chest_state = 1
+	if lv.get("event") is Dictionary:
+		n.has_event = true
+		n.event_done = GameData.is_event_seen(str(lv["id"]))
+	var gate: Variant = lv.get("gate")
+	if gate is Dictionary and int(gate.get("need_stars", 0)) > 0:
+		n.gate_need = int(gate["need_stars"])
+		n.gate_have = region
+	n.optional = bool(lv.get("optional", false))
 	var w := NODE_W
 	var h := NODE_H
 	if boss:
@@ -1111,6 +1222,19 @@ func _add_level_node(c: Vector2, it: Dictionary, li: int, boss: bool, title_w: f
 	n.position = c - Vector2(w * 0.5, h * 0.5)
 	n.activated.connect(func() -> void: _on_node_selected(li))
 	_content.add_child(n)
+	return n
+
+## 解锁礼花：重绘(recenter)时只登记现状；进度刷新时对「本次新解锁」的节点放一次礼花。
+func _note_unlock(n: MapNode, recenter: bool) -> void:
+	if n == null or not n.unlocked:
+		return
+	var id := str(_levels[n.li].get("id", ""))
+	if recenter or _unlocked_seen.has(id):
+		_unlocked_seen[id] = true
+		return
+	_unlocked_seen[id] = true
+	if UI.animations:
+		Vfx.star_burst(self, n.get_global_rect().get_center(), 16, 0.9)
 
 ## 知识点节点/单元标题逐个浮现（先轻微缩小淡入，再弹回原位）。
 ## 若刷新前后节点数一致，尽量让同一节点的旧位置不动（新增节点错峰补入）。
@@ -1227,6 +1351,8 @@ func _disasm_groups() -> Array:
 			"li": li, "code": code,
 			"title": item_title,
 			"technique": str(lv.get("technique", "")),
+			"optional": bool(lv.get("optional", false)),
+			"after": str(lv.get("after", "")),
 		})
 	# 隐藏挑战(Boss)始终排在所有单元之后
 	if gmap.has("b"):
@@ -1251,17 +1377,42 @@ func _disasm_groups() -> Array:
 	return out
 
 # ---------------------------------------------------------------- 解锁与面板
+## 当前单元(章节)的累计星数，用于 Boss 门 / 宝箱门槛。
+func _region_stars() -> int:
+	var ids: Array = []
+	for lv in _levels:
+		ids.append(str((lv as Dictionary).get("id", "")))
+	return GameData.stars_of(ids)
+
+func _level_li_by_id(level_id: String) -> int:
+	for i in _levels.size():
+		if str((_levels[i] as Dictionary).get("id", "")) == level_id:
+			return i
+	return -1
+
 func _level_unlocked(li: int) -> bool:
 	if GameData.free_roam:
 		return true
 	if li <= 0:
 		return true
+	if li >= _levels.size():
+		return false
+	var lv: Dictionary = _levels[li]
+	# 已通关的关卡始终可重玩(避免新增门槛后把已通关节点锁回去)。
+	if int(GameData.stars.get(str(lv.get("id", "")), 0)) >= 1:
+		return true
+	# Boss 门：配置 gate 时以「本单元累计星数」为唯一解锁条件。
+	var gate: Variant = lv.get("gate")
+	if gate is Dictionary and int(gate.get("need_stars", 0)) > 0:
+		return _region_stars() >= int(gate["need_stars"])
 	if li - 1 >= _levels.size():
 		return false
 	return int(GameData.stars.get(_levels[li - 1]["id"], 0)) >= 1
 
 func _on_node_selected(li: int) -> void:
-	if not _level_unlocked(li):
+	var lv: Dictionary = _levels[li]
+	var has_adv := lv.get("chest") is Dictionary or lv.get("event") is Dictionary or lv.get("gate") is Dictionary
+	if not _level_unlocked(li) and not has_adv:
 		Sound.play("error")
 		Toast.show_toast("尚未解锁：先通关上一节点")
 		return
@@ -1319,13 +1470,32 @@ func _open_panel(li: int) -> void:
 	vb.add_child(UI.hairline(Vector2(0, 1)))
 	vb.add_child(UI.mono_label("%s · %s" % [str(mod["title"]), str(lv.get("technique", ""))], 14, UI.COL_TEXT_DIM))
 
+	var unlocked := _level_unlocked(li)
+
+	# Boss 门：星数门槛进度
+	var gate: Variant = lv.get("gate")
+	if gate is Dictionary and int(gate.get("need_stars", 0)) > 0:
+		vb.add_child(UI.hairline(Vector2(0, 1)))
+		vb.add_child(_gate_section(int(gate["need_stars"])))
+
+	# 宝箱节点
+	if lv.get("chest") is Dictionary:
+		vb.add_child(UI.hairline(Vector2(0, 1)))
+		vb.add_child(_chest_section(li))
+
+	# 随机事件节点
+	if lv.get("event") is Dictionary:
+		vb.add_child(UI.hairline(Vector2(0, 1)))
+		vb.add_child(_event_section(li, unlocked))
+
 	var row := HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
 	row.add_theme_constant_override("separation", 16)
 	vb.add_child(row)
 	row.add_child(UI.ghost_button("关闭", _close_panel, 16))
 	var enter := Button.new()
-	enter.text = "进入推演 →"
+	enter.text = "进入推演 →" if unlocked else "尚未解锁"
+	enter.disabled = not unlocked
 	enter.custom_minimum_size = Vector2(200, 54)
 	UI.primary_button(enter)
 	enter.pressed.connect(func() -> void: _enter(li))
@@ -1358,3 +1528,134 @@ func _on_back_requested() -> bool:
 
 func _stars_str(s: int) -> String:
 	return "★".repeat(s) + "☆".repeat(maxi(0, 3 - s))
+
+func _progress(have: int, need: int, col: Color) -> Control:
+	var wrap := Control.new()
+	wrap.custom_minimum_size = Vector2(0, 12)
+	var bg := ColorRect.new()
+	bg.color = Color(0.1, 0.13, 0.2, 0.9)
+	UI.full_rect(bg)
+	wrap.add_child(bg)
+	var ratio := clampf(float(have) / maxf(1.0, float(need)), 0.0, 1.0)
+	var fill := ColorRect.new()
+	fill.color = col
+	fill.anchor_left = 0.0
+	fill.anchor_top = 0.0
+	fill.anchor_bottom = 1.0
+	fill.anchor_right = ratio
+	fill.offset_left = 0
+	fill.offset_top = 0
+	fill.offset_right = 0
+	fill.offset_bottom = 0
+	wrap.add_child(fill)
+	return wrap
+
+func _reward_text(reward: Dictionary) -> String:
+	var parts: Array = []
+	if int(reward.get("coins", 0)) > 0:
+		parts.append("金币 +%d" % int(reward.get("coins", 0)))
+	if int(reward.get("hint_tokens", 0)) > 0:
+		parts.append("提示卡 +%d" % int(reward.get("hint_tokens", 0)))
+	if int(reward.get("coin_boost", 0)) > 0:
+		parts.append("金币加成 +%d" % int(reward.get("coin_boost", 0)))
+	return " · ".join(parts) if not parts.is_empty() else "—"
+
+func _gate_section(need: int) -> Control:
+	var have := _region_stars()
+	var ok := have >= need
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 8)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 8)
+	head.add_child(UI.make_label("Boss 门 · 单元星数", 15, Color("#ffd479")))
+	var sp := Control.new()
+	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(sp)
+	head.add_child(UI.mono_label("%d / %d" % [have, need], 16, Color("#ffd479" if not ok else UI.COL_SUCCESS)))
+	box.add_child(head)
+	box.add_child(_progress(have, need, Color("#ffd479")))
+	var msg := "已开启，可挑战隐藏 Boss" if ok else "再得 %d ★ 即可开启隐藏 Boss" % (need - have)
+	box.add_child(UI.mono_label(msg, 12, Color(UI.COL_TEXT_DIM, 0.9)))
+	return box
+
+func _chest_section(li: int) -> Control:
+	var lv: Dictionary = _levels[li]
+	var ch: Dictionary = lv["chest"]
+	var need := int(ch.get("need_stars", 0))
+	var have := _region_stars()
+	var claimed := GameData.is_chest_claimed(str(lv["id"]))
+	var ready := have >= need
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 8)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 8)
+	head.add_child(UI.make_label(str(ch.get("title", "补给箱")), 15, Color("#ffd479")))
+	var sp := Control.new()
+	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(sp)
+	head.add_child(UI.mono_label(_reward_text(ch.get("reward", {})), 13, UI.COL_TEXT_DIM))
+	box.add_child(head)
+	if not ready:
+		box.add_child(_progress(have, need, Color("#ffd479")))
+		box.add_child(UI.mono_label("需本单元累计 %d ★（当前 %d）" % [need, have], 12, Color(UI.COL_TEXT_DIM, 0.9)))
+		return box
+	if claimed:
+		box.add_child(UI.mono_label("已领取", 13, UI.COL_SUCCESS))
+		return box
+	var b := Button.new()
+	b.text = "开启宝箱"
+	b.custom_minimum_size = Vector2(0, 44)
+	UI.primary_button(b)
+	b.pressed.connect(func() -> void: _claim_chest(li))
+	box.add_child(b)
+	return box
+
+func _claim_chest(li: int) -> void:
+	var lv: Dictionary = _levels[li]
+	var ch: Dictionary = lv["chest"]
+	if int(_region_stars()) < int(ch.get("need_stars", 0)):
+		Sound.play("error")
+		Toast.show_toast("星数不足，宝箱未解锁")
+		return
+	var reward: Dictionary = ch.get("reward", {})
+	if not GameData.claim_chest(str(lv["id"]), reward):
+		Sound.play("error")
+		Toast.show_toast("宝箱已领取")
+		return
+	Sound.play("star")
+	Toast.show_toast("宝箱开启：%s" % _reward_text(reward))
+	if _panel_layer != null and is_instance_valid(_panel_layer):
+		Vfx.celebrate(self, get_viewport_rect().get_center())
+	_close_panel()
+	_build_map(false)
+
+func _event_section(li: int, unlocked: bool) -> Control:
+	var lv: Dictionary = _levels[li]
+	var ev: Dictionary = lv["event"]
+	var done := GameData.is_event_seen(str(lv["id"]))
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 8)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 8)
+	head.add_child(UI.make_label(str(ev.get("title", "随机事件")), 15, Color("#5ee6ff")))
+	var sp := Control.new()
+	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(sp)
+	head.add_child(UI.mono_label(_reward_text(ev.get("reward", {})), 13, UI.COL_TEXT_DIM))
+	box.add_child(head)
+	if done:
+		box.add_child(UI.mono_label("已触发", 13, UI.COL_SUCCESS))
+		return box
+	if not unlocked:
+		box.add_child(UI.mono_label("通关本关后可触发", 12, Color(UI.COL_TEXT_DIM, 0.9)))
+		return box
+	# 首次展示时触发一次
+	var reward: Dictionary = ev.get("reward", {})
+	if GameData.mark_event_seen(str(lv["id"])):
+		GameData.grant_reward(reward)
+		Sound.play("complete")
+		Toast.show_toast("随机事件触发：%s" % _reward_text(reward))
+		Vfx.celebrate(self, get_viewport_rect().get_center())
+		_build_map(false)
+	box.add_child(UI.mono_label("事件已触发", 13, UI.COL_SUCCESS))
+	return box
