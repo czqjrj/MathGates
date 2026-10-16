@@ -464,13 +464,19 @@ static func _rotate_to(c: Control, r: float, dur: float) -> void:
 	tw.tween_property(c, "rotation", r, dur).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 ## 卡牌悬停：跟随光标轻微倾斜 + 抬升，离开平滑复位。
+## 注意：lift>1 会改变卡片尺寸。若控件在“发牌”等动画中从静止指针下方滑过，
+## Godot 不一定补发 mouse_exited，卡片会卡在放大态（表现为“大小不一致”）。
+## 对尺寸敏感、必须等大的卡片请传 lift=1.0（仅倾斜）。
 static func card_tilt(target: Control, src: Control, max_deg: float = 6.0, lift: float = 1.035) -> void:
 	if not animations:
 		return
-	src.mouse_entered.connect(func() -> void:
-		_scale_to(target, lift, 0.16, Tween.TRANS_QUAD, Tween.EASE_OUT))
+	var do_lift := not is_equal_approx(lift, 1.0)
+	if do_lift:
+		src.mouse_entered.connect(func() -> void:
+			_scale_to(target, lift, 0.16, Tween.TRANS_QUAD, Tween.EASE_OUT))
 	src.mouse_exited.connect(func() -> void:
-		_scale_to(target, 1.0, 0.22, Tween.TRANS_BACK, Tween.EASE_OUT)
+		if do_lift:
+			_scale_to(target, 1.0, 0.22, Tween.TRANS_BACK, Tween.EASE_OUT)
 		_rotate_to(target, 0.0, 0.22))
 	src.gui_input.connect(func(e: InputEvent) -> void:
 		if not (e is InputEventMouseMotion):

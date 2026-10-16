@@ -283,7 +283,9 @@ func _card(title: String, desc: String, color: Color, icon_name: String, on_pres
 	btn.add_theme_stylebox_override("disabled", UI.stylebox(Color(0, 0, 0, 0), 14, Color(0, 0, 0, 0), 0, 0))
 	btn.pressed.connect(on_press)
 	holder.add_child(btn)
-	UI.card_tilt(holder, btn)
+	# lift=1.0：悬停只做倾斜，不做放大——避免“发牌”飞入途中经过指针后
+	# 卡在 hover 放大态，导致五张卡片大小不一致（详见 UI.card_tilt）。
+	UI.card_tilt(holder, btn, 6.0, 1.0)
 	UI.press_scale(holder, btn, 0.985)
 	return holder
 
