@@ -72,10 +72,11 @@
 ## 2. 待办
 
 ### P1 收尾（仅剩「目视」类验证，需真实窗口）
-- [ ] **HUD 观感**：非 headless 截图确认 5 关战斗 HUD 布局（可临时改 `tools/capture_scene.gd` 强制截 `circle_boss`）。
-- [ ] **3D 视口**：`space_boss` 血条不挡 3D 交互——已**静态确认**（HUD 根/面板/子控件全部 `mouse_filter=IGNORE`，不拦截输入）；
-      仅剩跑一次 `tools/lab3d_render_check.tscn` 目视（**必须真实窗口**，headless 会卡在 `frame_post_draw`）。
-- [ ] 移动端窄屏：`view_left..right` 区过窄时 HUD 是否挤压（真机 / 改窗口尺寸验证）。
+- [x] **HUD 观感**：非 headless 截图确认 5 关战斗 HUD 布局（临时工具已跑，产物 `build/shots_p12/*_hud.png`，`line/space/vector/ellipse/circle` 五关 HUD 均正常：六边形头像、双血条、狂暴阈值、顶栏连击读数）。
+- [x] **3D 视口**：`space_boss` 血条不挡 3D 交互——已**静态确认**（HUD 根/面板/子控件全部 `mouse_filter=IGNORE`，不拦截输入）；
+      并已在**真实窗口**用 `Lab3DStage` 抓到 `space_boss_hud.png`：3D 视口有内容、血条浮于其上不遮挡交互。
+      数值化自检 `tools/lab3d_render_check.tscn`（内容像素占比）为可选项，未跑。
+- [ ] 移动端窄屏：`view_left..right` 区过窄时 HUD 是否挤压（真机 / 改窗口尺寸验证）。**未做**。
 
 ### P2 · 关卡节奏强化（已交付，见 §1；仅剩目视）
 - [x] 可见连击条 + 金币倍率（`ComboBar`，顶栏，连击≥2 显示）。
@@ -83,7 +84,10 @@
 - [x] 三星条件显式化 + 结算「下一星差在哪」引导。
 - [x] 道具即时演出：提示卡使用时的 `Vfx` 反馈。
 - [x] 设置项：关卡计时总开关（`Settings.challenge_timer`）。
-- [ ] **目视**：连击条在顶栏的观感 / 移动端窄屏是否需要收起（需真实窗口）。
+- [x] **目视**：连击条在顶栏的观感已确认真实窗口可读（`circle_boss_hud.png` 显示「连击 x4 ×1.2」），
+      计时读数（`计时 137.0s`，未超星时为金色）与 BOSS HUD 并存不冲突；
+      结算（`circle_boss_result.png` 三星含连击/极速/首通奖励；`circle_1_1_result.png` 二星显示「再 1 轮零失误即可升到 3 星」引导）。
+      ⚠️ 移动端窄屏尚未验证（连击条固定宽 168px，顶栏较挤时需真机确认）。
 - [ ] ℹ️ 范围说明：本层只改 `StageBase`（LAB 2D/3D，含 5 BOSS，覆盖绝大多数关卡）。
       `SequenceStage` / `SolidChallenge` / `ConicStage` 是**独立实现**（`extends Control`，
       各带自己的 `_finish`，无 `_streak`），如需同等节奏体验须另行移植（未纳入 P2 范围）。
