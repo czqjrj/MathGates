@@ -19,6 +19,7 @@ const SYM := {
 	"∥": "\\parallel ", "⊥": "\\perp ", "⊙": "\\odot ", "△": "\\triangle ", "□": "\\square ",
 	"°": "^{\\circ}", "′": "'", "″": "''", "∑": "\\sum ", "∫": "\\int ", "∂": "\\partial ",
 	"∴": "\\therefore ", "∵": "\\because ",
+	"⟹": "\\Rightarrow ", "∝": "\\propto ", "∶": ":", "⊄": "\\not\\subset ",
 	"α": "\\alpha ", "β": "\\beta ", "γ": "\\gamma ", "δ": "\\delta ", "ε": "\\varepsilon ",
 	"θ": "\\theta ", "λ": "\\lambda ", "μ": "\\mu ", "ν": "\\nu ", "π": "\\pi ",
 	"ρ": "\\rho ", "σ": "\\sigma ", "φ": "\\varphi ", "ϕ": "\\phi ", "ω": "\\omega ",
@@ -36,7 +37,7 @@ const FRAC := {"½": "\\frac{1}{2}", "⅓": "\\frac{1}{3}", "⅔": "\\frac{2}{3}
 	"⅙": "\\frac{1}{6}", "⅚": "\\frac{5}{6}", "⅐": "\\frac{1}{7}", "⅛": "\\frac{1}{8}", "⅜": "\\frac{3}{8}",
 	"⅝": "\\frac{5}{8}", "⅞": "\\frac{7}{8}", "⅑": "\\frac{1}{9}"}
 ## 装饰性字符：转 LaTeX 时直接丢弃（键仍保留原样）
-const DROP := "“”„‟–—"
+const DROP := "“”„‟–—▶"
 ## 带圈数字 → (n)
 const CIRC := {"①": "(1)", "②": "(2)", "③": "(3)", "④": "(4)", "⑤": "(5)", "⑥": "(6)", "⑦": "(7)",
 	"⑧": "(8)", "⑨": "(9)", "⑩": "(10)", "⑪": "(11)", "⑫": "(12)", "⑬": "(13)", "⑭": "(14)",
@@ -179,8 +180,16 @@ func _to_latex(src: String) -> String:
 				out += "\\sqrt{" + _to_latex(s.substr(j + 1, k - (j + 1))) + "}"
 				i = k + 1
 			elif j < n:
-				out += "\\sqrt{" + _one(s[j]) + "}"
-				i = j + 1
+				# √ 后若为连续数字，整体作为被开方数（如 √10 → \sqrt{10}），
+				# 否则只取一个字符（如 √3/2 → \sqrt{3}/2、√Δ → \sqrt{\Delta }）。
+				var k := j
+				if s[j] >= "0" and s[j] <= "9":
+					while k < n and s[k] >= "0" and s[k] <= "9":
+						k += 1
+				else:
+					k = j + 1
+				out += "\\sqrt{" + _to_latex(s.substr(j, k - j)) + "}"
+				i = k
 			else:
 				out += "\\sqrt{}"
 				i += 1
