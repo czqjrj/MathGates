@@ -52,3 +52,7 @@ build_microtex/
 
 # MicroTeX 资源目录整体 .gdignore（编辑器不导入），排除历史遗留的 .import
 gdextension/res/**/*.import
+
+# 美术源文件（.xcf 等）不入库：源文件保存在此目录，运行时只用 art/ 下的导出图。
+# 需要留档请另行使用外部存储 / Git LFS。见 art/SOURCES.md 与 TODO A13。
+assets_src/

@@ -38,6 +38,7 @@ tools/           开发/测试脚本:check_all.gd(脚本检查)、check_question
 				 check_questions_baseline.txt(已知问题基线)、fix_labels.gd(轮次标签编号批量重编:
 				 预览/--apply,文本级替换保留排版)、smoke_scene(全场景冒烟)、
 				 pack_math_res(把 gdextension/res 打包为 res.bin,排除 GPLv3 字体)、
+				 optimize_art(A13 降采样超大图,默认 dry-run)、check_assets(A13 资源入库/体积护栏)、
 				 bump_version(F2 发版:一处改版本,多预设同步)、
 				 capture_scene(截图)、dev_seq(单关调试)、
 				 lab3d_render_check(立体几何/空间向量 3D 场景渲染自检,需真实窗口)
@@ -111,6 +112,13 @@ build/           导出产物(APK,git 忽略)
 - 第三方许可全文（Godot / MicroTeX 的 MIT）：`THIRD_PARTY_LICENSES.md`；
 - 美术素材来源：`art/SOURCES.md`；音效来源：`audio/SOURCES.md`；
 - 隐私政策：`docs/隐私政策.md`（唯一联网功能=可选的在线语音朗读，默认关闭）。
+
+## 资源体积
+
+- 美术**源文件**（`.xcf` 等）不入库，统一放 `assets_src/`（已 gitignore）；导出也排除。
+- 降采样：`tools/optimize_art.gd`（默认 dry-run，加 `-- --apply` 写回）。
+- 护栏：`tools/check_assets.gd`（源文件入库 / 体积预算，已进 CI）。
+- 详见 `docs/资源优化.md`。
 
 > 待处理（上架前必做）：替换授权不明的标题字体 `art/fonts/aidianqianfengxingshu.ttf`（13.8 MB，见 A13/F7）。
 

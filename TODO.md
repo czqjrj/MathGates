@@ -35,7 +35,7 @@
 | **A6** | CI（headless 四件套自动化） | **P1** | ✅ 已完成（`.github/workflows/check.yml`） |
 | **A11** | UI/交互层缺自动化断言（测试只盖纯逻辑） | **P1** | ✅ 已完成（`tests/UiSmoke`：342 断言 + 反向验证 + 入 CI） |
 | **A12** | `questions.json` 变成第二份权威题库（与现行数据冲突） | **P1** | 数据层也有死代码 |
-| **A13** | 资源体积治理（`.xcf` 入库、13.8MB 字体、未排除） | **P1** | 仓库 48MB / APK 61MB |
+| **A13** | 资源体积治理（`.xcf` 入库、13.8MB 字体、未排除） | **P1** | 🟡 部分完成（`.xcf` 出库 + 图标降采样：46.8→29.6MB；残留：字体替换/背景压缩） |
 | **A14** | `export_presets.cfg` 残留第三方机器路径 | **P1** | ✅ 已完成（统一 `build/…`） |
 | **A15** | 元游戏内容硬编码在 `GameData.gd` | **P2** | 与「改内容只改 JSON」相悖 |
 | **A16** | 立几方法关内容在 GDScript（两套内容管线） | **P2** | ~1900 行代码当内容 |
@@ -431,6 +431,23 @@
 - tracked 体积降到 **≤ 20MB**；`art/` 无 `.xcf`；
 - 重新导出 APK 体积明显下降（并记录新基线）；
 - 首页/知识体系/关卡内观感无回退（用 A11 的截图回归比对）。
+
+**已实施（记录）**
+- **`.xcf` 移出仓库**：9 个源文件（13.6MB）移到 `assets_src/art/`（`.gitignore` 新增 `assets_src/`），
+  `art/` 已无 `.xcf`；`export_presets.cfg` 四个预设 `exclude_filter` 增 `assets_src/*, *.xcf`（源文件不再进包）。
+- **项目图标降采样**：`icon.png` 2048×2048/3.91MB → **512×512/0.33MB**（仅作项目/窗口图标；Android 图标另由 `art/android/*` 提供）。
+- **新增工具**：`tools/optimize_art.gd`（幂等降采样：`icon.png`≤512、`art/**/*.png`≤2048；默认 dry-run）、
+  `tools/check_assets.gd`（护栏：源文件入库→退出 1；总体积 >22MB 告警 / >40MB 失败）。
+- **CI**：`.github/workflows/check.yml` 增 `check_assets` 步骤；`docs/资源优化.md` 记录全过程。
+- 实测：仓库 tracked **46.8MB → 29.6MB**（`ASSETS: 29.59 MB over 3080 files, banned=0, oversize=0`）；
+  `res.bin` 亦因 F7 从 652KB→297KB。五件套全绿。
+
+**残留（需决策/换机）**
+- ⚠️ **字体 `art/fonts/aidianqianfengxingshu.ttf`（13.5MB）**：替换为 OFL 字体（见 F7）后仓库可降到 ≤20MB，
+  与 F7 是同一件事、一并解决；
+- ⚠️ 两张 1080p 背景（`bg_worldmap.png` 4.9MB / `bg_mainhub.png` 2.3MB）未压缩：本机无 `pngquant`/`cwebp`/ImageMagick，
+  需在有工具的环境跑 `pngquant` 或改 Godot 导入压缩，**改后须目视比对观感**；
+- ⚠️ APK 新基线需在有 Android SDK 的环境重新导出 release 记录。
 
 ---
 
@@ -1574,6 +1591,7 @@
 | `--headless --path . --script res://tools/check_questions.gd`（**已完成，见 A5**） | `QUESTION-CHECK: … / 0 new / 0 problems`（存量记基线） |
 | `--headless --path . res://tests/UiSmoke.tscn`（**新增，见 A11**） | `UI-SMOKE: … ok, 0 fail` |
 | `--headless --path . --script res://tools/verify_inline.gd` | 末尾 `VERIFY_TABLE: total=<N> fail=0`（MicroTeX 渲染复验，改动 `res/` 或字体后必跑） |
+| `--headless --path . --script res://tools/check_assets.gd`（**新增，见 A13**） | `ASSETS: <MB> MB … banned=0, oversize=0`（不得出现 `ASSETS-FAIL`） |
 
 > 引擎：Godot 4.7.2（`D:\Program Files\Godot_v4.7.2-stable_win64.exe`）。该 exe 无 console 变体，
 > 无头运行需 `Start-Process -Wait -RedirectStandardOutput/Error` 重定向取输出（GUI 子系统进程直连控制台会丢输出）。
@@ -1584,9 +1602,10 @@
 > `& "<godot472.exe>" --headless --editor --path . --quit`。
 
 **当前回归基线**（改完请对照，数字只能升不能降）：
-`CHECKED 83 scripts, 0 failures` / `TESTS: 1238 passed, 0 failed` / `SMOKE: 238 ok, 0 fail` /
+`CHECKED 85 scripts, 0 failures` / `TESTS: 1238 passed, 0 failed` / `SMOKE: 238 ok, 0 fail` /
 `UI-SMOKE: 342 ok, 0 fail` / `LabSmoke` 末尾 `TMP_OK` /
-`QUESTION-CHECK: 26 files / 222 levels / 712 questions / 0 new / 7 known`（A5 校验器，存量问题见下方基线）。
+`QUESTION-CHECK: 26 files / 222 levels / 712 questions / 0 new / 7 known`（A5 校验器，存量问题见下方基线）/
+`ASSETS: 29.59 MB … banned=0, oversize=0`（A13 护栏）。
 
 - 校验器基线：`tools/check_questions_baseline.txt`（**7 条已知**：题干重复 7；B9 轮次编号错位已归 0）。
 - CI：`.github/workflows/check.yml`（push/PR 跑上面五条；`gdextension/bin/` 不入库 → 顺带回归 PNG 回退不崩）。

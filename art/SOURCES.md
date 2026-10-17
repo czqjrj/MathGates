@@ -8,15 +8,18 @@
 目录内保留了 `.xcf`（GIMP）源文件，**强烈提示全部美术为项目自制**；
 但仍需书面确认（含素材平台下载件的授权条款）。若为自制，请按下表填写并在文末签名。
 
+> **A13 · 源文件已移出仓库**：9 个 `.xcf` 源文件已移动到 **`assets_src/art/`**（已 gitignore，不入库/不进包）。
+> 仓库内只保留运行时导出图。需要留档请另用外部存储 / Git LFS。见 `docs/资源优化.md`。
+
 ## 清单
 
 | 路径 | 内容 | 生成方式 / 来源 | 授权 | 状态 |
 |---|---|---|---|---|
-| `art/bg_mainhub.png` | 主界面背景 | 自制（源文件 `bg_mainhub.xcf`） | © 项目组 | ⚠️ 待确认 |
-| `art/bg_worldmap.png` | 世界地图背景 | 自制（源文件 `bg_worldmap.xcf`） | © 项目组 | ⚠️ 待确认 |
-| `art/island_locked.png` / `island_unlocked.png` | 岛屿节点 | 自制（`.xcf`） | © 项目组 | ⚠️ 待确认 |
-| `art/icon_book.png` / `icon_lock.png` / `icon_map.png` / `icon_train.png` | 图标 | 自制（`.xcf`） | © 项目组 | ⚠️ 待确认 |
-| `art/ui_panel.png` | 通用面板九宫格 | 自制（`ui_panel.xcf`） | © 项目组 | ⚠️ 待确认 |
+| `art/bg_mainhub.png` | 主界面背景 | 自制（源文件 `assets_src/art/bg_mainhub.xcf`） | © 项目组 | ⚠️ 待确认 |
+| `art/bg_worldmap.png` | 世界地图背景 | 自制（源文件 `assets_src/art/bg_worldmap.xcf`） | © 项目组 | ⚠️ 待确认 |
+| `art/island_locked.png` / `island_unlocked.png` | 岛屿节点 | 自制（`.xcf` 见 `assets_src/art/`） | © 项目组 | ⚠️ 待确认 |
+| `art/icon_book.png` / `icon_lock.png` / `icon_map.png` / `icon_train.png` | 图标 | 自制（`.xcf` 见 `assets_src/art/`） | © 项目组 | ⚠️ 待确认 |
+| `art/ui_panel.png` | 通用面板九宫格 | 自制（`assets_src/art/ui_panel.xcf`） | © 项目组 | ⚠️ 待确认 |
 | `art/android/*.png` | Android 启动图标（自适应前景/背景/单色） | 自制（由图标派生） | © 项目组 | ⚠️ 待确认 |
 | `art/formulas/*.png`、`art/inline/*.png` | 数学公式小图 | **程序生成**（MicroTeX 离线渲染，见 `tools/gen_inline.gd` / `tools/verify_inline.gd`） | 生成物；字形来源见 `THIRD_PARTY_NOTICES.md` §2 | ✅ 可追溯 |
 | `art/questions/**`、`art/circle/**`、`art/conic/**`、`art/ellipse/**`、`art/line/**`、`art/sequence/**`、`art/space/**`、`art/vector/**` | 题干配图（几何图） | 待确认：脚本/手工绘制？ | 待确认 | ⚠️ |
