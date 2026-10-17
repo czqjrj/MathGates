@@ -1044,6 +1044,24 @@
           "lab": "statistics",
           "lab_ref": "stat_percentile",
           "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "stat_chart",
+          "name": "1-5 统计图表",
+          "technique": "扇形图 · 条形图 · 折线图",
+          "archetype": "LAB",
+          "lab": "statistics",
+          "lab_ref": "stat_chart",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "stat_center",
+          "name": "1-6 集中趋势的估计",
+          "technique": "众数 · 中位数 · 平均数",
+          "archetype": "LAB",
+          "lab": "statistics",
+          "lab_ref": "stat_center",
+          "scene": "res://scenes/LabStage.tscn"
         }
       ]
     },
