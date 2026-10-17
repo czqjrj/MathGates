@@ -17,11 +17,12 @@ const DEFAULTS := {
 	"show_pet": true,
 	"fullscreen": false,
 	"animations": true,
-	"voice": true,
+	"voice": false,
 	"voice_rate": 1.0,
 	"voice_id": "",
-	"tts_engine": "online",
+	"tts_engine": "system",
 	"tts_provider": "baidu",
+	"tts_online_consent": false,
 	"textbook": "sujiao",
 	"editor_mode": false,
 	"challenge_timer": true,
@@ -32,11 +33,14 @@ var sfx_volume: float = 1.0
 var show_pet: bool = true
 var fullscreen: bool = false
 var animations: bool = true
-var voice: bool = true
+var voice: bool = false
 var voice_rate: float = 1.0
 var voice_id: String = ""
-var tts_engine: String = "online"
+var tts_engine: String = "system"
 var tts_provider: String = "baidu"
+## 在线 TTS 隐私同意：只有用户明确同意后，才允许把题目文本发送到在线语音服务(百度/有道)。
+## 默认 false；首次真正用到在线朗读时会弹一次说明（见 Tts）。
+var tts_online_consent: bool = false
 ## 高中数学教材版本(苏教/人教A/北师大…)：决定知识体系与方法推演的章节排序与分册归属。
 var textbook: String = "sujiao"
 ## 编辑模式：开启后可无条件解锁所有关卡，方便测试与编辑
@@ -64,6 +68,7 @@ func load_settings() -> void:
 	voice_id = str(data.get("voice_id", DEFAULTS["voice_id"]))
 	tts_engine = str(data.get("tts_engine", DEFAULTS["tts_engine"]))
 	tts_provider = str(data.get("tts_provider", DEFAULTS["tts_provider"]))
+	tts_online_consent = bool(data.get("tts_online_consent", DEFAULTS["tts_online_consent"]))
 	textbook = str(data.get("textbook", DEFAULTS["textbook"]))
 	editor_mode = bool(data.get("editor_mode", DEFAULTS["editor_mode"]))
 	challenge_timer = bool(data.get("challenge_timer", DEFAULTS["challenge_timer"]))
@@ -155,6 +160,12 @@ func set_tts_engine(v: String) -> void:
 func set_tts_provider(v: String) -> void:
 	tts_provider = v if v in ["baidu", "youdao"] else "baidu"
 	UI.tts_configure(voice, voice_rate, 1.0, voice_id, tts_engine, tts_provider)
+	save()
+	changed.emit()
+
+## 记录「允许联网朗读」的隐私同意（F1）。同意后在线 TTS 才允许外发文本。
+func set_tts_online_consent(v: bool) -> void:
+	tts_online_consent = v
 	save()
 	changed.emit()
 

@@ -169,7 +169,7 @@ func _voice_row() -> Control:
 	box.add_theme_constant_override("separation", 10)
 
 	var online := Settings.tts_engine == "online"
-	var sub := "用在线神经语音朗读题干、解析与提示（需联网）" if online else "用系统语音朗读题干、解析与提示"
+	var sub := "用在线神经语音朗读题干、解析与提示（需联网 · 首次使用会询问是否允许外发文本）" if online else "用系统语音朗读题干、解析与提示（离线）"
 	if not online and not UI.tts_available():
 		sub = "当前设备没有可用的系统语音，可在上方切换为在线语音"
 	box.add_child(_toggle_row("语音朗读", sub, Settings.voice, Settings.set_voice))

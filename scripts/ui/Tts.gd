@@ -26,6 +26,8 @@ static var _cute_voice := ""
 static var _last := ""
 static var _last_cute := false
 static var _f_re: RegEx
+## 正在等待用户对「在线朗读外发文本」的隐私确认，避免重复弹窗(F1)。
+static var _consent_pending := false
 
 ## 萌宠音色关键词：优先童声/女声，读起来更萌。
 const CUTE_KEYS := ["yaoyao", "yao", "xiaoxiao", "xiaoyi", "huihui", "xiaomo",
@@ -146,6 +148,10 @@ static func say(text: String, interrupt: bool = true, cute: bool = false) -> voi
 	_last = t
 	_last_cute = cute
 	if engine == "online":
+		# F1：未经用户明确同意，绝不把题目文本外发到在线语音服务。
+		if Settings != null and not Settings.tts_online_consent:
+			_ask_online_consent(t, interrupt, cute)
+			return
 		var mgr := _online_manager()
 		if mgr != null:
 			mgr.speak(t, provider, rate, cute)
@@ -165,6 +171,38 @@ static func say(text: String, interrupt: bool = true, cute: bool = false) -> voi
 static func repeat() -> void:
 	if not _last.is_empty():
 		say(_last, true, _last_cute)
+
+## F1：首次真正用到在线朗读时，弹一次说明并请用户确认是否允许外发文本。
+## 同意 → 记录并继续本次朗读；取消 → 本次及以后会话改用离线系统语音（不联网）。
+static func _ask_online_consent(t: String, interrupt: bool, cute: bool) -> void:
+	if _consent_pending:
+		return
+	# 无界面环境（headless / CI）不弹窗，直接改用离线系统语音，避免测试被模态框打断。
+	if DisplayServer.get_name() == "headless":
+		engine = "system"
+		_select_voice()
+		say(t, interrupt, cute)
+		return
+	var tree := Engine.get_main_loop() as SceneTree
+	if tree == null or tree.root == null:
+		return
+	_consent_pending = true
+	UI.confirm(tree.root, "语音朗读将联网",
+		"在线朗读会把题目文本发送到第三方语音服务（百度 / 有道）用于合成语音，其中可能包含题目内容。\n\n" +
+		"选择「取消」将改用离线系统语音（若设备支持），不会联网。",
+		func() -> void:
+			_consent_pending = false
+			if Settings != null:
+				Settings.set_tts_online_consent(true)
+			say(t, interrupt, cute),
+		"允许联网朗读",
+		func() -> void:
+			_consent_pending = false
+			engine = "system"
+			_select_voice()
+			if Settings != null:
+				Settings.set_tts_engine("system")
+			say(t, interrupt, cute))
 
 static func stop() -> void:
 	if _online != null and is_instance_valid(_online):

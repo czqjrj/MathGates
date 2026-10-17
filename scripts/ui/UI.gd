@@ -771,8 +771,9 @@ static func popup_in(c: Control, dur: float = 0.2) -> void:
 	tw.tween_property(c, "modulate:a", 1.0, dur).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tw.tween_property(c, "scale", Vector2.ONE, dur).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
-## 通用确认弹窗：半透明遮罩 + 玻璃面板 + 「取消 / 确定」。on_yes 在确认后调用。
-static func confirm(root: Node, title: String, msg: String, on_yes: Callable, ok_text: String = "确定") -> void:
+## 通用确认弹窗：半透明遮罩 + 玻璃面板 + 「取消 / 确定」。on_yes 在确认后调用，
+## on_no 在取消后调用（可选，默认无操作）。
+static func confirm(root: Node, title: String, msg: String, on_yes: Callable, ok_text: String = "确定", on_no: Callable = Callable()) -> void:
 	var dim := ColorRect.new()
 	dim.color = Color(0, 0, 0, 0.55)
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -803,7 +804,11 @@ static func confirm(root: Node, title: String, msg: String, on_yes: Callable, ok
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
 	row.add_theme_constant_override("separation", 16)
 	vb.add_child(row)
-	row.add_child(ghost_button("取消", func() -> void: dim.queue_free(), 17))
+	row.add_child(ghost_button("取消", func() -> void:
+		dim.queue_free()
+		if on_no.is_valid():
+			on_no.call()
+	, 17))
 	var ok := Button.new()
 	ok.text = ok_text
 	ok.custom_minimum_size = Vector2(150, 48)

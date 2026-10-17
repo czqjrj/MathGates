@@ -31,6 +31,7 @@ func _run() -> void:
 	_test_accuracy()
 	_test_economy()
 	_test_anti_farm()
+	_test_tts_policy()
 	_test_daily()
 	_test_textbook()
 	_test_adventure()
@@ -402,6 +403,26 @@ func _test_anti_farm() -> void:
 	GameData.coins = s_coins
 	GameData.coins_earned = s_earned
 	GameData.current_user = saved_user
+
+## F1：在线 TTS 隐私策略 —— 默认关闭、默认离线引擎、需明确同意才外发文本。
+func _test_tts_policy() -> void:
+	_eq(Settings.DEFAULTS.get("voice", true), false, "F1: 语音朗读默认关闭")
+	_eq(Settings.DEFAULTS.get("tts_engine", "online"), "system", "F1: 默认离线系统语音")
+	_eq(Settings.DEFAULTS.get("tts_online_consent", true), false, "F1: 默认未同意在线朗读")
+	# 未同意时，在线引擎的 say() 不得触达在线管理器（改走离线/静默）。
+	var saved_consent := Settings.tts_online_consent
+	var saved_enabled := Tts.enabled
+	Settings.tts_online_consent = false
+	Tts.engine = "online"
+	Tts.enabled = true
+	Tts.say("测试文本", true, false)
+	_ok(Tts._online == null, "F1: 无同意时不创建在线管理器(不外发文本)")
+	# sanitize 仍需正常工作(纯本地)。
+	_ok(Tts.sanitize("a²+b²").find("的平方") != -1, "F1: sanitize 本地清洗仍生效")
+	# 还原，避免影响其他用例。
+	Tts.engine = "system"
+	Tts.enabled = saved_enabled
+	Settings.tts_online_consent = saved_consent
 
 func _test_daily() -> void:
 	var saved_user := GameData.current_user
