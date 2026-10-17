@@ -1036,6 +1036,13 @@
 **验收**
 - 27 章全部 ≥6 关；`check_questions.gd` 输出「每章关卡数/题数」看板，可跟踪。
 
+**已实施（前置：验收工具）**
+- `tools/check_questions.gd` 增加「章节题量」看板：由 `curriculum.json` 反查「关卡 → 数据 key」
+  （按实际载入器解析：LabStage/Lab3DStage→`lab_ref`、SequenceStage→`sequence`、ConicStage→`conic`、
+  SolidChallenge→`method`，其中方法章题目在 `solid_methods.json`），输出 27 章「关/题」并 WARN 薄弱章节(<18 题)。
+- 当前看板：薄弱 11 章（函数与分段 1/3、不等式 2/6、统计/计数/思想/向量初步 4/12…），与下表一致。
+- 剩余（内容作业）：把 <6 关的章节补到 ≥6 关且每关 5~8 轮（见 B2），需逐章出题 + 数学复核。
+
 ---
 
 ### [ ] E3 · 补全整块缺失的教材必学知识点（P1）

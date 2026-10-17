@@ -48,6 +48,9 @@ var _dup_stem := 0
 var _key_owner := {}
 var _inline_missing := {}
 var _inline_checked := 0
+## 每个关卡数据 key 的题目数 / 所属文件（供 E2 的「每章关卡数/题数」看板）。
+var _group_q := {}
+var _group_file := {}
 
 func _initialize() -> void:
 	_label_re = RegEx.new()
@@ -110,8 +113,11 @@ func _check_file(path: String) -> void:
 		_check_inline(path, k, "title", str((g as Dictionary).get("title", "")))
 		_check_inline(path, k, "summary", str((g as Dictionary).get("summary", "")))
 		var stages: Array = lv
+		var q_before := _n_questions
 		for i in stages.size():
 			_check_stage(path, k, group_no, i, stages[i], stem_seen)
+		_group_q[k] = int(_group_q.get(k, 0)) + (_n_questions - q_before)
+		_group_file[k] = path
 
 func _check_stage(path: String, key: String, group_no: int, idx: int, s: Variant, stem_seen: Dictionary) -> void:
 	var where := "第 %d 轮" % (idx + 1)
@@ -306,6 +312,106 @@ func _write_baseline() -> void:
 	f.close()
 	print("已写入基线 %d 条 -> %s" % [keys.size(), BASELINE_PATH])
 
+# ---------------------------------------------------------------- 章节看板（E2）
+
+## 每章「关卡数 / 题数」看板：由 curriculum.json 反查「数据 key → 教材章节」，
+## 输出按题量升序的章节清单，并对薄弱章节(<18 题)告警（见 E2 验收）。
+func _chapter_board() -> void:
+	var raw := FileAccess.get_file_as_string("res://data/curriculum.json")
+	var data = JSON.parse_string(raw)
+	if typeof(data) != TYPE_DICTIONARY:
+		print("[看板] 章节题量: curriculum.json 解析失败")
+		return
+	var solid := _solid_method_counts()
+	var rows: Array = []
+	var on_board := {}
+	for ch in (data as Dictionary).get("chapters", []):
+		if typeof(ch) != TYPE_DICTIONARY:
+			continue
+		var c: Dictionary = ch
+		var lvs: Array = c.get("levels", [])
+		var q := 0
+		for lv in lvs:
+			if typeof(lv) != TYPE_DICTIONARY:
+				continue
+			var lvd: Dictionary = lv
+			var key := _data_key_of(lvd)
+			if key == "":
+				continue
+			if solid.has(key):
+				on_board[key] = true
+				q += int(solid[key])
+			elif _group_q.has(key):
+				on_board[key] = true
+				q += int(_group_q[key])
+		rows.append({"t": str(c.get("title", c.get("id", "?"))), "lv": lvs.size(), "q": q})
+	rows.sort_custom(func(a, b): return int(a["q"]) < int(b["q"]))
+	print("[看板] 章节题量（章 · 关/题，按题量升序，共 %d 章）:" % rows.size())
+	var line := ""
+	for r in rows:
+		line += "%s %d/%d   " % [r["t"], int(r["lv"]), int(r["q"])]
+		if line.length() > 64:
+			print("        " + line.strip_edges())
+			line = ""
+	if line.strip_edges() != "":
+		print("        " + line.strip_edges())
+	var thin: Array[String] = []
+	for r in rows:
+		if int(r["q"]) < 18:
+			thin.append("%s(%d 关/%d 题)" % [r["t"], int(r["lv"]), int(r["q"])])
+	if not thin.is_empty():
+		print("WARN: 薄弱章节 %d 个（<18 题，见 E2）：%s" % [thin.size(), "，".join(thin)])
+	var orphan: Array[String] = []
+	for k in _group_q.keys():
+		if not on_board.has(k):
+			orphan.append("%s(%d)" % [str(k), int(_group_q[k])])
+	for k in solid.keys():
+		if not on_board.has(k):
+			orphan.append("%s(%d)" % [str(k), int(solid[k])])
+	if not orphan.is_empty():
+		orphan.sort()
+		print("[看板] 未被教材章节引用的数据 key %d 个: %s" % [orphan.size(), ", ".join(orphan)])
+
+## 关卡 → 数据 key 的解析必须与实际载入器一致（否则章节题量会串号）：
+##   LabStage/Lab3DStage 用 lab_ref；SequenceStage 用 sequence；ConicStage 用 conic；
+##   SolidChallenge 用 method（题目在 solid_methods.json，非 *_levels.json）。
+func _data_key_of(lv: Dictionary) -> String:
+	var sc := str(lv.get("scene", ""))
+	if sc.ends_with("SequenceStage.tscn"):
+		return str(lv.get("sequence", ""))
+	if sc.ends_with("SolidChallenge.tscn"):
+		return str(lv.get("method", ""))
+	if sc.ends_with("ConicStage.tscn"):
+		return str(lv.get("conic", ""))
+	if lv.has("lab_ref"):
+		return str(lv["lab_ref"])
+	return str(lv.get("id", ""))
+
+## solid_methods.json 是嵌套结构({"methods":{id:{levels:[...]}}})，不在 *_levels.json 口径内，
+## 但立体几何「方法章」的 6 关题目在里面，补进来才能让章节题量看板准确。
+func _solid_method_counts() -> Dictionary:
+	var out := {}
+	var raw := FileAccess.get_file_as_string("res://data/solid_methods.json")
+	var data = JSON.parse_string(raw)
+	if typeof(data) != TYPE_DICTIONARY:
+		return out
+	var methods = (data as Dictionary).get("methods", {})
+	if typeof(methods) != TYPE_DICTIONARY:
+		return out
+	for mid in (methods as Dictionary).keys():
+		var m = methods[mid]
+		if typeof(m) != TYPE_DICTIONARY:
+			continue
+		var lvs = (m as Dictionary).get("levels", [])
+		if typeof(lvs) != TYPE_ARRAY:
+			continue
+		var n := 0
+		for s in (lvs as Array):
+			if typeof(s) == TYPE_DICTIONARY and (s as Dictionary).has("opts"):
+				n += 1
+		out[str(mid)] = n
+	return out
+
 # ---------------------------------------------------------------- 报告
 
 func _report() -> void:
@@ -342,6 +448,7 @@ func _report() -> void:
 	print("[看板] anim 演示覆盖: %d/%d 文件" % [_anim_files.size(), _n_files])
 	print("[看板] speak 口播字段: %d 处（见 B13）" % _speak_count)
 	print("[看板] 轮次编号错位: %d 处（%d 文件，见 B9）" % [_num_mismatch, _num_mismatch_files.size()])
+	_chapter_board()
 	if _inline_missing.size() > 0:
 		var tops: Array = _inline_missing.keys()
 		tops.sort_custom(func(a, b): return int(_inline_missing[a]) > int(_inline_missing[b]))
