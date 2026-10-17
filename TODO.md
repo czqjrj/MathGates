@@ -61,7 +61,7 @@
 | **D2** | 演示动画只覆盖 1/26 个关卡文件 | **P1** | 228 关只有 12 关有 |
 | **D3** | 动效全在"结果反馈"，缺"理解型动效" | **P1** | 强化情绪而非数学因果 |
 | **D4** | 动效令牌缺失 + 演示不可控 + 无障碍粒度不足 | **P2** | 44 处裸时长、无法重播 |
-| **E1** | 知识点覆盖矩阵 + 校验器（内容补全的前置） | **P0** | 目前"缺什么"不可见 |
+| **E1** | 知识点覆盖矩阵 + 校验器（内容补全的前置） | **P0** | ✅ 已完成（`data/knowledge_map.json` + `check_knowledge` → `docs/知识点覆盖矩阵.md`；硬缺口 6 条入基线，余四版小节级待补） |
 | **E2** | 补齐薄弱章节题量（8 章 ≤4 关，最少仅 6 题） | **P0** | 不等式 2 关、计数 4 关 |
 | **E3** | 补全 15 个整块缺失的教材必学知识点 | **P1** | 数学归纳法等完全没有 |
 | **E4** | 方法章/专题章过薄且与知识章脱节 | **P2** | function_methods 仅 1 关 |
@@ -1042,6 +1042,24 @@
 - 矩阵覆盖 27 章的全部教材小节（按苏教 + 人教A 两套为主，其余四版做差异标注）；
 - 校验器能输出「未覆盖知识点清单」，可在 CI 中跟踪数量下降。
 
+**已实施（记录）**
+- 新增数据源 `data/knowledge_map.json`：**27 章 / 228 个知识点**（= 关卡，每关必挂一个知识点），
+  每章含 `sujiao` / `renjiao_a`（章节级对齐，与人 `data/textbooks.json` 的章号一致）与 `gaps`（未覆盖清单，
+  `optional=true` 表示选学/旧课标）。
+- 新增 `tools/check_knowledge.gd`：校验矩阵 ↔ `curriculum.json` 同步（章节集合/顺序一致、**新增关卡必须挂知识点**、
+  引用的关卡 id 必须存在），输出未覆盖清单，并**由数据生成** `docs/知识点覆盖矩阵.md`（文档与数据不分叉）。
+- 缺口对照基线 `tools/knowledge_gaps_baseline.txt`（现 **6** 条硬缺口）：**新增**硬缺口 → 退出码 1；低于基线 → 提示下调。
+- 已纳入 CI（`.github/workflows/check.yml` 增 `check_knowledge` 步骤）。
+- 实测：`KNOWLEDGE: 27 chapters / 228 points / 228 levels mapped / hard-gaps=6 (baseline 6) / optional=8`。
+  **硬缺口 6**：集合基数（card）、含参一元二次不等式、基本不等式实际应用、函数图象变换、两角和与差、二倍角公式；
+  **选学/旧课标 8**：三垂线定理、圆锥曲线统一定义/极坐标、积化和差、数学归纳法、数列放缩、定积分、复数三角表示。
+- 附带发现（进 KN-WARN）：关卡 id `solid_angle` 在 `solid` 与 `solid_basic` 两章**重名**（关联 A17）。
+
+**残留**
+- ⚠️ 其余四版（北师大/人教B/湘教/沪教）仅按 `data/textbooks.json` 的章号/顺序对齐，**未拆到小节级**；
+- ⚠️ 缺口清单与教材小节归属为 **AI 初稿**，数学口径（尤其「两角和与差/二倍角是否真缺」）**需人工复核**；
+- ⚠️ `solid_angle` 跨章重名需与 A17 一并处置（改名或合并）。
+
 ---
 
 ### [ ] E2 · 补齐薄弱章节的题量（P0）
@@ -1592,6 +1610,7 @@
 | `--headless --path . res://tests/UiSmoke.tscn`（**新增，见 A11**） | `UI-SMOKE: … ok, 0 fail` |
 | `--headless --path . --script res://tools/verify_inline.gd` | 末尾 `VERIFY_TABLE: total=<N> fail=0`（MicroTeX 渲染复验，改动 `res/` 或字体后必跑） |
 | `--headless --path . --script res://tools/check_assets.gd`（**新增，见 A13**） | `ASSETS: <MB> MB … banned=0, oversize=0`（不得出现 `ASSETS-FAIL`） |
+| `--headless --path . --script res://tools/check_knowledge.gd`（**新增，见 E1**） | `KNOWLEDGE: <c> chapters / <p> points / <l> levels mapped / hard-gaps=<n> (baseline <b>)`（不得出现 `KNOWLEDGE-FAIL`） |
 
 > 引擎：Godot 4.7.2（`D:\Program Files\Godot_v4.7.2-stable_win64.exe`）。该 exe 无 console 变体，
 > 无头运行需 `Start-Process -Wait -RedirectStandardOutput/Error` 重定向取输出（GUI 子系统进程直连控制台会丢输出）。
@@ -1602,13 +1621,15 @@
 > `& "<godot472.exe>" --headless --editor --path . --quit`。
 
 **当前回归基线**（改完请对照，数字只能升不能降）：
-`CHECKED 85 scripts, 0 failures` / `TESTS: 1238 passed, 0 failed` / `SMOKE: 238 ok, 0 fail` /
+`CHECKED 86 scripts, 0 failures` / `TESTS: 1238 passed, 0 failed` / `SMOKE: 238 ok, 0 fail` /
 `UI-SMOKE: 342 ok, 0 fail` / `LabSmoke` 末尾 `TMP_OK` /
 `QUESTION-CHECK: 26 files / 222 levels / 712 questions / 0 new / 7 known`（A5 校验器，存量问题见下方基线）/
-`ASSETS: 29.59 MB … banned=0, oversize=0`（A13 护栏）。
+`ASSETS: 29.59 MB … banned=0, oversize=0`（A13 护栏）/
+`KNOWLEDGE: 27 chapters / 228 points / 228 levels mapped / hard-gaps=6 (baseline 6) / optional=8`（E1 矩阵）。
 
-- 校验器基线：`tools/check_questions_baseline.txt`（**7 条已知**：题干重复 7；B9 轮次编号错位已归 0）。
-- CI：`.github/workflows/check.yml`（push/PR 跑上面五条；`gdextension/bin/` 不入库 → 顺带回归 PNG 回退不崩）。
+- 校验器基线：`tools/check_questions_baseline.txt`（**7 条已知**：题干重复 7；B9 轮次编号错位已归 0）；
+  `tools/knowledge_gaps_baseline.txt`（**6 条硬缺口**，见 E1）。
+- CI：`.github/workflows/check.yml`（push/PR 跑上面各条；`gdextension/bin/` 不入库 → 顺带回归 PNG 回退不崩）。
 
 ### 9.2 本文件基线数字（改完请同步更新）
 
@@ -1618,8 +1639,10 @@
 - 选项：图片选项 **180** 处（位于 54 道题）；`ans==0` **699/754（92.7%）**。
 - 探究轮 **230**，其中题面为陈述句 **221（96%）**。
 - 轮次标签编号错位 **0 处**（B9 已修复：`tools/fix_labels.gd` 批量重编，规范 `<关卡序号>-<轮次> <阶段名>`）。
-- 资源体积：仓库 tracked 合计 **48.4MB**（`art/` 39.9MB：`.xcf` 源文件 9 个、标题字体 13.8MB）；
-  APK（debug）**60.9MB**。见 A13。
+- 资源体积（A13 已治理）：仓库 tracked 合计 **29.6MB**（治理前 48.4MB；`art/` 已无 `.xcf`，源文件移至 `assets_src/`，
+  标题字体 13.5MB 待替换）；APK（debug）旧基线 **60.9MB**（新基线待重新导出）。见 A13。
+- 知识点矩阵（E1 已建立）：`data/knowledge_map.json` 27 章 / **228 个知识点**（每关一挂）；
+  **硬缺口 6**、选学/旧课标 8（基线 `tools/knowledge_gaps_baseline.txt`）；关卡 id `solid_angle` 跨章重名 1 处。见 E1。
 - 数据一致性：`curriculum` 关卡 228 / 关卡数据组 222，`lab_ref` 动态映射覆盖其余；
   跨文件重名关卡数据 **5 组**（`questions.json` ↔ `set_logic_levels.json`，内容互不相同）。见 A12。
 - 口播字段 `speak`：**0 处**。见 B13。

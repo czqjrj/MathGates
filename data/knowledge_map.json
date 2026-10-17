@@ -1,0 +1,500 @@
+{
+  "_readme": "E1 知识点覆盖矩阵（数据源）。行=知识点，列=覆盖关卡 id。由 tools/check_knowledge.gd 校验并生成 docs/知识点覆盖矩阵.md。",
+  "chapters": [
+    {
+      "id": "recurrence_methods",
+      "title": "数列递推求通项公式",
+      "sujiao": "选择性必修第一册 4.1 数列的概念（递推/构造为拓展）",
+      "renjiao_a": "选择性必修第二册 4.1 数列的概念、4.3 等比数列（构造求通项为拓展）",
+      "points": [
+        { "name": "累加法", "levels": ["recur_add"] },
+        { "name": "累乘法", "levels": ["recur_mul"] },
+        { "name": "构造等比", "levels": ["recur_construct"] },
+        { "name": "取倒数", "levels": ["recur_reciprocal"] },
+        { "name": "取对数", "levels": ["recur_log"] },
+        { "name": "Sn 与 an", "levels": ["recur_sn"] }
+      ],
+      "gaps": []
+    },
+    {
+      "id": "solid",
+      "title": "立体几何",
+      "sujiao": "必修第二册 13.1–13.3 立体几何初步；选必二 6.2 空间向量应用（空间角/距离）",
+      "renjiao_a": "必修第二册 第八章 立体几何初步；选必一 1.4 空间向量的应用",
+      "points": [
+        { "name": "补形法 · 外接球", "levels": ["solid_complement"] },
+        { "name": "坐标法 · 外接球", "levels": ["solid_vector"] },
+        { "name": "垂线法 · 外接球", "levels": ["solid_geom"] },
+        { "name": "等体积法 · 内切球", "levels": ["solid_insphere"] },
+        { "name": "正四面体 · 两球", "levels": ["solid_inout"] },
+        { "name": "线面角 · 二面角", "levels": ["solid_angle"] }
+      ],
+      "gaps": [
+        { "name": "三垂线定理", "note": "新课标弱化，可选", "optional": true }
+      ]
+    },
+    {
+      "id": "conic",
+      "title": "圆锥曲线",
+      "sujiao": "选择性必修第一册 第3章 圆锥曲线与方程",
+      "renjiao_a": "选择性必修第一册 第三章 圆锥曲线的方程",
+      "points": [
+        { "name": "第一定义", "levels": ["conic_c1"] },
+        { "name": "第二定义", "levels": ["conic_c2"] },
+        { "name": "第三定义", "levels": ["conic_c3"] }
+      ],
+      "gaps": [
+        { "name": "圆锥曲线的统一定义与极坐标/参数方程", "note": "选学/旧课标选修4-4", "optional": true }
+      ]
+    },
+    {
+      "id": "set_logic",
+      "title": "集合与逻辑",
+      "sujiao": "必修第一册 第1章 集合（1.1–1.3）、第2章 常用逻辑用语（2.1–2.3）",
+      "renjiao_a": "必修第一册 第一章 集合与常用逻辑用语（1.1–1.5）",
+      "points": [
+        { "name": "1-1 集合的交并补", "levels": ["set_ops"] },
+        { "name": "1-2 区间与集合互化", "levels": ["set_interval"] },
+        { "name": "1-3 充分与必要", "levels": ["logic_cond"] },
+        { "name": "1-4 命题与量词", "levels": ["logic_neg"] },
+        { "name": "1-5 特殊值检验", "levels": ["logic_special"] }
+      ],
+      "gaps": [
+        { "name": "集合中元素的个数（card 容斥公式）", "note": "教材有、本项目未单列", "optional": false }
+      ]
+    },
+    {
+      "id": "inequalities",
+      "title": "不等式",
+      "sujiao": "必修第一册 3.1 不等式性质、3.2 基本不等式、3.3 一元二次不等式",
+      "renjiao_a": "必修第一册 第二章 一元二次函数、方程和不等式（2.1–2.3）",
+      "points": [
+        { "name": "1-1 一元二次不等式", "levels": ["ineq_quad"] },
+        { "name": "1-2 基本不等式", "levels": ["ineq_basic"] }
+      ],
+      "gaps": [
+        { "name": "含参一元二次不等式（恒成立/能成立）", "note": "分离参数与判别式讨论；全科工具，建议优先补", "optional": false },
+        { "name": "基本不等式的实际应用（建模求最值）", "note": "面积/成本等最值建模", "optional": false }
+      ]
+    },
+    {
+      "id": "functions",
+      "title": "函数",
+      "sujiao": "必修第一册 第5章 函数概念与性质、第6章 幂函数指数函数和对数函数、第8章 函数应用",
+      "renjiao_a": "必修第一册 第三章 函数的概念与性质、第四章 指数函数与对数函数",
+      "points": [
+        { "name": "1-1 函数的概念", "levels": ["func_concept"] },
+        { "name": "1-2 函数的定义域", "levels": ["func_domain"] },
+        { "name": "1-3 函数的值域", "levels": ["func_range"] },
+        { "name": "1-4 函数的对应关系", "levels": ["func_corr"] },
+        { "name": "1-5 函数的单调性", "levels": ["func_mono"] },
+        { "name": "1-6 函数的奇偶性", "levels": ["func_parity"] },
+        { "name": "1-7 周期与对称", "levels": ["func_period"] },
+        { "name": "1-8 指数与对数", "levels": ["func_exp_log"] },
+        { "name": "1-9 抽象函数", "levels": ["func_abstract"] },
+        { "name": "1-10 函数零点", "levels": ["func_zeros"] },
+        { "name": "1-11 幂函数", "levels": ["func_power"] },
+        { "name": "1-12 函数的应用（一）", "levels": ["func_apply"] },
+        { "name": "1-13 用二分法求近似解", "levels": ["func_bisect"] }
+      ],
+      "gaps": [
+        { "name": "函数图象变换（平移/伸缩/对称）", "note": "教材有、本项目分散在三角/立几，未单列", "optional": false }
+      ]
+    },
+    {
+      "id": "trig",
+      "title": "三角函数",
+      "sujiao": "必修第一册 第7章 三角函数；必修第二册 第10章 三角恒等变换、第11章 解三角形",
+      "renjiao_a": "必修第一册 第五章 三角函数；必修第二册 6.4 平面向量的应用（正余弦定理）",
+      "points": [
+        { "name": "1-1 诱导公式", "levels": ["trig_induce"] },
+        { "name": "1-2 恒等变换", "levels": ["trig_identity"] },
+        { "name": "1-3 图像与性质", "levels": ["trig_graph"] },
+        { "name": "1-4 解三角形", "levels": ["trig_solve"] },
+        { "name": "1-5 测量应用", "levels": ["trig_apply"] },
+        { "name": "1-6 弧度制与任意角", "levels": ["trig_radian"] },
+        { "name": "1-7 正切函数图象与性质", "levels": ["trig_tan"] },
+        { "name": "1-8 三角函数的概念", "levels": ["trig_concept"] },
+        { "name": "1-9 正弦、余弦函数图象与性质", "levels": ["trig_sincos"] }
+      ],
+      "gaps": [
+        { "name": "两角和与差的正弦/余弦/正切", "note": "三角恒等变换核心；待核是否被 trig_identity 部分覆盖", "optional": false },
+        { "name": "二倍角公式", "note": "三角恒等变换核心", "optional": false },
+        { "name": "积化和差与和差化积", "note": "选学/拓展", "optional": true }
+      ]
+    },
+    {
+      "id": "vectors",
+      "title": "平面向量初步",
+      "sujiao": "必修第二册 第9章 平面向量（概念与线性运算）",
+      "renjiao_a": "必修第二册 6.1–6.2 平面向量的概念与运算",
+      "points": [
+        { "name": "1-1 向量线性运算", "levels": ["vec_ops"] },
+        { "name": "1-2 坐标运算", "levels": ["vec_coord"] },
+        { "name": "1-3 数量积与夹角", "levels": ["vec_dot"] },
+        { "name": "1-4 共线与垂直", "levels": ["vec_collinear"] }
+      ],
+      "gaps": []
+    },
+    {
+      "id": "sequences",
+      "title": "数列",
+      "sujiao": "选择性必修第一册 第4章 数列",
+      "renjiao_a": "选择性必修第二册 第四章 数列",
+      "points": [
+        { "name": "1-1 数列的概念", "levels": ["seq_concept"] },
+        { "name": "2-1 等差数列", "levels": ["seq_ap"] },
+        { "name": "3-1 等差数列的前n项和", "levels": ["seq_ap_sum"] },
+        { "name": "4-1 等比数列", "levels": ["seq_gp"] },
+        { "name": "5-1 等比数列的前n项和", "levels": ["seq_gp_sum"] },
+        { "name": "6-1 递推数列", "levels": ["seq_recur"] },
+        { "name": "7-1 构造法求通项", "levels": ["seq_construct"] },
+        { "name": "8-1 通项与前n项和的关系", "levels": ["seq_sn"] },
+        { "name": "9-1 错位相减求和", "levels": ["seq_displace"] },
+        { "name": "10-1 裂项相消求和", "levels": ["seq_split"] }
+      ],
+      "gaps": [
+        { "name": "数学归纳法", "note": "人教A 选必二 4.4（苏教不作要求）", "optional": true },
+        { "name": "数列不等式放缩（综合）", "note": "拓展/压轴", "optional": true }
+      ]
+    },
+    {
+      "id": "conics",
+      "title": "解析几何综合",
+      "sujiao": "选择性必修第一册 第3章 圆锥曲线与方程（综合应用）",
+      "renjiao_a": "选择性必修第一册 第三章 圆锥曲线的方程（综合应用）",
+      "points": [
+        { "name": "1-1 直线与圆", "levels": ["conic_line_circle"] },
+        { "name": "1-2 圆锥曲线定义", "levels": ["conic_def"] },
+        { "name": "1-3 点差法", "levels": ["conic_pointdiff"] },
+        { "name": "1-4 切线问题", "levels": ["conic_tangent"] },
+        { "name": "1-5 定点与定值", "levels": ["conic_fixed"] },
+        { "name": "1-6 最值与范围", "levels": ["conic_range"] }
+      ],
+      "gaps": [
+        { "name": "圆锥曲线的统一定义与极坐标/参数方程", "note": "选学/旧课标选修4-4", "optional": true }
+      ]
+    },
+    {
+      "id": "probability",
+      "title": "概率与统计",
+      "sujiao": "必修第二册 第15章 概率；选择性必修第二册 第8章 概率",
+      "renjiao_a": "必修第二册 第十章 概率；选择性必修第三册 第七章 随机变量及其分布",
+      "points": [
+        { "name": "1-1 古典与几何概型", "levels": ["prob_classic"] },
+        { "name": "1-2 条件概率", "levels": ["prob_cond"] },
+        { "name": "1-3 分布列与期望", "levels": ["prob_dist"] },
+        { "name": "1-4 二项与正态", "levels": ["prob_binom"] },
+        { "name": "1-5 统计与回归", "levels": ["prob_stats"] },
+        { "name": "1-6 全概率与贝叶斯", "levels": ["prob_total"] },
+        { "name": "1-7 超几何分布", "levels": ["prob_hypergeo"] },
+        { "name": "1-8 事件的关系与运算", "levels": ["prob_event"] },
+        { "name": "1-9 概率的基本性质", "levels": ["prob_props"] },
+        { "name": "1-10 事件的相互独立性", "levels": ["prob_indep"] },
+        { "name": "1-11 频率与概率", "levels": ["prob_freq"] }
+      ],
+      "gaps": []
+    },
+    {
+      "id": "derivative",
+      "title": "导数及其应用",
+      "sujiao": "选择性必修第一册 第5章 导数及其应用",
+      "renjiao_a": "选择性必修第二册 第五章 一元函数的导数及其应用",
+      "points": [
+        { "name": "1-1 求导公式", "levels": ["deriv_formula"] },
+        { "name": "1-2 导数的几何意义", "levels": ["deriv_tangent"] },
+        { "name": "1-3 单调性与极值", "levels": ["deriv_mono"] },
+        { "name": "1-4 恒成立与分离参数", "levels": ["deriv_param"] },
+        { "name": "1-5 不等式证明", "levels": ["deriv_prove"] },
+        { "name": "1-6 零点与隐零点", "levels": ["deriv_zero"] }
+      ],
+      "gaps": [
+        { "name": "定积分与微积分基本定理", "note": "新课标不要求（选学）", "optional": true }
+      ]
+    },
+    {
+      "id": "complex",
+      "title": "复数",
+      "sujiao": "必修第二册 第12章 复数（12.1–12.4）",
+      "renjiao_a": "必修第二册 第七章 复数（7.1–7.3）",
+      "points": [
+        { "name": "1-1 复数的运算", "levels": ["cplx_calc"] },
+        { "name": "1-2 复数的几何意义", "levels": ["cplx_geo"] },
+        { "name": "1-3 i 的周期性", "levels": ["cplx_period"] }
+      ],
+      "gaps": [
+        { "name": "复数的三角表示（棣莫弗定理）", "note": "人教A 7.3* / 苏教 12.4*", "optional": true }
+      ]
+    },
+    {
+      "id": "counting",
+      "title": "计数原理",
+      "sujiao": "选择性必修第二册 第7章 计数原理",
+      "renjiao_a": "选择性必修第三册 第六章 计数原理",
+      "points": [
+        { "name": "1-1 两个基本原理", "levels": ["count_rule"] },
+        { "name": "1-2 排列组合", "levels": ["count_comb"] },
+        { "name": "1-3 间接法", "levels": ["count_indirect"] },
+        { "name": "1-4 二项式定理", "levels": ["count_binomial"] }
+      ],
+      "gaps": []
+    },
+    {
+      "id": "thinking",
+      "title": "数学思想综合",
+      "sujiao": "跨章节（数学思想方法）",
+      "renjiao_a": "跨章节（数学思想方法）",
+      "points": [
+        { "name": "1-1 函数与方程", "levels": ["think_func_eq"] },
+        { "name": "1-2 数形结合", "levels": ["think_geo"] },
+        { "name": "1-3 分类讨论", "levels": ["think_classify"] },
+        { "name": "1-4 转化与化归", "levels": ["think_convert"] }
+      ],
+      "gaps": []
+    },
+    {
+      "id": "statistics",
+      "title": "统计",
+      "sujiao": "必修第二册 第14章 统计",
+      "renjiao_a": "必修第二册 第九章 统计",
+      "points": [
+        { "name": "1-1 抽样方法", "levels": ["stat_sample"] },
+        { "name": "1-2 频率分布直方图", "levels": ["stat_freq"] },
+        { "name": "1-3 平均数与方差", "levels": ["stat_avg"] },
+        { "name": "1-4 百分位数", "levels": ["stat_percentile"] }
+      ],
+      "gaps": []
+    },
+    {
+      "id": "random_var",
+      "title": "随机变量及其分布",
+      "sujiao": "选择性必修第二册 8.2 离散型随机变量及其分布列、8.3 正态分布",
+      "renjiao_a": "选择性必修第三册 第七章 随机变量及其分布",
+      "points": [
+        { "name": "1-1 分布列", "levels": ["rv_dist"] },
+        { "name": "1-2 二项分布", "levels": ["rv_binom"] },
+        { "name": "1-3 正态分布", "levels": ["rv_normal"] }
+      ],
+      "gaps": []
+    },
+    {
+      "id": "corr_data",
+      "title": "成对数据的统计分析",
+      "sujiao": "选择性必修第二册 第9章 统计（9.1 线性回归、9.2 独立性检验）",
+      "renjiao_a": "选择性必修第三册 第八章 成对数据的统计分析",
+      "points": [
+        { "name": "1-1 相关关系", "levels": ["cd_scatter"] },
+        { "name": "1-2 一元线性回归", "levels": ["cd_regress"] },
+        { "name": "1-3 列联表与独立性检验", "levels": ["cd_indep"] }
+      ],
+      "gaps": []
+    },
+    {
+      "id": "line_eq",
+      "title": "直线方程",
+      "sujiao": "选择性必修第一册 第1章 直线与方程",
+      "renjiao_a": "选择性必修第一册 第二章 直线和圆的方程（2.1–2.3）",
+      "points": [
+        { "name": "1-1 倾斜角与斜率", "levels": ["line_1_1"] },
+        { "name": "1-2 倾角与斜率变化", "levels": ["line_1_2"] },
+        { "name": "1-3 方向向量", "levels": ["line_1_3"] },
+        { "name": "2-1 点斜式与斜截式", "levels": ["line_2_1"] },
+        { "name": "2-2 两点式·截距式·一般式", "levels": ["line_2_2"] },
+        { "name": "2-3 方程形式互化", "levels": ["line_2_3"] },
+        { "name": "3-1 斜率法判定", "levels": ["line_3_1"] },
+        { "name": "3-2 一般式万能判定", "levels": ["line_3_2"] },
+        { "name": "3-3 交点与含参", "levels": ["line_3_3"] },
+        { "name": "4-1 两点间距离", "levels": ["line_4_1"] },
+        { "name": "4-2 点到直线距离", "levels": ["line_4_2"] },
+        { "name": "4-3 平行线距离与最值", "levels": ["line_4_3"] },
+        { "name": "5-1 四大直线系", "levels": ["line_5_1"] },
+        { "name": "5-2 直线过定点", "levels": ["line_5_2"] },
+        { "name": "6-1 点对称与轴对称", "levels": ["line_6_1"] },
+        { "name": "6-2 距离和最小", "levels": ["line_6_2"] },
+        { "name": "6-3 距离差最大", "levels": ["line_6_3"] },
+        { "name": "隐藏Boss · 对称与最值压轴", "levels": ["line_boss"] }
+      ],
+      "gaps": []
+    },
+    {
+      "id": "space",
+      "title": "空间向量与立体几何",
+      "sujiao": "选择性必修第二册 第6章 空间向量与立体几何",
+      "renjiao_a": "选择性必修第一册 第一章 空间向量与立体几何",
+      "points": [
+        { "name": "1-1 空间向量概念与运算", "levels": ["space_1_1"] },
+        { "name": "1-2 共线共面与基底", "levels": ["space_1_2"] },
+        { "name": "1-3 数量积与坐标", "levels": ["space_1_3"] },
+        { "name": "2-1 方向向量与法向量", "levels": ["space_2_1"] },
+        { "name": "2-2 位置关系判定", "levels": ["space_2_2"] },
+        { "name": "2-3 建系避坑与平面方程", "levels": ["space_2_3"] },
+        { "name": "3-1 异面直线夹角", "levels": ["space_3_1"] },
+        { "name": "3-2 线面角", "levels": ["space_3_2"] },
+        { "name": "3-3 二面角", "levels": ["space_3_3"] },
+        { "name": "4-1 两点间距离", "levels": ["space_4_1"] },
+        { "name": "4-2 点到直线距离", "levels": ["space_4_2"] },
+        { "name": "4-3 点到平面距离", "levels": ["space_4_3"] },
+        { "name": "5-1 三垂线定理与等体积", "levels": ["space_5_1"] },
+        { "name": "5-2 翻折不变量", "levels": ["space_5_2"] },
+        { "name": "5-3 截面问题", "levels": ["space_5_3"] },
+        { "name": "6-1 空间最值模型", "levels": ["space_6_1"] },
+        { "name": "6-2 外接球四模型", "levels": ["space_6_2"] },
+        { "name": "6-3 内切球与球截面", "levels": ["space_6_3"] },
+        { "name": "隐藏Boss · 空间向量真题试炼", "levels": ["space_boss"] }
+      ],
+      "gaps": []
+    },
+    {
+      "id": "vector",
+      "title": "平面向量",
+      "sujiao": "必修第二册 第9章 平面向量；选择性必修第一册 第3章（向量与圆锥曲线综合）",
+      "renjiao_a": "必修第二册 第六章 平面向量及其应用",
+      "points": [
+        { "name": "1-1 平面向量的概念", "levels": ["vector_1_1"] },
+        { "name": "1-2 向量的模长与单位向量", "levels": ["vector_1_2"] },
+        { "name": "1-3 零向量陷阱", "levels": ["vector_1_3"] },
+        { "name": "2-1 向量加法的三角形法则", "levels": ["vector_2_1"] },
+        { "name": "2-2 向量减法的方向", "levels": ["vector_2_2"] },
+        { "name": "2-3 共线向量定理", "levels": ["vector_2_3"] },
+        { "name": "3-1 平面向量基本定理", "levels": ["vector_3_1"] },
+        { "name": "3-2 平面向量的坐标运算", "levels": ["vector_3_2"] },
+        { "name": "3-3 中点与重心公式", "levels": ["vector_3_3"] },
+        { "name": "4-1 数量积的定义", "levels": ["vector_4_1"] },
+        { "name": "4-2 坐标形式与求值", "levels": ["vector_4_2"] },
+        { "name": "4-3 垂直判定与陷阱", "levels": ["vector_4_3"] },
+        { "name": "5-1 数量投影", "levels": ["vector_5_1"] },
+        { "name": "5-2 平行四边形恒等式", "levels": ["vector_5_2"] },
+        { "name": "5-3 三角形四心向量模型", "levels": ["vector_5_3"] },
+        { "name": "6-1 模长最值与三角不等式", "levels": ["vector_6_1"] },
+        { "name": "6-2 数量积最值三法", "levels": ["vector_6_2"] },
+        { "name": "6-3 动点轨迹模型", "levels": ["vector_6_3"] },
+        { "name": "隐藏Boss · 平面向量真题试炼", "levels": ["vector_boss"] }
+      ],
+      "gaps": []
+    },
+    {
+      "id": "ellipse",
+      "title": "椭圆",
+      "sujiao": "选择性必修第一册 3.1 椭圆",
+      "renjiao_a": "选择性必修第一册 3.1 椭圆",
+      "points": [
+        { "name": "1-1 椭圆的定义 · 距离之和", "levels": ["ellipse_1_1"] },
+        { "name": "1-2 椭圆第二定义", "levels": ["ellipse_1_2"] },
+        { "name": "1-3 椭圆方程的建立", "levels": ["ellipse_1_3"] },
+        { "name": "2-1 离心率 · 圆与扁", "levels": ["ellipse_2_1"] },
+        { "name": "2-2 焦点位置与方程形式", "levels": ["ellipse_2_2"] },
+        { "name": "2-3 离心率求值", "levels": ["ellipse_2_3"] },
+        { "name": "3-1 焦点三角形面积", "levels": ["ellipse_3_1"] },
+        { "name": "3-2 焦点三角形的性质", "levels": ["ellipse_3_2"] },
+        { "name": "3-3 焦半径的取值范围", "levels": ["ellipse_3_3"] },
+        { "name": "4-1 点差法 · 中点弦", "levels": ["ellipse_4_1"] },
+        { "name": "4-2 中点弦的求法", "levels": ["ellipse_4_2"] },
+        { "name": "4-3 弦中点与轨迹", "levels": ["ellipse_4_3"] },
+        { "name": "5-1 直线与椭圆 · 弦长", "levels": ["ellipse_5_1"] },
+        { "name": "5-2 弦长与中点", "levels": ["ellipse_5_2"] },
+        { "name": "5-3 位置关系与最值", "levels": ["ellipse_5_3"] },
+        { "name": "隐藏Boss · 椭圆综合试炼", "levels": ["ellipse_boss"] }
+      ],
+      "gaps": []
+    },
+    {
+      "id": "circle_eq",
+      "title": "圆的方程",
+      "sujiao": "选择性必修第一册 第2章 圆与方程",
+      "renjiao_a": "选择性必修第一册 第二章 直线和圆的方程（2.4–2.5）",
+      "points": [
+        { "name": "1-1 圆的定义与标准方程", "levels": ["circle_1_1"] },
+        { "name": "1-2 由方程读圆心与半径", "levels": ["circle_1_2"] },
+        { "name": "1-3 待定系数求圆的方程", "levels": ["circle_1_3"] },
+        { "name": "2-1 一般方程与配方", "levels": ["circle_2_1"] },
+        { "name": "2-2 表示圆的条件", "levels": ["circle_2_2"] },
+        { "name": "2-3 三种形式互化", "levels": ["circle_2_3"] },
+        { "name": "3-1 点与圆的位置关系", "levels": ["circle_3_1"] },
+        { "name": "3-2 直线与圆的位置关系", "levels": ["circle_3_2"] },
+        { "name": "3-3 弦长与弦心距", "levels": ["circle_3_3"] },
+        { "name": "4-1 过圆上一点的切线", "levels": ["circle_4_1"] },
+        { "name": "4-2 过圆外一点的切线", "levels": ["circle_4_2"] },
+        { "name": "4-3 切点弦与切线性质", "levels": ["circle_4_3"] },
+        { "name": "5-1 两圆位置关系", "levels": ["circle_5_1"] },
+        { "name": "5-2 公共弦与根轴", "levels": ["circle_5_2"] },
+        { "name": "5-3 圆系方程", "levels": ["circle_5_3"] },
+        { "name": "6-1 与圆有关的最值 I", "levels": ["circle_6_1"] },
+        { "name": "6-2 与圆有关的最值 II", "levels": ["circle_6_2"] },
+        { "name": "6-3 轨迹与阿波罗尼斯圆", "levels": ["circle_6_3"] },
+        { "name": "隐藏Boss · 圆综合试炼", "levels": ["circle_boss"] }
+      ],
+      "gaps": []
+    },
+    {
+      "id": "hyperbola",
+      "title": "双曲线",
+      "sujiao": "选择性必修第一册 3.2 双曲线",
+      "renjiao_a": "选择性必修第一册 3.2 双曲线",
+      "points": [
+        { "name": "1-1 双曲线的定义 · 距离之差", "levels": ["hypo_def"] },
+        { "name": "2-1 标准方程 · a、b、c", "levels": ["hypo_std"] },
+        { "name": "3-1 渐近线", "levels": ["hypo_asym"] },
+        { "name": "4-1 离心率 · e=c/a", "levels": ["hypo_ecc"] },
+        { "name": "5-1 综合应用 · 焦点与距离", "levels": ["hypo_apply"] },
+        { "name": "6-1 焦点三角形", "levels": ["hypo_focal_tri"] },
+        { "name": "7-1 焦半径", "levels": ["hypo_focal_radius"] },
+        { "name": "8-1 点差法 · 中点弦", "levels": ["hypo_pointdiff"] },
+        { "name": "9-1 直线与双曲线", "levels": ["hypo_line"] },
+        { "name": "10-1 共轭双曲线", "levels": ["hypo_conjugate"] },
+        { "name": "11-1 定点定值与最值", "levels": ["hypo_fixed"] }
+      ],
+      "gaps": []
+    },
+    {
+      "id": "parabola",
+      "title": "抛物线",
+      "sujiao": "选择性必修第一册 3.3 抛物线",
+      "renjiao_a": "选择性必修第一册 3.3 抛物线",
+      "points": [
+        { "name": "1-1 抛物线的定义 · 距离相等", "levels": ["para_def"] },
+        { "name": "2-1 四种标准方程", "levels": ["para_std"] },
+        { "name": "3-1 焦点 · 焦半径", "levels": ["para_geo"] },
+        { "name": "4-1 焦点弦 · 通径", "levels": ["para_chord"] },
+        { "name": "5-1 综合应用 · 距离问题", "levels": ["para_apply"] },
+        { "name": "6-1 几何性质", "levels": ["para_props"] },
+        { "name": "7-1 焦点弦性质", "levels": ["para_focal_chord"] },
+        { "name": "8-1 点差法 · 中点弦", "levels": ["para_pointdiff"] },
+        { "name": "9-1 直线与抛物线", "levels": ["para_line"] },
+        { "name": "10-1 定点定值", "levels": ["para_fixed"] },
+        { "name": "11-1 最值与距离", "levels": ["para_maxmin"] }
+      ],
+      "gaps": []
+    },
+    {
+      "id": "solid_basic",
+      "title": "立体几何初步",
+      "sujiao": "必修第二册 第13章 立体几何初步",
+      "renjiao_a": "必修第二册 第八章 立体几何初步",
+      "points": [
+        { "name": "1-1 基本立体图形", "levels": ["solid_kinds"] },
+        { "name": "2-1 棱台与圆台", "levels": ["solid_frustum"] },
+        { "name": "3-1 表面积与展开", "levels": ["solid_surface"] },
+        { "name": "4-1 体积", "levels": ["solid_volume"] },
+        { "name": "5-1 体对角线与截面", "levels": ["solid_diag"] },
+        { "name": "6-1 球与组合体", "levels": ["solid_sphere"] },
+        { "name": "7-1 直观图与三视图", "levels": ["solid_view"] },
+        { "name": "8-1 空间点线面位置关系", "levels": ["solid_axiom"] },
+        { "name": "9-1 平行关系", "levels": ["solid_parallel"] },
+        { "name": "10-1 垂直关系", "levels": ["solid_perp_prop"] },
+        { "name": "11-1 空间角（几何法）", "levels": ["solid_angle"] },
+        { "name": "12-1 空间距离（几何法）", "levels": ["solid_distance"] }
+      ],
+      "gaps": []
+    },
+    {
+      "id": "function_methods",
+      "title": "函数与分段",
+      "sujiao": "必修第一册 第5章 函数概念与性质（分段函数/值域）",
+      "renjiao_a": "必修第一册 3.1 函数的概念及其表示（分段函数）",
+      "points": [
+        { "name": "分段函数的值域实验", "levels": ["func_piecewise_range"] }
+      ],
+      "gaps": []
+    }
+  ]
+}

@@ -81,3 +81,10 @@ jobs:
           set -euo pipefail
           ./godot --headless --path . --script res://tools/check_questions.gd 2>&1 | tee out.log
           grep -Eq "QUESTION-CHECK:" out.log
+
+      - name: check_knowledge（知识点覆盖矩阵，E1）
+        run: |
+          set -euo pipefail
+          ./godot --headless --path . --script res://tools/check_knowledge.gd 2>&1 | tee out.log
+          grep -Eq "KNOWLEDGE: [0-9]+ chapters" out.log
+          ! grep -Eq "KNOWLEDGE-FAIL" out.log

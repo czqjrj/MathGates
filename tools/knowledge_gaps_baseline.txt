@@ -1,0 +1,15 @@
+# E1 · 知识点矩阵「硬缺口」基线（未覆盖知识点条数）
+#
+# 由 tools/check_knowledge.gd 读取并对照 data/knowledge_map.json：
+#   - 实测硬缺口 > 本值 → 退出码 1（新增缺口未登记，CI 红灯）
+#   - 实测硬缺口 < 本值 → 提示下调本值（缺口被补齐）
+# 只计 optional=false 的缺口；选学/旧课标（optional=true）不计入。
+#
+# 当前硬缺口（6）：
+#   [set_logic]     集合中元素的个数（card 容斥公式）
+#   [inequalities]  含参一元二次不等式（恒成立/能成立）
+#   [inequalities]  基本不等式的实际应用（建模求最值）
+#   [functions]     函数图象变换（平移/伸缩/对称）
+#   [trig]          两角和与差的正弦/余弦/正切
+#   [trig]          二倍角公式
+6

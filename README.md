@@ -39,6 +39,8 @@ tools/           开发/测试脚本:check_all.gd(脚本检查)、check_question
 				 预览/--apply,文本级替换保留排版)、smoke_scene(全场景冒烟)、
 				 pack_math_res(把 gdextension/res 打包为 res.bin,排除 GPLv3 字体)、
 				 optimize_art(A13 降采样超大图,默认 dry-run)、check_assets(A13 资源入库/体积护栏)、
+				 check_knowledge(E1 知识点覆盖矩阵校验+生成 docs/知识点覆盖矩阵.md,
+				 关卡↔知识点同步/未覆盖缺口基线)、knowledge_gaps_baseline.txt(硬缺口基线)、
 				 bump_version(F2 发版:一处改版本,多预设同步)、
 				 capture_scene(截图)、dev_seq(单关调试)、
 				 lab3d_render_check(立体几何/空间向量 3D 场景渲染自检,需真实窗口)
@@ -101,6 +103,7 @@ build/           导出产物(APK,git 忽略)
 ## 内容与教材的关系
 
 - 本项目的**课程结构**（分册、章节、顺序）对齐人教A/苏教等人教版教材的**知识点顺序**，便于按教材体系复习；
+- **逐章知识点覆盖矩阵**（教材小节 → 知识点 → 关卡 id，含未覆盖缺口清单）：`docs/知识点覆盖矩阵.md`（数据源 `data/knowledge_map.json`，由 `tools/check_knowledge.gd` 校验并生成）；
 - **题目均为自编**（题干、选项、解析由项目组撰写），**不逐题复制教材习题**；
 - 教材名称与章节名为客观指代，相关著作权归各出版社所有，本项目与出版社无隶属关系。
   详见 `THIRD_PARTY_NOTICES.md` §5。
