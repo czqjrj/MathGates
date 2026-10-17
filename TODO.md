@@ -62,7 +62,7 @@
 | **D3** | 动效全在"结果反馈"，缺"理解型动效" | **P1** | 强化情绪而非数学因果 |
 | **D4** | 动效令牌缺失 + 演示不可控 + 无障碍粒度不足 | **P2** | 44 处裸时长、无法重播 |
 | **E1** | 知识点覆盖矩阵 + 校验器（内容补全的前置） | **P0** | ✅ 已完成（`data/knowledge_map.json` + `check_knowledge` → `docs/知识点覆盖矩阵.md`；硬缺口基线随 E2 收敛，现 4 条） |
-| **E2** | 补齐薄弱章节题量（8 章 ≤4 关，最少仅 6 题） | **P0** | 🟡 进行中：不等式 6/26、计数原理 6/22、统计 6/22（余 8 章薄弱，函数与分段仅 1 关） |
+| **E2** | 补齐薄弱章节题量（8 章 ≤4 关，最少仅 6 题） | **P0** | 🟡 进行中：不等式 6/26、计数原理 6/22、统计 6/22（余 8 章；下次从 `random_var` 继续，见 E2「断点」） |
 | **E3** | 补全 15 个整块缺失的教材必学知识点 | **P1** | 数学归纳法等完全没有 |
 | **E4** | 方法章/专题章过薄且与知识章脱节 | **P2** | function_methods 仅 1 关 |
 | **E5** | 与 6 版教材对齐的持续核对流程 | **P1** | 换版本只改排序不改覆盖 |
@@ -1130,6 +1130,26 @@
 - ⚠️ 新增 40 题（及后续补题）的**数学正确性需人工复核**（尤其 `ineq_param` 含参分类、`ineq_apply` 取等条件、
   `count_group` 平均分组除以 `k!`、`stat_center` 中位数/众数）；
 - ⚠️ 新内容未预烘焙 `art/line/formulas/*.png` 回退（正式包含扩展，无头 CI 不渲染但不崩）。
+
+**断点（2026-10-17 收工，下次从这里继续）**
+- 已完 3 章（合计 +8 关 / +40 题）：`inequalities`、`counting`、`statistics`。
+- 下一步顺序：`random_var`(3→6，+3 关) → `corr_data`(3→6，+3 关) → `complex`(3→6，+3 关) →
+  `vectors`(4→6，+2 关) → `thinking`(4→6，+2 关) → `set_logic`(5→6，+1 关)；
+  `function_methods`(1 关) 与 `conic`(3 关) 属方法/专题章，**先定口径**（是否按知识章 6 关补）再动。
+- 每章固定流程（照前 3 章的样子，缺一步校验器会红）：
+  1. `data/<章>_levels.json` 追加关卡组：每组 5 轮（探究→建构→迁移→巩固→综合），`ans` 恒为 `0`，
+     数学式子一律 `$$…$$`（**不写** Unicode 片段、**不加** `FORMULA_LATEX` 命名）；
+  2. `data/curriculum.json` 该章 `levels` 追加同 id 条目：`name` 用 `1-N`、`technique`/`archetype`(`LAB`)/
+     `lab`/`lab_ref`/`scene` 照抄邻条；
+  3. `data/knowledge_map.json` 该章 `points` 追加 `{ "name": "1-N …", "levels": ["<id>"] }`
+     （漏挂 → `check_knowledge` 退出 1）；
+  4. `godot --headless --path . --script res://tools/fix_labels.gd -- --apply` 规范轮次标签 `<关卡序号>-<轮次>`；
+  5. 校验：`check_all` / `check_questions` / `check_knowledge` / `check_inline` / `smoke_scene.tscn` /
+     `Tests.tscn` / `UiSmoke.tscn` / `LabSmoke.tscn` / `check_assets`；
+  6. 更新本文件 §0.1、§9.1、§9.2 与本节表格，提交 `feat(E2): <章> a→6 关`。
+- LaTeX 渲染自检（**临时探针，用完即删**，否则 `CHECKED` 计数会变）：扫 `data/*.json` 的 `\$\$([^$]+)\$\$`，
+  逐条 `InlineMath._latex_bbcode(latex, 26)`，返回值不含 `[/img]` 即渲染失败；本轮 218 段 / 0 失败。
+- ⚠️ 待人工复核：本轮 40 题（不等式 20 / 计数 10 / 统计 10），复核后再算「已验收」。
 
 ---
 
