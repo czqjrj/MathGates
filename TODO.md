@@ -62,7 +62,7 @@
 | **D3** | 动效全在"结果反馈"，缺"理解型动效" | **P1** | 强化情绪而非数学因果 |
 | **D4** | 动效令牌缺失 + 演示不可控 + 无障碍粒度不足 | **P2** | 44 处裸时长、无法重播 |
 | **E1** | 知识点覆盖矩阵 + 校验器（内容补全的前置） | **P0** | ✅ 已完成（`data/knowledge_map.json` + `check_knowledge` → `docs/知识点覆盖矩阵.md`；硬缺口基线随 E2 收敛，现 4 条） |
-| **E2** | 补齐薄弱章节题量（8 章 ≤4 关，最少仅 6 题） | **P0** | 🟡 进行中：不等式已补到 6 关/26 题（余 10 章薄弱，含计数 4 关、函数与分段 1 关） |
+| **E2** | 补齐薄弱章节题量（8 章 ≤4 关，最少仅 6 题） | **P0** | 🟡 进行中：不等式 6/26、计数原理 6/22（余 9 章薄弱，函数与分段仅 1 关） |
 | **E3** | 补全 15 个整块缺失的教材必学知识点 | **P1** | 数学归纳法等完全没有 |
 | **E4** | 方法章/专题章过薄且与知识章脱节 | **P2** | function_methods 仅 1 关 |
 | **E5** | 与 6 版教材对齐的持续核对流程 | **P1** | 换版本只改排序不改覆盖 |
@@ -1101,30 +1101,32 @@
   （按实际载入器解析：LabStage/Lab3DStage→`lab_ref`、SequenceStage→`sequence`、ConicStage→`conic`、
   SolidChallenge→`method`，其中方法章题目在 `solid_methods.json`），输出 27 章「关/题」并 WARN 薄弱章节(<18 题)。
 
-**已实施（内容：第 1 章 `inequalities`，2026-10）**
-- 章节从 **2 关 / 6 题** 补齐到 **6 关 / 26 题**，新增 4 关（每关 5 轮，遵循 B3「探究→建构→迁移」+ 巩固/综合）：
-  | 新关卡 | 知识点 | 对应 E1 硬缺口 |
-  |---|---|---|
-  | `ineq_props` | 不等式的基本性质与作差法比较大小 | E3#2 |
-  | `ineq_param` | 含参一元二次不等式（恒成立/分类讨论/由解集反求系数） | E1 硬缺口 |
-  | `ineq_apply` | 基本不等式的实际应用（和定积最大 / 积定和最小 / 1 的代换） | E1 硬缺口 |
-  | `ineq_abs_frac` | 绝对值不等式与分式不等式 | — |
-- 配套改动：
-  - `data/curriculum.json` + `data/inequalities_levels.json`（4 组 × 5 轮，全部答案位 `ans=0`、运行时打乱）；
-  - `data/knowledge_map.json` 挂 4 个新知识点；E1 的 2 条 inequalities 硬缺口移入覆盖，基线
-    `tools/knowledge_gaps_baseline.txt` 6 → **4**；
-  - 轮次标签经 `tools/fix_labels.gd -- --apply` 规范为 `<关卡序号>-<轮次>`（3-1…6-5）；
-  - **落 A10**：新内容全部用 `$$…$$` 直写 LaTeX（新增 177 个片段，`MicroTeX` 渲染 0 失败），
-    `InlineMath` 新增 `$$…$$` 支持、`check_questions.gd`/`check_inline.gd` 跳过 `$$…$$` 区段。
-- 实测：`不等式 6/26`；薄弱章节 11 → **10**；`QUESTION-CHECK: 26 files / 226 levels / 732 questions / 0 new`；
-  `SMOKE: 242 ok, 0 fail`；`TESTS: 1245 passed`；`KNOWLEDGE: 232 points / hard-gaps=4`。
+**已实施（内容：2026-10）**
+- 目标：把 <6 关的章节补到 ≥6 关、每关 5 轮（B2/B3 口径：探究→建构→迁移→巩固→综合；
+  探究轮用**任务式提问**，不写「题面即答案」）。
+
+| 章节 | 补前 → 补后 | 新增关卡（各 5 轮） | 备注 |
+|---|---|---|---|
+| `inequalities` | 2 关/6 题 → **6 关/26 题** | `ineq_props` 基本性质与作差法、`ineq_param` 含参一元二次不等式、`ineq_apply` 基本不等式应用、`ineq_abs_frac` 绝对值/分式 | 覆盖 E1 两条硬缺口 + E3#2 |
+| `counting` | 4 关/12 题 → **6 关/22 题** | `count_group` 分组与分配、`count_binom_props` 二项式系数的性质 | — |
+
+- 配套改动（每章）：
+  - `data/curriculum.json` + `data/<章>_levels.json`（全部答案位 `ans=0`，运行时打乱）；
+  - `data/knowledge_map.json` 挂新知识点；被覆盖的 E1 硬缺口移出 `gaps`
+    （不等式基线 `tools/knowledge_gaps_baseline.txt` 6 → **4**）；
+  - 轮次标签经 `tools/fix_labels.gd -- --apply` 规范为 `<关卡序号>-<轮次>`；
+  - **落 A10**：新内容全部用 `$$…$$` 直写 LaTeX（`MicroTeX` 渲染 0 失败），无新增 `FORMULA_LATEX` 命名、
+    无新增 Unicode 数学片段。
+- 实测：薄弱章节 **11 → 9**（`不等式 6/26`、`计数原理 6/22`）；`QUESTION-CHECK: 26 files / 228 levels / 742 questions / 0 new`；
+  `SMOKE: 244 ok, 0 fail`；`TESTS: 1245 passed`；`KNOWLEDGE: 234 points / hard-gaps=4`；`LATEX-PROBE: 211 段 / 0 失败`。
 
 **残留（E2 未完）**
-- ⚠️ 余 **10 章**仍薄弱（<18 题）：函数与分段(1 关)、成对数据的统计分析/圆锥曲线/随机变量(各 3 关)、
-  复数/统计/数学思想/计数原理/平面向量初步(各 4 关)、集合与逻辑(5 关)；其中 `function_methods`(1 关)、
-  `conic`(3 关) 为**方法/专题章**，补法另定；
-- ⚠️ 新增 20 题（及后续所有补题）的**数学正确性需人工复核**（尤其 `ineq_param` 的含参分类、`ineq_apply` 的取等条件）；
-- ⚠️ 新内容未预烘焙 `art/line/formulas/*.png` 回退（与最近 `pw_*`/`av_*` 一致；正式包含扩展，无头 CI 不渲染但不崩）。
+- ⚠️ 余 **9 章**仍薄弱（<18 题）：函数与分段(1 关)、成对数据的统计分析/圆锥曲线/随机变量及其分布/复数(各 3 关)、
+  统计/数学思想综合/平面向量初步(各 4 关)、集合与逻辑(5 关)；其中 `function_methods`(1 关)、`conic`(3 关)
+  为**方法/专题章**，补法另定；
+- ⚠️ 新增 30 题（及后续补题）的**数学正确性需人工复核**（尤其 `ineq_param` 含参分类、`ineq_apply` 取等条件、
+  `count_group` 平均分组除以 `k!`）；
+- ⚠️ 新内容未预烘焙 `art/line/formulas/*.png` 回退（正式包含扩展，无头 CI 不渲染但不崩）。
 
 ---
 
@@ -1652,11 +1654,11 @@
 > `& "<godot472.exe>" --headless --editor --path . --quit`。
 
 **当前回归基线**（改完请对照，数字只能升不能降）：
-`CHECKED 86 scripts, 0 failures` / `TESTS: 1245 passed, 0 failed` / `SMOKE: 242 ok, 0 fail` /
+`CHECKED 86 scripts, 0 failures` / `TESTS: 1245 passed, 0 failed` / `SMOKE: 244 ok, 0 fail` /
 `UI-SMOKE: 342 ok, 0 fail` / `LabSmoke` 末尾 `TMP_OK` /
-`QUESTION-CHECK: 26 files / 226 levels / 732 questions / 0 new / 7 known`（A5 校验器，存量问题见下方基线）/
+`QUESTION-CHECK: 26 files / 228 levels / 742 questions / 0 new / 7 known`（A5 校验器，存量问题见下方基线）/
 `ASSETS: 29.67 MB … banned=0, oversize=0`（A13 护栏）/
-`KNOWLEDGE: 27 chapters / 232 points / 232 levels mapped / hard-gaps=4 (baseline 4) / optional=8`（E1 矩阵）。
+`KNOWLEDGE: 27 chapters / 234 points / 234 levels mapped / hard-gaps=4 (baseline 4) / optional=8`（E1 矩阵）。
 
 - 校验器基线：`tools/check_questions_baseline.txt`（**7 条已知**：题干重复 7；B9 轮次编号错位已归 0）；
   `tools/knowledge_gaps_baseline.txt`（**4 条硬缺口**：集合基数 / 图象变换 / 两角和差 / 二倍角，见 E1）。
@@ -1664,17 +1666,17 @@
 
 ### 9.2 本文件基线数字（改完请同步更新）
 
-- 题目总数 **774**（关卡文件 732 + `questions.json` 42）；关卡组 **226**；
-  平均 **3.24 题/关**（轮次 736 = 单选 731 + 多选 1 + 无选项 `interact` 4，即 **3.26 轮/关**）。
-- 题型分布：单选 **731**，多选 **1**，`interact` **4**。
-- 选项：图片选项 **114** 处（位于 36 道题）；`ans==0` **705/731（96.4%）**（B8 偏高）。
-- 探究轮 **231**，其中题面为陈述句 **221（96%）**（E2 前口径，E2 补题后见 A5 看板）。
+- 题目总数 **784**（关卡文件 742 + `questions.json` 42）；关卡组 **228**；
+  平均 **3.27 题/关**（轮次 746 = 单选 741 + 多选 1 + 无选项 `interact` 4，即 **3.27 轮/关**）。
+- 题型分布：单选 **741**，多选 **1**，`interact` **4**。
+- 选项：图片选项 **114** 处（位于 36 道题）；`ans==0` **715/741（96.5%）**（B8 偏高）。
+- 探究轮 **230**，其中题面为陈述句 **221（96%）**（E2 前人工统计口径；B3 重算见 A5）。
 - 轮次标签编号错位 **0 处**（B9 已修复：`tools/fix_labels.gd` 批量重编，规范 `<关卡序号>-<轮次> <阶段名>`）。
 - 资源体积（A13 已治理）：仓库 tracked 合计 **29.6MB**（治理前 48.4MB；`art/` 已无 `.xcf`，源文件移至 `assets_src/`，
   标题字体 13.5MB 待替换）；APK（debug）旧基线 **60.9MB**（新基线待重新导出）。见 A13。
-- 知识点矩阵（E1 已建立，E2 补 `inequalities` 后）：`data/knowledge_map.json` 27 章 / **232 个知识点**（每关一挂）；
+- 知识点矩阵（E1 已建立，E2 补 `inequalities`/`counting` 后）：`data/knowledge_map.json` 27 章 / **234 个知识点**（每关一挂）；
   **硬缺口 4**、选学/旧课标 8（基线 `tools/knowledge_gaps_baseline.txt`）；关卡 id `solid_angle` 跨章重名 1 处。见 E1/E2。
-- 数据一致性：`curriculum` 关卡 232 / 关卡数据组 226，`lab_ref` 动态映射覆盖其余；
+- 数据一致性：`curriculum` 关卡 234 / 关卡数据组 228，`lab_ref` 动态映射覆盖其余；
   跨文件重名关卡数据 **5 组**（`questions.json` ↔ `set_logic_levels.json`，内容互不相同）。见 A12。
 - 口播字段 `speak`：**0 处**。见 B13。
 - 动效：`anim` 演示字段只出现在 **1/26** 个关卡文件（`solid_basic_levels.json`，27 处 / 12 关）；

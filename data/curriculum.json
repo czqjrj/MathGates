@@ -936,6 +936,24 @@
           "lab": "counting",
           "lab_ref": "count_binomial",
           "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "count_group",
+          "name": "1-5 分组与分配",
+          "technique": "先分组 · 再排列",
+          "archetype": "LAB",
+          "lab": "counting",
+          "lab_ref": "count_group",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "count_binom_props",
+          "name": "1-6 二项式系数的性质",
+          "technique": "对称性 · 赋值法",
+          "archetype": "LAB",
+          "lab": "counting",
+          "lab_ref": "count_binom_props",
+          "scene": "res://scenes/LabStage.tscn"
         }
       ]
     },
