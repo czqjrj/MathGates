@@ -22,7 +22,7 @@
 
 | 编号 | 标题 | 优先级 | 说明 |
 |---|---|---|---|
-| **A1** | `SequenceStage` 迁移到 `StageBase` | **P0** | 不修则新功能永久双轨 |
+| **A1** | `SequenceStage` 迁移到 `StageBase` | **P0** | ✅ 已完成（763 → 185 行，双轨消除） |
 | **B1** | 题型单一：把 `interact/gate` 与填空题用起来 | **P0** | 决定产品定位 |
 | **B3** | 「探究→建构→迁移」名不副实 | **P0** | 教学设计核心 |
 | **B9** | 轮次标签编号错乱（纯编校，可脚本修） | **P0** | ✅ 已完成（`fix_labels.gd`，错位归 0） |
@@ -136,7 +136,7 @@
 
 ## 1. A 类 · 架构与工程收敛
 
-### [ ] A1 · `SequenceStage` 迁移到 `StageBase`（P0）
+### [x] A1 · `SequenceStage` 迁移到 `StageBase`（P0）
 
 **现状（证据）**
 - `scripts/modules/sequence/SequenceStage.gd`（712 行）`extends Control`，**未继承** `StageBase`，
@@ -154,6 +154,13 @@
   _default_color()/_use_rich_text()/_load()/_build_view()/_load_q()/_on_confirm()/_build_interact()/_build_explore()`）。
 - 删掉与基类重复的实现；`SequencePlane`（675 行）保持不变。
 - 迁移后核对：数列关卡应自动获得连击条/计时/三星引导；BOSS 关（若有）获得 BossHud。
+
+**已实施（记录）**
+- `extends StageBase`，仅保留数列专属部分：`_load()`（recurrence_levels.json）、`_build_view()`（SequencePlane 画布）、
+  `_load_q()`、`_build_explore()/_build_interact()/_on_confirm()`（explore 两段式）、`_refresh_live()` 与配置钩子；
+  763 → 185 行，无与基类同名函数。
+- 探针已验（临时脚本，验后删）：`extends StageBase`、`_combo_bar != null`、`rules{time_limit}` → `_timing=true`、
+  explore→追问构建 4 选项。
 
 **验收**
 - `SequenceStage.gd` 行数显著下降（目标 < 300），无与基类同名函数重复。
