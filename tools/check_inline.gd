@@ -5,8 +5,13 @@ extends SceneTree
 
 const MATH_CHARS := "²³¹⁰⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉√·×÷±≤≥≠≈∞∈∉⊆⊇∪∩→←⇒⇔∀∃∠°Δαβγθλμπ∅∩∪"
 
+## A10：剥离 $$LaTeX$$ 片段（运行时渲染，不经 inline_math.json 覆盖）。
+var _dollar: RegEx
+
 func _initialize() -> void:
 	InlineMath.inline("x", 24) # 触发 inline_math.json 加载 + 正则编译
+	_dollar = RegEx.new()
+	_dollar.compile("\\$\\$[^$]+\\$\\$")
 	var cjk := RegEx.new()
 	cjk.compile("[\\x{2e80}-\\x{303f}\\x{31c0}-\\x{9fff}\\x{f900}-\\x{faff}\\x{fe30}-\\x{fe4f}\\x{ff00}-\\x{ffef}]+")
 	var dir := DirAccess.open("res://data")
@@ -69,6 +74,8 @@ func _walk(v: Variant, cjk: RegEx, miss: Dictionary) -> void:
 func _check(t: String, cjk: RegEx, miss: Dictionary) -> void:
 	if t == "":
 		return
+	if _dollar != null and t.find("$$") >= 0:
+		t = _dollar.sub(t, " ", true)
 	var last := 0
 	for m in cjk.search_all(t):
 		_gap(t.substr(last, m.get_start() - last), miss)

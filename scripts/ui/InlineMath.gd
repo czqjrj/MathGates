@@ -6,6 +6,7 @@ extends RefCounted
 
 static var _formula_size_cache: Dictionary = {}
 static var _inline_re: RegEx
+static var _dollar_re: RegEx
 
 static var _inline_math: Dictionary = {}
 static var _inline_math_loaded := false
@@ -101,6 +102,7 @@ static func _inline_trim(t: String) -> String:
 ## 把文本里的 {f:名称} 替换为 art/line/formulas/名称.png 的内联 LaTeX 公式图。
 ## h 为目标显示高度(像素)，宽度按原图比例自动计算。
 static func inline_formulas(text: String, h: int = 26) -> String:
+	text = _inline_dollar(text, h)
 	text = inline(text, h)
 	if text.find("{f:") < 0:
 		return text
@@ -119,6 +121,7 @@ static func inline_formulas(text: String, h: int = 26) -> String:
 
 ## 去掉 {f:名称} 标记(用于朗读)，替换为可朗读的口播文案(而非笼统的「公式」)。
 static func strip_formulas(text: String) -> String:
+	text = _dollar_speech(text)
 	if text.find("{f:") < 0:
 		return text
 	if _inline_re == null:
@@ -132,6 +135,48 @@ static func strip_formulas(text: String) -> String:
 		last = m.get_end()
 	out += text.substr(last)
 	return out
+
+## A10：正文里的 $$LaTeX$$ 直接经 MicroTeX 渲染为内联公式图，无需 FORMULA_LATEX 命名。
+## 扩展未就绪(如无头 CI / 未打包)时回退为原始 LaTeX 文本(便于排查；正式包内自带扩展)。
+static func _inline_dollar(text: String, h: int) -> String:
+	if text.find("$$") < 0:
+		return text
+	_ensure_dollar_re()
+	var out := ""
+	var last := 0
+	for m in _dollar_re.search_all(text):
+		out += text.substr(last, m.get_start() - last)
+		out += _latex_bbcode(m.get_string(1), h)
+		last = m.get_end()
+	out += text.substr(last)
+	return out
+
+## $$LaTeX$$ 的口播文案(朗读用)。
+static func _dollar_speech(text: String) -> String:
+	if text.find("$$") < 0:
+		return text
+	_ensure_dollar_re()
+	var out := ""
+	var last := 0
+	for m in _dollar_re.search_all(text):
+		out += text.substr(last, m.get_start() - last)
+		out += _latex_to_speech(m.get_string(1))
+		last = m.get_end()
+	out += text.substr(last)
+	return out
+
+static func _ensure_dollar_re() -> void:
+	if _dollar_re == null:
+		_dollar_re = RegEx.new()
+		_dollar_re.compile("\\$\\$([^$]+)\\$\\$")
+
+## 单条 LaTeX → 内联 bbcode(优先 MicroTeX，失败回退原文)。
+static func _latex_bbcode(latex: String, h: int) -> String:
+	if _mt_ready():
+		var bb := _mt_inline_bbcode(latex, h, MT_COLOR)
+		if bb != "":
+			return bb
+	return latex
 
 ## {f:名称} → 口播文案：优先 FORMULA_SPEECH；否则用 FORMULA_LATEX 通用转换；再否则「公式」。
 static func _formula_speech(name: String) -> String:
@@ -165,6 +210,7 @@ static func _latex_to_speech(tex: String) -> String:
 		"\\div": "除以", "\\pm": "正负", "\\in": "属于", "\\sum": "求和",
 		"\\alpha": "阿尔法", "\\beta": "贝塔", "\\theta": "西塔", "\\pi": "派",
 		"\\Delta": "德尔塔", "\\lambda": "兰姆达",
+		">": "大于", "<": "小于",
 	}
 	for k in cmd:
 		t = t.replace(k, cmd[k])

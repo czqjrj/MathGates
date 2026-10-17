@@ -48,6 +48,8 @@ var _dup_stem := 0
 var _key_owner := {}
 var _inline_missing := {}
 var _inline_checked := 0
+## A10：剥离正文里的 $$LaTeX$$ 片段（已由运行时渲染，不再走 inline_math.json 覆盖检查）。
+var _dollar: RegEx
 ## 每个关卡数据 key 的题目数 / 所属文件（供 E2 的「每章关卡数/题数」看板）。
 var _group_q := {}
 var _group_file := {}
@@ -57,6 +59,8 @@ func _initialize() -> void:
 	_label_re.compile("^([0-9]+)[-.．]")
 	_cjk = RegEx.new()
 	_cjk.compile("[\\x{2e80}-\\x{303f}\\x{31c0}-\\x{9fff}\\x{f900}-\\x{faff}\\x{fe30}-\\x{fe4f}\\x{ff00}-\\x{ffef}]+")
+	_dollar = RegEx.new()
+	_dollar.compile("\\$\\$[^$]+\\$\\$")
 	# 触发 inline_math.json 加载（纯中文入参，不会触发 MicroTeX 渲染）
 	InlineMath.inline("预热", 24)
 
@@ -249,6 +253,8 @@ func _check_cross_file_dups() -> void:
 func _check_inline(path: String, key: String, field: String, t: String) -> void:
 	if t.strip_edges() == "":
 		return
+	if _dollar != null and t.find("$$") >= 0:
+		t = _dollar.sub(t, " ", true)
 	_inline_checked += 1
 	var last := 0
 	for m in _cjk.search_all(t):

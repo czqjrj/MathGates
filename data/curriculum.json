@@ -225,6 +225,42 @@
           "lab": "inequalities",
           "lab_ref": "ineq_basic",
           "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "ineq_props",
+          "name": "1-3 不等式的基本性质",
+          "technique": "不等式性质 · 作差法",
+          "archetype": "LAB",
+          "lab": "inequalities",
+          "lab_ref": "ineq_props",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "ineq_param",
+          "name": "1-4 含参一元二次不等式",
+          "technique": "含参讨论 · 恒成立",
+          "archetype": "LAB",
+          "lab": "inequalities",
+          "lab_ref": "ineq_param",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "ineq_apply",
+          "name": "1-5 基本不等式的应用",
+          "technique": "基本不等式 · 建模求最值",
+          "archetype": "LAB",
+          "lab": "inequalities",
+          "lab_ref": "ineq_apply",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "ineq_abs_frac",
+          "name": "1-6 绝对值与分式不等式",
+          "technique": "去绝对值 · 分式化整式",
+          "archetype": "LAB",
+          "lab": "inequalities",
+          "lab_ref": "ineq_abs_frac",
+          "scene": "res://scenes/LabStage.tscn"
         }
       ]
     },

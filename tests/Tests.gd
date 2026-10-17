@@ -35,6 +35,7 @@ func _run() -> void:
 	_test_daily()
 	_test_textbook()
 	_test_adventure()
+	_test_inline_math()
 	print("TESTS: %d passed, %d failed" % [_pass, _fail])
 	get_tree().quit(1 if _fail > 0 else 0)
 
@@ -620,3 +621,17 @@ func _test_adventure() -> void:
 	GameData.hint_tokens = saved_hint
 	GameData.coin_boost = saved_boost
 	GameData.current_user = saved_user
+
+func _test_inline_math() -> void:
+	# A10：$$...$$ 内联 LaTeX(无需 FORMULA_LATEX 命名)，且不残留 $$ 标记
+	var s := InlineMath.strip_formulas("当 $$x>0$$ 时")
+	_ok(s.find("$$") < 0, "strip_formulas 去掉 $$ 标记")
+	_ok(s.find("大于") >= 0, "strip_formulas 把 > 读作「大于」")
+	var f := InlineMath.strip_formulas("恒有 $$\\frac{1}{a}>\\frac{1}{b}$$")
+	_ok(f.find("$$") < 0, "strip 分式无 $$ 残留")
+	_ok(f.find("分之") >= 0, "strip 分式读作「分之」")
+	var r := InlineMath.inline_formulas("当 $$x>0$$ 时")
+	_ok(r.find("$$") < 0, "inline_formulas 去掉 $$ 标记")
+	_ok(r.find("[img=") >= 0 or r.find("x>0") >= 0, "$$ 渲染或回退")
+	# {f:名称} 老路径仍可用
+	_ok(InlineMath.inline_formulas("看 {f:pw_xge_a}").find("{f:") < 0, "{f:} 仍被替换")
