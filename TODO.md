@@ -25,7 +25,7 @@
 | **A1** | `SequenceStage` 迁移到 `StageBase` | **P0** | 不修则新功能永久双轨 |
 | **B1** | 题型单一：把 `interact/gate` 与填空题用起来 | **P0** | 决定产品定位 |
 | **B3** | 「探究→建构→迁移」名不副实 | **P0** | 教学设计核心 |
-| **B9** | 轮次标签编号错乱（纯编校，可脚本修） | **P0** | 成本最低、可立刻验证 |
+| **B9** | 轮次标签编号错乱（纯编校，可脚本修） | **P0** | ✅ 已完成（`fix_labels.gd`，错位归 0） |
 | **C1** | 重复通关无限刷经验/金币 | **P0** | 经济系统已被绕过 |
 | **C2** | 星级只升不降 + 免费重试 + 四选一 → 进度可刷 | **P0** | 与 C1 同批处理 |
 | **A5** | 关卡 JSON 校验器（schema + 编校） | **P0** | ✅ 已完成（`check_questions.gd` + 基线） |
@@ -706,7 +706,7 @@
 
 ---
 
-### [ ] B9 · 轮次标签编号错乱（P0，纯编校，可脚本修）
+### [x] B9 · 轮次标签编号错乱（P0，纯编校，可脚本修）
 
 **现状（证据）**——「轮次标签编号 == 关卡序号」的校验结果：
 
@@ -1503,10 +1503,10 @@
 > `& "<godot472.exe>" --headless --editor --path . --quit`。
 
 **当前回归基线**（改完请对照，数字只能升不能降）：
-`CHECKED 80 scripts, 0 failures` / `TESTS: 1220 passed, 0 failed` / `SMOKE: 238 ok, 0 fail` / `LabSmoke` 末尾 `TMP_OK` /
-`QUESTION-CHECK: 26 files / 222 levels / 712 questions / 0 new / 335 known`（A5 校验器，存量问题见下方基线）。
+`CHECKED 81 scripts, 0 failures` / `TESTS: 1220 passed, 0 failed` / `SMOKE: 238 ok, 0 fail` / `LabSmoke` 末尾 `TMP_OK` /
+`QUESTION-CHECK: 26 files / 222 levels / 712 questions / 0 new / 7 known`（A5 校验器，存量问题见下方基线）。
 
-- 校验器基线：`tools/check_questions_baseline.txt`（**335 条已知**：轮次编号错位 328、题干重复 7）。
+- 校验器基线：`tools/check_questions_baseline.txt`（**7 条已知**：题干重复 7；B9 轮次编号错位已归 0）。
 - CI：`.github/workflows/check.yml`（push/PR 跑上面五条；`gdextension/bin/` 不入库 → 顺带回归 PNG 回退不崩）。
 
 ### 9.2 本文件基线数字（改完请同步更新）
@@ -1516,7 +1516,7 @@
 - 题型分布：四选一 **752**，多选 **2**，`interact`/`gate` **4**。
 - 选项：图片选项 **180** 处（位于 54 道题）；`ans==0` **699/754（92.7%）**。
 - 探究轮 **230**，其中题面为陈述句 **221（96%）**。
-- 轮次标签编号错位 **约 260 处**（跨 9 个文件，见 B9 表）。
+- 轮次标签编号错位 **0 处**（B9 已修复：`tools/fix_labels.gd` 批量重编，规范 `<关卡序号>-<轮次> <阶段名>`）。
 - 资源体积：仓库 tracked 合计 **48.4MB**（`art/` 39.9MB：`.xcf` 源文件 9 个、标题字体 13.8MB）；
   APK（debug）**60.9MB**。见 A13。
 - 数据一致性：`curriculum` 关卡 228 / 关卡数据组 222，`lab_ref` 动态映射覆盖其余；

@@ -6,7 +6,7 @@
     "summary": "先拖动分界点看两段值域如何拼接，再总结「动态分段点」与「定段含参」的通法，最后迁移到变式。",
     "levels": [
       {
-        "name": "实验探究 · 拖动分界点",
+        "name": "1-1 实验探究 · 拖动分界点",
         "type": "explore",
         "goal": "拖动分界点 a，让左右两段的值域无缝拼成整个实数集 R。",
         "q": "左段 {f:pw_left}（{f:pw_xlt_a}），右段 {f:pw_right}（{f:pw_xge_a}）。拖动黄色分界点 a，观察两段值域（右侧色带）随 a 的变化，并尝试让它们恰好拼满 R。",
@@ -36,7 +36,7 @@
         }
       },
       {
-        "name": "建构知识 · 动态分段点",
+        "name": "1-2 建构知识 · 动态分段点",
         "type": "choice",
         "q": "已知 {f:pw_left}（{f:pw_xlt_a}），{f:pw_right}（{f:pw_xge_a}），其值域为 R，则 a 的取值范围是（ ）",
         "opts": ["{f:opt_pw_a}", "{f:opt_pw_b}", "{f:opt_pw_c}", "{f:opt_pw_d}"],
@@ -55,7 +55,7 @@
         }
       },
       {
-        "name": "迁移应用 · 定段含参",
+        "name": "1-3 迁移应用 · 定段含参",
         "type": "choice",
         "q": "（多选）已知 {f:pw2_left}（{f:pw_xlt_1}），{f:pw2_right}（{f:pw_xge_1}），且值域为 R，那么 a 的取值可以是（ ）",
         "opts": ["{f:av_0}", "{f:av_neg1}", "{f:av_1}", "{f:av_half}"],

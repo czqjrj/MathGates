@@ -35,7 +35,8 @@ art/             美术 PNG/WebP + 公式小图 + Android 图标 + 标题字体(
 audio/           音效 wav
 tools/           开发/测试脚本:check_all.gd(脚本检查)、check_questions.gd(内容校验器:
 				 结构/答案范围/选项与题干重复/轮次编号/公式覆盖 + 内容看板,含基线机制)、
-				 check_questions_baseline.txt(已知问题基线)、smoke_scene(全场景冒烟)、
+				 check_questions_baseline.txt(已知问题基线)、fix_labels.gd(轮次标签编号批量重编:
+				 预览/--apply,文本级替换保留排版)、smoke_scene(全场景冒烟)、
 				 capture_scene(截图)、dev_seq(单关调试)、
 				 lab3d_render_check(立体几何/空间向量 3D 场景渲染自检,需真实窗口)
 tests/           回归测试(GameData 纯逻辑)
