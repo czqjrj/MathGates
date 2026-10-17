@@ -1,0 +1,368 @@
+extends SceneTree
+## 内容校验器（TODO A5）。
+##
+## 把关卡数据与编校一致性做成可自动跑的检查，并把「内容看板」打出来。
+## 用法：
+##   godot --headless --path . --script res://tools/check_questions.gd
+##   godot --headless --path . --script res://tools/check_questions.gd -- --write-baseline
+##
+## 退出码：0 = 无「新问题」；1 = 存在不在基线内的新问题。
+##
+## 基线机制：历史遗留问题（如 B9 的轮次编号错位）记在
+##   res://tools/check_questions_baseline.txt
+## 里，逐行一条签名；这些记为「已知」，不阻塞 CI。修完后删掉对应行即可。
+## 全 AI 批量产内容时，这个机制让「新引入的错误」立刻红灯，而存量债不挡路。
+##
+## 覆盖的 TODO 条目：
+##   A5  结构 / ans 范围 / 选项重复 / 题干重复 / 轮次编号 / inline 覆盖
+##   A12 跨文件重名关卡数据
+##   B7  图片选项计数（看板）      B9  轮次标签编号错位（清单）
+##   B13 speak 口播字段计数（看板） D2  anim 演示覆盖率（看板）
+
+const DATA_DIR := "res://data"
+const BASELINE_PATH := "res://tools/check_questions_baseline.txt"
+
+## 含特殊数学符号的字符集（同 tools/check_inline.gd，用于过滤普通标点噪声）。
+const MATH_CHARS := "²³¹⁰⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉√·×÷±≤≥≠≈∞∈∉⊆⊇∪∩→←⇒⇔∀∃∠°Δαβγθλμπ∅"
+
+var _issues: Array[String] = []          ## "file|key|detail"
+var _known := {}                         ## 基线签名集合
+var _label_re: RegEx
+var _cjk: RegEx
+
+# ---- 看板统计
+var _n_files := 0
+var _n_levels := 0
+var _n_questions := 0
+var _n_choice := 0
+var _n_multi := 0
+var _n_interact := 0
+var _ans_hist := {}
+var _img_opt_count := 0
+var _img_opt_questions := 0
+var _anim_files := {}
+var _speak_count := 0
+var _num_mismatch := 0
+var _num_mismatch_files := {}
+var _dup_stem := 0
+var _key_owner := {}
+var _inline_missing := {}
+var _inline_checked := 0
+
+func _initialize() -> void:
+	_label_re = RegEx.new()
+	_label_re.compile("^([0-9]+)[-.．]")
+	_cjk = RegEx.new()
+	_cjk.compile("[\\x{2e80}-\\x{303f}\\x{31c0}-\\x{9fff}\\x{f900}-\\x{faff}\\x{fe30}-\\x{fe4f}\\x{ff00}-\\x{ffef}]+")
+	# 触发 inline_math.json 加载（纯中文入参，不会触发 MicroTeX 渲染）
+	InlineMath.inline("预热", 24)
+
+	_load_baseline()
+	for f in _level_files():
+		_check_file(f)
+	_check_cross_file_dups()
+	_report()
+
+# ---------------------------------------------------------------- 文件收集
+
+func _level_files() -> Array[String]:
+	var out: Array[String] = []
+	var d := DirAccess.open(DATA_DIR)
+	if d == null:
+		push_error("无法打开 " + DATA_DIR)
+		return out
+	for f in d.get_files():
+		if f.ends_with("_levels.json"):
+			out.append(DATA_DIR + "/" + f)
+	out.sort()
+	return out
+
+# ---------------------------------------------------------------- 单文件校验
+
+func _check_file(path: String) -> void:
+	var raw := FileAccess.get_file_as_string(path)
+	if raw == "":
+		_add(path, "*", "空文件或读取失败")
+		return
+	var data = JSON.parse_string(raw)
+	if typeof(data) != TYPE_DICTIONARY:
+		_add(path, "*", "顶层不是 JSON 对象（解析失败？）")
+		return
+	_n_files += 1
+	var group_no := 0
+	var stem_seen := {}
+	for key in data.keys():
+		group_no += 1
+		var k := str(key)
+		if not _key_owner.has(k):
+			_key_owner[k] = []
+		(_key_owner[k] as Array).append(path)
+		var g = data[key]
+		if typeof(g) != TYPE_DICTIONARY:
+			_add(path, k, "关卡不是对象")
+			continue
+		var lv = g.get("levels", null)
+		if typeof(lv) != TYPE_ARRAY or (lv as Array).is_empty():
+			_add(path, k, "缺少非空 levels 数组")
+			continue
+		_n_levels += 1
+		# 关卡级标题/综述也参与公式覆盖检查
+		_check_inline(path, k, "title", str((g as Dictionary).get("title", "")))
+		_check_inline(path, k, "summary", str((g as Dictionary).get("summary", "")))
+		var stages: Array = lv
+		for i in stages.size():
+			_check_stage(path, k, group_no, i, stages[i], stem_seen)
+
+func _check_stage(path: String, key: String, group_no: int, idx: int, s: Variant, stem_seen: Dictionary) -> void:
+	var where := "第 %d 轮" % (idx + 1)
+	if typeof(s) != TYPE_DICTIONARY:
+		_add(path, key, "%s 不是对象" % where)
+		return
+	var st: Dictionary = s
+	var is_interact := str(st.get("type", "")) == "interact" or st.has("gate") or st.has("answers")
+	var q := str(st.get("q", ""))
+	if q.strip_edges() == "" and not is_interact:
+		_add(path, key, "%s 缺少 q（且非 interact/gate 轮）" % where)
+	elif q.strip_edges() != "":
+		# 题干重复（同文件内）；确定性重复多为复制残留
+		var h := q.hash()
+		if stem_seen.has(h):
+			_dup_stem += 1
+			_add(path, key, "%s 题干与 %s 重复：%s" % [where, stem_seen[h], q.substr(0, 24)])
+		else:
+			stem_seen[h] = "%s/%s" % [key, where]
+
+	# ---- 选项 / 答案
+	var opts = st.get("opts", null)
+	if opts == null:
+		if is_interact:
+			_n_interact += 1
+		_check_inline(path, key, where + ".q", q)
+		_check_inline(path, key, where + ".ask", str(st.get("ask", "")))
+		_check_label(path, key, group_no, where, st)
+		_check_anim(path, st)
+		if st.has("speak"):
+			_speak_count += 1
+		return
+	if typeof(opts) != TYPE_ARRAY:
+		_add(path, key, "%s opts 不是数组" % where)
+		return
+	var arr: Array = opts
+	if arr.size() < 2:
+		_add(path, key, "%s 选项少于 2 个" % where)
+	_n_questions += 1
+	var ans = st.get("ans", null)
+	var multi := ans is Array
+	if multi:
+		_n_multi += 1
+	else:
+		_n_choice += 1
+		if ans != null:
+			var ai0 := int(ans)
+			_ans_hist[ai0] = int(_ans_hist.get(ai0, 0)) + 1
+	var seen := {}
+	var n_img_here := 0
+	for o in arr:
+		var t := str(o)
+		if seen.has(t):
+			_add(path, key, "%s 选项重复：%s" % [where, t.substr(0, 30)])
+		seen[t] = true
+		if t.begins_with("res://"):
+			_img_opt_count += 1
+			n_img_here += 1
+		else:
+			_check_inline(path, key, where + ".opt", t)
+	if n_img_here > 0:
+		_img_opt_questions += 1
+	# ans 合法性
+	if ans == null:
+		if not is_interact:
+			_add(path, key, "%s 有 opts 但缺 ans" % where)
+	elif ans is Array:
+		var seen_a := {}
+		for v in (ans as Array):
+			var ai := int(v)
+			if ai < 0 or ai >= arr.size():
+				_add(path, key, "%s ans 下标越界：%d（共 %d 项）" % [where, ai, arr.size()])
+			if seen_a.has(ai):
+				_add(path, key, "%s ans 下标重复：%d" % [where, ai])
+			seen_a[ai] = true
+	else:
+		var ai2 := int(ans)
+		if ai2 < 0 or ai2 >= arr.size():
+			_add(path, key, "%s ans 下标越界：%d（共 %d 项）" % [where, ai2, arr.size()])
+
+	_check_inline(path, key, where + ".q", q)
+	_check_inline(path, key, where + ".ask", str(st.get("ask", "")))
+	_check_inline(path, key, where + ".hint", str(st.get("hint", "")))
+	_check_inline(path, key, where + ".explain", str(st.get("explain", "")))
+	_check_inline(path, key, where + ".success", str(st.get("success", "")))
+	_check_inline(path, key, where + ".goal", str(st.get("goal", "")))
+	_check_inline(path, key, where + ".tip", str(st.get("tip", "")))
+	_check_label(path, key, group_no, where, st)
+	_check_anim(path, st)
+	if st.has("speak"):
+		_speak_count += 1
+
+## B9：轮次标签编号必须等于该关卡在本文件中的序号（如第 3 关的轮次应形如 "3-x"）。
+func _check_label(path: String, key: String, group_no: int, where: String, st: Dictionary) -> void:
+	var nm := str(st.get("name", ""))
+	if nm == "":
+		return
+	var m := _label_re.search(nm)
+	if m == null:
+		# 无编号前缀（如「实验一」「实验探究 · 描点连线」）同样视为错位（见 B9）。
+		_num_mismatch += 1
+		_num_mismatch_files[path] = true
+		_add(path, key, "%s 标签无编号前缀（应形如 %d-x）：%s" % [where, group_no, nm])
+		return
+	var n := int(m.get_string(1))
+	if n != group_no:
+		_num_mismatch += 1
+		_num_mismatch_files[path] = true
+		_add(path, key, "%s 标签编号 %d- 与关卡序号 %d 不符：%s" % [where, n, group_no, nm])
+
+func _check_anim(path: String, st: Dictionary) -> void:
+	if st.has("anim"):
+		_anim_files[path] = true
+		return
+	var sc = st.get("scene", null)
+	if typeof(sc) == TYPE_DICTIONARY and (sc as Dictionary).has("anim"):
+		_anim_files[path] = true
+
+# ---------------------------------------------------------------- 跨文件重名
+
+func _check_cross_file_dups() -> void:
+	for k in _key_owner.keys():
+		var owners: Array = _key_owner[k]
+		if owners.size() > 1:
+			_add("res://data/*_levels.json", str(k), "关卡数据 key 跨文件重复：%s" % ", ".join(owners))
+
+# ---------------------------------------------------------------- 公式覆盖
+
+func _check_inline(path: String, key: String, field: String, t: String) -> void:
+	if t.strip_edges() == "":
+		return
+	_inline_checked += 1
+	var last := 0
+	for m in _cjk.search_all(t):
+		_inline_piece(path, key, field, t.substr(last, m.get_start() - last))
+		last = m.get_end()
+	_inline_piece(path, key, field, t.substr(last))
+
+func _inline_piece(path: String, key: String, field: String, gap: String) -> void:
+	if gap.strip_edges() == "":
+		return
+	var core := InlineMath._inline_trim(gap)
+	if core == "":
+		return
+	if InlineMath._inline_math.has(core):
+		return
+	if not _has_math_char(core):
+		return
+	_inline_missing[core] = int(_inline_missing.get(core, 0)) + 1
+
+func _has_math_char(s: String) -> bool:
+	for i in s.length():
+		var c := s[i]
+		if c == "·":
+			var prev_ws := i == 0 or s[i - 1] == " "
+			var next_ws := i == s.length() - 1 or s[i + 1] == " "
+			if prev_ws or next_ws:
+				continue
+		if MATH_CHARS.find(c) >= 0:
+			return true
+	return false
+
+# ---------------------------------------------------------------- 问题收集 / 基线
+
+func _add(file: String, key: String, detail: String) -> void:
+	# detail 统一 strip：基线的逐行读取也做 strip，否则尾随空格会造成「永远不匹配」。
+	_issues.append("%s|%s|%s" % [file, key, detail.strip_edges()])
+
+func _load_baseline() -> void:
+	if not FileAccess.file_exists(BASELINE_PATH):
+		return
+	for line in FileAccess.get_file_as_string(BASELINE_PATH).split("\n"):
+		var t := line.strip_edges()
+		if t == "" or t.begins_with("#"):
+			continue
+		_known[t] = true
+
+func _write_baseline() -> void:
+	var uniq := {}
+	for i in _issues:
+		uniq[i] = true
+	var keys: Array = uniq.keys()
+	keys.sort()
+	var f := FileAccess.open(BASELINE_PATH, FileAccess.WRITE)
+	if f == null:
+		push_error("无法写入 " + BASELINE_PATH)
+		return
+	f.store_string("# 内容校验基线（TODO A5）：每行一条已知问题签名，修完请删行。\n")
+	f.store_string("# 生成：godot --headless --path . --script res://tools/check_questions.gd -- --write-baseline\n")
+	for k in keys:
+		f.store_string(str(k) + "\n")
+	f.close()
+	print("已写入基线 %d 条 -> %s" % [keys.size(), BASELINE_PATH])
+
+# ---------------------------------------------------------------- 报告
+
+func _report() -> void:
+	var write_baseline := OS.get_cmdline_user_args().has("--write-baseline")
+	if write_baseline:
+		_write_baseline()
+		quit(0)
+		return
+
+	var new_issues: Array[String] = []
+	var known_hits := 0
+	for i in _issues:
+		if _known.has(i):
+			known_hits += 1
+		else:
+			new_issues.append(i)
+
+	var warns: Array[String] = []
+	if _dup_stem > 0:
+		warns.append("题干重复 %d 处（warn）" % _dup_stem)
+	var ans0 := int(_ans_hist.get(0, 0))
+	if _n_choice > 0 and float(ans0) / float(_n_choice) > 0.35:
+		warns.append("ans==0 占 %d/%d（%.1f%%，偏高，见 B8）" % [ans0, _n_choice, 100.0 * float(ans0) / float(_n_choice)])
+	if _inline_missing.size() > 0:
+		warns.append("inline 公式未覆盖片段 %d 个（见 B7/A10；另见 tools/check_inline.gd）" % _inline_missing.size())
+
+	print("QUESTION-CHECK: %d files / %d levels / %d questions / %d new / %d known / %d warnings"
+		% [_n_files, _n_levels, _n_questions, new_issues.size(), known_hits, warns.size()])
+	print("[看板] 题型: 单选=%d 多选=%d interact=%d" % [_n_choice, _n_multi, _n_interact])
+	print("[看板] 选项: 图片 %d 处（%d 题）" % [_img_opt_count, _img_opt_questions])
+	print("[看板] ans 原始分布: 0=%d(%.1f%%) 1=%d 2=%d 3=%d"
+		% [ans0, (100.0 * float(ans0) / float(maxi(1, _n_choice))),
+			int(_ans_hist.get(1, 0)), int(_ans_hist.get(2, 0)), int(_ans_hist.get(3, 0))])
+	print("[看板] anim 演示覆盖: %d/%d 文件" % [_anim_files.size(), _n_files])
+	print("[看板] speak 口播字段: %d 处（见 B13）" % _speak_count)
+	print("[看板] 轮次编号错位: %d 处（%d 文件，见 B9）" % [_num_mismatch, _num_mismatch_files.size()])
+	if _inline_missing.size() > 0:
+		var tops: Array = _inline_missing.keys()
+		tops.sort_custom(func(a, b): return int(_inline_missing[a]) > int(_inline_missing[b]))
+		var show: Array[String] = []
+		for i in mini(10, tops.size()):
+			show.append("<%s>x%d" % [str(tops[i]), int(_inline_missing[tops[i]])])
+		print("[看板] inline 未覆盖 Top10: " + ", ".join(show))
+
+	for w in warns:
+		print("WARN: " + str(w))
+
+	if new_issues.is_empty():
+		print("OK: 无新增问题（已知问题 %d 条在基线内）" % known_hits)
+		quit(0)
+		return
+
+	print("")
+	print("新增问题 %d 条（前 40 条）：" % new_issues.size())
+	for i in mini(40, new_issues.size()):
+		print("  " + str(new_issues[i]))
+	if new_issues.size() > 40:
+		print("  ...还有 %d 条" % (new_issues.size() - 40))
+	print("提示：确认这些是历史遗留而非新引入时，可用 --write-baseline 记入基线。")
+	quit(1)
