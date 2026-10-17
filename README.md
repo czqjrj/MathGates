@@ -33,12 +33,31 @@ scripts/         总控与共享逻辑(按职责分目录)
 data/            课程表与题库 JSON(curriculum/questions + 各模块 *_levels.json)
 art/             美术 PNG/WebP + 公式小图 + Android 图标 + 标题字体(art/fonts/,放入行书 ttf 即自动启用)
 audio/           音效 wav
-tools/           开发/测试脚本:check_all.gd(脚本检查)、smoke_scene(全场景冒烟)、
+tools/           开发/测试脚本:check_all.gd(脚本检查)、check_questions.gd(内容校验器:
+				 结构/答案范围/选项与题干重复/轮次编号/公式覆盖 + 内容看板,含基线机制)、
+				 check_questions_baseline.txt(已知问题基线)、smoke_scene(全场景冒烟)、
 				 capture_scene(截图)、dev_seq(单关调试)、
 				 lab3d_render_check(立体几何/空间向量 3D 场景渲染自检,需真实窗口)
 tests/           回归测试(GameData 纯逻辑)
 build/           导出产物(APK,git 忽略)
 ```
+
+## 自检与 CI
+
+改完**必跑**（顺序任意，全绿才提交）：
+
+```
+& "<godot4.7.2.exe>" --headless --path . --script res://tools/check_all.gd
+& "<godot4.7.2.exe>" --headless --path . res://tests/Tests.tscn
+& "<godot4.7.2.exe>" --headless --path . res://tools/smoke_scene.tscn
+& "<godot4.7.2.exe>" --headless --path . res://tests/LabSmoke.tscn
+& "<godot4.7.2.exe>" --headless --path . --script res://tools/check_questions.gd
+```
+
+- `check_questions.gd`：有**新增**内容问题即退出码 1；存量问题记在
+  `tools/check_questions_baseline.txt`（修完删对应行）。
+  确认新问题是历史遗留而非本次引入时，可 `-- --write-baseline` 记入基线。
+- 以上五条已接入 CI（`.github/workflows/check.yml`，push/PR 自动跑）。
 
 ## 运行
 

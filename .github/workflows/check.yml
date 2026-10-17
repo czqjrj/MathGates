@@ -1,0 +1,70 @@
+name: checks
+
+# TODO A6：headless 四件套 + 内容校验器（A5）自动化。
+# 说明：`gdextension/bin/` 不在库里（见 .gitignore），CI 上 InlineMath 会走 PNG 回退路径——
+# 这是**预期行为**，正好顺带回归「扩展缺失时的降级不崩」。
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  GODOT_VERSION: "4.7.2"
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 下载 Godot ${{ env.GODOT_VERSION }}（headless）
+        run: |
+          set -euo pipefail
+          BASE="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable"
+          ZIP="Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          curl -fsSL -o godot.zip "$BASE/$ZIP"
+          unzip -q godot.zip
+          mv "Godot_v${GODOT_VERSION}-stable_linux.x86_64" godot
+          chmod +x godot
+          ./godot --version
+
+      - name: 导入资源（生成全局类缓存，必需；否则 class_name 连锁 Parse Error）
+        run: |
+          set -uo pipefail
+          ./godot --headless --path . --import || true
+          test -f .godot/global_script_class_cache.cfg \
+            || ./godot --headless --editor --path . --quit || true
+          test -f .godot/global_script_class_cache.cfg
+
+      # 每个检查：跑完把输出落盘，再断言期望行；失败即非零退出。
+      - name: check_all（脚本可加载）
+        run: |
+          set -euo pipefail
+          ./godot --headless --path . --script res://tools/check_all.gd 2>&1 | tee out.log
+          grep -Eq "CHECKED [0-9]+ scripts, 0 failures" out.log
+
+      - name: Tests（纯逻辑）
+        run: |
+          set -euo pipefail
+          ./godot --headless --path . res://tests/Tests.tscn 2>&1 | tee out.log
+          grep -Eq "TESTS: [0-9]+ passed, 0 failed" out.log
+
+      - name: smoke_scene（逐场景构建）
+        run: |
+          set -euo pipefail
+          ./godot --headless --path . res://tools/smoke_scene.tscn 2>&1 | tee out.log
+          grep -Eq "SMOKE: [0-9]+ ok, 0 fail" out.log
+
+      - name: LabSmoke（3D 关卡数据）
+        run: |
+          set -euo pipefail
+          ./godot --headless --path . res://tests/LabSmoke.tscn 2>&1 | tee out.log
+          grep -Eq "TMP_OK" out.log
+
+      - name: check_questions（内容校验器，A5）
+        run: |
+          set -euo pipefail
+          ./godot --headless --path . --script res://tools/check_questions.gd 2>&1 | tee out.log
+          grep -Eq "QUESTION-CHECK:" out.log
