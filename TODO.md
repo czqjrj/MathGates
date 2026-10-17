@@ -28,15 +28,15 @@
 | **B9** | 轮次标签编号错乱（纯编校，可脚本修） | **P0** | 成本最低、可立刻验证 |
 | **C1** | 重复通关无限刷经验/金币 | **P0** | 经济系统已被绕过 |
 | **C2** | 星级只升不降 + 免费重试 + 四选一 → 进度可刷 | **P0** | 与 C1 同批处理 |
-| **A5** | 关卡 JSON 校验器（schema + 编校） | **P0** | B9/C 类问题的自动化防线 |
+| **A5** | 关卡 JSON 校验器（schema + 编校） | **P0** | ✅ 已完成（`check_questions.gd` + 基线） |
 | **A10** | 公式来源单一化：新数据直接写 LaTeX | **P1** | 消除 824 条映射的隐性耦合 |
 | **A2** | 遗留模块（`SolidChallenge` / `ConicStage`+C1~C3）定策略 | **P1** | 决定继续删还是冻结 |
 | **A3** | `Battle.gd` 死代码处理 | **P1** | 614 行不再增长 |
-| **A6** | CI（headless 四件套自动化） | **P1** | 现有脚本已就绪，成本极低 |
+| **A6** | CI（headless 四件套自动化） | **P1** | ✅ 已完成（`.github/workflows/check.yml`） |
 | **A11** | UI/交互层缺自动化断言（测试只盖纯逻辑） | **P1** | A1/B 类改动目前只能靠人眼 |
 | **A12** | `questions.json` 变成第二份权威题库（与现行数据冲突） | **P1** | 数据层也有死代码 |
 | **A13** | 资源体积治理（`.xcf` 入库、13.8MB 字体、未排除） | **P1** | 仓库 48MB / APK 61MB |
-| **A14** | `export_presets.cfg` 残留第三方机器路径 | **P1** | 换机导出直接异常 |
+| **A14** | `export_presets.cfg` 残留第三方机器路径 | **P1** | ✅ 已完成（统一 `build/…`） |
 | **A15** | 元游戏内容硬编码在 `GameData.gd` | **P2** | 与「改内容只改 JSON」相悖 |
 | **A16** | 立几方法关内容在 GDScript（两套内容管线） | **P2** | ~1900 行代码当内容 |
 | **A17** | 数据文件命名易混（`conic`/`conics`、`vector`/`vectors`） | **P2** | 改错文件静默失效 |
@@ -50,9 +50,9 @@
 | **B7** | 图片选项回归 LaTeX 文本 | **P1** | 180 处图片选项 |
 | **B11** | 模块间质量方差过大 | **P1** | 同一品牌下深度差 3 倍 |
 | **A4** | 上帝对象拆分（`GameData`/`StageBase`/`TheoremTree`） | **P2** | 趁还能读懂 |
-| **A7** | 版本声明漂移（文档 vs `project.godot` vs GDExtension） | **P2** | 隐性风险 |
+| **A7** | 版本声明漂移（文档 vs `project.godot` vs GDExtension） | **P2** | ✅ 已完成（文档基线 + 版本策略已记录） |
 | **A8** | 「地图」隐喻套在清单结构上 | **P2** | 产品层，长期方向 |
-| **A9** | 工作区残留（`*.log` / `*.pck`） | **P2** | 仅本地整洁 |
+| **A9** | 工作区残留（`*.log` / `*.pck`） | **P2** | ✅ 已完成（已清理） |
 | **B8** | 正确项恒写在第 1 位（92.7%） | **P2** | 编校规范 |
 | **B10** | 题干套路化与重复 | **P2** | 编校质量 |
 | **B12** | 提示语泄露答案 | **P2** | 编校质量 |
@@ -219,7 +219,7 @@
 
 ---
 
-### [ ] A5 · 关卡 JSON 校验器（P0，B9/C 类的防线）
+### [x] A5 · 关卡 JSON 校验器（P0，B9/C 类的防线）
 
 **现状（证据）**
 - 现有校验只有 `tests/Tests.gd::_test_lab_data()` 里的**手抄 id 白名单**（每加一关必须手动补一行）。
@@ -242,7 +242,7 @@
 
 ---
 
-### [ ] A6 · CI（P1）
+### [x] A6 · CI（P1）
 
 **现状（证据）**
 - 仓库根目录**没有 `.github/`**；四件套只能手动跑（命令见第 9 节）。
@@ -260,7 +260,7 @@
 
 ---
 
-### [ ] A7 · 版本声明漂移（P2）
+### [x] A7 · 版本声明漂移（P2）
 
 **现状（证据，已核对）**
 - `project.godot` → `config/features=PackedStringArray("4.7", "GL Compatibility")`（本机引擎 4.7.2）。
@@ -296,7 +296,7 @@
 
 ---
 
-### [ ] A9 · 工作区残留清理（P2）
+### [x] A9 · 工作区残留清理（P2）
 
 **现状（证据）**
 - 仓库干净（`git status` 无未跟踪改动），但工作区根目录残留：
@@ -410,7 +410,7 @@
 
 ---
 
-### [ ] A14 · `export_presets.cfg` 残留第三方机器路径（P1）
+### [x] A14 · `export_presets.cfg` 残留第三方机器路径（P1）
 
 **现状（证据）**
 - `export_presets.cfg` 的 Windows 预设里有：
@@ -1491,7 +1491,7 @@
 | `--headless --path . res://tests/Tests.tscn` | `TESTS: <N> passed, 0 failed` |
 | `--headless --path . res://tools/smoke_scene.tscn` | `SMOKE: <N> ok, 0 fail` |
 | `--headless --path . res://tests/LabSmoke.tscn` | 末尾 `TMP_OK` |
-| `--headless --path . --script res://tools/check_questions.gd`（**新增，见 A5**） | `QUESTION-CHECK: … / 0 problems` |
+| `--headless --path . --script res://tools/check_questions.gd`（**已完成，见 A5**） | `QUESTION-CHECK: … / 0 new / 0 problems`（存量记基线） |
 | `--headless --path . res://tests/UiSmoke.tscn`（**新增，见 A11**） | `UI-SMOKE: … ok, 0 fail` |
 
 > 引擎：Godot 4.7.2（`D:\Program Files\Godot_v4.7.2-stable_win64.exe`）。该 exe 无 console 变体，
@@ -1503,7 +1503,11 @@
 > `& "<godot472.exe>" --headless --editor --path . --quit`。
 
 **当前回归基线**（改完请对照，数字只能升不能降）：
-`CHECKED 79 scripts, 0 failures` / `TESTS: 1220 passed, 0 failed` / `SMOKE: 238 ok, 0 fail` / `LabSmoke` 末尾 `TMP_OK`。
+`CHECKED 80 scripts, 0 failures` / `TESTS: 1220 passed, 0 failed` / `SMOKE: 238 ok, 0 fail` / `LabSmoke` 末尾 `TMP_OK` /
+`QUESTION-CHECK: 26 files / 222 levels / 712 questions / 0 new / 335 known`（A5 校验器，存量问题见下方基线）。
+
+- 校验器基线：`tools/check_questions_baseline.txt`（**335 条已知**：轮次编号错位 328、题干重复 7）。
+- CI：`.github/workflows/check.yml`（push/PR 跑上面五条；`gdextension/bin/` 不入库 → 顺带回归 PNG 回退不崩）。
 
 ### 9.2 本文件基线数字（改完请同步更新）
 
