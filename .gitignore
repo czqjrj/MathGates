@@ -7,6 +7,11 @@ android/
 *.apk
 *.idsig
 
+# 发布签名密钥（F2）：绝不入库；口令走本地未提交配置
+keystore/
+*.keystore
+*.jks
+
 # 导出二进制
 *.exe
 *.pck
