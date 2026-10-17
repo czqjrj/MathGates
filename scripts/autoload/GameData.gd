@@ -693,8 +693,12 @@ func _eval_medals(notify: bool = true) -> void:
 
 # ---------------------------------------------------------------- 修改
 func grant_stars(level_id: String, n: int) -> void:
-	stars[level_id] = maxi(int(stars.get(level_id, 0)), n)
-	player_exp += 10 * n
+	var prev := int(stars.get(level_id, 0))
+	var best := maxi(prev, n)
+	stars[level_id] = best
+	# C1：经验只在星级提升时发放——重复通关不再无限刷经验。
+	if best > prev:
+		player_exp += 10 * (best - prev)
 	_eval_mastery()
 	_eval_medals()
 	_save()
@@ -759,6 +763,60 @@ func add_exp(n: int) -> void:
 	player_exp += n
 	_save()
 	progress_changed.emit()
+
+# ---------------------------------------------------------------- 关卡结算与防刷（TODO C1/C2）
+const REPEAT_REWARD_RATE := 0.3        ## 重复通关(未刷新星级)的奖励折扣
+const REPEAT_PAID_PER_DAY := 3         ## 同一关每日最多计几次「重复奖励」，之后为 0
+const STAR_CAP_ATTEMPTS_PER_DAY := 3   ## 同一关当日第几次尝试起降级星级上限
+const STAR_CAP_REPEAT := 2             ## 上述情况下的星级上限
+
+## 本关今日已尝试次数（旧存档无字段按 0，跨天自动归零）。
+func attempts_today(level_id: String) -> int:
+	if level_id == "":
+		return 0
+	var r: Dictionary = level_records.get(level_id, {})
+	if str(r.get("attempt_date", "")) != _today():
+		return 0
+	return int(r.get("attempts_today", 0))
+
+## 本次尝试的星级上限（C2：当日多次重试不再能靠盲猜刷满三星）。
+func star_cap_for_attempt(level_id: String) -> int:
+	if level_id == "":
+		return 3
+	return STAR_CAP_REPEAT if attempts_today(level_id) >= STAR_CAP_ATTEMPTS_PER_DAY else 3
+
+## 通关结算收口（C1/C2）：星级/经验/金币/记录一处处理。
+## 规则：首次达成某星级 → 全额奖励；重复通关 → 折扣(×0.3)且每日最多 REPEAT_PAID_PER_DAY 次。
+## 内部会调用 record_level_result（顺带累加当日尝试数），返回 { granted, full }。
+func settle_level(level_id: String, level_stars: int, clean: int, total: int, trap_missed: bool, base_reward: int) -> Dictionary:
+	if level_id == "":
+		var g0 := maxi(0, base_reward)
+		add_coins(g0)
+		return { "granted": g0, "full": true }
+	var prev_best := int(level_records.get(level_id, {}).get("best_stars", 0))
+	var full := level_stars > prev_best
+	grant_stars(level_id, level_stars)
+	var granted := 0
+	if full:
+		granted = maxi(0, base_reward)
+	else:
+		var r: Dictionary = level_records.get(level_id, {})
+		var today := _today()
+		if str(r.get("paid_date", "")) != today:
+			r["paid_date"] = today
+			r["paid_today"] = 0
+		if int(r.get("paid_today", 0)) < REPEAT_PAID_PER_DAY:
+			granted = int(floor(float(maxi(0, base_reward)) * REPEAT_REWARD_RATE))
+			r["paid_today"] = int(r.get("paid_today", 0)) + 1
+		level_records[level_id] = r
+	if granted > 0:
+		coins += granted
+		coins_earned += granted
+	record_level_result(level_id, level_stars, clean, total, trap_missed)
+	_eval_medals()
+	_save()
+	progress_changed.emit()
+	return { "granted": granted, "full": full }
 
 # ---------------------------------------------------------------- 收集商店
 func has_avatar(id: String) -> bool:
@@ -1180,6 +1238,12 @@ func record_level_result(level_id: String, level_stars: int, clean: int, total: 
 	r["last_clean"] = clean
 	r["last_total"] = total
 	r["trap_missed"] = trap_missed
+	# C2：当日尝试次数（跨天归零），供星级上限与重复奖励判定使用。
+	var today := _today()
+	if str(r.get("attempt_date", "")) != today:
+		r["attempt_date"] = today
+		r["attempts_today"] = 0
+	r["attempts_today"] = int(r.get("attempts_today", 0)) + 1
 	level_records[level_id] = r
 	_eval_mastery()
 	_eval_medals()

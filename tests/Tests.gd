@@ -30,6 +30,7 @@ func _run() -> void:
 	_test_focus()
 	_test_accuracy()
 	_test_economy()
+	_test_anti_farm()
 	_test_daily()
 	_test_textbook()
 	_test_adventure()
@@ -342,6 +343,64 @@ func _test_economy() -> void:
 	GameData.coin_boost = s_boost
 	GameData.last_login_date = s_date
 	GameData.login_streak = s_lstreak
+	GameData.current_user = saved_user
+
+## C1/C2：重复通关不再无限刷经验/金币；当日重试降级星级上限。
+func _test_anti_farm() -> void:
+	var saved_user := GameData.current_user
+	var s_stars: Dictionary = GameData.stars.duplicate(true)
+	var s_records: Dictionary = GameData.level_records.duplicate(true)
+	var s_exp := GameData.player_exp
+	var s_coins := GameData.coins
+	var s_earned := GameData.coins_earned
+	GameData.current_user = ""   # 阻止测试触碰真实存档
+
+	var lid := "__farm_test__"
+	GameData.stars.erase(lid)
+	GameData.level_records.erase(lid)
+	GameData.player_exp = 0
+	GameData.coins = 0
+	GameData.coins_earned = 0
+
+	# 首次三星：全额 + 经验 30
+	var r0 := GameData.settle_level(lid, 3, 3, 3, false, 100)
+	_eq(int(r0["granted"]), 100, "first clear full reward")
+	_ok(bool(r0["full"]), "first clear full flag")
+	_eq(GameData.player_exp, 30, "first clear exp += 30")
+	_eq(GameData.coins, 100, "first clear coins += 100")
+
+	# 重复通关：折扣 ×0.3，每日最多 3 次；经验不再增长
+	var got: Array = []
+	for i in 5:
+		got.append(int(GameData.settle_level(lid, 3, 3, 3, false, 100)["granted"]))
+	_eq(got, [30, 30, 30, 0, 0], "repeat rewards discounted & capped per day")
+	_eq(GameData.player_exp, 30, "repeat clear gives no exp")
+	_eq(GameData.coins, 190, "repeat coins converge")
+
+	# 当日尝试数 >= 3 → 星级上限降为 2（盲猜无法刷满三星）
+	_eq(GameData.attempts_today(lid), 6, "attempts_today accumulates")
+	_eq(GameData.star_cap_for_attempt(lid), 2, "star cap drops to 2 on 3rd+ daily attempt")
+
+	# 跨天归零（模拟：把 attempt_date 改到过去）
+	GameData.level_records[lid]["attempt_date"] = "1970-01-01"
+	_eq(GameData.attempts_today(lid), 0, "attempts_today resets on new day")
+	_eq(GameData.star_cap_for_attempt(lid), 3, "star cap restored next day")
+
+	# grant_stars 只在星级提升时给经验
+	GameData.stars[lid] = 3
+	var exp_before := GameData.player_exp
+	GameData.grant_stars(lid, 2)
+	_eq(GameData.player_exp, exp_before, "lower stars gives no exp")
+	GameData.stars[lid] = 1
+	GameData.grant_stars(lid, 2)
+	_eq(GameData.player_exp, exp_before + 10, "star improvement gives delta exp")
+
+	# 还原
+	GameData.stars = s_stars
+	GameData.level_records = s_records
+	GameData.player_exp = s_exp
+	GameData.coins = s_coins
+	GameData.coins_earned = s_earned
 	GameData.current_user = saved_user
 
 func _test_daily() -> void:

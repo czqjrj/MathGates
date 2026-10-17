@@ -730,20 +730,20 @@ func _finish() -> void:
 		if st > 1:
 			st -= 1
 		_time_capped = true
+	var star_capped := false
 	if _boss_failed:
 		st = 0
 	var lv0 := GameData.player_level()
 	var lid := GameData.current_level_id()
+	# C2 · 当日重试降级：同一关当天第 3 次尝试起，星级上限降为 2（抑制盲猜刷三星）。
+	if lid != "" and st > 0:
+		var cap := GameData.star_cap_for_attempt(lid)
+		if st > cap:
+			st = cap
+			star_capped = true
 	var prev_best := int(GameData.level_records.get(lid, {}).get("best_stars", 0)) if lid != "" else 0
 	# P2 · 读取历史最快用时(在写入前)，用于结算展示与「新速度纪录」判定。
 	_prev_best_time = GameData.best_time_of(lid) if (lid != "" and _timing) else 0.0
-	if lid != "":
-		GameData.grant_stars(lid, st)
-		GameData.record_level_result(lid, st, clean, total, _trap_missed)
-	if _timing and lid != "" and st > 0:
-		_new_time_rec = _prev_best_time <= 0.0 or _elapsed < _prev_best_time
-		GameData.record_level_time(lid, _elapsed)
-	var lv1 := GameData.player_level()
 	var reward := 30 + clean * 15 + st * 20
 	if st >= 3:
 		reward += 60
@@ -769,7 +769,19 @@ func _finish() -> void:
 		reward *= 2
 	if _max_streak > GameData.best_streak:
 		GameData.best_streak = _max_streak
-	GameData.add_coins(reward)
+	# C1/C2 · 星级/经验/金币/记录收口结算：首次达成给全额，重复通关给折扣且每日封顶。
+	var granted := reward
+	var repeat_discounted := false
+	if lid != "":
+		var settle := GameData.settle_level(lid, st, clean, total, _trap_missed, reward)
+		granted = int(settle.get("granted", reward))
+		repeat_discounted = not bool(settle.get("full", true))
+	else:
+		GameData.add_coins(reward)
+	if _timing and lid != "" and st > 0:
+		_new_time_rec = _prev_best_time <= 0.0 or _elapsed < _prev_best_time
+		GameData.record_level_time(lid, _elapsed)
+	var lv1 := GameData.player_level()
 	_update_hud()
 
 	var pct := int(round(ratio * 100.0))
@@ -813,10 +825,17 @@ func _finish() -> void:
 		score_txt += "   ·   新纪录！"
 	if boosted:
 		score_txt += "   ·   双倍金币"
+	if star_capped:
+		score_txt += "   ·   今日重试：星级上限 %d" % GameData.STAR_CAP_REPEAT
+	if repeat_discounted:
+		score_txt += "   ·   重复通关奖励 ×%.1f" % GameData.REPEAT_REWARD_RATE
 	if first_clear:
 		score_txt += "   ·   首通奖励 +%d" % _boss_first_clear_coins()
 	_v_score.text = score_txt
 	_v_guide.text = _next_star_hint(st, clean, total)
+	if star_capped:
+		var cap_txt := "今日重试：本关上星上限 %d 星" % GameData.STAR_CAP_REPEAT
+		_v_guide.text = cap_txt if _v_guide.text == "" else _v_guide.text + "  ·  " + cap_txt
 	_v_guide.visible = _v_guide.text != ""
 	for c in _v_star_row.get_children():
 		_v_star_row.remove_child(c)
@@ -864,10 +883,10 @@ func _finish() -> void:
 			return
 		Vfx.celebrate(_ui, Vfx.center_of(_victory, _ui.size * 0.5), UI.COL_ACCENT)
 		Vfx.coin_fly(_ui, Vfx.center_of(_victory, _ui.size * 0.5), Vfx.center_of(_coins, Vector2(_ui.size.x - 120.0, 30.0)), 12))
-	tc.tween_method(func(v: float) -> void: _v_coins.text = "金币  +%d" % int(v), 0.0, float(reward), 0.9).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tc.tween_method(func(v: float) -> void: _v_coins.text = "金币  +%d" % int(v), 0.0, float(granted), 0.9).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tc.tween_callback(func() -> void:
 		if is_instance_valid(_v_coins):
-			_v_coins.text = "金币  +%d      (共 %d)" % [reward, GameData.coins])
+			_v_coins.text = "金币  +%d      (共 %d)" % [granted, GameData.coins])
 
 func _show_feed(msg: String, col: Color) -> void:
 	if _feed == null:

@@ -26,8 +26,8 @@
 | **B1** | 题型单一：把 `interact/gate` 与填空题用起来 | **P0** | 决定产品定位 |
 | **B3** | 「探究→建构→迁移」名不副实 | **P0** | 教学设计核心 |
 | **B9** | 轮次标签编号错乱（纯编校，可脚本修） | **P0** | ✅ 已完成（`fix_labels.gd`，错位归 0） |
-| **C1** | 重复通关无限刷经验/金币 | **P0** | 经济系统已被绕过 |
-| **C2** | 星级只升不降 + 免费重试 + 四选一 → 进度可刷 | **P0** | 与 C1 同批处理 |
+| **C1** | 重复通关无限刷经验/金币 | **P0** | ✅ 已完成（经验仅星升；重复奖励×0.3/日封顶） |
+| **C2** | 星级只升不降 + 免费重试 + 四选一 → 进度可刷 | **P0** | ✅ 已完成（当日第 3 次起星级上限 2） |
 | **A5** | 关卡 JSON 校验器（schema + 编校） | **P0** | ✅ 已完成（`check_questions.gd` + 基线） |
 | **A10** | 公式来源单一化：新数据直接写 LaTeX | **P1** | 消除 824 条映射的隐性耦合 |
 | **A2** | 遗留模块（`SolidChallenge` / `ConicStage`+C1~C3）定策略 | **P1** | 决定继续删还是冻结 |
@@ -818,7 +818,7 @@
 
 ## 3. C 类 · 防刷与经济（跨 A/B）
 
-### [ ] C1 · 重复通关无限刷经验/金币（P0）
+### [x] C1 · 重复通关无限刷经验/金币（P0）
 
 **现状（证据）**
 - `scripts/screens/StageBase.gd::_finish`（第 713 行起）每次结算都无条件调用：
@@ -841,7 +841,7 @@
 
 ---
 
-### [ ] C2 · 星级只升不降 + 免费重试 + 四选一 → 全进度可刷（P0）
+### [x] C2 · 星级只升不降 + 免费重试 + 四选一 → 全进度可刷（P0）
 
 **现状（证据）**
 - `grant_stars` 取 `max`（只升不降）；`_wrong()`（第 562 行起）只是 `_wrongs += 1` 并公布答案，
@@ -1503,7 +1503,7 @@
 > `& "<godot472.exe>" --headless --editor --path . --quit`。
 
 **当前回归基线**（改完请对照，数字只能升不能降）：
-`CHECKED 81 scripts, 0 failures` / `TESTS: 1220 passed, 0 failed` / `SMOKE: 238 ok, 0 fail` / `LabSmoke` 末尾 `TMP_OK` /
+`CHECKED 81 scripts, 0 failures` / `TESTS: 1233 passed, 0 failed` / `SMOKE: 238 ok, 0 fail` / `LabSmoke` 末尾 `TMP_OK` /
 `QUESTION-CHECK: 26 files / 222 levels / 712 questions / 0 new / 7 known`（A5 校验器，存量问题见下方基线）。
 
 - 校验器基线：`tools/check_questions_baseline.txt`（**7 条已知**：题干重复 7；B9 轮次编号错位已归 0）。
@@ -1525,7 +1525,8 @@
 - 动效：`anim` 演示字段只出现在 **1/26** 个关卡文件（`solid_basic_levels.json`，27 处 / 12 关）；
   `Lab3DView.play_anim` 支持 7 种步骤（`highlight` 50 / `view` 38 / `reveal` 25 / `a` 22 / `vars` 21 / `rotate` 7 / `pulse` 4）；
   2D 侧无 `anim` 能力、滑块重绘无补间；`tween_property` 裸时长 **44 处**。见 D1~D4。
-- 经济：`grant_stars` 每次 `+10n` 经验；`add_coins` 每次发全额。
+- 经济（C1/C2 已修复）：`grant_stars` 经验仅随星级提升发放；`settle_level` 首达全额、重复通关 ×0.3 且每日最多 3 次；
+  同一关当日第 3 次尝试起星级上限降为 2（`Tests._test_anti_farm` 覆盖）。
 
 ### 9.3 审计数据的复现方法
 
