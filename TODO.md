@@ -72,7 +72,7 @@
 | **F4** | 桌面端键盘操作（主流程完全缺失） | **P1** | 已发布 Windows 版 |
 | **F5** | 存档版本化与进度迁移（换机即丢） | **P2** | 无导出/导入 |
 | **F6** | 首次引导与机制说明 | **P2** | 无 tutorial |
-| **F7** | 授权与第三方声明缺失（LICENSE / 素材来源 / 教材改编） | **P0** | 上架与开源前必做 |
+| **F7** | 授权与第三方声明缺失（LICENSE / 素材来源 / 教材改编） | **P0** | ✅ LICENSE+第三方声明齐备、排除 GPLv3 字体；残留：标题字体替换/素材签字 |
 | **G1** | 错题间隔重复（SRS 遗忘曲线排程） | **P1** | review_order 无时间维度 |
 | **G2** | 关卡作者工具链（编辑器 + 实时预览） | **P1** | E 类补内容的最大瓶颈 |
 | **G3** | 学习报告 / 家长视图（可导出、含趋势） | **P2** | 无导出、无时间维度 |
@@ -1354,6 +1354,27 @@
 - README 有"内容与教材的关系"说明（知识点对齐，非题目改编）；
 - 上架检查清单包含此项。
 
+**已实施（记录）**
+- 新增根 **`LICENSE`**（专有/保留所有权利）与 **`THIRD_PARTY_LICENSES.md`**（Godot、MicroTeX 的 MIT 全文）。
+- 新增 **`THIRD_PARTY_NOTICES.md`**：逐项列出 Godot/MicroTeX/godot-cpp（组件）与全部随包字体
+  （CM=Knuth、AMS Euler/Symbols=OFL、dsrom=宽许可）、美术/音效，标注许可与来源，含上架检查清单。
+- **发现并排除 GPLv3 字体**：上游 MicroTeX 的 `res/greek`、`res/cyrillic` 随附完整 GPLv3（与专有发布冲突）。
+  已 `git rm` 这两个目录 + 在 `tools/pack_math_res.gd` 加 `EXCLUDE_DIRS` 兜底 + 更新 `RES_README`；
+  `res.bin` 652 KB/78 项 → 297 KB/36 文件（顺带缓解 A13）。
+- **渲染复验**（dev 模式直接用 `gdextension/res/`，已清 `%TEMP%\mathtex_res` 缓存）：
+  `MT_READY=true`、`VERIFY_TABLE: total=3904 fail=0`；五件套全绿。
+- 新增 **`art/SOURCES.md`**、**`audio/SOURCES.md`**（逐项来源/授权，待项目组确认签字）。
+- README 增「内容与教材的关系」（**知识点对齐教材、题面自编**）与「授权与第三方声明」两节。
+- 全仓核实：**唯一**网络访问为可选在线 TTS（与 F1 一致，无埋点/广告/账号）。
+
+**残留（需决策/采购，见 `THIRD_PARTY_NOTICES.md` §6）**
+- ❌ **标题字体 `art/fonts/aidianqianfengxingshu.ttf`（13.8 MB）授权不可核实** → 上架前**必须替换**为
+  OFL 字体（推荐霞鹜文楷/得意黑），并顺手解决 A13；
+- ⚠️ `rsfs10`/`stmary10` 上游无单独许可文件，待核或替换；
+- ⚠️ `art/`（除公式生成物）与 `audio/*.wav` 的来源需项目组签字确认（`SOURCES.md`）；
+- ⚠️ 仓库有公开 remote（`github.com:czqjrj/MathGates`）：若维持公开，请确认"专有授权"与"公开可见"是否冲突
+  （或转为私有仓库）。
+
 ---
 
 ## 7. G 类 · 产品演进（增强，非缺陷）
@@ -1535,6 +1556,7 @@
 | `--headless --path . res://tests/LabSmoke.tscn` | 末尾 `TMP_OK` |
 | `--headless --path . --script res://tools/check_questions.gd`（**已完成，见 A5**） | `QUESTION-CHECK: … / 0 new / 0 problems`（存量记基线） |
 | `--headless --path . res://tests/UiSmoke.tscn`（**新增，见 A11**） | `UI-SMOKE: … ok, 0 fail` |
+| `--headless --path . --script res://tools/verify_inline.gd` | 末尾 `VERIFY_TABLE: total=<N> fail=0`（MicroTeX 渲染复验，改动 `res/` 或字体后必跑） |
 
 > 引擎：Godot 4.7.2（`D:\Program Files\Godot_v4.7.2-stable_win64.exe`）。该 exe 无 console 变体，
 > 无头运行需 `Start-Process -Wait -RedirectStandardOutput/Error` 重定向取输出（GUI 子系统进程直连控制台会丢输出）。

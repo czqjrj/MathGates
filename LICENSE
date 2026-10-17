@@ -1,0 +1,28 @@
+衍数阁 / MathGates
+Copyright (c) 2026 衍数阁（MathGates）项目组。保留所有权利。
+All rights reserved.
+
+本软件及其源代码、美术素材、题库内容均为著作权人所有，采用「专有（Proprietary）」
+授权：未经著作权人事先书面许可，任何人不得复制、修改、再分发、再许可、公开展示、
+或以任何形式用于商业用途（含但不限于上架应用商店、作为服务提供、二次销售）。
+
+This software and its source code, artwork and question content are proprietary and
+confidential. All rights are reserved by the copyright holder. No part of this software
+may be copied, modified, redistributed, sublicensed, publicly displayed, or used
+commercially in any form without the prior written permission of the copyright holder.
+
+允许的用途 / Permitted use:
+- 你可以在个人设备上安装并运行本项目构建出的应用；
+- 你可以在未修改、未再分发的前提下，为本项目提交问题反馈。
+
+例外 / Exceptions:
+- 第三方组件（引擎、数学排版库、字体等）按其各自许可分发，详见
+  `THIRD_PARTY_NOTICES.md`；这些组件不受本许可约束。
+- 目录 `third_party/`、`gdextension/bin/` 等依赖与二进制**不随仓库分发**（见 `.gitignore`）。
+
+免责声明 / Disclaimer:
+本软件按「现状」提供，不附带任何明示或默示担保，包括但不限于对适销性、特定用途
+适用性及不侵权的担保。在任何情况下，著作权人均不对任何索赔、损害或其他责任负责。
+
+如需商业授权，请联系著作权人。
+For commercial licensing, please contact the copyright holder.

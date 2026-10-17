@@ -7,6 +7,11 @@ extends SceneTree
 const SRC_DIR := "res://gdextension/res"
 const OUT_ZIP := "res://gdextension/res.bin"
 
+## 打包时排除的目录（F7）：greek/ 与 cyrillic/ 的字体随上游 MicroTeX 附带 GPLv3 许可，
+## 与本项目「专有发布」不兼容；本应用只做中文+数学排版，数学希腊字母来自 base/cmmi10 等字体，
+## 不依赖这两个目录（全仓源码亦无任何引用）。排除后 APK 更小、许可更干净。
+const EXCLUDE_DIRS := ["greek", "cyrillic"]
+
 func _initialize() -> void:
 	var packer := ZIPPacker.new()
 	var err := packer.open(OUT_ZIP)
@@ -30,7 +35,8 @@ func _add_dir(packer: ZIPPacker, dir_path: String, prefix: String) -> int:
 		var full := dir_path.path_join(name)
 		var rel := name if prefix == "" else prefix + "/" + name
 		if d.current_is_dir():
-			n += _add_dir(packer, full, rel)
+			if not (name in EXCLUDE_DIRS):
+				n += _add_dir(packer, full, rel)
 		elif not name.ends_with(".import") and name != ".gdignore":
 			packer.start_file(rel)
 			packer.write_file(FileAccess.get_file_as_bytes(full))

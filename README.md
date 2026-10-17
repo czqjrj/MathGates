@@ -37,6 +37,8 @@ tools/           开发/测试脚本:check_all.gd(脚本检查)、check_question
 				 结构/答案范围/选项与题干重复/轮次编号/公式覆盖 + 内容看板,含基线机制)、
 				 check_questions_baseline.txt(已知问题基线)、fix_labels.gd(轮次标签编号批量重编:
 				 预览/--apply,文本级替换保留排版)、smoke_scene(全场景冒烟)、
+				 pack_math_res(把 gdextension/res 打包为 res.bin,排除 GPLv3 字体)、
+				 bump_version(F2 发版:一处改版本,多预设同步)、
 				 capture_scene(截图)、dev_seq(单关调试)、
 				 lab3d_render_check(立体几何/空间向量 3D 场景渲染自检,需真实窗口)
 tests/           回归测试(GameData 纯逻辑)
@@ -94,3 +96,30 @@ build/           导出产物(APK,git 忽略)
 - 通用题库:`data/questions.json`;各模块关卡:`data/*_levels.json`。几何类章节(圆/椭圆/向量/直线)已统一为 `lab` 三阶段格式,对应 `circle_levels.json / ellipse_levels.json / vector_levels.json / line_levels.json`,场景统一为 `res://scenes/LabStage.tscn`
 - 立体几何 / 空间向量章节已统一为 `lab3d` 三阶段真实 3D 格式,对应 `solid_basic_levels.json`(立体几何初步,含「基本事实(公理)」旗舰关 `solid_axiom`)与 `space_levels.json`(空间向量与立体几何),场景统一为 `res://scenes/Lab3DStage.tscn`。3D 场景描述见 `scripts/modules/lab3d/SolidBuilder.gd`
 - 立体几何方法讲解:`data/solid_methods.json` + `scripts/modules/solid/topics/*.gd`
+
+## 内容与教材的关系
+
+- 本项目的**课程结构**（分册、章节、顺序）对齐人教A/苏教等人教版教材的**知识点顺序**，便于按教材体系复习；
+- **题目均为自编**（题干、选项、解析由项目组撰写），**不逐题复制教材习题**；
+- 教材名称与章节名为客观指代，相关著作权归各出版社所有，本项目与出版社无隶属关系。
+  详见 `THIRD_PARTY_NOTICES.md` §5。
+
+## 授权与第三方声明
+
+- 项目自身授权：**专有（保留所有权利）**，见根目录 `LICENSE`；
+- 第三方组件与素材清单：`THIRD_PARTY_NOTICES.md`；
+- 第三方许可全文（Godot / MicroTeX 的 MIT）：`THIRD_PARTY_LICENSES.md`；
+- 美术素材来源：`art/SOURCES.md`；音效来源：`audio/SOURCES.md`；
+- 隐私政策：`docs/隐私政策.md`（唯一联网功能=可选的在线语音朗读，默认关闭）。
+
+> 待处理（上架前必做）：替换授权不明的标题字体 `art/fonts/aidianqianfengxingshu.ttf`（13.8 MB，见 A13/F7）。
+
+## 发版
+
+版本号一处修改、多预设同步（`version/code`、`version/name` 与 Windows 的 `file/product_version`）：
+
+```
+& "<godot4.7.2.exe>" --headless --path . --script res://tools/bump_version.gd -- --bump patch
+```
+
+发布签名（release keystore，密钥不入库）与 Android 上架要点见 `docs/环境配置.md` §6.1。
