@@ -66,8 +66,8 @@
 | **E3** | 补全 15 个整块缺失的教材必学知识点 | **P1** | 数学归纳法等完全没有 |
 | **E4** | 方法章/专题章过薄且与知识章脱节 | **P2** | function_methods 仅 1 关 |
 | **E5** | 与 6 版教材对齐的持续核对流程 | **P1** | 换版本只改排序不改覆盖 |
-| **F1** | 在线 TTS 的合规与稳定性（外发题目文本） | **P0** | 上架前必做 |
-| **F2** | 发布准备（包名/版本/签名/targetSdk） | **P0** | 当前无 release 签名 |
+| **F1** | 在线 TTS 的合规与稳定性（外发题目文本） | **P0** | ✅ 客户端策略完成（默认关闭+明示同意+隐私政策）；官方 API/商店表单并入 F2 |
+| **F2** | 发布准备（包名/版本/签名/targetSdk） | **P0** | ✅ 包名=cn.edu.mathgates、版本脚本、targetSdk35、签名位就绪；残留 keystore/真机 |
 | **F3** | 性能与耗电（3D 每帧渲染、背景常驻重绘） | **P1** | 静止时无信息增量 |
 | **F4** | 桌面端键盘操作（主流程完全缺失） | **P1** | 已发布 Windows 版 |
 | **F5** | 存档版本化与进度迁移（换机即丢） | **P2** | 无导出/导入 |
@@ -1168,6 +1168,20 @@
 - 若保留在线路径，有明示同意 + 隐私政策条目 + 官方授权凭证；
 - 断网时朗读功能可用（走本地 TTS）。
 
+**已实施（记录）**
+- 采用「默认关闭 + 首用弹明示同意」（选项 3）：`Settings` 默认 `voice=false`、`tts_engine=system`
+  （离线优先），新增持久化 `tts_online_consent`（默认 false）。
+- `Tts.say()` 在 `engine=="online"` 且未同意时**绝不外发**：改弹一次性说明（`UI.confirm`，含"取消→改用离线"分支），
+  无界面环境（headless/CI）直接降级离线；取消即会话内切回系统语音。
+- 设置页文案注明"需联网 · 首次使用会询问是否允许外发文本"。
+- 新增 `docs/隐私政策.md`（唯一网络功能=可选在线朗读；无埋点/广告/账号；本地存储说明）。
+- 回归：`tests/Tests.gd` 增 `_test_tts_policy()`（默认关闭/离线/未同意不外发）；TESTS 1233 → 1238。
+
+**残留风险（上架前）**
+- 在线路径仍是**第三方公开接口、无官方授权与密钥**（`TtsOnline.gd` 伪装 UA）：可能违反第三方条款或随时失效。
+  若上架正式商店，建议二选一：改用官方授权 API（密钥放服务端，CLIENT 不硬编码）**或**移除在线引擎、只保留离线。
+- 需在商店后台的**数据安全/隐私表单**中勾选"朗读文本可能外发第三方"。
+
 ---
 
 ### [ ] F2 · 发布准备（包名 / 版本 / 签名 / targetSdk）（P0，上架前必做）
@@ -1192,6 +1206,20 @@
 - release 签名可导出并安装到真机；
 - 发版只改一处版本号（脚本自动同步三处预设）；
 - 包名与 targetSdk 有明确书面决定。
+
+**已实施（记录，除"真机实装"外均完成）**
+- 包名定为 **`cn.edu.mathgates`**（`package/unique_name`）。
+- 显式 `min_sdk=24` / `target_sdk=35`（依据见 `docs/环境配置.md` §6）。
+- 预设补齐 `keystore/release*`（指向 `keystore/mathgates-release.keystore`，`release_user=mathgates`，
+  口令留空由本地填）；`keystore/`、`*.keystore`、`*.jks` 加入 `.gitignore`。
+- 新增 `tools/bump_version.gd`：一处改版本，自动同步 `version/code`、`version/name` 与 3 个 Windows 预设的
+  `application/file_version`/`application/product_version`（`x.y.z.0`）；本次已把 Windows 版本从空同步为 `1.0.0.0`。
+- `docs/环境配置.md` §6.1 写明 keytool 生成 keystore + 填充口令 + `--export-release` 全流程。
+
+**残留（需本机/账号动作）**
+- 生成 release keystore 并填入口令（密钥不入库）；
+- 真机安装验证；应用商店的**数据安全/隐私表单**（与 F1 的 TTS 外发一致）；
+- 可选：`package/retain_data_on_uninstall` 当前为 true，上架按隐私策略确认。
 
 ---
 
@@ -1517,7 +1545,7 @@
 > `& "<godot472.exe>" --headless --editor --path . --quit`。
 
 **当前回归基线**（改完请对照，数字只能升不能降）：
-`CHECKED 81 scripts, 0 failures` / `TESTS: 1233 passed, 0 failed` / `SMOKE: 238 ok, 0 fail` / `LabSmoke` 末尾 `TMP_OK` /
+`CHECKED 82 scripts, 0 failures` / `TESTS: 1238 passed, 0 failed` / `SMOKE: 238 ok, 0 fail` / `LabSmoke` 末尾 `TMP_OK` /
 `QUESTION-CHECK: 26 files / 222 levels / 712 questions / 0 new / 7 known`（A5 校验器，存量问题见下方基线）。
 
 - 校验器基线：`tools/check_questions_baseline.txt`（**7 条已知**：题干重复 7；B9 轮次编号错位已归 0）。
