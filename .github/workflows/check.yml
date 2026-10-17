@@ -63,6 +63,12 @@ jobs:
           ./godot --headless --path . res://tests/LabSmoke.tscn 2>&1 | tee out.log
           grep -Eq "TMP_OK" out.log
 
+      - name: UiSmoke（UI/交互层断言，A11）
+        run: |
+          set -euo pipefail
+          ./godot --headless --path . res://tests/UiSmoke.tscn 2>&1 | tee out.log
+          grep -Eq "UI-SMOKE: [0-9]+ ok, 0 fail" out.log
+
       - name: check_questions（内容校验器，A5）
         run: |
           set -euo pipefail

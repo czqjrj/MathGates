@@ -33,7 +33,7 @@
 | **A2** | 遗留模块（`SolidChallenge` / `ConicStage`+C1~C3）定策略 | **P1** | 决定继续删还是冻结 |
 | **A3** | `Battle.gd` 死代码处理 | **P1** | 614 行不再增长 |
 | **A6** | CI（headless 四件套自动化） | **P1** | ✅ 已完成（`.github/workflows/check.yml`） |
-| **A11** | UI/交互层缺自动化断言（测试只盖纯逻辑） | **P1** | A1/B 类改动目前只能靠人眼 |
+| **A11** | UI/交互层缺自动化断言（测试只盖纯逻辑） | **P1** | ✅ 已完成（`tests/UiSmoke`：342 断言 + 反向验证 + 入 CI） |
 | **A12** | `questions.json` 变成第二份权威题库（与现行数据冲突） | **P1** | 数据层也有死代码 |
 | **A13** | 资源体积治理（`.xcf` 入库、13.8MB 字体、未排除） | **P1** | 仓库 48MB / APK 61MB |
 | **A14** | `export_presets.cfg` 残留第三方机器路径 | **P1** | ✅ 已完成（统一 `build/…`） |
@@ -361,6 +361,23 @@
 - 新增 ≥ 20 条 UI 断言，可在 `--headless` 下跑通；
 - 反向验证：故意注释掉 A1 迁移后的 HUD 构建，应能红灯；
 - 「逐章目视复核」可由该套断言替代大部分，届时可关闭该历史遗留项。
+
+**已实施（记录）**
+- 新增 **`tests/UiSmoke.gd` + `tests/UiSmoke.tscn`**，headless 运行输出 `UI-SMOKE: 342 ok, 0 fail`（退出码非 0 表示有失败）。
+- 断言内容（**342 条**，远超要求的 20 条）：
+  1. `StageBase` 家族（`LabStage`/`Lab3DStage`/`SequenceStage`）每关采样断言 **14 个关键节点**存在
+     （`_ui`/`_panel`/`_ans`/`_q`/`_next`/`_hint`/`_victory`/`_dim`/`_v_title`/`_v_rate`/`_v_star_row`/`_v_score`/`_prog`/`_coins`）；
+  2. 逐轮数据级不变量：`opts.size()≥2`、`ans` 在范围内、多选非全选；
+  3. 实际按钮数 == 数据 `opts` 数，`badge`/`panel` 与按钮数一致；
+  4. `_opt_order` 是**排列**、`_disp_of/_orig_of` **往返一致**；
+  5. 顺序相关选项（以上/都对…）**不打乱**；
+  6. **乱序确实生效**：同一轮重建 12 次，出现 ≥2 种顺序（保护 B8）；
+  7. `_finish()` → 结算面板/遮罩可见、星级行已渲染、标题非空；
+  8. `UI.fs()` 随 `UI.S` 线性生效（1.0/1.4/2.0 → 20/28/40，最小 1）；
+  9. legacy 场景（`ConicStage`/`SolidChallenge`/`Battle`）能构建出子节点。
+- **反向验证通过**：临时注释 `StageBase._ready()` 的 `_build_ui()`，`UiSmoke` 立即红灯（`EXIT=1`，14 条节点断言失败），恢复后回到全绿。
+- 已纳入 CI（`.github/workflows/check.yml` 新增 UiSmoke 步骤，`pipefail` + 断言 `0 fail`）。
+- 说明：`Battle.tscn` 无课程表样本（占位/死代码，见 A3），用任意真实关卡上下文实例化验证。
 
 ---
 
@@ -1567,7 +1584,8 @@
 > `& "<godot472.exe>" --headless --editor --path . --quit`。
 
 **当前回归基线**（改完请对照，数字只能升不能降）：
-`CHECKED 82 scripts, 0 failures` / `TESTS: 1238 passed, 0 failed` / `SMOKE: 238 ok, 0 fail` / `LabSmoke` 末尾 `TMP_OK` /
+`CHECKED 83 scripts, 0 failures` / `TESTS: 1238 passed, 0 failed` / `SMOKE: 238 ok, 0 fail` /
+`UI-SMOKE: 342 ok, 0 fail` / `LabSmoke` 末尾 `TMP_OK` /
 `QUESTION-CHECK: 26 files / 222 levels / 712 questions / 0 new / 7 known`（A5 校验器，存量问题见下方基线）。
 
 - 校验器基线：`tools/check_questions_baseline.txt`（**7 条已知**：题干重复 7；B9 轮次编号错位已归 0）。
