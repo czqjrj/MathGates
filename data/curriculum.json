@@ -522,6 +522,24 @@
           "lab": "vectors",
           "lab_ref": "vec_collinear",
           "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "vec_basis",
+          "name": "1-5 基底与单位向量",
+          "technique": "单位化 · 投影 · 基底判定",
+          "archetype": "LAB",
+          "lab": "vectors",
+          "lab_ref": "vec_basis",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "vec_tri",
+          "name": "1-6 三角形中的向量",
+          "technique": "中点公式 · 中线 · 重心",
+          "archetype": "LAB",
+          "lab": "vectors",
+          "lab_ref": "vec_tri",
+          "scene": "res://scenes/LabStage.tscn"
         }
       ]
     },

@@ -133,7 +133,9 @@
         { "name": "1-1 向量线性运算", "levels": ["vec_ops"] },
         { "name": "1-2 坐标运算", "levels": ["vec_coord"] },
         { "name": "1-3 数量积与夹角", "levels": ["vec_dot"] },
-        { "name": "1-4 共线与垂直", "levels": ["vec_collinear"] }
+        { "name": "1-4 共线与垂直", "levels": ["vec_collinear"] },
+        { "name": "1-5 基底与单位向量", "levels": ["vec_basis"] },
+        { "name": "1-6 三角形中的向量", "levels": ["vec_tri"] }
       ],
       "gaps": []
     },
