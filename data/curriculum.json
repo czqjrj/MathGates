@@ -1161,6 +1161,33 @@
           "lab": "corr_data",
           "lab_ref": "cd_indep",
           "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "cd_resid",
+          "name": "1-4 残差与拟合优度",
+          "technique": "残差 · 最小二乘准则",
+          "archetype": "LAB",
+          "lab": "corr_data",
+          "lab_ref": "cd_resid",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "cd_rprops",
+          "name": "1-5 相关系数的性质",
+          "technique": "符号 · 强度 · 线性含义",
+          "archetype": "LAB",
+          "lab": "corr_data",
+          "lab_ref": "cd_rprops",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "cd_chi",
+          "name": "1-6 卡方统计量的计算与判断",
+          "technique": "χ² 计算 · 临界值比较",
+          "archetype": "LAB",
+          "lab": "corr_data",
+          "lab_ref": "cd_chi",
+          "scene": "res://scenes/LabStage.tscn"
         }
       ]
     },
