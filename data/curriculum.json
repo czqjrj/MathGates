@@ -1098,6 +1098,33 @@
           "lab": "random_var",
           "lab_ref": "rv_normal",
           "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "rv_props",
+          "name": "1-4 均值与方差的性质",
+          "technique": "线性性质 · 稳定性判断",
+          "archetype": "LAB",
+          "lab": "random_var",
+          "lab_ref": "rv_props",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "rv_hyper",
+          "name": "1-5 超几何分布",
+          "technique": "不放回抽取 · 组合计数",
+          "archetype": "LAB",
+          "lab": "random_var",
+          "lab_ref": "rv_hyper",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "rv_model",
+          "name": "1-6 分布的识别与建模",
+          "technique": "模型选择 · 期望决策",
+          "archetype": "LAB",
+          "lab": "random_var",
+          "lab_ref": "rv_model",
+          "scene": "res://scenes/LabStage.tscn"
         }
       ]
     },
