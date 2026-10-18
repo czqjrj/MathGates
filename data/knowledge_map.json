@@ -99,7 +99,6 @@
         { "name": "1-13 用二分法求近似解", "levels": ["func_bisect"] }
       ],
       "gaps": [
-        { "name": "函数图象变换（平移/伸缩/对称）", "note": "教材有、本项目分散在三角/立几，未单列", "optional": false }
       ]
     },
     {
@@ -510,7 +509,12 @@
       "sujiao": "必修第一册 第5章 函数概念与性质（分段函数/值域）",
       "renjiao_a": "必修第一册 3.1 函数的概念及其表示（分段函数）",
       "points": [
-        { "name": "分段函数的值域实验", "levels": ["func_piecewise_range"] }
+        { "name": "分段函数的值域实验", "levels": ["func_piecewise_range"] },
+        { "name": "函数图象变换", "levels": ["fm_transform"] },
+        { "name": "复合函数", "levels": ["fm_composite"] },
+        { "name": "反函数", "levels": ["fm_inverse"] },
+        { "name": "二次函数区间最值", "levels": ["fm_quad_interval"] },
+        { "name": "方程根的分布", "levels": ["fm_root_dist"] }
       ],
       "gaps": []
     }

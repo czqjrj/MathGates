@@ -2522,6 +2522,51 @@
           "lab": "function_lab",
           "lab_ref": "piecewise_range",
           "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "fm_transform",
+          "name": "函数图象变换",
+          "technique": "平移 · 对称 · 翻折",
+          "archetype": "LAB",
+          "lab": "function_lab",
+          "lab_ref": "fm_transform",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "fm_composite",
+          "name": "复合函数",
+          "technique": "逐层代入 · 同增异减",
+          "archetype": "LAB",
+          "lab": "function_lab",
+          "lab_ref": "fm_composite",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "fm_inverse",
+          "name": "反函数",
+          "technique": "关于 y=x 对称 · 求法",
+          "archetype": "LAB",
+          "lab": "function_lab",
+          "lab_ref": "fm_inverse",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "fm_quad_interval",
+          "name": "二次函数区间最值",
+          "technique": "动轴定区间 · 分类",
+          "archetype": "LAB",
+          "lab": "function_lab",
+          "lab_ref": "fm_quad_interval",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "fm_root_dist",
+          "name": "方程根的分布",
+          "technique": "数形结合 · 三件套",
+          "archetype": "LAB",
+          "lab": "function_lab",
+          "lab_ref": "fm_root_dist",
+          "scene": "res://scenes/LabStage.tscn"
         }
       ]
     }
