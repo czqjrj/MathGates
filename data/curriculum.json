@@ -891,6 +891,33 @@
           "lab": "complex",
           "lab_ref": "cplx_period",
           "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "cplx_div",
+          "name": "1-4 复数的除法",
+          "technique": "共轭实数化 · 分母实数化",
+          "archetype": "LAB",
+          "lab": "complex",
+          "lab_ref": "cplx_div",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "cplx_eq",
+          "name": "1-5 复数相等与实虚部",
+          "technique": "实虚部对应 · 建立方程",
+          "archetype": "LAB",
+          "lab": "complex",
+          "lab_ref": "cplx_eq",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "cplx_mod",
+          "name": "1-6 模的性质与最值",
+          "technique": "模的运算 · 几何最值",
+          "archetype": "LAB",
+          "lab": "complex",
+          "lab_ref": "cplx_mod",
+          "scene": "res://scenes/LabStage.tscn"
         }
       ]
     },

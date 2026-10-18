@@ -221,7 +221,10 @@
       "points": [
         { "name": "1-1 复数的运算", "levels": ["cplx_calc"] },
         { "name": "1-2 复数的几何意义", "levels": ["cplx_geo"] },
-        { "name": "1-3 i 的周期性", "levels": ["cplx_period"] }
+        { "name": "1-3 i 的周期性", "levels": ["cplx_period"] },
+        { "name": "1-4 复数的除法", "levels": ["cplx_div"] },
+        { "name": "1-5 复数相等与实虚部", "levels": ["cplx_eq"] },
+        { "name": "1-6 模的性质与最值", "levels": ["cplx_mod"] }
       ],
       "gaps": [
         { "name": "复数的三角表示（棣莫弗定理）", "note": "人教A 7.3* / 苏教 12.4*", "optional": true }
