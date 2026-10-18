@@ -1044,6 +1044,24 @@
           "lab": "thinking",
           "lab_ref": "think_convert",
           "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "think_whole",
+          "name": "1-5 整体思想",
+          "technique": "整体代换 · 换元",
+          "archetype": "LAB",
+          "lab": "thinking",
+          "lab_ref": "think_whole",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "think_construct",
+          "name": "1-6 构造思想",
+          "technique": "共轭对 · 构造函数 · 反例",
+          "archetype": "LAB",
+          "lab": "thinking",
+          "lab_ref": "think_construct",
+          "scene": "res://scenes/LabStage.tscn"
         }
       ]
     },

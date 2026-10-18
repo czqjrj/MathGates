@@ -256,7 +256,9 @@
         { "name": "1-1 函数与方程", "levels": ["think_func_eq"] },
         { "name": "1-2 数形结合", "levels": ["think_geo"] },
         { "name": "1-3 分类讨论", "levels": ["think_classify"] },
-        { "name": "1-4 转化与化归", "levels": ["think_convert"] }
+        { "name": "1-4 转化与化归", "levels": ["think_convert"] },
+        { "name": "1-5 整体思想", "levels": ["think_whole"] },
+        { "name": "1-6 构造思想", "levels": ["think_construct"] }
       ],
       "gaps": []
     },
