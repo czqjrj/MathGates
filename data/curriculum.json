@@ -198,6 +198,15 @@
           "lab": "set_logic",
           "lab_ref": "logic_special",
           "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "set_card",
+          "name": "1-6 集合中元素的个数",
+          "technique": "card · 容斥公式",
+          "archetype": "LAB",
+          "lab": "set_logic",
+          "lab_ref": "set_card",
+          "scene": "res://scenes/LabStage.tscn"
         }
       ]
     },

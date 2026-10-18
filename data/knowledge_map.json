@@ -57,10 +57,10 @@
         { "name": "1-2 区间与集合互化", "levels": ["set_interval"] },
         { "name": "1-3 充分与必要", "levels": ["logic_cond"] },
         { "name": "1-4 命题与量词", "levels": ["logic_neg"] },
-        { "name": "1-5 特殊值检验", "levels": ["logic_special"] }
+        { "name": "1-5 特殊值检验", "levels": ["logic_special"] },
+        { "name": "1-6 集合中元素的个数", "levels": ["set_card"] }
       ],
       "gaps": [
-        { "name": "集合中元素的个数（card 容斥公式）", "note": "教材有、本项目未单列", "optional": false }
       ]
     },
     {
