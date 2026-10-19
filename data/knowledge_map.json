@@ -116,14 +116,15 @@
         { "name": "1-2 恒等变换", "levels": ["trig_identity"] },
         { "name": "1-3 图像与性质", "levels": ["trig_graph"] },
         { "name": "1-4 解三角形", "levels": ["trig_solve"] },
-        { "name": "1-5 测量应用", "levels": ["trig_apply"] },
+        { "name": "1-5 三角函数的应用", "levels": ["trig_apply"] },
         { "name": "1-6 弧度制与任意角", "levels": ["trig_radian"] },
         { "name": "1-7 正切函数图象与性质", "levels": ["trig_tan"] },
         { "name": "1-8 三角函数的概念", "levels": ["trig_concept"] },
         { "name": "1-9 正弦、余弦函数图象与性质", "levels": ["trig_sincos"] },
         { "name": "1-10 两角和与差公式", "levels": ["trig_sumdiff"] },
         { "name": "1-11 二倍角公式", "levels": ["trig_double"] },
-        { "name": "1-12 辅助角公式", "levels": ["trig_aux"] }
+        { "name": "1-12 辅助角公式", "levels": ["trig_aux"] },
+        { "name": "1-13 解三角形测量应用", "levels": ["trig_measure"] }
       ],
       "gaps": [
         { "name": "积化和差与和差化积", "note": "选学/拓展", "optional": true }

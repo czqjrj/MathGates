@@ -489,7 +489,7 @@
         },
         {
           "id": "trig_apply",
-          "name": "1-5 测量应用",
+          "name": "1-5 三角函数的应用",
           "technique": "简谐运动 · 辅助角最值",
           "archetype": "LAB",
           "lab": "trig",
@@ -558,6 +558,15 @@
           "name": "1-12 辅助角公式",
           "scene": "res://scenes/LabStage.tscn",
           "technique": "辅助角 · 一式合一"
+        },
+        {
+          "archetype": "LAB",
+          "id": "trig_measure",
+          "lab": "trig",
+          "lab_ref": "trig_measure",
+          "name": "1-13 解三角形测量应用",
+          "scene": "res://scenes/LabStage.tscn",
+          "technique": "仰角 · 方位角 · 不可达距离"
         }
       ]
     },

@@ -134,22 +134,26 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`d4a6a40`（`feat(E3)` 集合关系与补集；前条 `1630a99` 三角恒等变换），已 push（`main` 与 `origin/main` 同步）。
+- **最后提交**：`d4a6a40`（`feat(E3)` 集合关系与补集；前条 `1630a99` 三角恒等变换）→ 本轮第三条 E3 提交（哈希见回填），已 push（`main` 与 `origin/main` 同步）。
 - **本轮交付（2026-10-19，第二轮）**：
+  - **E3 第 6 条「解三角形的实际应用」落地**：`trig_measure` 1 组 5 轮（仰角测高实验 + `BC=AB·tanα`
+    公式、方位角、后退法测塔高 30°/15°、河对岸不可达距离），curriculum 1-13、知识点 264 点全挂载；
+    顺带修正错名：`trig_apply` 实为简谐运动建模，curriculum/知识点「1-5 测量应用」→「1-5 三角函数的应用」。
   - **E3 第 4 条「集合间关系与补集」落地**：`scaffold_level.gd` + 手写内容新增 `set_relation`
     （包含文氏图实验、⊆/∈ 辨析、解方程比集合、夹逼集合计数、互异性筛根）与 `set_complement`
     （补集边界实验、先交后补、区间求补、card 联用、德摩根律辨析），2 组 10 轮；
-    curriculum 1-7/1-8、知识点 263 点全挂载，hard-gaps 保持 0。
+    curriculum 1-7/1-8、知识点全挂载，hard-gaps 保持 0。
   - **E3 第 5 条「三角恒等变换体系」落地（提交 `1630a99`）**：`trig_sumdiff`/`trig_double`/`trig_aux`
     3 组 15 轮（3 个 readouts 双行/三行读数探究），E1 两条硬缺口 2→0、基线文件改 0。
-  - 全量回归绿（含两条 E3 合计）：`SMOKE 273` / `LEVEL-PREVIEW-SMOKE 6475` /
-    `QUESTION-CHECK 257 关 887 题 0 new（warn 3 与基线同）` / `KNOWLEDGE 263 点 hard-gaps=0`；
-    `UI-SMOKE 326`（取样漂移，fail=0）；`TESTS 1245` / `CHECKED 89` / `LabSmoke TMP_OK` / `ASSETS 29.86`。
+  - 全量回归绿（含 E3 #4/#5/#6 合计）：`SMOKE 274` / `LEVEL-PREVIEW-SMOKE 6511` /
+    `QUESTION-CHECK 258 关 892 题 0 new（warn 3 与基线同）` / `KNOWLEDGE 264 点 hard-gaps=0`；
+    `UI-SMOKE 347`（取样漂移，fail=0；stderr 的 `Lab3DStage._load_q` float→Dictionary 报错已用 stash
+    对照确认 HEAD 即有，存量）；`TESTS 1245` / `CHECKED 89` / `LabSmoke TMP_OK` / `ASSETS 29.87`。
   - 上一轮：G2 关卡预览器/编辑器 + 脚手架入 CI（6313 断言自检）；第 0 步「护栏」全部完成（A5/A6/G2/A11）。
 - **下次建议顺序**（按性价比）：
   1. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 需人工决策/下载/目视（AI 无法替代）。
   2. **E3 剩余缺口批产**（继续 scaffold+预览器流程，每 1~2 条一个 commit）：
-     `trig_measure`（解三角形应用）、计数方法体系余项（`count_bundle`/`count_partition`/`count_misc`）、
+     计数方法体系余项（`count_bundle`/`count_partition`/`count_misc`）、
      `func_model`、`deriv_extrema`/`deriv_optimize`、`stat_sampling`/`stat_case`、
      `cd_corr_coef`/`cd_residual`、`vector_physics`、`seq_induction`（选学）、`cplx_polar`（选学）、
      `prob_simulate`（可选）；同期穿插 **B1 达标 / B2 扩题 / B5 干扰项**（内容重设计）。
@@ -1234,8 +1238,10 @@
 5. ✅ **三角恒等变换完整体系**（必修一 5.5）（2026-10-19 完成）—— 新增 `trig_sumdiff`（两角和差，
    单位圆双角读数探究 cos(α−β)）、`trig_double`（二倍角/升降幂/半角）、`trig_aux`（辅助角 `asinx+bcosx`
    最值与单调区间），共 3 组 15 轮；E1 的两条硬缺口（两角和差 / 二倍角）随之清零，基线文件改 0。
-6. **解三角形的实际应用**（必修二 6.4.3）—— 无。
-   → 新增 `trig_measure`：测量距离/高度/角度，含仰角俯角、方位角、不可达两点距离。
+6. ✅ **解三角形的实际应用**（必修二 6.4.3）（2026-10-19 完成）—— 新增 `trig_measure`（1 组 5 轮）：
+   仰角测高实验 + `BC=AB·tanα` 公式建构、方位角（北偏东 30° 与正东夹角）、后退法测塔高
+   （30°/15° 两次观测，精确解 10 m）、河对岸不可达距离（`AD=CD/cos60°=160 m`）；
+   顺带修正错名——`trig_apply` 实为简谐运动建模，curriculum/知识点「1-5 测量应用」改「1-5 三角函数的应用」。
 7. **排列组合方法体系**（选必三 6.2）—— `counting` 仅 4 关且无方法体系。
    → 新增 `count_group`（分组分配·均分与非均分）、`count_bundle`（捆绑法/插空法）、
    `count_partition`（隔板法）、`count_misc`（错位排列/染色/至多至少）。
@@ -1775,12 +1781,12 @@
 > `& "<godot472.exe>" --headless --editor --path . --quit`。
 
 **当前回归基线**（改完请对照，数字只能升不能降）：
-`CHECKED 89 scripts, 0 failures` / `TESTS: 1245 passed, 0 failed` / `SMOKE: 273 ok, 0 fail` /
-`UI-SMOKE: 326 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
-`LEVEL-PREVIEW-SMOKE: 6475 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
-`QUESTION-CHECK: 26 files / 257 levels / 887 questions / 0 new / 7 known / 3 warnings`（A5 校验器，存量问题见下方基线）/
-`ASSETS: 29.86 MB … banned=0, oversize=0`（A13 护栏）/
-`KNOWLEDGE: 27 chapters / 263 points / 263 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5 起硬缺口清零）/
+`CHECKED 89 scripts, 0 failures` / `TESTS: 1245 passed, 0 failed` / `SMOKE: 274 ok, 0 fail` /
+`UI-SMOKE: 347 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
+`LEVEL-PREVIEW-SMOKE: 6511 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
+`QUESTION-CHECK: 26 files / 258 levels / 892 questions / 0 new / 7 known / 3 warnings`（A5 校验器，存量问题见下方基线）/
+`ASSETS: 29.87 MB … banned=0, oversize=0`（A13 护栏）/
+`KNOWLEDGE: 27 chapters / 264 points / 264 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `LATEX-PROBE: conic C4 68 / C5 76 / C6 68 段 / 0 失败`（E2 收官；**需按组分进程**，见 E2 的 MicroTeX 累积崩溃注）。
 
 > 注：`UI-SMOKE` 的 ok 总数随关卡池大小**取样漂移**（`_pick` 均摊取样，LabStage 样本 193→196 时
@@ -1794,19 +1800,19 @@
 
 ### 9.2 本文件基线数字（改完请同步更新）
 
-- 题目总数 **929**（关卡文件 887 + `questions.json` 42）；关卡组 **257**；
-  平均 **3.45 题/关**（`check_questions` 口径：887 = 单选 736 + 多选 2 + 填空 149；无选项 `interact` 4 另计）。
-- 题型分布（`check_questions.gd` 看板）：单选 **736**，多选 **2**，`interact` **4**，填空 **149**；
-  非四选一占比 **17.4%**（B1 目标 ≥30%；纯数值转换已到上限，余下需内容重设计）。
-- 选项：图片选项 **114** 处（位于 36 道题）；`ans==0` **701/736（95.2%）**（B8 偏高；E3 新关卡已刻意分散 ans 位置）。
-- 探究轮 **261**，其中题面为陈述句 **0（0.0%）**（`check_questions.gd` 口径；B3 目标 <20%；原始人工口径 221/230）。
+- 题目总数 **934**（关卡文件 892 + `questions.json` 42）；关卡组 **258**；
+  平均 **3.46 题/关**（`check_questions` 口径：892 = 单选 739 + 多选 2 + 填空 151；无选项 `interact` 4 另计）。
+- 题型分布（`check_questions.gd` 看板）：单选 **739**，多选 **2**，`interact` **4**，填空 **151**；
+  非四选一占比 **17.5%**（B1 目标 ≥30%；纯数值转换已到上限，余下需内容重设计）。
+- 选项：图片选项 **114** 处（位于 36 道题）；`ans==0` **702/739（95.0%）**（B8 偏高；E3 新关卡已刻意分散 ans 位置）。
+- 探究轮 **262**，其中题面为陈述句 **0（0.0%）**（`check_questions.gd` 口径；B3 目标 <20%；原始人工口径 221/230）。
 - 轮次标签编号错位 **0 处**（B9 已修复：`tools/fix_labels.gd` 批量重编，规范 `<关卡序号>-<轮次> <阶段名>`）。
 - 资源体积（A13 已治理）：仓库 tracked 合计 **29.6MB**（治理前 48.4MB；`art/` 已无 `.xcf`，源文件移至 `assets_src/`，
   标题字体 13.5MB 待替换）；APK（debug）旧基线 **60.9MB**（新基线待重新导出）。见 A13。
-- 知识点矩阵（E1 已建立，E2/E3 已补齐）：`data/knowledge_map.json` 27 章 / **263 个知识点**（每关一挂）；
+- 知识点矩阵（E1 已建立，E2/E3 已补齐）：`data/knowledge_map.json` 27 章 / **264 个知识点**（每关一挂）；
   **硬缺口 0**、选学/旧课标 8（基线 `tools/knowledge_gaps_baseline.txt`；2026-10-19 两角和差/二倍角清零）；
   关卡 id `solid_angle` 跨章重名 1 处。见 E1/E2/E3。
-- 数据一致性：`curriculum` 关卡 263 / 关卡数据组 257，`lab_ref` 动态映射覆盖其余；
+- 数据一致性：`curriculum` 关卡 264 / 关卡数据组 258，`lab_ref` 动态映射覆盖其余；
   跨文件重名关卡数据 **5 组**（`questions.json` ↔ `set_logic_levels.json`，内容互不相同）。见 A12。
 - 口播字段 `speak`：**0 处**。见 B13。
 - 动效：`anim` 演示字段只出现在 **1/26** 个关卡文件（`solid_basic_levels.json`，27 处 / 12 关）；
