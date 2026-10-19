@@ -63,7 +63,7 @@
 | **D4** | 动效令牌缺失 + 演示不可控 + 无障碍粒度不足 | **P2** | 44 处裸时长、无法重播 |
 | **E1** | 知识点覆盖矩阵 + 校验器（内容补全的前置） | **P0** | ✅ 已完成（`data/knowledge_map.json` + `check_knowledge` → `docs/知识点覆盖矩阵.md`；硬缺口基线随 E2 收敛，现 2 条） |
 | **E2** | 补齐薄弱章节题量（8 章 ≤4 关，最少仅 6 题） | **P0** | ✅ 已完成（2026-10-19）：27 章全部 ≥6 关（知识章 9 章 + 方法章 `function_methods`、`conic` 各补齐到 6 关）；薄弱章节 **11 → 0** |
-| **E3** | 补全 15 个整块缺失的教材必学知识点 | **P1** | 进行中：#2~#9 已落地（不等式/集合/三角/计数/函数模型），余 #1、#10~#15 |
+| **E3** | 补全 15 个整块缺失的教材必学知识点 | **P1** | 进行中：#2~#10 已落地（不等式/集合/三角/计数/函数模型/导数），#1、#11 教材已删故跳过，余 #12~#15 |
 | **E4** | 方法章/专题章过薄且与知识章脱节 | **P2** | 🟡 function_methods、conic 均已 1→6（2026-10）；余 `thinking` 专题章与知识章引用关系待强化 |
 | **E5** | 与 6 版教材对齐的持续核对流程 | **P1** | 换版本只改排序不改覆盖 |
 | **F1** | 在线 TTS 的合规与稳定性（外发题目文本） | **P0** | ✅ 客户端策略完成（默认关闭+明示同意+隐私政策）；官方 API/商店表单并入 F2 |
@@ -135,23 +135,26 @@
 ### 0.3 续接点（每次收工更新）
 
 - **最后提交**：`0bb0a2e`（`feat(E3)` 函数模型的增长对比与选择 `func_model`；前条 `5d784bb` 计数方法体系余项 + 二项式系数补 6-6），已 push（`main` 与 `origin/main` 同步）。
-- **本轮交付（2026-10-19，第四轮）**：
-  - **E3 第 9 条「函数模型的应用与增长对比」落地**：新增 `func_model`（指数 y=2ˣ 与幂 y=x² 交点读图
-    探究、充分大时增长速度排序指数>幂>一次>对数、细菌分裂情境选指数模型、两点拟合 y=a·bˣ 定底数、
-    复利指数应用），5 轮；curriculum 1-14、知识点 268 点全挂载。
-  - 全量回归绿（含以上）：`SMOKE 278` / `LEVEL-PREVIEW-SMOKE 6645` /
-    `QUESTION-CHECK 262 关 913 题 0 new（warn 3 与基线同）` / `KNOWLEDGE 268 点 hard-gaps=0`；
-    `UI-SMOKE 347`（取样漂移，fail=0；stderr 的 `Lab3DStage._load_q` float→Dictionary 报错为存量）；
-    `TESTS 1245` / `CHECKED 89` / `LabSmoke TMP_OK` / `ASSETS 29.89`。
-  - 上一轮（第三轮）：E3 #7 计数方法体系（`count_bundle`/`count_partition`/`count_misc`）+ #8 补 6-6
-    （`5d784bb`）；第二轮：E3 #6 `trig_measure`（`017f04b`）、#4 集合关系与补集（`d4a6a40`）、
+- **本轮交付（2026-10-19，第五轮）**：
+  - **E3 第 10 条「导数的最值与优化应用」落地**：新增 `deriv_extrema`（读图端点最值探究、
+    x³−12x 在 [−3,3] 最小值 −16、含参 g(1)=2、[0,2] 上 M−m=4、a≥0 时 R 上无极值）与
+    `deriv_optimize`（利润抛物线读图、顶点定价 80、平均成本最低产量 20、水渠断面宽:深=2:1、
+    顶点被区间截断 L(25)=2875），2 组 10 轮；curriculum 1-7/1-8、知识点 270 点全挂载。
+  - **用户判定跳过**：E3 #1 数学归纳法、#11 复数三角表示 —— 现行教材已删，不再新增
+    `seq_induction`/`cplx_polar`（矩阵中保持 optional 标注）。
+  - 全量回归绿（含以上）：`SMOKE 280` / `LEVEL-PREVIEW-SMOKE 6708` /
+    `QUESTION-CHECK 264 关 923 题 0 new（warn 3 与基线同）` / `KNOWLEDGE 270 点 hard-gaps=0`；
+    `UI-SMOKE 326`（取样漂移，fail=0；stderr 的 `Lab3DStage._load_q` float→Dictionary 报错为存量）；
+    `TESTS 1245` / `CHECKED 89` / `LabSmoke TMP_OK` / `ASSETS 29.90`。
+  - 上一轮（第四轮）：E3 #9 `func_model`（`0bb0a2e`）；第三轮：#7 计数方法体系 + #8 补 6-6（`5d784bb`）；
+    第二轮：#6 `trig_measure`（`017f04b`）、#4 集合关系与补集（`d4a6a40`）、
     #5 三角恒等变换（`1630a99`，E1 硬缺口 2→0）。
 - **下次建议顺序**（按性价比）：
   1. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 需人工决策/下载/目视（AI 无法替代）。
   2. **E3 剩余缺口批产**（继续 scaffold+预览器流程，每 1~2 条一个 commit）：
-     `deriv_extrema`/`deriv_optimize`、`stat_sampling`/`stat_case`、
-     `cd_corr_coef`/`cd_residual`、`vector_physics`、`seq_induction`（选学）、`cplx_polar`（选学）、
-     `prob_simulate`（可选）；同期穿插 **B1 达标 / B2 扩题 / B5 干扰项**（内容重设计）。
+     `stat_sampling`/`stat_case`（#12）、`cd_corr_coef`/`cd_residual`（#13）、
+     `vector_physics`（#14）、`prob_simulate`（#15，可选）；
+     同期穿插 **B1 达标 / B2 扩题 / B5 干扰项**（内容重设计）。
 - **收工前必做**：跑全量校验（`check_all` / `Tests` / `smoke_scene` / `UiSmoke` / `LabSmoke` /
   `check_questions` / `check_knowledge` / `check_assets` / `LevelPreview --smoke`），并同步 §9.2 基线数字。
 
@@ -1221,8 +1224,7 @@
 
 > 下列每条都已在现有章节里确认**完全没有**对应关卡。括号内为教材出处。
 
-1. **数学归纳法**（人教A选必二 4.4 / 苏教选必一 4.4）—— `sequences` 与 `thinking` 均无。
-   → 新增 `seq_induction`：奠基 + 递推两步、常见错误（漏奠基、假设使用不当、"n=k 到 n=k+1"的写法）。
+1. ⏭️ **数学归纳法**（人教A选必二 4.4 / 苏教选必一 4.4）—— **跳过**（2026-10-19 用户判定：现行教材已删，不再学习，不再新增 `seq_induction`）。
 2. **不等式的基本性质与比较大小**（人教A必修一 2.1）—— `inequalities` 无。
    → 新增 `ineq_props`：对称/传递/可加性/可乘性/同向可加、作差法比较大小。
 3. **一元二次不等式含参讨论** —— `ineq_quad` 只讲图像法解集。
@@ -1249,10 +1251,11 @@
    新增 `func_model` 5 轮：指数 y=2ˣ 与幂 y=x² 交点读图探究（(2,4)/(4,16)）、充分大时增长速度排序
    （指数>幂>一次>对数）、细菌分裂情境选指数模型、两点拟合 y=a·bˣ 定底数、复利 1000×1.05²=1102.5；
    curriculum 1-14、知识点 268 点全挂载。
-10. **导数的最值与优化应用**（选必二 5.3）—— 只有极值，无最值与实际优化。
-    → 新增 `deriv_extrema`（闭区间最值、含参讨论）、`deriv_optimize`（利润/用料/效率最优化建模）。
-11. **复数的三角表示**（必修二 7.3*，**选学**）—— `complex` 无。
-    → 新增 `cplx_polar`：三角形式、辐角主值、乘除法的旋转与伸缩意义、棣莫弗定理。
+10. ✅ **导数的最值与优化应用**（选必二 5.3）（2026-10-19 完成）—— 只有极值，无最值与实际优化。
+    新增 `deriv_extrema` 5 轮（读图端点最值、x³−12x 闭区间最小值 −16、含参 g(1)=2、M−m=4、
+    a≥0 时无极值），`deriv_optimize` 5 轮（利润抛物线读图、顶点定价 80、平均成本最低 x=20、
+    水渠断面宽:深=2:1、顶点被区间截断 L(25)=2875）；curriculum 1-7/1-8、知识点 270 点全挂载。
+11. ⏭️ **复数的三角表示**（必修二 7.3*，**选学**）—— **跳过**（2026-10-19 用户判定：现行教材已删，不再学习，不再新增 `cplx_polar`）。
 12. **抽样方法细分与统计案例**（必修二 9.1 / 9.3）—— `stat_sample` 1 关承载。
     → 新增 `stat_sampling`（简单随机/分层/系统抽样及适用场景）、`stat_case`（真实统计案例）。
 13. **相关系数与残差分析**（选必三 8.1 / 8.2）—— `corr_data` 3 关偏薄。
@@ -1268,7 +1271,8 @@
 - **参数方程与极坐标**：新课标弱化，标注为"不适用（旧课标）"，除非定位离线老教材。
 
 **验收**
-- 上述 15 条各自落成关卡，并在 E1 矩阵里由「未覆盖」变为「已覆盖」；
+- 上述 15 条中 13 条落成关卡（#1 数学归纳法、#11 复数三角表示经用户判定**教材已删、跳过**），
+  并在 E1 矩阵里由「未覆盖」变为「已覆盖」（此两条保持 `optional=true` 的选学标注）；
 - 每条新关卡的题目质量符合 B 类要求（非纯四选一、有干扰项设计）。
 
 ---
@@ -1781,12 +1785,12 @@
 > `& "<godot472.exe>" --headless --editor --path . --quit`。
 
 **当前回归基线**（改完请对照，数字只能升不能降）：
-`CHECKED 89 scripts, 0 failures` / `TESTS: 1245 passed, 0 failed` / `SMOKE: 278 ok, 0 fail` /
-`UI-SMOKE: 347 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
-`LEVEL-PREVIEW-SMOKE: 6645 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
-`QUESTION-CHECK: 26 files / 262 levels / 913 questions / 0 new / 7 known / 3 warnings`（A5 校验器，存量问题见下方基线）/
-`ASSETS: 29.89 MB … banned=0, oversize=0`（A13 护栏）/
-`KNOWLEDGE: 27 chapters / 268 points / 268 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
+`CHECKED 89 scripts, 0 failures` / `TESTS: 1245 passed, 0 failed` / `SMOKE: 280 ok, 0 fail` /
+`UI-SMOKE: 326 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
+`LEVEL-PREVIEW-SMOKE: 6708 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
+`QUESTION-CHECK: 26 files / 264 levels / 923 questions / 0 new / 7 known / 3 warnings`（A5 校验器，存量问题见下方基线）/
+`ASSETS: 29.90 MB … banned=0, oversize=0`（A13 护栏）/
+`KNOWLEDGE: 27 chapters / 270 points / 270 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `LATEX-PROBE: conic C4 68 / C5 76 / C6 68 段 / 0 失败`（E2 收官；**需按组分进程**，见 E2 的 MicroTeX 累积崩溃注）。
 
 > 注：`UI-SMOKE` 的 ok 总数随关卡池大小**取样漂移**（`_pick` 均摊取样，LabStage 样本 193→196 时
@@ -1800,19 +1804,19 @@
 
 ### 9.2 本文件基线数字（改完请同步更新）
 
-- 题目总数 **955**（关卡文件 913 + `questions.json` 42）；关卡组 **262**；
-  平均 **3.48 题/关**（`check_questions` 口径：913 = 单选 749 + 多选 2 + 填空 162；无选项 `interact` 4 另计）。
-- 题型分布（`check_questions.gd` 看板）：单选 **749**，多选 **2**，`interact` **4**，填空 **162**；
-  非四选一占比 **18.3%**（B1 目标 ≥30%；纯数值转换已到上限，余下需内容重设计）。
-- 选项：图片选项 **114** 处（位于 36 道题）；`ans==0` **706/749（94.3%）**（B8 偏高；E3 新关卡已刻意分散 ans 位置）。
-- 探究轮 **266**，其中题面为陈述句 **0（0.0%）**（`check_questions.gd` 口径；B3 目标 <20%；原始人工口径 221/230）。
+- 题目总数 **965**（关卡文件 923 + `questions.json` 42）；关卡组 **264**；
+  平均 **3.50 题/关**（`check_questions` 口径：923 = 单选 754 + 多选 2 + 填空 167；无选项 `interact` 4 另计）。
+- 题型分布（`check_questions.gd` 看板）：单选 **754**，多选 **2**，`interact` **4**，填空 **167**；
+  非四选一占比 **18.7%**（B1 目标 ≥30%；纯数值转换已到上限，余下需内容重设计）。
+- 选项：图片选项 **114** 处（位于 36 道题）；`ans==0` **708/754（93.9%）**（B8 偏高；E3 新关卡已刻意分散 ans 位置）。
+- 探究轮 **268**，其中题面为陈述句 **0（0.0%）**（`check_questions.gd` 口径；B3 目标 <20%；原始人工口径 221/230）。
 - 轮次标签编号错位 **0 处**（B9 已修复：`tools/fix_labels.gd` 批量重编，规范 `<关卡序号>-<轮次> <阶段名>`）。
 - 资源体积（A13 已治理）：仓库 tracked 合计 **29.6MB**（治理前 48.4MB；`art/` 已无 `.xcf`，源文件移至 `assets_src/`，
   标题字体 13.5MB 待替换）；APK（debug）旧基线 **60.9MB**（新基线待重新导出）。见 A13。
-- 知识点矩阵（E1 已建立，E2/E3 已补齐）：`data/knowledge_map.json` 27 章 / **268 个知识点**（每关一挂）；
+- 知识点矩阵（E1 已建立，E2/E3 已补齐）：`data/knowledge_map.json` 27 章 / **270 个知识点**（每关一挂）；
   **硬缺口 0**、选学/旧课标 8（基线 `tools/knowledge_gaps_baseline.txt`；2026-10-19 两角和差/二倍角清零）；
   关卡 id `solid_angle` 跨章重名 1 处。见 E1/E2/E3。
-- 数据一致性：`curriculum` 关卡 268 / 关卡数据组 262，`lab_ref` 动态映射覆盖其余；
+- 数据一致性：`curriculum` 关卡 270 / 关卡数据组 264，`lab_ref` 动态映射覆盖其余；
   跨文件重名关卡数据 **5 组**（`questions.json` ↔ `set_logic_levels.json`，内容互不相同）。见 A12。
 - 口播字段 `speak`：**0 处**。见 B13。
 - 动效：`anim` 演示字段只出现在 **1/26** 个关卡文件（`solid_basic_levels.json`，27 处 / 12 关）；

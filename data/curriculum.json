@@ -972,6 +972,24 @@
           "lab": "derivative",
           "lab_ref": "deriv_zero",
           "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "archetype": "LAB",
+          "id": "deriv_extrema",
+          "lab": "derivative",
+          "lab_ref": "deriv_extrema",
+          "name": "1-7 闭区间最值与含参讨论",
+          "scene": "res://scenes/LabStage.tscn",
+          "technique": "端点比较 · 含参讨论"
+        },
+        {
+          "archetype": "LAB",
+          "id": "deriv_optimize",
+          "lab": "derivative",
+          "lab_ref": "deriv_optimize",
+          "name": "1-8 最值优化应用",
+          "scene": "res://scenes/LabStage.tscn",
+          "technique": "利润建模 · 区间约束"
         }
       ]
     },
