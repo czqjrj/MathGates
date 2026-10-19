@@ -101,7 +101,8 @@
         { "name": "1-10 函数零点", "levels": ["func_zeros"] },
         { "name": "1-11 幂函数", "levels": ["func_power"] },
         { "name": "1-12 函数的应用（一）", "levels": ["func_apply"] },
-        { "name": "1-13 用二分法求近似解", "levels": ["func_bisect"] }
+        { "name": "1-13 用二分法求近似解", "levels": ["func_bisect"] },
+        { "name": "1-14 函数模型与增长对比", "levels": ["func_model"] }
       ],
       "gaps": [
       ]

@@ -441,6 +441,15 @@
           "lab": "functions",
           "lab_ref": "func_bisect",
           "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "archetype": "LAB",
+          "id": "func_model",
+          "lab": "functions",
+          "lab_ref": "func_model",
+          "name": "1-14 函数模型与增长对比",
+          "scene": "res://scenes/LabStage.tscn",
+          "technique": "增长对比 · 模型选择与拟合"
         }
       ]
     },
