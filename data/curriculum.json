@@ -513,6 +513,33 @@
           "lab": "trig",
           "lab_ref": "trig_sincos",
           "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "archetype": "LAB",
+          "id": "trig_sumdiff",
+          "lab": "trig",
+          "lab_ref": "trig_sumdiff",
+          "name": "1-10 两角和与差公式",
+          "scene": "res://scenes/LabStage.tscn",
+          "technique": "两角和差 · 单位圆推导"
+        },
+        {
+          "archetype": "LAB",
+          "id": "trig_double",
+          "lab": "trig",
+          "lab_ref": "trig_double",
+          "name": "1-11 二倍角公式",
+          "scene": "res://scenes/LabStage.tscn",
+          "technique": "二倍角 · 升降幂"
+        },
+        {
+          "archetype": "LAB",
+          "id": "trig_aux",
+          "lab": "trig",
+          "lab_ref": "trig_aux",
+          "name": "1-12 辅助角公式",
+          "scene": "res://scenes/LabStage.tscn",
+          "technique": "辅助角 · 一式合一"
         }
       ]
     },

@@ -118,11 +118,12 @@
         { "name": "1-6 弧度制与任意角", "levels": ["trig_radian"] },
         { "name": "1-7 正切函数图象与性质", "levels": ["trig_tan"] },
         { "name": "1-8 三角函数的概念", "levels": ["trig_concept"] },
-        { "name": "1-9 正弦、余弦函数图象与性质", "levels": ["trig_sincos"] }
+        { "name": "1-9 正弦、余弦函数图象与性质", "levels": ["trig_sincos"] },
+        { "name": "1-10 两角和与差公式", "levels": ["trig_sumdiff"] },
+        { "name": "1-11 二倍角公式", "levels": ["trig_double"] },
+        { "name": "1-12 辅助角公式", "levels": ["trig_aux"] }
       ],
       "gaps": [
-        { "name": "两角和与差的正弦/余弦/正切", "note": "三角恒等变换核心；待核是否被 trig_identity 部分覆盖", "optional": false },
-        { "name": "二倍角公式", "note": "三角恒等变换核心", "optional": false },
         { "name": "积化和差与和差化积", "note": "选学/拓展", "optional": true }
       ]
     },

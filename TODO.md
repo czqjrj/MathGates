@@ -134,18 +134,22 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`c5296a5`（`feat(G2)`），已 push（`main` 与 `origin/main` 同步）。
-- **本轮交付（2026-10-19）**：
-  - **G2 作者工具链落地**：关卡预览器/编辑器（`tools/LevelPreview.tscn`：三级选关 + 真实舞台渲染 +
-    热重载 + q/opts/ans/hint/explain/scene 写回 + A5 轻量校验；headless 自检 6313 断言）+ 关卡脚手架
-    （`tools/scaffold_level.gd`：一键生成 5 轮骨架并挂 curriculum/知识点）；均已入 CI。
-    第 0 步「护栏」至此全部完成（A5/A6/G2/A11）。
-  - 上一轮：B1 非四选一 17.0%；B3 探究轮题面陈述句 0.0%（验收①达标）。
-- **明日建议顺序**（按性价比）：
-  1. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 把「最小可上架」推到可提审（≈3~5 天，需人工决策/目视）。
-  2. **B1 达标 / B2 扩题 / B5 干扰项** —— 第 2 步内容批产（4~8 周，最大项）；**现在有 G2 工具链加持，
-     建议先用 `scaffold_level.gd` + 预览器跑通一批新关卡，验证工具链实效并记录单关耗时**。
-  3. **E3 剩余缺口**（数学归纳法/三角恒等变换体系/解三角形应用等 15 条中未补的）——同样走 G2 流程批产。
+- **最后提交**：`c5296a5`（`feat(G2)`）→ 本轮 `feat(E3)`（哈希见回填提交），已 push（`main` 与 `origin/main` 同步）。
+- **本轮交付（2026-10-19，第二轮）**：
+  - **E3 第 5 条「三角恒等变换体系」落地，E1 硬缺口清零**：G2 流程（`scaffold_level.gd` 骨架 +
+    `LevelPreview` 预览/写回 + 全套校验）新增 `trig_sumdiff`（两角和差：单位圆双角读数探究
+    cos(α−β) 展开、sin75° 输入、象限角求值、正切公式）、`trig_double`（二倍角：倍角读数、降幂、
+    cos²15°−sin²15°、半角求值）、`trig_aux`（辅助角：比值读数∈[−1,1]、最值、单调区间），共
+    3 组 15 轮（9 探究/选择 + 5 输入 + 3 readouts 实验场景）。硬缺口 2→0，基线文件与 §9.1/§9.2 已同步。
+  - 全量回归绿：`SMOKE 271` / `LEVEL-PREVIEW-SMOKE 6410` / `QUESTION-CHECK 877 题 0 new 3 warn（与基线同）` /
+    `KNOWLEDGE 261 点 hard-gaps=0`；`UI-SMOKE 333`（取样漂移，fail=0）。
+  - 上一轮：G2 关卡预览器/编辑器 + 脚手架入 CI（6313 断言自检）；第 0 步「护栏」全部完成（A5/A6/G2/A11）。
+  - 更早：B1 非四选一 17.0%；B3 探究轮题面陈述句 0.0%（验收①达标）。
+- **下次建议顺序**（按性价比）：
+  1. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 需人工决策/下载/目视（AI 无法替代）。
+  2. **E3 剩余缺口批产**（`set_relation`/`set_complement`、`trig_measure`、计数与导数各条、
+     `cd_corr_coef`/`cd_residual`、`func_model`、`vector_physics` 等）——继续本轮 scaffold+预览器流程，
+     每 1~2 条一个 commit；同期穿插 **B1 达标 / B2 扩题 / B5 干扰项**（内容重设计）。
 - **收工前必做**：跑全量校验（`check_all` / `Tests` / `smoke_scene` / `UiSmoke` / `LabSmoke` /
   `check_questions` / `check_knowledge` / `check_assets` / `LevelPreview --smoke`），并同步 §9.2 基线数字。
 
@@ -1223,8 +1227,9 @@
    → 新增 `ineq_param`：按二次项系数符号 / 判别式 / 两根大小三类分类讨论。
 4. **集合间的基本关系与补集·德摩根律**（人教A必修一 1.2 / 1.3）—— `set_logic` 只有交并运算。
    → 新增 `set_relation`（子集/真子集/集合相等/空集陷阱/元素互异性）与 `set_complement`（补集、德摩根律）。
-5. **三角恒等变换完整体系**（必修一 5.5）—— 现由 `trig_identity` **1 关**承载全部。
-   → 拆为 `trig_sumdiff`（两角和差）、`trig_double`（二倍角/半角）、`trig_aux`（辅助角 `asinx+bcosx`）。
+5. ✅ **三角恒等变换完整体系**（必修一 5.5）（2026-10-19 完成）—— 新增 `trig_sumdiff`（两角和差，
+   单位圆双角读数探究 cos(α−β)）、`trig_double`（二倍角/升降幂/半角）、`trig_aux`（辅助角 `asinx+bcosx`
+   最值与单调区间），共 3 组 15 轮；E1 的两条硬缺口（两角和差 / 二倍角）随之清零，基线文件改 0。
 6. **解三角形的实际应用**（必修二 6.4.3）—— 无。
    → 新增 `trig_measure`：测量距离/高度/角度，含仰角俯角、方位角、不可达两点距离。
 7. **排列组合方法体系**（选必三 6.2）—— `counting` 仅 4 关且无方法体系。
@@ -1766,12 +1771,12 @@
 > `& "<godot472.exe>" --headless --editor --path . --quit`。
 
 **当前回归基线**（改完请对照，数字只能升不能降）：
-`CHECKED 89 scripts, 0 failures` / `TESTS: 1245 passed, 0 failed` / `SMOKE: 268 ok, 0 fail` /
-`UI-SMOKE: 340 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
-`LEVEL-PREVIEW-SMOKE: 6313 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
-`QUESTION-CHECK: 26 files / 252 levels / 862 questions / 0 new / 7 known`（A5 校验器，存量问题见下方基线）/
-`ASSETS: 29.84 MB … banned=0, oversize=0`（A13 护栏）/
-`KNOWLEDGE: 27 chapters / 258 points / 258 levels mapped / hard-gaps=2 (baseline 2) / optional=8`（E1 矩阵）/
+`CHECKED 89 scripts, 0 failures` / `TESTS: 1245 passed, 0 failed` / `SMOKE: 271 ok, 0 fail` /
+`UI-SMOKE: 333 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
+`LEVEL-PREVIEW-SMOKE: 6410 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
+`QUESTION-CHECK: 26 files / 255 levels / 877 questions / 0 new / 7 known / 3 warnings`（A5 校验器，存量问题见下方基线）/
+`ASSETS: 29.85 MB … banned=0, oversize=0`（A13 护栏）/
+`KNOWLEDGE: 27 chapters / 261 points / 261 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#5 起硬缺口清零）/
 `LATEX-PROBE: conic C4 68 / C5 76 / C6 68 段 / 0 失败`（E2 收官；**需按组分进程**，见 E2 的 MicroTeX 累积崩溃注）。
 
 > 注：`UI-SMOKE` 的 ok 总数随关卡池大小**取样漂移**（`_pick` 均摊取样，LabStage 样本 193→196 时
@@ -1779,24 +1784,25 @@
 > 判据看 `fail=0`；新增关卡若要保持可比，可把 `_pick(scene, 3)` 的 n 调大。
 
 - 校验器基线：`tools/check_questions_baseline.txt`（**7 条已知**：题干重复 7；B9 轮次编号错位已归 0）；
-  `tools/knowledge_gaps_baseline.txt`（**2 条硬缺口**：两角和差 / 二倍角，见 E1；集合基数已由 `set_card`、
-  函数图象变换已由 `fm_transform` 补齐，基线 4→3→2）。
+  `tools/knowledge_gaps_baseline.txt`（**0 条硬缺口**：集合基数 4→3→2、两角和差与二倍角
+  2026-10-19 由 `trig_sumdiff`/`trig_double` 补齐 → 0，余下 gaps 仅 optional=true）。
 - CI：`.github/workflows/check.yml`（push/PR 跑上面各条；`gdextension/bin/` 不入库 → 顺带回归 PNG 回退不崩）。
 
 ### 9.2 本文件基线数字（改完请同步更新）
 
-- 题目总数 **904**（关卡文件 862 + `questions.json` 42）；关卡组 **252**；
-  平均 **3.43 题/关**（`check_questions` 口径：862 = 单选 719 + 多选 2 + 填空 141；无选项 `interact` 4 另计）。
-- 题型分布（`check_questions.gd` 看板）：单选 **719**，多选 **2**，`interact` **4**，填空 **141**；
-  非四选一占比 **17.0%**（B1 目标 ≥30%；纯数值转换已到上限，余下需内容重设计）。
-- 选项：图片选项 **114** 处（位于 36 道题）；`ans==0` **694/719（96.5%）**（B8 偏高）。
-- 探究轮 **256**，其中题面为陈述句 **0（0.0%）**（`check_questions.gd` 口径；B3 目标 <20%；原始人工口径 221/230）。
+- 题目总数 **919**（关卡文件 877 + `questions.json` 42）；关卡组 **255**；
+  平均 **3.44 题/关**（`check_questions` 口径：877 = 单选 729 + 多选 2 + 填空 146；无选项 `interact` 4 另计）。
+- 题型分布（`check_questions.gd` 看板）：单选 **729**，多选 **2**，`interact` **4**，填空 **146**；
+  非四选一占比 **17.3%**（B1 目标 ≥30%；纯数值转换已到上限，余下需内容重设计）。
+- 选项：图片选项 **114** 处（位于 36 道题）；`ans==0` **699/729（95.9%）**（B8 偏高）。
+- 探究轮 **259**，其中题面为陈述句 **0（0.0%）**（`check_questions.gd` 口径；B3 目标 <20%；原始人工口径 221/230）。
 - 轮次标签编号错位 **0 处**（B9 已修复：`tools/fix_labels.gd` 批量重编，规范 `<关卡序号>-<轮次> <阶段名>`）。
 - 资源体积（A13 已治理）：仓库 tracked 合计 **29.6MB**（治理前 48.4MB；`art/` 已无 `.xcf`，源文件移至 `assets_src/`，
   标题字体 13.5MB 待替换）；APK（debug）旧基线 **60.9MB**（新基线待重新导出）。见 A13。
-- 知识点矩阵（E1 已建立，E2 已补齐）：`data/knowledge_map.json` 27 章 / **258 个知识点**（每关一挂）；
-  **硬缺口 2**、选学/旧课标 8（基线 `tools/knowledge_gaps_baseline.txt`）；关卡 id `solid_angle` 跨章重名 1 处。见 E1/E2。
-- 数据一致性：`curriculum` 关卡 258 / 关卡数据组 252，`lab_ref` 动态映射覆盖其余；
+- 知识点矩阵（E1 已建立，E2/E3 已补齐）：`data/knowledge_map.json` 27 章 / **261 个知识点**（每关一挂）；
+  **硬缺口 0**、选学/旧课标 8（基线 `tools/knowledge_gaps_baseline.txt`；2026-10-19 两角和差/二倍角清零）；
+  关卡 id `solid_angle` 跨章重名 1 处。见 E1/E2/E3。
+- 数据一致性：`curriculum` 关卡 261 / 关卡数据组 255，`lab_ref` 动态映射覆盖其余；
   跨文件重名关卡数据 **5 组**（`questions.json` ↔ `set_logic_levels.json`，内容互不相同）。见 A12。
 - 口播字段 `speak`：**0 处**。见 B13。
 - 动效：`anim` 演示字段只出现在 **1/26** 个关卡文件（`solid_basic_levels.json`，27 处 / 12 关）；
