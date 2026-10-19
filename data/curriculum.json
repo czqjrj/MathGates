@@ -1089,6 +1089,33 @@
           "lab": "counting",
           "lab_ref": "count_binom_props",
           "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "archetype": "LAB",
+          "id": "count_bundle",
+          "lab": "counting",
+          "lab_ref": "count_bundle",
+          "name": "1-7 捆绑法与插空法",
+          "scene": "res://scenes/LabStage.tscn",
+          "technique": "捆绑 · 插空"
+        },
+        {
+          "archetype": "LAB",
+          "id": "count_partition",
+          "lab": "counting",
+          "lab_ref": "count_partition",
+          "name": "1-8 隔板法",
+          "scene": "res://scenes/LabStage.tscn",
+          "technique": "隔板 · 正整数解"
+        },
+        {
+          "archetype": "LAB",
+          "id": "count_misc",
+          "lab": "counting",
+          "lab_ref": "count_misc",
+          "name": "1-9 错位排列与染色",
+          "scene": "res://scenes/LabStage.tscn",
+          "technique": "错位递推 · 染色排除"
         }
       ]
     },
