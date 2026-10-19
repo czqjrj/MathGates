@@ -144,6 +144,33 @@
           "archetype": "CHAIN",
           "conic": "C3",
           "scene": "res://scenes/ConicStage.tscn"
+        },
+        {
+          "id": "conic_c4",
+          "name": "定义的基本量",
+          "technique": "由定义求 a,b,c,e",
+          "archetype": "LAB",
+          "lab": "conic",
+          "lab_ref": "C4",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "conic_c5",
+          "name": "定义法求轨迹方程",
+          "technique": "距离和/差 · 等距",
+          "archetype": "LAB",
+          "lab": "conic",
+          "lab_ref": "C5",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "conic_c6",
+          "name": "定义的综合与分类",
+          "technique": "含参分类 · 焦点位置",
+          "archetype": "LAB",
+          "lab": "conic",
+          "lab_ref": "C6",
+          "scene": "res://scenes/LabStage.tscn"
         }
       ]
     },

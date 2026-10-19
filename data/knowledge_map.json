@@ -41,7 +41,10 @@
       "points": [
         { "name": "第一定义", "levels": ["conic_c1"] },
         { "name": "第二定义", "levels": ["conic_c2"] },
-        { "name": "第三定义", "levels": ["conic_c3"] }
+        { "name": "第三定义", "levels": ["conic_c3"] },
+        { "name": "定义的基本量", "levels": ["conic_c4"] },
+        { "name": "定义法求轨迹方程", "levels": ["conic_c5"] },
+        { "name": "定义的综合与分类", "levels": ["conic_c6"] }
       ],
       "gaps": [
         { "name": "圆锥曲线的统一定义与极坐标/参数方程", "note": "选学/旧课标选修4-4", "optional": true }
