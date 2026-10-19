@@ -1269,6 +1269,24 @@
           "lab": "statistics",
           "lab_ref": "stat_center",
           "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "archetype": "LAB",
+          "id": "stat_sampling",
+          "lab": "statistics",
+          "lab_ref": "stat_sampling",
+          "name": "1-7 系统抽样与方法选择",
+          "scene": "res://scenes/LabStage.tscn",
+          "technique": "等距抽取 · 场景匹配"
+        },
+        {
+          "archetype": "LAB",
+          "id": "stat_case",
+          "lab": "statistics",
+          "lab_ref": "stat_case",
+          "name": "1-8 统计案例与总体估计",
+          "scene": "res://scenes/LabStage.tscn",
+          "technique": "样本比例 · 总体推断"
         }
       ]
     },
