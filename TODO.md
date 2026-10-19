@@ -134,7 +134,7 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：见 `git log` 顶部（`feat(G2)`，已随本次 push 同步）。
+- **最后提交**：`c5296a5`（`feat(G2)`），已 push（`main` 与 `origin/main` 同步）。
 - **本轮交付（2026-10-19）**：
   - **G2 作者工具链落地**：关卡预览器/编辑器（`tools/LevelPreview.tscn`：三级选关 + 真实舞台渲染 +
     热重载 + q/opts/ans/hint/explain/scene 写回 + A5 轻量校验；headless 自检 6313 断言）+ 关卡脚手架
