@@ -234,6 +234,24 @@
           "lab": "set_logic",
           "lab_ref": "set_card",
           "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "archetype": "LAB",
+          "id": "set_relation",
+          "lab": "set_logic",
+          "lab_ref": "set_relation",
+          "name": "1-7 集合间的关系",
+          "scene": "res://scenes/LabStage.tscn",
+          "technique": "子集与真子集 · 文氏图包含"
+        },
+        {
+          "archetype": "LAB",
+          "id": "set_complement",
+          "lab": "set_logic",
+          "lab_ref": "set_complement",
+          "name": "1-8 补集与德摩根律",
+          "scene": "res://scenes/LabStage.tscn",
+          "technique": "补集 · 德摩根律"
         }
       ]
     },

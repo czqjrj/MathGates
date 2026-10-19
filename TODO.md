@@ -134,22 +134,25 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`1630a99`（`feat(E3)`，前一提交 `c5296a5`/`782fe89` G2），已 push（`main` 与 `origin/main` 同步）。
+- **最后提交**：`1630a99`（`feat(E3)` 三角恒等变换）→ 本轮第二条 E3 提交（哈希见回填），已 push（`main` 与 `origin/main` 同步）。
 - **本轮交付（2026-10-19，第二轮）**：
-  - **E3 第 5 条「三角恒等变换体系」落地，E1 硬缺口清零**：G2 流程（`scaffold_level.gd` 骨架 +
-    `LevelPreview` 预览/写回 + 全套校验）新增 `trig_sumdiff`（两角和差：单位圆双角读数探究
-    cos(α−β) 展开、sin75° 输入、象限角求值、正切公式）、`trig_double`（二倍角：倍角读数、降幂、
-    cos²15°−sin²15°、半角求值）、`trig_aux`（辅助角：比值读数∈[−1,1]、最值、单调区间），共
-    3 组 15 轮（9 探究/选择 + 5 输入 + 3 readouts 实验场景）。硬缺口 2→0，基线文件与 §9.1/§9.2 已同步。
-  - 全量回归绿：`SMOKE 271` / `LEVEL-PREVIEW-SMOKE 6410` / `QUESTION-CHECK 877 题 0 new 3 warn（与基线同）` /
-    `KNOWLEDGE 261 点 hard-gaps=0`；`UI-SMOKE 333`（取样漂移，fail=0）。
+  - **E3 第 4 条「集合间关系与补集」落地**：`scaffold_level.gd` + 手写内容新增 `set_relation`
+    （包含文氏图实验、⊆/∈ 辨析、解方程比集合、夹逼集合计数、互异性筛根）与 `set_complement`
+    （补集边界实验、先交后补、区间求补、card 联用、德摩根律辨析），2 组 10 轮；
+    curriculum 1-7/1-8、知识点 263 点全挂载，hard-gaps 保持 0。
+  - **E3 第 5 条「三角恒等变换体系」落地（提交 `1630a99`）**：`trig_sumdiff`/`trig_double`/`trig_aux`
+    3 组 15 轮（3 个 readouts 双行/三行读数探究），E1 两条硬缺口 2→0、基线文件改 0。
+  - 全量回归绿（含两条 E3 合计）：`SMOKE 273` / `LEVEL-PREVIEW-SMOKE 6475` /
+    `QUESTION-CHECK 257 关 887 题 0 new（warn 3 与基线同）` / `KNOWLEDGE 263 点 hard-gaps=0`；
+    `UI-SMOKE 326`（取样漂移，fail=0）；`TESTS 1245` / `CHECKED 89` / `LabSmoke TMP_OK` / `ASSETS 29.86`。
   - 上一轮：G2 关卡预览器/编辑器 + 脚手架入 CI（6313 断言自检）；第 0 步「护栏」全部完成（A5/A6/G2/A11）。
-  - 更早：B1 非四选一 17.0%；B3 探究轮题面陈述句 0.0%（验收①达标）。
 - **下次建议顺序**（按性价比）：
   1. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 需人工决策/下载/目视（AI 无法替代）。
-  2. **E3 剩余缺口批产**（`set_relation`/`set_complement`、`trig_measure`、计数与导数各条、
-     `cd_corr_coef`/`cd_residual`、`func_model`、`vector_physics` 等）——继续本轮 scaffold+预览器流程，
-     每 1~2 条一个 commit；同期穿插 **B1 达标 / B2 扩题 / B5 干扰项**（内容重设计）。
+  2. **E3 剩余缺口批产**（继续 scaffold+预览器流程，每 1~2 条一个 commit）：
+     `trig_measure`（解三角形应用）、计数方法体系余项（`count_bundle`/`count_partition`/`count_misc`）、
+     `func_model`、`deriv_extrema`/`deriv_optimize`、`stat_sampling`/`stat_case`、
+     `cd_corr_coef`/`cd_residual`、`vector_physics`、`seq_induction`（选学）、`cplx_polar`（选学）、
+     `prob_simulate`（可选）；同期穿插 **B1 达标 / B2 扩题 / B5 干扰项**（内容重设计）。
 - **收工前必做**：跑全量校验（`check_all` / `Tests` / `smoke_scene` / `UiSmoke` / `LabSmoke` /
   `check_questions` / `check_knowledge` / `check_assets` / `LevelPreview --smoke`），并同步 §9.2 基线数字。
 
@@ -1225,8 +1228,9 @@
    → 新增 `ineq_props`：对称/传递/可加性/可乘性/同向可加、作差法比较大小。
 3. **一元二次不等式含参讨论** —— `ineq_quad` 只讲图像法解集。
    → 新增 `ineq_param`：按二次项系数符号 / 判别式 / 两根大小三类分类讨论。
-4. **集合间的基本关系与补集·德摩根律**（人教A必修一 1.2 / 1.3）—— `set_logic` 只有交并运算。
-   → 新增 `set_relation`（子集/真子集/集合相等/空集陷阱/元素互异性）与 `set_complement`（补集、德摩根律）。
+4. ✅ **集合间的基本关系与补集·德摩根律**（人教A必修一 1.2 / 1.3）（2026-10-19 完成）——
+   新增 `set_relation`（子集/真子集/集合相等/空集与 ∈、⊆ 之辨/元素互异性筛根）与
+   `set_complement`（文氏图补集边界、区间求补、补集+card 联用、德摩根律辨析），共 2 组 10 轮。
 5. ✅ **三角恒等变换完整体系**（必修一 5.5）（2026-10-19 完成）—— 新增 `trig_sumdiff`（两角和差，
    单位圆双角读数探究 cos(α−β)）、`trig_double`（二倍角/升降幂/半角）、`trig_aux`（辅助角 `asinx+bcosx`
    最值与单调区间），共 3 组 15 轮；E1 的两条硬缺口（两角和差 / 二倍角）随之清零，基线文件改 0。
@@ -1771,12 +1775,12 @@
 > `& "<godot472.exe>" --headless --editor --path . --quit`。
 
 **当前回归基线**（改完请对照，数字只能升不能降）：
-`CHECKED 89 scripts, 0 failures` / `TESTS: 1245 passed, 0 failed` / `SMOKE: 271 ok, 0 fail` /
-`UI-SMOKE: 333 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
-`LEVEL-PREVIEW-SMOKE: 6410 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
-`QUESTION-CHECK: 26 files / 255 levels / 877 questions / 0 new / 7 known / 3 warnings`（A5 校验器，存量问题见下方基线）/
-`ASSETS: 29.85 MB … banned=0, oversize=0`（A13 护栏）/
-`KNOWLEDGE: 27 chapters / 261 points / 261 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#5 起硬缺口清零）/
+`CHECKED 89 scripts, 0 failures` / `TESTS: 1245 passed, 0 failed` / `SMOKE: 273 ok, 0 fail` /
+`UI-SMOKE: 326 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
+`LEVEL-PREVIEW-SMOKE: 6475 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
+`QUESTION-CHECK: 26 files / 257 levels / 887 questions / 0 new / 7 known / 3 warnings`（A5 校验器，存量问题见下方基线）/
+`ASSETS: 29.86 MB … banned=0, oversize=0`（A13 护栏）/
+`KNOWLEDGE: 27 chapters / 263 points / 263 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5 起硬缺口清零）/
 `LATEX-PROBE: conic C4 68 / C5 76 / C6 68 段 / 0 失败`（E2 收官；**需按组分进程**，见 E2 的 MicroTeX 累积崩溃注）。
 
 > 注：`UI-SMOKE` 的 ok 总数随关卡池大小**取样漂移**（`_pick` 均摊取样，LabStage 样本 193→196 时
@@ -1790,19 +1794,19 @@
 
 ### 9.2 本文件基线数字（改完请同步更新）
 
-- 题目总数 **919**（关卡文件 877 + `questions.json` 42）；关卡组 **255**；
-  平均 **3.44 题/关**（`check_questions` 口径：877 = 单选 729 + 多选 2 + 填空 146；无选项 `interact` 4 另计）。
-- 题型分布（`check_questions.gd` 看板）：单选 **729**，多选 **2**，`interact` **4**，填空 **146**；
-  非四选一占比 **17.3%**（B1 目标 ≥30%；纯数值转换已到上限，余下需内容重设计）。
-- 选项：图片选项 **114** 处（位于 36 道题）；`ans==0` **699/729（95.9%）**（B8 偏高）。
-- 探究轮 **259**，其中题面为陈述句 **0（0.0%）**（`check_questions.gd` 口径；B3 目标 <20%；原始人工口径 221/230）。
+- 题目总数 **929**（关卡文件 887 + `questions.json` 42）；关卡组 **257**；
+  平均 **3.45 题/关**（`check_questions` 口径：887 = 单选 736 + 多选 2 + 填空 149；无选项 `interact` 4 另计）。
+- 题型分布（`check_questions.gd` 看板）：单选 **736**，多选 **2**，`interact` **4**，填空 **149**；
+  非四选一占比 **17.4%**（B1 目标 ≥30%；纯数值转换已到上限，余下需内容重设计）。
+- 选项：图片选项 **114** 处（位于 36 道题）；`ans==0` **701/736（95.2%）**（B8 偏高；E3 新关卡已刻意分散 ans 位置）。
+- 探究轮 **261**，其中题面为陈述句 **0（0.0%）**（`check_questions.gd` 口径；B3 目标 <20%；原始人工口径 221/230）。
 - 轮次标签编号错位 **0 处**（B9 已修复：`tools/fix_labels.gd` 批量重编，规范 `<关卡序号>-<轮次> <阶段名>`）。
 - 资源体积（A13 已治理）：仓库 tracked 合计 **29.6MB**（治理前 48.4MB；`art/` 已无 `.xcf`，源文件移至 `assets_src/`，
   标题字体 13.5MB 待替换）；APK（debug）旧基线 **60.9MB**（新基线待重新导出）。见 A13。
-- 知识点矩阵（E1 已建立，E2/E3 已补齐）：`data/knowledge_map.json` 27 章 / **261 个知识点**（每关一挂）；
+- 知识点矩阵（E1 已建立，E2/E3 已补齐）：`data/knowledge_map.json` 27 章 / **263 个知识点**（每关一挂）；
   **硬缺口 0**、选学/旧课标 8（基线 `tools/knowledge_gaps_baseline.txt`；2026-10-19 两角和差/二倍角清零）；
   关卡 id `solid_angle` 跨章重名 1 处。见 E1/E2/E3。
-- 数据一致性：`curriculum` 关卡 261 / 关卡数据组 255，`lab_ref` 动态映射覆盖其余；
+- 数据一致性：`curriculum` 关卡 263 / 关卡数据组 257，`lab_ref` 动态映射覆盖其余；
   跨文件重名关卡数据 **5 组**（`questions.json` ↔ `set_logic_levels.json`，内容互不相同）。见 A12。
 - 口播字段 `speak`：**0 处**。见 B13。
 - 动效：`anim` 演示字段只出现在 **1/26** 个关卡文件（`solid_basic_levels.json`，27 处 / 12 关）；
