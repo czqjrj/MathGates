@@ -43,7 +43,10 @@ tools/           开发/测试脚本:check_all.gd(脚本检查)、check_question
 				 关卡↔知识点同步/未覆盖缺口基线)、knowledge_gaps_baseline.txt(硬缺口基线)、
 				 bump_version(F2 发版:一处改版本,多预设同步)、
 				 capture_scene(截图)、dev_seq(单关调试)、
-				 lab3d_render_check(立体几何/空间向量 3D 场景渲染自检,需真实窗口)
+				 lab3d_render_check(立体几何/空间向量 3D 场景渲染自检,需真实窗口)、
+				 json_text(G2 JSON 文本级修改工具:括号匹配定位,不重排文件)、
+				 LevelPreview.tscn + level_preview.gd(G2 关卡预览器/编辑器,见「关卡作者工具链」)、
+				 scaffold_level.gd(G2 关卡脚手架:一键生成新关卡组骨架,默认 dry-run)
 tests/           回归测试(GameData 纯逻辑)
 build/           导出产物(APK,git 忽略)
 ```
@@ -63,7 +66,30 @@ build/           导出产物(APK,git 忽略)
 - `check_questions.gd`：有**新增**内容问题即退出码 1；存量问题记在
   `tools/check_questions_baseline.txt`（修完删对应行）。
   确认新问题是历史遗留而非本次引入时，可 `-- --write-baseline` 记入基线。
-- 以上五条已接入 CI（`.github/workflows/check.yml`，push/PR 自动跑）。
+- 以上检查已接入 CI（`.github/workflows/check.yml`，push/PR 自动跑）：五件套 + UiSmoke + check_assets +
+  check_questions + check_knowledge + LevelPreview 自检（`-- --smoke`）+ scaffold dry-run。
+
+## 关卡作者工具链（G2）
+
+写/改关卡不再手抄 JSON，推荐流程：
+
+1. **脚手架**生成骨架（免手抄样板，并自动挂 curriculum + 知识点）：
+   ```
+   & "<godot4.7.2.exe>" --headless --path . --script res://tools/scaffold_level.gd -- `
+       --file=inequalities_levels --key=ineq_demo --chapter=inequalities --apply
+   ```
+   默认 dry-run 只打印骨架；`--chapter` 会同步追加 `curriculum.json` 该章 levels 与
+   `knowledge_map.json` 该章 points（E1 联动，漏挂知识点 CI 会红）。
+2. **预览器**里「选关 → 看效果 → 改题干/选项/ans/scene → 写回 JSON → 立即刷新」：
+   ```
+   & "<godot4.7.2.exe>" --path . res://tools/LevelPreview.tscn
+   ```
+   - 右侧用**真实舞台**渲染（LabStage/Lab3DStage/SequenceStage 等），所见即学生所见；
+   - 数据文件被外部修改后 ~0.7s **自动热重载**；
+   - 内置 A5 轻量校验（轮次编号/ans 范围/选项重复/题干缺失），写回后自动复检；
+   - 写回走 `tools/json_text.gd` **文本级修改**，只动目标字段、不重排文件（diff 最小）；
+   - 代码驱动的遗留关（SolidChallenge 方法关 / ConicStage C1~C3）只读预览。
+3. 填完内容后按「自检与 CI」一节跑全量校验，别忘了 `fix_labels --apply` 规范轮次标签。
 
 ## 运行
 

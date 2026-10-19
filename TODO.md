@@ -74,7 +74,7 @@
 | **F6** | 首次引导与机制说明 | **P2** | 无 tutorial |
 | **F7** | 授权与第三方声明缺失（LICENSE / 素材来源 / 教材改编） | **P0** | ✅ LICENSE+第三方声明齐备、排除 GPLv3 字体；残留：标题字体替换/素材签字 |
 | **G1** | 错题间隔重复（SRS 遗忘曲线排程） | **P1** | review_order 无时间维度 |
-| **G2** | 关卡作者工具链（编辑器 + 实时预览） | **P1** | E 类补内容的最大瓶颈 |
+| **G2** | 关卡作者工具链（编辑器 + 实时预览） | **P1** | 🟡 预览器 + 脚手架已落地（`LevelPreview.tscn` + `scaffold_level.gd`，入 CI）；编辑态仅覆盖 q/ask/opts/ans/hint/explain/scene |
 | **G3** | 学习报告 / 家长视图（可导出、含趋势） | **P2** | 无导出、无时间维度 |
 | **G4** | 云同步（**决策项：暂不实施**，需先做隐私评估） | **P2** | 先由 F5 覆盖大部分场景 |
 | **G5** | 音效与配乐（**决策项：先确认是否刻意不做**） | **P2** | 无 BGM，音效已完整 |
@@ -134,16 +134,20 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`b37ffc7`，已 push（`main` 与 `origin/main` 同步）。
+- **最后提交**：见 `git log` 顶部（`feat(G2)`，已随本次 push 同步）。
 - **本轮交付（2026-10-19）**：
-  - B1 数值填空能力 + 26/26 章扫描改写 → 非四选一 **17.0%**（目标 ≥30%；纯数值转换已到上限，余下需内容重设计）。
-  - B3 探究轮题面陈述句 **0/256（0.0%）**（验收①达标）；建构/迁移轮深化未做。
+  - **G2 作者工具链落地**：关卡预览器/编辑器（`tools/LevelPreview.tscn`：三级选关 + 真实舞台渲染 +
+    热重载 + q/opts/ans/hint/explain/scene 写回 + A5 轻量校验；headless 自检 6313 断言）+ 关卡脚手架
+    （`tools/scaffold_level.gd`：一键生成 5 轮骨架并挂 curriculum/知识点）；均已入 CI。
+    第 0 步「护栏」至此全部完成（A5/A6/G2/A11）。
+  - 上一轮：B1 非四选一 17.0%；B3 探究轮题面陈述句 0.0%（验收①达标）。
 - **明日建议顺序**（按性价比）：
-  1. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 把「最小可上架」推到可提审（≈3~5 天）。
-  2. **G2 作者工具链** —— 第 0 步护栏的最后一块，直接决定第 2 步批产速度。
-  3. **B1 达标 / B2 扩题 / B5 干扰项** —— 第 2 步内容批产（4~8 周，最大项，越早开始越好）。
+  1. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 把「最小可上架」推到可提审（≈3~5 天，需人工决策/目视）。
+  2. **B1 达标 / B2 扩题 / B5 干扰项** —— 第 2 步内容批产（4~8 周，最大项）；**现在有 G2 工具链加持，
+     建议先用 `scaffold_level.gd` + 预览器跑通一批新关卡，验证工具链实效并记录单关耗时**。
+  3. **E3 剩余缺口**（数学归纳法/三角恒等变换体系/解三角形应用等 15 条中未补的）——同样走 G2 流程批产。
 - **收工前必做**：跑全量校验（`check_all` / `Tests` / `smoke_scene` / `UiSmoke` / `LabSmoke` /
-  `check_questions` / `check_knowledge` / `check_assets`），并同步 §9.2 基线数字。
+  `check_questions` / `check_knowledge` / `check_assets` / `LevelPreview --smoke`），并同步 §9.2 基线数字。
 
 ---
 
@@ -1604,6 +1608,36 @@
 - 用脚本生成一个符合规范的新关卡骨架（不含手抄样板）；
 - E 类补内容的平均单关耗时明显下降（可记录前后对比）。
 
+**进度（🟡 做法 1/2/3/4 已落地，2026-10-19）**
+- 新增 **`tools/json_text.gd`**：JSON 文本级修改原语（字符串感知的括号匹配定位、
+  对象/数组末尾追加、键值替换），**不重排文件**，git diff 最小。
+- 新增 **`tools/LevelPreview.tscn` + `tools/level_preview.gd`**（关卡预览器/编辑器）：
+  - 左侧「章节 → 关卡 → 轮次」三级选择，右侧用**真实舞台**渲染该轮
+    （LabStage/Lab3DStage/SequenceStage/ConicStage/SolidChallenge 均可预览）；
+  - **热重载**：`data/*_levels.json` / `curriculum.json` 外部改动 ~0.7s 自动刷新重建；
+  - **编辑态**：q / ask / opts（每行一项）/ ans / hint / explain / scene（整个 JSON 对象）
+    → 「写回 JSON」（文本级，写前做「可解析 + 组数/轮数不变」终检，失败不落盘）；
+  - **内置 A5 轻量校验**：轮次编号（B9）/ ans 范围 / 选项重复 / 题干缺失与文件内重复，选关即显示；
+  - 代码驱动遗留关（SolidChallenge 方法关 / ConicStage C1~C3）**只读预览**；
+  - headless 自检 `-- --smoke`：**6313 断言 / 0 fail**——覆盖 26 个数据文件全量「组/轮/字段定位回归」、
+    内存编辑往返（不写盘）、校验器存量扫描、每类舞台抽样构建。已入 CI。
+- 新增 **`tools/scaffold_level.gd`**（关卡脚手架，做法 3/4）：
+  - `-- --file=<*_levels> --key=<新组> [--chapter=<章>] [--name=…] [--rounds=5] [--apply]`，默认 dry-run；
+  - 生成 5 轮骨架（探究 explore→建构 choice→迁移 choice→巩固 input→综合 choice，`ans=0`，
+    【TODO】占位互不重复以避免触发题干重复检查；探究轮带合法的 sliders/lines 占位 scene）；
+  - `--chapter` 同步追加 `curriculum.json` 该章 levels（**结构克隆该章最后一条**，自动适配
+    LabStage/Lab3DStage 的 `lab`/`lab_ref`/`space` 字段）与 `knowledge_map.json` 该章 points（E1 联动）；
+  - **集成实测**：apply 到 `inequalities` 后 `check_questions` **0 new**、
+    `check_knowledge` 259 points 全映射、hard-gaps 不变（测后已还原）。
+- CI：`check.yml` 新增 `LevelPreview 自检` 与 `scaffold dry-run` 两步。
+- README 新增「关卡作者工具链（G2）」一节（推荐创作流程）。
+
+**残留**
+- ⚠️ 预览器的 GUI 观感/操作手感**未经人眼验收**（本机 headless 无法目视）；
+- ⚠️ 编辑态暂不覆盖 `steps`/`goal`/`success`（explore 轮的实验文案）与多选 `ans` 数组；
+- ⚠️ 「校验报错直接定位到行号并高亮」未做（当前为文字清单）；
+- ⚠️ 「E 类补内容平均单关耗时前后对比」待实际使用后记录。
+
 ---
 
 ### [ ] G3 · 学习报告 / 家长视图（P2）
@@ -1721,6 +1755,7 @@
 | `--headless --path . --script res://tools/verify_inline.gd` | 末尾 `VERIFY_TABLE: total=<N> fail=0`（MicroTeX 渲染复验，改动 `res/` 或字体后必跑） |
 | `--headless --path . --script res://tools/check_assets.gd`（**新增，见 A13**） | `ASSETS: <MB> MB … banned=0, oversize=0`（不得出现 `ASSETS-FAIL`） |
 | `--headless --path . --script res://tools/check_knowledge.gd`（**新增，见 E1**） | `KNOWLEDGE: <c> chapters / <p> points / <l> levels mapped / hard-gaps=<n> (baseline <b>)`（不得出现 `KNOWLEDGE-FAIL`） |
+| `--headless --path . res://tools/LevelPreview.tscn -- --smoke`（**新增，见 G2**） | `LEVEL-PREVIEW-SMOKE: <N> ok, 0 fail`（作者工具链：数据定位回归 + 编辑往返 + 舞台抽样） |
 
 > 引擎：Godot 4.7.2（`D:\Program Files\Godot_v4.7.2-stable_win64.exe`）。该 exe 无 console 变体，
 > 无头运行需 `Start-Process -Wait -RedirectStandardOutput/Error` 重定向取输出（GUI 子系统进程直连控制台会丢输出）。
@@ -1731,10 +1766,11 @@
 > `& "<godot472.exe>" --headless --editor --path . --quit`。
 
 **当前回归基线**（改完请对照，数字只能升不能降）：
-`CHECKED 86 scripts, 0 failures` / `TESTS: 1245 passed, 0 failed` / `SMOKE: 268 ok, 0 fail` /
-`UI-SMOKE: 375 ok, 0 fail` / `LabSmoke` 末尾 `TMP_OK` /
+`CHECKED 89 scripts, 0 failures` / `TESTS: 1245 passed, 0 failed` / `SMOKE: 268 ok, 0 fail` /
+`UI-SMOKE: 340 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
+`LEVEL-PREVIEW-SMOKE: 6313 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
 `QUESTION-CHECK: 26 files / 252 levels / 862 questions / 0 new / 7 known`（A5 校验器，存量问题见下方基线）/
-`ASSETS: 29.79 MB … banned=0, oversize=0`（A13 护栏）/
+`ASSETS: 29.84 MB … banned=0, oversize=0`（A13 护栏）/
 `KNOWLEDGE: 27 chapters / 258 points / 258 levels mapped / hard-gaps=2 (baseline 2) / optional=8`（E1 矩阵）/
 `LATEX-PROBE: conic C4 68 / C5 76 / C6 68 段 / 0 失败`（E2 收官；**需按组分进程**，见 E2 的 MicroTeX 累积崩溃注）。
 

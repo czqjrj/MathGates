@@ -88,3 +88,17 @@ jobs:
           ./godot --headless --path . --script res://tools/check_knowledge.gd 2>&1 | tee out.log
           grep -Eq "KNOWLEDGE: [0-9]+ chapters" out.log
           ! grep -Eq "KNOWLEDGE-FAIL" out.log
+
+      - name: LevelPreview 自检（作者工具链，G2）
+        run: |
+          set -euo pipefail
+          ./godot --headless --path . res://tools/LevelPreview.tscn -- --smoke 2>&1 | tee out.log
+          grep -Eq "LEVEL-PREVIEW-SMOKE: [0-9]+ ok, 0 fail" out.log
+
+      - name: scaffold dry-run（关卡脚手架，G2）
+        run: |
+          set -euo pipefail
+          ./godot --headless --path . --script res://tools/scaffold_level.gd -- \
+            --file=inequalities_levels --key=_scaffold_dryrun 2>&1 | tee out.log
+          grep -Eq "SCAFFOLD: file=" out.log
+          ! grep -Eq "ERROR" out.log
