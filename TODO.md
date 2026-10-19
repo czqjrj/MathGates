@@ -134,7 +134,7 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`5d784bb`（`feat(E3)` 计数方法体系余项 `count_bundle`/`count_partition`/`count_misc` + `count_binom_props` 补 6-6；前条 `017f04b` 解三角形实际应用 `trig_measure`），已 push（`main` 与 `origin/main` 同步）。
+- **最后提交**：`0bb0a2e`（`feat(E3)` 函数模型的增长对比与选择 `func_model`；前条 `5d784bb` 计数方法体系余项 + 二项式系数补 6-6），已 push（`main` 与 `origin/main` 同步）。
 - **本轮交付（2026-10-19，第四轮）**：
   - **E3 第 9 条「函数模型的应用与增长对比」落地**：新增 `func_model`（指数 y=2ˣ 与幂 y=x² 交点读图
     探究、充分大时增长速度排序指数>幂>一次>对数、细菌分裂情境选指数模型、两点拟合 y=a·bˣ 定底数、
