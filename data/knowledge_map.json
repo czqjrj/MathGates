@@ -317,7 +317,8 @@
         { "name": "1-3 列联表与独立性检验", "levels": ["cd_indep"] },
         { "name": "1-4 残差与拟合优度", "levels": ["cd_resid"] },
         { "name": "1-5 相关系数的性质", "levels": ["cd_rprops"] },
-        { "name": "1-6 卡方统计量的计算与判断", "levels": ["cd_chi"] }
+        { "name": "1-6 卡方统计量的计算与判断", "levels": ["cd_chi"] },
+        { "name": "1-7 相关系数的计算与解释", "levels": ["cd_corr_coef"] }
       ],
       "gaps": []
     },

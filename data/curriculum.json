@@ -1413,6 +1413,15 @@
           "lab": "corr_data",
           "lab_ref": "cd_chi",
           "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "archetype": "LAB",
+          "id": "cd_corr_coef",
+          "lab": "corr_data",
+          "lab_ref": "cd_corr_coef",
+          "name": "1-7 相关系数的计算与解释",
+          "scene": "res://scenes/LabStage.tscn",
+          "technique": "公式计算 · 符号强弱"
         }
       ]
     },
