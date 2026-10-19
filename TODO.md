@@ -134,7 +134,7 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`017f04b`（`feat(E3)` 解三角形实际应用 `trig_measure`；前条 `d4a6a40` 集合关系与补集），已 push（`main` 与 `origin/main` 同步）。
+- **最后提交**：`5d784bb`（`feat(E3)` 计数方法体系余项 `count_bundle`/`count_partition`/`count_misc` + `count_binom_props` 补 6-6；前条 `017f04b` 解三角形实际应用 `trig_measure`），已 push（`main` 与 `origin/main` 同步）。
 - **本轮交付（2026-10-19，第三轮）**：
   - **E3 第 7 条「排列组合方法体系」落地**：新增 `count_bundle`（捆绑法/插空法：整体×内部排列探究、
     相邻列式辨析、插空列式辨析、相邻+不相邻排除综合、男生互不相邻）、`count_partition`（隔板法：
