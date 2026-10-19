@@ -220,6 +220,8 @@ func _load_q() -> void:
 	elif t == "interact" and has_interactive:
 		_begin_interactive(s)
 		_build_interact(s)
+	elif t == "input":
+		_build_input(s)
 	else:
 		if has_interactive:
 			_begin_interactive(s)

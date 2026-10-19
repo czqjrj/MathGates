@@ -37,6 +37,9 @@ var _n_questions := 0
 var _n_choice := 0
 var _n_multi := 0
 var _n_interact := 0
+var _n_input := 0
+var _n_explore := 0
+var _n_explore_stmt := 0
 var _ans_hist := {}
 var _img_opt_count := 0
 var _img_opt_questions := 0
@@ -129,8 +132,14 @@ func _check_stage(path: String, key: String, group_no: int, idx: int, s: Variant
 		_add(path, key, "%s 不是对象" % where)
 		return
 	var st: Dictionary = s
-	var is_interact := str(st.get("type", "")) == "interact" or st.has("gate") or st.has("answers")
+	var rtype := str(st.get("type", ""))
+	var is_interact := rtype == "interact" or st.has("gate") or st.has("answers")
+	var is_input := rtype == "input"
 	var q := str(st.get("q", ""))
+	if rtype == "explore":
+		_n_explore += 1
+		if q.find("？") < 0 and q.find("?") < 0:
+			_n_explore_stmt += 1
 	if q.strip_edges() == "" and not is_interact:
 		_add(path, key, "%s 缺少 q（且非 interact/gate 轮）" % where)
 	elif q.strip_edges() != "":
@@ -145,7 +154,12 @@ func _check_stage(path: String, key: String, group_no: int, idx: int, s: Variant
 	# ---- 选项 / 答案
 	var opts = st.get("opts", null)
 	if opts == null:
-		if is_interact:
+		if is_input:
+			_n_input += 1
+			_n_questions += 1
+			if not st.has("ans"):
+				_add(path, key, "%s 填空轮缺少 ans" % where)
+		elif is_interact:
 			_n_interact += 1
 		_check_inline(path, key, where + ".q", q)
 		_check_inline(path, key, where + ".ask", str(st.get("ask", "")))
@@ -446,7 +460,14 @@ func _report() -> void:
 
 	print("QUESTION-CHECK: %d files / %d levels / %d questions / %d new / %d known / %d warnings"
 		% [_n_files, _n_levels, _n_questions, new_issues.size(), known_hits, warns.size()])
-	print("[看板] 题型: 单选=%d 多选=%d interact=%d" % [_n_choice, _n_multi, _n_interact])
+	print("[看板] 题型: 单选=%d 多选=%d interact=%d 填空=%d" % [_n_choice, _n_multi, _n_interact, _n_input])
+	var n_total := _n_choice + _n_multi + _n_interact + _n_input
+	if n_total > 0:
+		print("[看板] 非四选一占比: %.1f%%（B1 目标 ≤30%%，即四选一 ≤70%%）"
+			% [100.0 * float(n_total - _n_choice) / float(n_total)])
+	if _n_explore > 0:
+		print("[看板] 探究轮题面陈述句(无「？」): %d/%d（%.1f%%，B3 目标 <20%%）"
+			% [_n_explore_stmt, _n_explore, 100.0 * float(_n_explore_stmt) / float(_n_explore)])
 	print("[看板] 选项: 图片 %d 处（%d 题）" % [_img_opt_count, _img_opt_questions])
 	print("[看板] ans 原始分布: 0=%d(%.1f%%) 1=%d 2=%d 3=%d"
 		% [ans0, (100.0 * float(ans0) / float(maxi(1, _n_choice))),

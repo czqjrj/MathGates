@@ -102,6 +102,8 @@ func _load_q() -> void:
 		_build_explore(s)
 	elif t == "interact":
 		_build_interact(s)
+	elif t == "input":
+		_build_input(s)
 	else:
 		_build_choices(s)
 

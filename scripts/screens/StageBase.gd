@@ -59,6 +59,8 @@ var _opt_order: Array[int] = []
 var _multi_sel: Dictionary = {}
 var _multi_row: CenterContainer
 var _multi_btn: Button
+## 数值/公式填空(B1，题面 type="input"):单行输入 + 提交。
+var _input_edit: LineEdit
 
 # ---------------------------------------------------------------- 状态
 var _idx := 0
@@ -284,6 +286,7 @@ func _clear_opts() -> void:
 	_opt_marks.clear()
 	_opt_order.clear()
 	_multi_sel.clear()
+	_input_edit = null
 	if _multi_row != null:
 		_multi_row.visible = false
 
@@ -298,6 +301,114 @@ func _build_choices(s: Dictionary) -> void:
 		_multi_row.visible = s.get("ans") is Array
 	if _multi_btn != null:
 		_multi_btn.disabled = true
+
+# ---------------------------------------------------------------- 数值/公式填空(B1)
+## 题面 "type":"input"：学生输入数值/公式，与 "ans"(数值) 比较；"tol" 为容差(默认 0.05)。
+## 常见写法(√、²、³、π、×、÷、隐式乘法)由 _parse_math 归一化为表达式求值。
+func _build_input(s: Dictionary) -> void:
+	var col := VBoxContainer.new()
+	col.add_theme_constant_override("separation", 8)
+	_ans.add_child(col)
+	var hb := HBoxContainer.new()
+	hb.add_theme_constant_override("separation", 10)
+	col.add_child(hb)
+	_input_edit = LineEdit.new()
+	_input_edit.placeholder_text = str(s.get("placeholder", "输入数值，如 3.5、√2、1/2"))
+	_input_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_input_edit.add_theme_font_size_override("font_size", UI.fs(19))
+	_input_edit.custom_minimum_size = Vector2(0, 52)
+	_input_edit.add_theme_color_override("font_color", UI.COL_TEXT)
+	_input_edit.add_theme_color_override("font_placeholder_color", Color(UI.COL_TEXT_DIM, 0.7))
+	_input_edit.add_theme_color_override("caret_color", UI.COL_ACCENT)
+	_input_edit.add_theme_color_override("selection_color", Color(UI.COL_ACCENT, 0.3))
+	_input_edit.add_theme_stylebox_override("normal", UI.glass_box(Color(0, 0, 0, 0.3), 10, Color(1, 1, 1, 0.16), 1, 10))
+	_input_edit.add_theme_stylebox_override("focus", UI.glass_box(Color(0, 0, 0, 0.3), 10, Color(UI.COL_ACCENT, 0.6), 1, 10))
+	_input_edit.text_submitted.connect(func(_t: String) -> void: _submit_input())
+	hb.add_child(_input_edit)
+	var b := Button.new()
+	b.text = str(s.get("submit", "提交"))
+	UI.primary_button(b)
+	b.custom_minimum_size = Vector2(96, 52)
+	b.pressed.connect(_submit_input)
+	hb.add_child(b)
+	# 数学符号快捷输入(触屏友好)
+	var keys := HBoxContainer.new()
+	keys.add_theme_constant_override("separation", 6)
+	col.add_child(keys)
+	for sym in ["√", "²", "³", "π", "×", "÷", "(", ")", "/", "."]:
+		var kb := Button.new()
+		kb.text = sym
+		kb.focus_mode = Control.FOCUS_NONE
+		kb.custom_minimum_size = Vector2(40, 40)
+		kb.add_theme_font_size_override("font_size", UI.fs(19))
+		kb.add_theme_color_override("font_color", UI.COL_TEXT)
+		kb.add_theme_stylebox_override("normal", UI.glass_box(Color(1, 1, 1, 0.05), 8, Color(1, 1, 1, 0.16), 1, 4))
+		kb.add_theme_stylebox_override("hover", UI.glass_box(Color(1, 1, 1, 0.1), 8, Color(UI.COL_ACCENT, 0.5), 1, 4))
+		kb.add_theme_stylebox_override("pressed", UI.glass_box(Color(0, 0, 0, 0.3), 8, Color(UI.COL_ACCENT, 0.8), 1, 4))
+		kb.pressed.connect(_insert_symbol.bind(sym))
+		keys.add_child(kb)
+
+func _insert_symbol(sym: String) -> void:
+	if _input_edit == null:
+		return
+	_input_edit.grab_focus()
+	_input_edit.insert_text_at_caret(sym)
+
+## 提交填空：归一化后求值，与 ans 在 tol 内视为答对。
+func _submit_input() -> void:
+	if _solved or _done or _input_edit == null or _stages.is_empty():
+		return
+	_last_picked = -1
+	var s := _current()
+	var val = _parse_math(_input_edit.text.strip_edges())
+	if val == null:
+		_wrong("没看懂这个式子，试试输入数值或 sqrt(2)。")
+		return
+	var tol := float(s.get("tol", 0.05))
+	if absf(float(val) - float(s.get("ans", 0.0))) <= tol:
+		_level_ok()
+	else:
+		_wrong(str(s.get("wrong", "还差一点，再算算？")))
+
+## 把常见数学写法(√、²、³、×、÷、π、隐式乘法)转成表达式可解析的形式。
+func _norm_math(text: String) -> String:
+	var s := text.strip_edges()
+	s = s.replace(" ", "").replace("　", "")
+	s = s.replace("×", "*").replace("·", "*").replace("÷", "/")
+	s = s.replace("−", "-").replace("–", "-").replace("—", "-")
+	s = s.replace("π", "3.141592653589793")
+	s = s.replace("²", "^2").replace("³", "^3").replace("¹", "^1").replace("⁰", "^0")
+	var re := RegEx.new()
+	re.compile("([0-9]+(?:\\.[0-9]+)?)\\^([0-9]+)")
+	s = re.sub(s, "pow($1,$2)", true)
+	re.compile("√\\s*\\(([^()]*)\\)")
+	s = re.sub(s, "sqrt($1)", true)
+	re.compile("√\\s*([0-9]+(?:\\.[0-9]+)?)")
+	s = re.sub(s, "sqrt($1)", true)
+	s = s.replace("√", "sqrt")
+	re.compile("([0-9])\\s*([a-zA-Z(])")
+	s = re.sub(s, "$1*$2", true)
+	re.compile("\\)\\s*([0-9a-zA-Z(])")
+	s = re.sub(s, ")*$1", true)
+	return s
+
+func _parse_math(text: String) -> Variant:
+	var s := _norm_math(text)
+	if s == "":
+		return null
+	if s.is_valid_float():
+		return s.to_float()
+	if s.is_valid_int():
+		return float(s.to_int())
+	var e := Expression.new()
+	if e.parse(s) != OK:
+		return null
+	var v: Variant = e.execute()
+	if e.has_execute_failed():
+		return null
+	if v != null and (v is float or v is int):
+		return float(v)
+	return null
 
 ## 选项乱序：默认打乱，防止学生记住答案位置；题面写 "shuffle": false 或 "fixed": true
 ## 可关闭，含「以上都对」等顺序相关选项时也自动关闭。返回 [显示位置 -> 原始下标]。
