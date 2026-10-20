@@ -34,6 +34,7 @@ func _run() -> void:
 	_test_tts_policy()
 	_test_daily()
 	_test_textbook()
+	_test_player_rules()
 	_test_adventure()
 	_test_inline_math()
 	print("TESTS: %d passed, %d failed" % [_pass, _fail])
@@ -130,11 +131,11 @@ func _test_boss_data() -> void:
 		_ok(ea > 0.0 and ea <= 1.0, lid + " boss.enrage_at in (0,1]")
 		var rw: Dictionary = boss.get("reward", {})
 		_ok(int(rw.get("first_clear_coins", 0)) > 0, lid + " boss.reward.first_clear_coins > 0")
-	# 勋章 boss_first / boss_all 依赖 GameData._boss_level_ids()：应恰好覆盖这 5 关
-	var meta: Array = GameData._boss_level_ids()
+	# 勋章 boss_first / boss_all 依赖 GameData.boss_level_ids()：应恰好覆盖这 5 关
+	var meta: Array = GameData.boss_level_ids()
 	_eq(meta.size(), 5, "boss level count == 5")
 	for lid2 in ids:
-		_ok(meta.has(lid2), "_boss_level_ids has " + lid2)
+		_ok(meta.has(lid2), "boss_level_ids has " + lid2)
 
 ## 校验 P2 关卡节奏：连击倍率映射、5 个 Boss 关的 rules{} 限时块、以及最快用时存档。
 func _test_rhythm() -> void:
@@ -332,11 +333,11 @@ func _test_economy() -> void:
 	_ok(not GameData.daily_available(), "daily_available false after claim")
 	_ok(not bool(GameData.claim_daily().get("ok", true)), "claim_daily twice blocked")
 
-	# 勋章判定改用累计金币
+	# 勋章判定改用累计金币(规则在 PlayerRules，GameData._medal_ctx() 汇总快照)
 	GameData.coins_earned = 999
-	_ok(not GameData._medal_met("coins_1000"), "coins_1000 needs earned>=1000")
+	_ok(not PlayerRules.medal_met("coins_1000", GameData._medal_ctx()), "coins_1000 needs earned>=1000")
 	GameData.coins_earned = 1000
-	_ok(GameData._medal_met("coins_1000"), "coins_1000 met at earned=1000")
+	_ok(PlayerRules.medal_met("coins_1000", GameData._medal_ctx()), "coins_1000 met at earned=1000")
 
 	GameData.coins = s_coins
 	GameData.coins_earned = s_earned
@@ -346,6 +347,91 @@ func _test_economy() -> void:
 	GameData.last_login_date = s_date
 	GameData.login_streak = s_lstreak
 	GameData.current_user = saved_user
+
+## A4 第一刀：纯规则层 PlayerRules(称号/等级/星级统计/勋章/防刷公式)。
+## 全部用构造数据单测，不依赖存档状态——GameData 门面的一致性由 _test_anti_farm 等既有用例覆盖。
+func _test_player_rules() -> void:
+	# —— 称号阶梯(按满星比例达成) ——
+	var mx := 100
+	_eq(PlayerRules.rank_index(0, mx), 0, "rank 0★ -> 窥数者")
+	_eq(PlayerRules.rank_index(5, mx), 0, "rank 5/100 still 窥数者(6% 未达)")
+	_eq(PlayerRules.rank_index(6, mx), 1, "rank 6/100 -> 演算者")
+	_eq(PlayerRules.rank_index(15, mx), 2, "rank 15/100 -> 衍算师")
+	_eq(PlayerRules.rank_index(mx, mx), PlayerRules.RANKS.size() - 1, "rank 全满星 -> 顶阶")
+	_eq(PlayerRules.rank_index(0, 0), 0, "max=0 守卫为 1 不崩")
+	var rp: Dictionary = PlayerRules.rank_progress(6, mx)
+	_eq(rp["title"], "演算者", "rank_progress 当前称号")
+	_eq(rp["next_title"], "衍算师", "rank_progress 下一称号")
+	_eq(rp["need"], 9, "6★/100 距 15% 还需 9★")
+	rp = PlayerRules.rank_progress(mx, mx)
+	_eq(rp["next_title"], "", "顶阶 next_title 空")
+	_eq(rp["need"], 0, "顶阶 need=0")
+
+	# —— 玩家等级(每 8 星升 1 级) ——
+	_eq(PlayerRules.player_level(0), 1, "lv 0★ -> 1")
+	_eq(PlayerRules.player_level(8), 2, "lv 8★ -> 2")
+	_eq(PlayerRules.player_level(17), 3, "lv 17★ -> 3")
+	var lp: Dictionary = PlayerRules.level_progress(10)
+	_eq(lp["level"], 2, "level_progress.level")
+	_eq(lp["cur"], 2, "level_progress.cur")
+	_eq(lp["span"], 8, "level_progress.span")
+	_ok(absf(float(lp["ratio"]) - 0.25) < 0.0001, "level_progress.ratio=2/8")
+
+	# —— 星级统计(构造课程) ——
+	var ch := { "levels": [ { "id": "a" }, { "id": "b" }, { "id": "c_boss" } ] }
+	var st := { "a": 1, "b": 3, "c_boss": 3 }
+	_eq(PlayerRules.chapter_stars(ch, st), 7, "chapter_stars 累加")
+	_eq(PlayerRules.chapter_max_stars(ch), 9, "chapter_max_stars = 关数×3")
+	_eq(PlayerRules.chapter_stars({ "levels": [] }, st), 0, "空章 stars=0")
+	_eq(PlayerRules.cleared_level_count([ch], st), 3, "cleared 计 ≥1★")
+	_eq(PlayerRules.full_star_level_count([ch], st), 2, "full_star 计 =3★")
+	_eq(PlayerRules.boss_level_ids([ch]), ["c_boss"], "boss ids 按 _boss 后缀")
+	_eq(PlayerRules.boss_cleared_count([ch], st), 1, "boss_cleared 计数")
+	var chs := [ { "levels": [ { "id": "x" }, { "id": "y" } ] }, { "levels": [ { "id": "z" } ] } ]
+	_ok(not PlayerRules.chapter_master_any(chs, { "x": 3, "y": 2, "z": 2 }), "chapter_master_any 两章均差星为 false")
+	_ok(PlayerRules.chapter_master_any(chs, { "x": 3, "y": 2, "z": 3 }), "chapter_master_any 第 2 章满星即 true")
+
+	# —— 勋章判定(构造 ctx 快照) ——
+	var ctx := {
+		"cleared": 10, "full_star": 1, "total_stars": 50, "total_questions": 60,
+		"accuracy": 0.85, "coins_earned": 999, "pet_fed": 3,
+		"boss_total": 5, "boss_cleared": 1, "chapter_master": false,
+	}
+	_ok(PlayerRules.medal_met("first_clear", ctx), "medal first_clear 达成")
+	_ok(PlayerRules.medal_met("clear_10", ctx), "medal clear_10 达成(=10)")
+	_ok(not PlayerRules.medal_met("clear_30", ctx), "medal clear_30 未达")
+	_ok(PlayerRules.medal_met("perfect_1", ctx), "medal perfect_1 达成")
+	_ok(not PlayerRules.medal_met("perfect_10", ctx), "medal perfect_10 未达")
+	_ok(not PlayerRules.medal_met("chapter_master", ctx), "medal chapter_master 未达")
+	_ok(PlayerRules.medal_met("stars_50", ctx), "medal stars_50 达成(=50)")
+	_ok(not PlayerRules.medal_met("stars_150", ctx), "medal stars_150 未达")
+	_ok(not PlayerRules.medal_met("answer_100", ctx), "medal answer_100 未达(60<100)")
+	_ok(PlayerRules.medal_met("accuracy_80", ctx), "medal accuracy_80 达成(60题85%)")
+	_ok(not PlayerRules.medal_met("coins_1000", ctx), "medal coins_1000 未达(999)")
+	_ok(PlayerRules.medal_met("boss_first", ctx), "medal boss_first 达成")
+	_ok(not PlayerRules.medal_met("boss_all", ctx), "medal boss_all 未达(1/5)")
+	_ok(PlayerRules.medal_met("pet_3", ctx), "medal pet_3 达成(=3)")
+	ctx["boss_cleared"] = 5
+	_ok(PlayerRules.medal_met("boss_all", ctx), "medal boss_all 5/5 达成")
+	ctx["total_questions"] = 20
+	ctx["accuracy"] = 0.95
+	_ok(not PlayerRules.medal_met("accuracy_80", ctx), "accuracy_80 需满 50 题")
+	ctx["boss_total"] = 0
+	ctx["boss_cleared"] = 0
+	_ok(not PlayerRules.medal_met("boss_all", ctx), "boss_all 课程无 Boss 时不达成")
+	_ok(not PlayerRules.medal_met("no_such_medal", ctx), "未知勋章 id 判定 false")
+	_eq(PlayerRules.medal_def("clear_10").get("name", ""), "小有心得", "medal_def 查表")
+	_eq(PlayerRules.medal_def("nope").size(), 0, "medal_def 未知 id 空字典")
+
+	# —— 防刷公式(C1/C2) ——
+	_eq(PlayerRules.star_cap(0), 3, "star_cap 当日第 1 次前=3")
+	_eq(PlayerRules.star_cap(2), 3, "star_cap 2 次内=3")
+	_eq(PlayerRules.star_cap(3), 2, "star_cap 第 3 次起=2")
+	_eq(PlayerRules.repeat_grant(100, 0), 30, "repeat_grant ×0.3")
+	_eq(PlayerRules.repeat_grant(100, 2), 30, "repeat_grant 3 次内仍折扣")
+	_eq(PlayerRules.repeat_grant(100, 3), 0, "repeat_grant 当日封顶=0")
+	_eq(PlayerRules.repeat_grant(0, 0), 0, "repeat_grant 基数 0")
+	_eq(PlayerRules.repeat_grant(-10, 0), 0, "repeat_grant 负基数守卫")
 
 ## C1/C2：重复通关不再无限刷经验/金币；当日重试降级星级上限。
 func _test_anti_farm() -> void:

@@ -12,11 +12,11 @@ func _ready() -> void:
 
 func _pet_comment() -> String:
 	var n := GameData.medal_count()
-	var total := GameData.MEDALS.size()
+	var total := PlayerRules.MEDALS.size()
 	if n >= total:
 		return "全部勋章都集齐了，太厉害了！"
 	var nxt := ""
-	for m in GameData.MEDALS:
+	for m in PlayerRules.MEDALS:
 		if not GameData.is_medal_unlocked(str(m["id"])):
 			nxt = str(m["name"])
 			break
@@ -31,12 +31,12 @@ var _count_lbl: Label
 
 func _build_topbar() -> void:
 	var hb := UI.screen_topbar(self, "成就馆", "ACHIEVEMENTS", "res://scenes/MainHub.tscn")
-	_count_lbl = UI.mono_label("勋章 %d / %d" % [GameData.medal_count(), GameData.MEDALS.size()], 17, Color("#a878ff"))
+	_count_lbl = UI.mono_label("勋章 %d / %d" % [GameData.medal_count(), PlayerRules.MEDALS.size()], 17, Color("#a878ff"))
 	hb.add_child(_count_lbl)
 
 func _build_topbar_refresh() -> void:
 	if _count_lbl != null and is_instance_valid(_count_lbl):
-		_count_lbl.text = "勋章 %d / %d" % [GameData.medal_count(), GameData.MEDALS.size()]
+		_count_lbl.text = "勋章 %d / %d" % [GameData.medal_count(), PlayerRules.MEDALS.size()]
 
 # ---------------------------------------------------------------- 主体
 func _build_body() -> void:
@@ -69,7 +69,7 @@ func _build_body() -> void:
 	grid.add_theme_constant_override("h_separation", 14)
 	grid.add_theme_constant_override("v_separation", 14)
 	gcenter.add_child(grid)
-	for m in GameData.MEDALS:
+	for m in PlayerRules.MEDALS:
 		grid.add_child(_medal_card(m))
 
 	vb.add_child(UI.gap(20))
@@ -89,7 +89,7 @@ func _overview_card() -> Control:
 	hsp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(hsp)
 	head.add_child(UI.mono_label("解析失序 · 留痕成章", 14, UI.COL_TEXT_DIM))
-	var total := GameData.MEDALS.size()
+	var total := PlayerRules.MEDALS.size()
 	var got := GameData.medal_count()
 	var stats := HBoxContainer.new()
 	stats.add_theme_constant_override("separation", 18)
@@ -162,12 +162,12 @@ func _medal_card(m: Dictionary) -> Control:
 ## 可量化的勋章返回 {cur, goal}；不可量化(章节通解等)返回空。
 func _medal_progress(id: String) -> Dictionary:
 	match id:
-		"clear_10":   return { "cur": GameData._cleared_level_count(), "goal": 10 }
-		"clear_30":   return { "cur": GameData._cleared_level_count(), "goal": 30 }
-		"clear_60":   return { "cur": GameData._cleared_level_count(), "goal": 60 }
-		"perfect_1":  return { "cur": GameData._full_star_level_count(), "goal": 1 }
-		"perfect_10": return { "cur": GameData._full_star_level_count(), "goal": 10 }
-		"perfect_30": return { "cur": GameData._full_star_level_count(), "goal": 30 }
+		"clear_10":   return { "cur": GameData.cleared_level_count(), "goal": 10 }
+		"clear_30":   return { "cur": GameData.cleared_level_count(), "goal": 30 }
+		"clear_60":   return { "cur": GameData.cleared_level_count(), "goal": 60 }
+		"perfect_1":  return { "cur": GameData.full_star_level_count(), "goal": 1 }
+		"perfect_10": return { "cur": GameData.full_star_level_count(), "goal": 10 }
+		"perfect_30": return { "cur": GameData.full_star_level_count(), "goal": 30 }
 		"stars_50":   return { "cur": GameData.total_stars(), "goal": 50 }
 		"stars_150":  return { "cur": GameData.total_stars(), "goal": 150 }
 		"stars_300":  return { "cur": GameData.total_stars(), "goal": 300 }
@@ -176,6 +176,6 @@ func _medal_progress(id: String) -> Dictionary:
 		"coins_1000": return { "cur": GameData.coins_earned, "goal": 1000 }
 		"pet_3":      return { "cur": GameData.pet_fed, "goal": 3 }
 		"pet_10":     return { "cur": GameData.pet_fed, "goal": 10 }
-		"boss_first": return { "cur": GameData._boss_cleared_count(), "goal": 1 }
-		"boss_all":   return { "cur": GameData._boss_cleared_count(), "goal": GameData._boss_level_ids().size() }
+		"boss_first": return { "cur": GameData.boss_cleared_count(), "goal": 1 }
+		"boss_all":   return { "cur": GameData.boss_cleared_count(), "goal": GameData.boss_level_ids().size() }
 	return {}

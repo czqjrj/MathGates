@@ -937,15 +937,15 @@ func _finish() -> void:
 	if boosted:
 		score_txt += "   ·   双倍金币"
 	if star_capped:
-		score_txt += "   ·   今日重试：星级上限 %d" % GameData.STAR_CAP_REPEAT
+		score_txt += "   ·   今日重试：星级上限 %d" % PlayerRules.STAR_CAP_REPEAT
 	if repeat_discounted:
-		score_txt += "   ·   重复通关奖励 ×%.1f" % GameData.REPEAT_REWARD_RATE
+		score_txt += "   ·   重复通关奖励 ×%.1f" % PlayerRules.REPEAT_REWARD_RATE
 	if first_clear:
 		score_txt += "   ·   首通奖励 +%d" % _boss_first_clear_coins()
 	_v_score.text = score_txt
 	_v_guide.text = _next_star_hint(st, clean, total)
 	if star_capped:
-		var cap_txt := "今日重试：本关上星上限 %d 星" % GameData.STAR_CAP_REPEAT
+		var cap_txt := "今日重试：本关上星上限 %d 星" % PlayerRules.STAR_CAP_REPEAT
 		_v_guide.text = cap_txt if _v_guide.text == "" else _v_guide.text + "  ·  " + cap_txt
 	_v_guide.visible = _v_guide.text != ""
 	for c in _v_star_row.get_children():

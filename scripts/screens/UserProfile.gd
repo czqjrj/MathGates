@@ -333,12 +333,12 @@ func _achievements_summary_card() -> Control:
 	var hsp := Control.new()
 	hsp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(hsp)
-	head.add_child(UI.mono_label("%d / %d" % [GameData.medal_count(), GameData.MEDALS.size()], 15, Color("#a878ff")))
+	head.add_child(UI.mono_label("%d / %d" % [GameData.medal_count(), PlayerRules.MEDALS.size()], 15, Color("#a878ff")))
 	head.add_child(UI.ghost_button("打开成就馆", func() -> void:
 		Sound.play("select")
 		Scene.goto("res://scenes/Achievements.tscn")
 	, 14))
-	var total := maxi(1, GameData.MEDALS.size())
+	var total := maxi(1, PlayerRules.MEDALS.size())
 	var bar := ProgressLine.new()
 	bar.col = Color("#a878ff")
 	bar.glow = GameData.medal_count() > 0

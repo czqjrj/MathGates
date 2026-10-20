@@ -27,39 +27,9 @@ const AVATARS := [
 	{ "id": "train", "icon": "icon_train", "color": "#4dd6a8" },
 ]
 
-## 称号阶梯：按「满星比例」达成，课程扩充时自动适配，无需改数值。
-const RANKS := [
-	{ "title": "窥数者",     "ratio": 0.00 },
-	{ "title": "演算者",     "ratio": 0.06 },
-	{ "title": "衍算师",     "ratio": 0.15 },
-	{ "title": "定理执笔人", "ratio": 0.30 },
-	{ "title": "公理谛听者", "ratio": 0.50 },
-	{ "title": "衍数尊者",   "ratio": 0.70 },
-	{ "title": "衍数阁主",   "ratio": 0.88 },
-]
-
-## 勋章/成就定义。symbol 为徽章中央字符；达成条件见 _medal_met()。
-const MEDALS := [
-	{ "id": "first_clear",   "name": "初露锋芒", "desc": "首次通关任意关卡",             "symbol": "初", "color": "#5ee6ff" },
-	{ "id": "clear_10",      "name": "小有心得", "desc": "通关 10 个关卡",               "symbol": "十", "color": "#5ee6ff" },
-	{ "id": "clear_30",      "name": "登堂入室", "desc": "通关 30 个关卡",               "symbol": "堂", "color": "#a878ff" },
-	{ "id": "clear_60",      "name": "融会贯通", "desc": "通关 60 个关卡",               "symbol": "贯", "color": "#a878ff" },
-	{ "id": "perfect_1",     "name": "一丝不苟", "desc": "首次满星通关",                 "symbol": "满", "color": "#ffd479" },
-	{ "id": "perfect_10",    "name": "完美主义", "desc": "满星关卡达到 10 个",           "symbol": "完", "color": "#ffd479" },
-	{ "id": "perfect_30",    "name": "精益求精", "desc": "满星关卡达到 30 个",           "symbol": "精", "color": "#f6bd16" },
-	{ "id": "chapter_master","name": "章节通解", "desc": "任意章节集满全部星星",         "symbol": "章", "color": "#45C7E5" },
-	{ "id": "stars_50",      "name": "星辉初绽", "desc": "累计获得 50 颗星",             "symbol": "星", "color": "#5ee6ff" },
-	{ "id": "stars_150",     "name": "星河璀璨", "desc": "累计获得 150 颗星",            "symbol": "河", "color": "#a878ff" },
-	{ "id": "stars_300",     "name": "满天星斗", "desc": "累计获得 300 颗星",            "symbol": "斗", "color": "#ffd479" },
-	{ "id": "answer_100",    "name": "勤学不辍", "desc": "累计作答 100 题",              "symbol": "勤", "color": "#34d399" },
-	{ "id": "answer_500",    "name": "博览群题", "desc": "累计作答 500 题",              "symbol": "博", "color": "#34d399" },
-	{ "id": "accuracy_80",   "name": "精准推演", "desc": "作答满 50 题且正确率 ≥ 80%",    "symbol": "准", "color": "#34d399" },
-	{ "id": "coins_1000",    "name": "富甲一方", "desc": "金币累计达到 1000",            "symbol": "金", "color": "#ffd479" },
-	{ "id": "boss_first",    "name": "破阵者",   "desc": "通关任意隐藏 Boss",            "symbol": "破", "color": "#fb7185" },
-	{ "id": "boss_all",      "name": "无冕之王", "desc": "通关全部隐藏 Boss",            "symbol": "王", "color": "#fb7185" },
-	{ "id": "pet_3",         "name": "亲密伙伴", "desc": "投喂萌宠 3 次",                "symbol": "友", "color": "#4dd6a8" },
-	{ "id": "pet_10",         "name": "形影不离", "desc": "投喂萌宠 10 次",               "symbol": "伴", "color": "#4dd6a8" },
-]
+## A4：称号阶梯(RANKS)/勋章(MEDALS)/星级统计/玩家等级/防刷公式已切到
+## scripts/rules/PlayerRules.gd（纯规则层，可直接单测）；本类保留 GameData.xxx() 门面，
+## 存档、通知、音效仍在门面之后。
 
 ## 每日任务：metric 对应当日增量(answers/clears/coins)或当日峰值(streak)。
 const DAILY_MISSIONS := [
@@ -513,13 +483,10 @@ func is_chapter_unlocked(index: int) -> bool:
 	return true
 
 func chapter_stars(chapter: Dictionary) -> int:
-	var total := 0
-	for lv in chapter.get("levels", []):
-		total += int(stars.get(lv["id"], 0))
-	return total
+	return PlayerRules.chapter_stars(chapter, stars)
 
 func chapter_max_stars(chapter: Dictionary) -> int:
-	return chapter.get("levels", []).size() * 3
+	return PlayerRules.chapter_max_stars(chapter)
 
 func is_level_unlocked(chapter_index: int, level_index: int) -> bool:
 	if chapter_index < 0 or chapter_index >= chapters.size():
@@ -548,52 +515,27 @@ func total_max_stars() -> int:
 	return total
 
 func player_level() -> int:
-	return 1 + int(total_stars() / 8.0)
+	return PlayerRules.player_level(total_stars())
 
 ## 等级进度(每 8 星升 1 级)：{level, cur, span, ratio}
 func level_progress() -> Dictionary:
-	var s := total_stars()
-	var into := s % 8
-	return { "level": 1 + int(s / 8.0), "cur": into, "span": 8, "ratio": float(into) / 8.0 }
+	return PlayerRules.level_progress(total_stars())
 
-# ---------------------------------------------------------------- 称号阶梯
+# ---------------------------------------------------------------- 称号阶梯(规则在 PlayerRules)
 ## 当前称号在 RANKS 中的下标(按满星比例达成)
 func rank_index() -> int:
-	var s := total_stars()
-	var mx := maxi(1, total_max_stars())
-	var idx := 0
-	for i in RANKS.size():
-		if s >= int(ceil(float(RANKS[i]["ratio"]) * float(mx))):
-			idx = i
-	return idx
+	return PlayerRules.rank_index(total_stars(), total_max_stars())
 
 func rank_title() -> String:
-	return str(RANKS[rank_index()]["title"])
+	return PlayerRules.rank_title(total_stars(), total_max_stars())
 
 ## 称号进度：{title, next_title, cur, span, need, ratio}(已满级 next_title 为空)
 func rank_progress() -> Dictionary:
-	var s := total_stars()
-	var mx := maxi(1, total_max_stars())
-	var idx := rank_index()
-	var prev := int(ceil(float(RANKS[idx]["ratio"]) * float(mx)))
-	var has_next := idx < RANKS.size() - 1
-	var target := mx if not has_next else int(ceil(float(RANKS[idx + 1]["ratio"]) * float(mx)))
-	var span := maxi(1, target - prev)
-	var into := clampi(s - prev, 0, span)
-	return {
-		"title": str(RANKS[idx]["title"]),
-		"next_title": str(RANKS[idx + 1]["title"]) if has_next else "",
-		"cur": into, "span": span,
-		"need": maxi(0, target - s),
-		"ratio": float(into) / float(span),
-	}
+	return PlayerRules.rank_progress(total_stars(), total_max_stars())
 
-# ---------------------------------------------------------------- 勋章 / 成就
+# ---------------------------------------------------------------- 勋章 / 成就(规则在 PlayerRules)
 func medal_def(id: String) -> Dictionary:
-	for m in MEDALS:
-		if str(m["id"]) == id:
-			return m
-	return {}
+	return PlayerRules.medal_def(id)
 
 func is_medal_unlocked(id: String) -> bool:
 	return medals.has(id)
@@ -603,81 +545,44 @@ func medal_count() -> int:
 
 ## 已解锁勋章(按 MEDALS 顺序)
 func unlocked_medals() -> Array:
-	var arr: Array = []
-	for m in MEDALS:
-		if medals.has(str(m["id"])):
-			arr.append(m)
-	return arr
+	return PlayerRules.medals_in_order(medals)
 
-## 隐藏 Boss 关卡 id 列表(以 _boss 结尾)
-func _boss_level_ids() -> Array:
-	var arr: Array = []
-	for ch in chapters:
-		for lv in ch.get("levels", []):
-			if str(lv.get("id", "")).ends_with("_boss"):
-				arr.append(str(lv["id"]))
-	return arr
+# 进度统计门面(纯统计，实现在 PlayerRules；Achievements 等界面走这里)
+func cleared_level_count() -> int:
+	return PlayerRules.cleared_level_count(chapters, stars)
 
-func _cleared_level_count() -> int:
-	var n := 0
-	for ch in chapters:
-		for lv in ch.get("levels", []):
-			if int(stars.get(lv["id"], 0)) >= 1:
-				n += 1
-	return n
+func full_star_level_count() -> int:
+	return PlayerRules.full_star_level_count(chapters, stars)
 
-func _full_star_level_count() -> int:
-	var n := 0
-	for ch in chapters:
-		for lv in ch.get("levels", []):
-			if int(stars.get(lv["id"], 0)) >= 3:
-				n += 1
-	return n
+func boss_level_ids() -> Array:
+	return PlayerRules.boss_level_ids(chapters)
 
-func _boss_cleared_count() -> int:
-	var n := 0
-	for id in _boss_level_ids():
-		if int(stars.get(id, 0)) >= 1:
-			n += 1
-	return n
+func boss_cleared_count() -> int:
+	return PlayerRules.boss_cleared_count(chapters, stars)
 
-## 单枚勋章的达成判定
-func _medal_met(id: String) -> bool:
-	match id:
-		"first_clear":    return _cleared_level_count() >= 1
-		"clear_10":       return _cleared_level_count() >= 10
-		"clear_30":       return _cleared_level_count() >= 30
-		"clear_60":       return _cleared_level_count() >= 60
-		"perfect_1":      return _full_star_level_count() >= 1
-		"perfect_10":     return _full_star_level_count() >= 10
-		"perfect_30":     return _full_star_level_count() >= 30
-		"chapter_master":
-			for ch in chapters:
-				if chapter_max_stars(ch) > 0 and chapter_stars(ch) >= chapter_max_stars(ch):
-					return true
-			return false
-		"stars_50":       return total_stars() >= 50
-		"stars_150":      return total_stars() >= 150
-		"stars_300":      return total_stars() >= 300
-		"answer_100":     return total_questions >= 100
-		"answer_500":     return total_questions >= 500
-		"accuracy_80":    return total_questions >= 50 and accuracy() >= 0.8
-		"coins_1000":     return coins_earned >= 1000
-		"boss_first":     return _boss_cleared_count() >= 1
-		"boss_all":
-			var total := _boss_level_ids().size()
-			return total > 0 and _boss_cleared_count() >= total
-		"pet_3":          return pet_fed >= 3
-		"pet_10":         return pet_fed >= 10
-	return false
+## 勋章判定上下文：一次性汇总遍历型统计，供 PlayerRules.medal_met() 纯函数判定。
+func _medal_ctx() -> Dictionary:
+	return {
+		"cleared": PlayerRules.cleared_level_count(chapters, stars),
+		"full_star": PlayerRules.full_star_level_count(chapters, stars),
+		"total_stars": total_stars(),
+		"total_questions": total_questions,
+		"accuracy": accuracy(),
+		"coins_earned": coins_earned,
+		"pet_fed": pet_fed,
+		"boss_total": PlayerRules.boss_level_ids(chapters).size(),
+		"boss_cleared": PlayerRules.boss_cleared_count(chapters, stars),
+		"chapter_master": PlayerRules.chapter_master_any(chapters, stars),
+	}
 
 ## 结算勋章：解锁新达成的成就。notify=true 时弹提示音+飘字(登录回填时传 false)。
 func _eval_medals(notify: bool = true) -> void:
-	for m in MEDALS:
+	var ctx := _medal_ctx()
+	for m in PlayerRules.MEDALS:
 		var id := str(m["id"])
 		if medals.has(id):
 			continue
-		if _medal_met(id):
+		if PlayerRules.medal_met(id, ctx):
 			medals[id] = Time.get_datetime_string_from_system(false, true)
 			medal_unlocked.emit(m)
 			if notify:
@@ -757,12 +662,7 @@ func add_exp(n: int) -> void:
 	_save()
 	progress_changed.emit()
 
-# ---------------------------------------------------------------- 关卡结算与防刷（TODO C1/C2）
-const REPEAT_REWARD_RATE := 0.3        ## 重复通关(未刷新星级)的奖励折扣
-const REPEAT_PAID_PER_DAY := 3         ## 同一关每日最多计几次「重复奖励」，之后为 0
-const STAR_CAP_ATTEMPTS_PER_DAY := 3   ## 同一关当日第几次尝试起降级星级上限
-const STAR_CAP_REPEAT := 2             ## 上述情况下的星级上限
-
+# ---------------------------------------------------------------- 关卡结算与防刷（TODO C1/C2，公式在 PlayerRules）
 ## 本关今日已尝试次数（旧存档无字段按 0，跨天自动归零）。
 func attempts_today(level_id: String) -> int:
 	if level_id == "":
@@ -776,7 +676,7 @@ func attempts_today(level_id: String) -> int:
 func star_cap_for_attempt(level_id: String) -> int:
 	if level_id == "":
 		return 3
-	return STAR_CAP_REPEAT if attempts_today(level_id) >= STAR_CAP_ATTEMPTS_PER_DAY else 3
+	return PlayerRules.star_cap(attempts_today(level_id))
 
 ## 通关结算收口（C1/C2）：星级/经验/金币/记录一处处理。
 ## 规则：首次达成某星级 → 全额奖励；重复通关 → 折扣(×0.3)且每日最多 REPEAT_PAID_PER_DAY 次。
@@ -798,8 +698,8 @@ func settle_level(level_id: String, level_stars: int, clean: int, total: int, tr
 		if str(r.get("paid_date", "")) != today:
 			r["paid_date"] = today
 			r["paid_today"] = 0
-		if int(r.get("paid_today", 0)) < REPEAT_PAID_PER_DAY:
-			granted = int(floor(float(maxi(0, base_reward)) * REPEAT_REWARD_RATE))
+		granted = PlayerRules.repeat_grant(base_reward, int(r.get("paid_today", 0)))
+		if granted > 0:
 			r["paid_today"] = int(r.get("paid_today", 0)) + 1
 		level_records[level_id] = r
 	if granted > 0:
@@ -936,7 +836,7 @@ func claim_daily() -> Dictionary:
 func _daily_metrics() -> Dictionary:
 	return {
 		"answers": total_questions,
-		"clears": _cleared_level_count(),
+		"clears": PlayerRules.cleared_level_count(chapters, stars),
 		"coins": coins_earned,
 		"streak": daily_peak_streak,
 	}
