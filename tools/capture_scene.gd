@@ -28,7 +28,9 @@ func _ready() -> void:
 		var levels: Array = GameData.chapters[ci].get("levels", [])
 		for li in levels.size():
 			var lv: Dictionary = levels[li]
-			var scene := str(lv.get("scene", "res://scenes/Battle.tscn"))
+			var scene := str(lv.get("scene", ""))
+			if scene == "":
+				continue   # A3：缺 scene 的关卡不可导航（curriculum 实测 275/275 全带 scene）
 			if not seen.has(scene):
 				seen[scene] = [ci, li]
 

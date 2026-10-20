@@ -9,7 +9,7 @@ extends Node
 ##   4. 乱序确实生效（同一轮多次构建顺序不恒定，保护 B8）；
 ##   5. 结算面板可弹出（_finish → _victory/_dim 可见）；
 ##   6. 字号随 UI.S 线性生效；
-##   7. legacy 舞台（ConicStage/SolidChallenge/Battle）可构建。
+##   7. legacy 舞台（ConicStage/SolidChallenge，仍在用；Battle 已随 A3 删除）可构建。
 ##
 ## 退出码：0 = 全通过；1 = 有失败（供 CI 判定）。
 ## 反向验证：故意注释掉 StageBase._ready() 里的 _build_ui() 调用，本测试应红灯。
@@ -56,7 +56,7 @@ func _ready() -> void:
 	for scene_path in ["res://scenes/LabStage.tscn", "res://scenes/Lab3DStage.tscn", "res://scenes/SequenceStage.tscn"]:
 		await _test_stagebase(scene_path, _pick(scene_path, 3))
 
-	for scene_path in ["res://scenes/ConicStage.tscn", "res://scenes/SolidChallenge.tscn", "res://scenes/Battle.tscn"]:
+	for scene_path in ["res://scenes/ConicStage.tscn", "res://scenes/SolidChallenge.tscn"]:
 		await _test_legacy(scene_path, _pick(scene_path, 1))
 
 	print("UI-SMOKE: %d ok, %d fail" % [_pass, _fail])
@@ -71,7 +71,9 @@ func _collect_samples() -> void:
 	for ci in GameData.chapters.size():
 		var levels: Array = GameData.chapters[ci].get("levels", [])
 		for li in levels.size():
-			var sc := str(levels[li].get("scene", "res://scenes/Battle.tscn"))
+			var sc := str(levels[li].get("scene", ""))
+			if sc == "":
+				continue   # A3：缺 scene 的关卡不可导航（curriculum 实测 275/275 全带 scene）
 			if not _samples.has(sc):
 				_samples[sc] = []
 			_samples[sc].append([ci, li])
@@ -206,7 +208,7 @@ func _expect_finish(st: Node, tag: String) -> void:
 
 func _test_legacy(scene_path: String, picks: Array) -> void:
 	if picks.is_empty():
-		# 无课程表样本（如占位场景 Battle）时，用任意真实关卡上下文实例化，只验「能构建」。
+		# 无课程表样本（如不在用的历史场景）时，用任意真实关卡上下文实例化，只验「能构建」。
 		picks = [[0, 0]]
 	for p in picks:
 		if not GameData.start_level(p[0], p[1]):

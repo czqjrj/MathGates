@@ -21,9 +21,11 @@ scripts/         总控与共享逻辑(按职责分目录)
   save/            SaveIO.gd(存档原子读写:临时文件校验 + 备份 + 替换;GameData 存档 IO 委托于此)
   screens/         BootSplash.gd(品牌启动屏,规避引擎启动屏缩放 bug)、Login.gd、MainHub.gd、
 				   WorldMap.gd、UserProfile.gd、SettingsMenu.gd、ChapterNode.gd、
-				   Battle.gd(通用战斗/占位关卡)、StageBase.gd(闯关共享骨架:
+				   StageBase.gd(闯关共享骨架:
 				   HUD/答题面板/选项/结算/上下关导航;由 LabStage、Lab3DStage 继承,
 				   服务于圆/椭圆/向量/直线及各 LAB 章节,以及立体几何/空间向量的 3D 章节)
+				   (历史:原 Battle.gd 通用战斗/占位关卡已于 2026-10-20 随 TODO A3 删除——
+				   275 关全部带 scene,回退路径不可达;关卡缺 scene 时现在报错并回主界面)
   modules/         知识模块:conic/ lab/ lab3d/ line/ sequence/ solid/
 				   lab/ 为通用三阶段 2D 闯关(LabStage + LabPlane:滑块/拖动实时重绘 + 读数),
 				   承载圆/椭圆/向量/直线等章节;line/ 仅余 TheoremTree.gd(被知识树共用);
@@ -122,7 +124,7 @@ build/           导出产物(APK,git 忽略)
 
 - 课程/章节/解锁关系:`data/curriculum.json`
 - 教材版本(苏教/人教A/人教B/北师大/湘教/沪教):分册、章节排序与章号:`data/textbooks.json`
-- 通用题库:`data/questions.json`;各模块关卡:`data/*_levels.json`。几何类章节(圆/椭圆/向量/直线)已统一为 `lab` 三阶段格式,对应 `circle_levels.json / ellipse_levels.json / vector_levels.json / line_levels.json`,场景统一为 `res://scenes/LabStage.tscn`
+- 各模块关卡:**全仓只有一份权威题库 `data/*_levels.json`**(原通用题库 `data/questions.json` 与 Battle 兜底关卡已于 2026-10-20 随 TODO A3/A12 删除——其 42 题仅被 Battle.gd 消费且 275 关全部带 scene,通道不可达)。几何类章节(圆/椭圆/向量/直线)已统一为 `lab` 三阶段格式,对应 `circle_levels.json / ellipse_levels.json / vector_levels.json / line_levels.json`,场景统一为 `res://scenes/LabStage.tscn`
 - 立体几何 / 空间向量章节已统一为 `lab3d` 三阶段真实 3D 格式,对应 `solid_basic_levels.json`(立体几何初步,含「基本事实(公理)」旗舰关 `solid_axiom`)与 `space_levels.json`(空间向量与立体几何),场景统一为 `res://scenes/Lab3DStage.tscn`。3D 场景描述见 `scripts/modules/lab3d/SolidBuilder.gd`
 - 立体几何方法讲解:`data/solid_methods.json` + `scripts/modules/solid/topics/*.gd`
 - **公式写法(A10)**:新题/文案里的数学式子**直接写 LaTeX,并用 `$$…$$` 包裹**(运行时由 MicroTeX 渲染成内联公式图)。例:`"q": "不等式 $$x^{2}-2x-3>0$$ 的解集是?"`。旧的 `{f:名称}`(命名表 `scripts/ui/InlineMath.gd` 的 `FORMULA_LATEX`)仍兼容,但**新内容不再新增命名**、也**不再写 Unicode 数学片段**(`²`/`≤`/`α` 等;`data/inline_math.json` 已冻结为历史兼容层)。校验器 `check_questions.gd` 会忽略 `$$…$$` 区段(见 A5/A10)。

@@ -12,7 +12,6 @@ signal wrong_cleared(level_id: String, qi: int)
 const CURRICULUM_PATH := "res://data/curriculum.json"
 const TEXTBOOK_PATH := "res://data/textbooks.json"
 const SETTINGS_PATH := "user://settings.json"   # 与 Settings 共用，仅读取教材版本
-const QUESTIONS_PATH := "res://data/questions.json"
 const SAVE_PATH := "user://save.json"
 const USERS_PATH := "user://users.json"
 const USERS_TMP := "user://users.tmp"   # 原子写入的临时文件
@@ -149,7 +148,6 @@ var current_level_index: int = -1
 var current_level: Dictionary = {}
 var last_chapter_id: String = ""   # 上次学习的章节 id(跨启动记住「正在学习」，即使重开也应置顶)
 
-var _questions: Dictionary = {}   # level_id -> Array[Dictionary]
 var _save_pending: bool = false   # 是否有一次延迟落盘待执行(见 _save_soon)
 var review_focus: int = -1        # 错题深链要优先显示的题号(原始 qi)，-1 表示无
 
@@ -172,7 +170,6 @@ var events_seen: Dictionary = {}       # level_id -> 触发时间戳(随机事�
 func _ready() -> void:
 	_load_textbooks()
 	_load_curriculum()
-	_load_questions()
 	_load_users()
 	_sync_free_roam_from_settings()
 
@@ -376,18 +373,6 @@ func _load_curriculum() -> void:
 			if not stars.has(lv["id"]):
 				stars[lv["id"]] = 0
 
-# ---------------------------------------------------------------- 题库
-func _load_questions() -> void:
-	if not FileAccess.file_exists(QUESTIONS_PATH):
-		return
-	var f := FileAccess.open(QUESTIONS_PATH, FileAccess.READ)
-	var data = JSON.parse_string(f.get_as_text())
-	if typeof(data) == TYPE_DICTIONARY:
-		_questions = data
-
-func questions_for(level_id: String) -> Array:
-	return _questions.get(level_id, [])
-
 func level_name(level_id: String) -> String:
 	for ch in chapters:
 		for lv in ch.get("levels", []):
@@ -452,7 +437,7 @@ func _flat_index() -> int:
 			return i
 	return -1
 
-## 关卡是否可进入:有独立场景走 scene,否则统一进入通用战斗场景 Battle(题面未录入时显示占位)。
+## 关卡是否可进入:有独立场景走 scene(A3 后无 scene 即坏数据,push_error 并跳回主界面,不再兜底 Battle)。
 ## 因此课程表内的所有关卡都可导航,「上一关/下一关」不会因某章没有 scene 而被误判为不可用。
 func has_prev_level() -> bool:
 	return _flat_index() > 0
@@ -483,11 +468,19 @@ func goto_next_level() -> void:
 	_enter_level(e)
 
 func _enter_level(e: Dictionary) -> void:
+	var lv: Dictionary = e["level"]
+	var sc := str(lv.get("scene", ""))
+	if sc == "" or not ResourceLoader.exists(sc):
+		# A3：Battle 兜底已删；缺 scene 属坏数据(curriculum 实测 275/275 全带 scene)，原地报错并回主界面。
+		push_error("GameData: 关卡 %s 缺少 scene(或路径不存在)，跳回主界面" % str(lv.get("id", "")))
+		Sound.play("error")
+		Scene.goto("res://scenes/MainHub.tscn")
+		return
 	if not start_level(int(e["ci"]), int(e["li"])):
 		return
 	Sound.play("begin")
 	# 不记录历史：上一关/下一关不应污染「返回来源」，返回键始终回到进入关卡前的场景。
-	Scene.goto(str(e["level"].get("scene", "res://scenes/Battle.tscn")), false)
+	Scene.goto(sc, false)
 
 # ---------------------------------------------------------------- 进度查询
 ## 章节分类: "method"=方法推演(专题方法实验与汇总) / "knowledge"=知识体系(知识点由来与简单运用)。
@@ -1328,15 +1321,18 @@ func _domain_of_level(level_id: String) -> Dictionary:
 func domain_id_for_level(level_id: String) -> String:
 	return str(_domain_of_level(level_id).get("id", ""))
 
-## 关卡导航信息：{ci, li, scene}；不存在返回 {}
+## 关卡导航信息：{ci, li, scene}；不存在或缺 scene（不可导航）返回 {}
 func _level_nav(level_id: String) -> Dictionary:
 	for ci in chapters.size():
 		var levels: Array = chapters[ci].get("levels", [])
 		for li in levels.size():
 			if str(levels[li].get("id", "")) == level_id:
+				var sc := str(levels[li].get("scene", ""))
+				if sc == "":
+					return {}   # A3：缺 scene 的关卡不可导航，不再兜底到 Battle
 				return {
 					"ci": ci, "li": li,
-					"scene": str(levels[li].get("scene", "res://scenes/Battle.tscn")),
+					"scene": sc,
 				}
 	return {}
 
@@ -1471,6 +1467,9 @@ func _weakest_level_in_domain(domain_id: String) -> Dictionary:
 				continue
 			var lv: Dictionary = levels[li]
 			var lid := str(lv["id"])
+			var lv_scene := str(lv.get("scene", ""))
+			if lv_scene == "":
+				continue   # A3：缺 scene 的关卡不可导航，不进入推荐
 			var key := level_mastery(lid) * 2.0 - minf(float(int(lv_wrong.get(lid, 0))), 6.0) * 0.2
 			if int(stars.get(lid, 0)) >= 3:
 				key += 3.0
@@ -1479,7 +1478,7 @@ func _weakest_level_in_domain(domain_id: String) -> Dictionary:
 				best = {
 					"level_id": lid, "level_name": str(lv.get("name", "")),
 					"ci": ci, "li": li,
-					"scene": str(lv.get("scene", "res://scenes/Battle.tscn")),
+					"scene": lv_scene,
 				}
 	return best
 
@@ -1491,11 +1490,14 @@ func _first_unmastered_level() -> Dictionary:
 		var levels: Array = chapters[ci].get("levels", [])
 		for li in levels.size():
 			var lid := str(levels[li]["id"])
+			var lv_scene := str(levels[li].get("scene", ""))
+			if lv_scene == "":
+				continue   # A3：缺 scene 的关卡不可导航，不进入兜底推荐
 			if is_level_unlocked(ci, li) and int(stars.get(lid, 0)) < 3:
 				return {
 					"level_id": lid, "level_name": str(levels[li].get("name", "")),
 					"ci": ci, "li": li,
-					"scene": str(levels[li].get("scene", "res://scenes/Battle.tscn")),
+					"scene": lv_scene,
 					"reason": "继续巩固",
 				}
 	return {}

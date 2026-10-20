@@ -4,7 +4,7 @@ extends SceneTree
 ## 用法：godot --headless --path . --script res://tools/sample_distractors.gd -- [n]
 ## 抽样口径：文件名排序 → 组出现序 → 轮序展开成一维序列，取第 floor((j+0.5)*total/n) 题（j 从 0 起）。
 ## 说明：explore 轮的追问题干在 "ask" 字段（"q" 是探究指令），故优先取 ask。
-## 排除 questions.json（遗留通用题库，去留见 TODO A2/A3/A12）。
+## 排除 questions.json（已随 A12 删除；过滤保留仅为防御旧数据残留）。
 
 func _initialize() -> void:
 	var n := 30

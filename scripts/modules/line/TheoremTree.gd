@@ -4,7 +4,7 @@ extends Control
 ##   kind="knowledge" → 知识体系(TheoremTree.tscn)
 ##   kind="method"    → 方法推演(WorldMap.tscn)，章节为「专题方法实验」
 ## 章节按 curriculum.json 的 "kind" 过滤，分册归属/章号由 data/textbooks.json 决定；
-## 有独立 scene 的关卡走对应场景,其余进入通用战斗场景 Battle;新增章节只需写进 curriculum.json 即会自动出现。
+## 有独立 scene 的关卡走对应场景;缺 scene 属坏数据(A3 起不再兜底 Battle),原地报错;新增章节只需写进 curriculum.json 即会自动出现。
 
 ## 展示哪一类章节（knowledge / method）
 @export var kind := "knowledge"
@@ -1500,13 +1500,20 @@ func _open_panel(li: int) -> void:
 		UI.popup_in(panel)
 
 func _enter(li: int) -> void:
+	var sc := str(_levels[li].get("scene", ""))
+	if sc == "" or not ResourceLoader.exists(sc):
+		# A3：Battle 兜底已删；缺 scene 属坏数据(curriculum 实测 275/275 全带 scene)，原地报错。
+		push_error("TheoremTree: 关卡 %s 缺少 scene(或路径不存在)，无法进入" % str(_levels[li].get("id", "")))
+		Sound.play("error")
+		Toast.show_toast("该关卡缺少场景数据")
+		return
 	if not GameData.start_level(_chapter_index, li):
 		Sound.play("error")
 		Toast.show_toast("无法进入该节点")
 		return
 	Sound.play("begin")
 	_close_panel()
-	Scene.goto(str(_levels[li].get("scene", "res://scenes/Battle.tscn")))
+	Scene.goto(sc)
 
 func _close_panel() -> void:
 	if _panel_layer != null and is_instance_valid(_panel_layer):
