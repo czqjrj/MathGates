@@ -133,9 +133,26 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`375eb1a`（`feat(A3+A12)` 删除 Battle 死代码与第二份题库 `questions.json`）；
-  本轮 docs 回填随下一提交走；上一提交链：`c6b3742`（上游第十二轮 docs 尾）→ `375eb1a`，已 push。
-- **本轮交付（2026-10-20，第十三轮）**：**A3 + A12 合并清理双清**（死代码与第二份题库一次清零，`375eb1a`）。
+- **最后提交**：`af14e73`（`feat(A4)` 第一刀：从 GameData 切出纯规则层 `PlayerRules`）；本条 §0.3 更新随后以 `docs(TODO)` 提交并 push。
+- **本轮交付（2026-10-20，第十四轮）**：**A4 上帝对象拆分第一刀——纯规则层 PlayerRules**（`af14e73`）。
+  - **新增** `scripts/rules/PlayerRules.gd`（194 行，无状态静态纯函数）：称号阶梯 `RANKS`、勋章定义与达成判定
+    `MEDALS`/`medal_met(ctx)`、玩家等级曲线（每 8 星）、星级统计（chapter_stars / 满星 / boss / 整章满星）、
+    防刷公式 `star_cap` / `repeat_grant`。
+  - **`GameData.gd` 1779 → 1681 行**：`rank_*`/`medal_*`/`chapter_stars`/`star_cap_for_attempt` 等门面原地保留、
+    内部委托，调用方面零破坏；`_medal_met` 改为 `_medal_ctx()` 一次汇总统计快照 + 纯函数判定
+    （勋章循环内不再每枚重复遍历课程表）；新增公开进度门面 `cleared_level_count()` 等 4 个。
+  - **调用方同步**：`Achievements`/`UserProfile` 改用 `PlayerRules.MEDALS` 与进度门面，`StageBase` 改用
+    `PlayerRules.STAR_CAP_REPEAT`/`REPEAT_REWARD_RATE`；`Tests` 旧私有 API 引用改新 API。
+  - **新测试**：`Tests._test_player_rules()` 约 55 条构造数据断言——称号边界（6%/15%/满星）、等级曲线、
+    星级统计、勋章达成/未达/边界（50 题门槛、boss 课程 0 枚不达成）、防刷公式（第 3 次降上限、每日 3 次封顶、负基数守卫）。
+  - **踩坑（重要）**：headless 跑 `*.gd` 脚本**必须带 `--script`**——位置参数会把工程当游戏正常跑起来
+    （Login 场景 headless 空转、无输出、零 CPU，形似假死），本轮曾因此误判 `.godot` 损坏并重建；
+    正确姿势以 CI 为准：先 `--import`（生成类缓存）再 `--script`。
+  - 全量回归绿：`CHECKED **90**`（89 + PlayerRules，0 failures）/ `TESTS **1300**`（+55）/ `SMOKE 285` /
+    `UI-SMOKE 367` / `LabSmoke TMP_OK` / `LEVEL-PREVIEW-SMOKE 7474` /
+    `QUESTION-CHECK 269 关 1057 题 0 new（warn 3 与基线同）` / `KNOWLEDGE 275 点 hard-gaps=0` /
+    `ASSETS 29.99（3099 files，banned=0）`。
+- **第十三轮（2026-10-20，上一轮）**：**A3 + A12 合并清理双清**（死代码与第二份题库一次清零，`375eb1a`）。
   - **删除**（−1225 行 / −14.9KB）：`scripts/screens/Battle.gd`（688 行）+ `Battle.gd.uid`、
     `scenes/Battle.tscn`、`data/questions.json`（42 题）、`GameData._load_questions()` / `questions_for()`
     / `QUESTIONS_PATH` / `_questions`。
@@ -155,7 +172,7 @@
     移除 Battle legacy 样本）/ `LabSmoke TMP_OK` / `LEVEL-PREVIEW-SMOKE 7474` /
     `QUESTION-CHECK 269 关 1057 题 0 new（warn 3 与基线同）` / `KNOWLEDGE 275 点 hard-gaps=0` /
     `ASSETS 29.97（3097 files，banned=0）`。
-  - 上一轮（第十二轮，上游）：**B2 扩题 13 章收官（27/27 章 ≥5.0 题/关）+ E3 验收补齐 #2/#3 + TODO 改结构优先**；
+  - 第十二轮（上游）：**B2 扩题 13 章收官（27/27 章 ≥5.0 题/关）+ E3 验收补齐 #2/#3 + TODO 改结构优先**；
     第十一轮：B5 收官（`6fb59c7`：抽检 30 题 + `sample_distractors.gd`）；
     第十轮：B5 批次二（`32f064e`）；第九轮：B5 批次一（`0ddf55e`）；
     第八轮：E3 全条收官 `vector_physics` #14（`7f94b7c`）、`prob_simulate` #15（`9534189`）；
@@ -164,9 +181,10 @@
 - **下次建议顺序**（按性价比）：
   > **2026-10-20 用户决策：暂停题目扩产，先做结构收敛。** B2 下限已全线达成（27/27 章 ≥ 5.0 题/关），
   > B1（21.4% → ≥30%）与 B2「上探 6~7 题/关中段」均为**纯内容批量生产**，可随时回归；当前转向 A/D/F 类结构问题。
-  1. **A4 上帝对象拆分** —— 实测 `GameData.gd` **1779 行**、`TheoremTree.gd` **1655 行**、
-     `StageBase.gd` **1291 行**（合计 4725 行）。策略：**不做大重写**，只把可独立测试的纯逻辑切出
-     （如进度/星级计算、几何构造），每切一块先补测试再搬。
+  1. **A4 继续第二刀** —— 第一刀已切出纯规则层 `PlayerRules.gd`（`af14e73`，GameData 1779→1681 行，
+     +55 条单测全绿）；下一刀候选：**经济结算公式**（`settle_level`/`grant_stars` 纯公式部分）或
+     **StageBase 节奏层**（`ComboBar`/计时/`_grade`）——同样**先补测试再搬**；
+     `TheoremTree.gd` **1655 行**、`StageBase.gd` **1291 行** 未动。
   2. **A2 遗留模块定策略（前提已变）** —— `SolidChallenge.tscn` 仍被 6 关引用、`ConicStage.tscn` 被 3 关引用，
      **不能删**。二选一：迁到 `LabStage`（与 229 关统一）或明确「收编为正式场景」并补测试；
      建议先做后者（低成本），把迁移列入长期项。
@@ -279,13 +297,19 @@
 ### [ ] A4 · 上帝对象拆分（P2）
 
 **现状（证据）**
-- `scripts/autoload/GameData.gd` **1779 行**（旧记 1548）：课程表 + 进度 + 存档 IO + 勋章 + 称号 + 领域掌握度
+- `scripts/autoload/GameData.gd` **1681 行**（A4 第一刀后；原 1779，称号/勋章/等级/星级统计/防刷公式
+  已切到 `scripts/rules/PlayerRules.gd` 194 行；旧记 1548）：课程表 + 进度 + 存档 IO + 勋章 + 称号 + 领域掌握度
   + 萌宠 + 每日任务 + 经济 + 地图宝箱/事件 + 错题本 + 多用户，全在一个 autoload 类里。
 - `scripts/modules/line/TheoremTree.gd` **1655 行**（旧记 1496）：同一脚本同时充当 `WorldMap.tscn`（`kind="method"`）
   与 `TheoremTree.tscn`（`kind="knowledge"`）；引用面仅 **4 处**，拆分风险低。
 - `scripts/screens/StageBase.gd` **1291 行**（旧记 1092）：HUD + 答题 + 选项乱序 + BOSS 层 + 节奏/计时 + 结算 + 导航；
   被 **12 处**引用，是关卡基类，改动面最大。
-- 三文件合计 **4725 行**（2026-10-20 实测）。
+- 三文件合计 **4627 行**（2026-10-20 第一刀后实测 1681+1655+1291；第一刀前 4725）。
+
+**进度**
+- 2026-10-20 第十四轮 · **第一刀（`af14e73`）**：纯规则层 `scripts/rules/PlayerRules.gd`（称号/勋章/等级/
+  星级统计/防刷公式）切出，`Tests._test_player_rules()` 先行约 55 断言，GameData 门面零破坏、
+  全量九件套绿（CHECKED 90 / TESTS 1300）。后续按同一手法增量继续，不必一次到位。
 
 **做法（增量，不必一次到位）**
 - `GameData` → 组合子对象：`Curriculum`（课程/教材/章节）、`Progress`（星级/记录/掌握度）、
