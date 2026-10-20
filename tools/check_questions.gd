@@ -25,6 +25,11 @@ const BASELINE_PATH := "res://tools/check_questions_baseline.txt"
 ## 含特殊数学符号的字符集（同 tools/check_inline.gd，用于过滤普通标点噪声）。
 const MATH_CHARS := "²³¹⁰⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉√·×÷±≤≥≠≈∞∈∉⊆⊇∪∩→←⇒⇔∀∃∠°Δαβγθλμπ∅"
 
+## B5 · 干扰项关键词黑名单：命中即「范畴错误型干扰项」（不列式就能排除，诊断价值为零）。
+## 词表刻意保守——只收全库审计确认过的通用回避句式；学科专属的范畴错误
+## （如在计数题里写「错位相减」）按章逐条整改，不进黑名单。
+const BAD_DISTRACTOR := ["画折线图", "求概率密度", "无法判断", "不能确定", "说不清"]
+
 var _issues: Array[String] = []          ## "file|key|detail"
 var _known := {}                         ## 基线签名集合
 var _label_re: RegEx
@@ -48,6 +53,7 @@ var _speak_count := 0
 var _num_mismatch := 0
 var _num_mismatch_files := {}
 var _dup_stem := 0
+var _bad_distractor := 0
 var _key_owner := {}
 var _inline_missing := {}
 var _inline_checked := 0
@@ -215,6 +221,22 @@ func _check_stage(path: String, key: String, group_no: int, idx: int, s: Variant
 		var ai2 := int(ans)
 		if ai2 < 0 or ai2 >= arr.size():
 			_add(path, key, "%s ans 下标越界：%d（共 %d 项）" % [where, ai2, arr.size()])
+
+	# B5：干扰项黑名单（只查错误项，正确项里出现同词是正常表述）
+	var correct := {}
+	if ans is Array:
+		for v in (ans as Array):
+			correct[int(v)] = true
+	elif ans != null:
+		correct[int(ans)] = true
+	for oi in arr.size():
+		if correct.has(oi):
+			continue
+		var ot := str(arr[oi])
+		for bad in BAD_DISTRACTOR:
+			if ot.find(bad) >= 0:
+				_bad_distractor += 1
+				_add(path, key, "%s 干扰项黑名单「%s」：%s" % [where, bad, ot.substr(0, 30)])
 
 	_check_inline(path, key, where + ".q", q)
 	_check_inline(path, key, where + ".ask", str(st.get("ask", "")))
@@ -475,6 +497,7 @@ func _report() -> void:
 	print("[看板] anim 演示覆盖: %d/%d 文件" % [_anim_files.size(), _n_files])
 	print("[看板] speak 口播字段: %d 处（见 B13）" % _speak_count)
 	print("[看板] 轮次编号错位: %d 处（%d 文件，见 B9）" % [_num_mismatch, _num_mismatch_files.size()])
+	print("[看板] 干扰项黑名单命中: %d 处（B5 目标 0；范畴错误型干扰项须换成错误路径型）" % _bad_distractor)
 	_chapter_board()
 	if _inline_missing.size() > 0:
 		var tops: Array = _inline_missing.keys()
