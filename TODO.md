@@ -23,27 +23,27 @@
 | 编号 | 标题 | 优先级 | 说明 |
 |---|---|---|---|
 | **A1** | `SequenceStage` 迁移到 `StageBase` | **P0** | ✅ 已完成（763 → 185 行，双轨消除） |
-| **B1** | 题型单一：把 `interact/gate` 与填空题用起来 | **P0** | 🟡 填空题已落地 + 题型看板；26/26 章已扫描改写（非四选一 19.2%，目标 ≥30%；纯数值转换已到上限，余下需内容重设计） |
+| **B1** | 题型单一：把 `interact/gate` 与填空题用起来 | **P0** | 🟡 非四选一 **21.4%**（目标 ≥30%）；填空题已落地 + 题型看板，26/26 章已扫描改写；纯数值转换已到上限，余下需内容重设计。**2026-10-20 起暂缓，先做结构收敛** |
 | **B3** | 「探究→建构→迁移」名不副实 | **P0** | 🟡 26/26 章探究轮题面已改写（陈述句 0.0%，验收①达标）；建构/迁移轮深化待续 |
 | **B9** | 轮次标签编号错乱（纯编校，可脚本修） | **P0** | ✅ 已完成（`fix_labels.gd`，错位归 0） |
 | **C1** | 重复通关无限刷经验/金币 | **P0** | ✅ 已完成（经验仅星升；重复奖励×0.3/日封顶） |
 | **C2** | 星级只升不降 + 免费重试 + 四选一 → 进度可刷 | **P0** | ✅ 已完成（当日第 3 次起星级上限 2） |
 | **A5** | 关卡 JSON 校验器（schema + 编校） | **P0** | ✅ 已完成（`check_questions.gd` + 基线） |
 | **A10** | 公式来源单一化：新数据直接写 LaTeX | **P1** | 🟡 已支持 `$$…$$` 直写 LaTeX（`InlineMath` + 校验器已适配）；旧 `{f:}` 兼容，待存量迁移 |
-| **A2** | 遗留模块（`SolidChallenge` / `ConicStage`+C1~C3）定策略 | **P1** | 决定继续删还是冻结 |
-| **A3** | `Battle.gd` 死代码处理 | **P1** | 614 行不再增长 |
+| **A2** | 遗留模块（`SolidChallenge` / `ConicStage`+C1~C3）定策略 | **P1** | ⚠️ 前提已变：二者仍被 curriculum.json **活跃引用**（SolidChallenge 6 关、ConicStage 3 关），不是可直删的死代码 → 改为「迁移到 LabStage 或正式收编」 |
+| **A3** | `Battle.gd` 死代码处理 | **P1** | 🟡 已确认为**真死代码**（`scenes/Battle.tscn` 被 0 个关卡引用；`Battle.gd` 688 行）；与 A12 同源，建议合并清理 |
 | **A6** | CI（headless 四件套自动化） | **P1** | ✅ 已完成（`.github/workflows/check.yml`） |
 | **A11** | UI/交互层缺自动化断言（测试只盖纯逻辑） | **P1** | ✅ 已完成（`tests/UiSmoke`：342 断言 + 反向验证 + 入 CI） |
-| **A12** | `questions.json` 变成第二份权威题库（与现行数据冲突） | **P1** | 数据层也有死代码 |
+| **A12** | `questions.json` 变成第二份权威题库（与现行数据冲突） | **P1** | 🟡 已定性：`data/questions.json`（14.9 KB）**唯一消费者是 `Battle.gd`**（`GameData.questions_for()` 只被 `Battle.gd:50` 调用）→ 随 A3 一并删除即可连带消灭第二份题库 |
 | **A13** | 资源体积治理（`.xcf` 入库、13.8MB 字体、未排除） | **P1** | 🟡 部分完成（`.xcf` 出库 + 图标降采样：46.8→29.6MB；残留：字体替换/背景压缩） |
 | **A14** | `export_presets.cfg` 残留第三方机器路径 | **P1** | ✅ 已完成（统一 `build/…`） |
 | **A15** | 元游戏内容硬编码在 `GameData.gd` | **P2** | 与「改内容只改 JSON」相悖 |
-| **A16** | 立几方法关内容在 GDScript（两套内容管线） | **P2** | ~1900 行代码当内容 |
+| **A16** | 立几方法关内容在 GDScript（两套内容管线） | **P2** | 🟡 前提部分失效：题目已迁至 `data/solid_methods.json`；`scripts/modules/solid/topics/*.gd`（6 文件 3568 行）现为**纯几何/标注逻辑**（问号 0~1 处、无题干）→ 降级为「3D 场景代码与数据的分层整理」 |
 | **A17** | 数据文件命名易混（`conic`/`conics`、`vector`/`vectors`） | **P2** | 改错文件静默失效 |
 | **A18** | 内容数据异常时缺用户可见兜底 | **P1** | 坏档 → 空白知识体系 |
 | **A19** | 多用户切换的会话状态残留 | **P2** | 切用户丢萌宠问候 |
 | **B13** | 朗读/无障碍路径不完整且双路径不一致 | **P1** | 听题用户拿不到数学内容 |
-| **B2** | 每关题量 3 → 5~8 | **P1** | 🟡 下限全线达标（2026-10-20：27/27 章 ≥ 5.0 题/关，全库平均 3.93；上探 6~7 题/关中段待续） |
+| **B2** | 每关题量 3 → 5~8 | **P1** | 🟡 下限全线达标（2026-10-20：27/27 章 ≥ 5.0 题/关，全库平均 3.93；上探 6~7 题/关中段待续）。**2026-10-20 起暂缓，先做结构收敛** |
 | **B4** | 实验与追问不闭环 | **P1** | 探究轮形同虚设 |
 | **B5** | 干扰项改为诊断性干扰项 | **P1** | ✅ 已完成（2026-10-20 收官：黑名单校验器 + 42 轮整改 + 抽检 30 题；`tools/sample_distractors.gd`） |
 | **B6** | 选项过短、退化为结果核对 | **P1** | 概念性误解测不出来 |
@@ -164,14 +164,28 @@
     第七轮：E3 #13 `93240c1`；第六轮：#12 `0a3aae0`；第五轮：#10 `b3205f0`；第四轮：#9 `0bb0a2e`；
     第三轮：#7/#8 `5d784bb`；第二轮：#6/#4 `017f04b`/`d4a6a40`、#5 `1630a99`。
 - **下次建议顺序**（按性价比）：
-  1. **B2 扩题**（**下限已达 3.93 → 27/27 章 ≥ 5.0 题/关**）/ **B1 达标**（21.4% → ≥30%）——大批量内容生产，
-     按章成批、每章一个 commit；B2 下限收官后，转向把各章上探到区间中段（6~7 题/关），
-     下一批仍以 `check_questions` **章节看板**升序取（函数与分段 6/30、随机变量 6/30、数学思想综合 6/30…）；
-     **批产模板必须内建 B5 规范**（错误路径型干扰项，见第 1 节第 129 行的教训），新题先过 `check_questions`
-     黑名单与 `sample_distractors` 抽检；新增轮次优先用填空/多选，顺手抬 B1。
-  2. **B6 选项过短/理由选项占比**（可与 B1/B2 同批推进：新题直接用「理由选项」）。
-  3. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 需人工决策/下载/目视（AI 无法替代，也是上架硬门槛）。
-  4. 决策项待拍板：**A2/A3/A12**（遗留模块与 `Battle`/`questions.json` 去留）、**A17**（数据文件命名）、**G4/G5**。
+  > **2026-10-20 用户决策：暂停题目扩产，先做结构收敛。** B2 下限已全线达成（27/27 章 ≥ 5.0 题/关），
+  > B1（21.4% → ≥30%）与 B2「上探 6~7 题/关中段」均为**纯内容批量生产**，可随时回归；当前转向 A/D/F 类结构问题。
+  1. **A3 + A12 合并清理（死代码与第二份题库双清）** —— 最高性价比：
+     `Battle.gd` 688 行 + `scenes/Battle.tscn`（被 0 关卡引用）+ `data/questions.json` 14.9 KB
+     + `GameData._load_questions()` / `questions_for()`。**前置风险**：`GameData.gd` 有 4 处把
+     `"res://scenes/Battle.tscn"` 当兜底默认场景（:490/:1339/:1482/:1498），删场景前必须把这些兜底改为
+     显式报错或空场景，否则坏数据会指向不存在的路径。验收：`check_all` + `Tests` + `UiSmoke` 全绿，
+     且 `grep Battle` 只剩历史文档。
+  2. **A4 上帝对象拆分** —— 实测 `GameData.gd` **1779 行**、`TheoremTree.gd` **1655 行**、
+     `StageBase.gd` **1291 行**（合计 4725 行）。策略：**不做大重写**，只把可独立测试的纯逻辑切出
+     （如进度/星级计算、题目加载、几何构造），每切一块先补测试再搬。
+  3. **A2 遗留模块定策略（前提已变）** —— `SolidChallenge.tscn` 仍被 6 关引用、`ConicStage.tscn` 被 3 关引用，
+     **不能删**。二选一：迁到 `LabStage`（与 229 关统一）或明确「收编为正式场景」并补测试；
+     建议先做后者（低成本），把迁移列入长期项。
+  4. **A17 数据文件命名（已实际致误）** —— `conic`/`conics`、`vector`/`vectors`、`solid`/`solid_basic` 混用，
+     本轮 B2 已因它漏改一章（见上方「口径纠偏」）。做法：加**文件名/章节映射自检**到 `check_questions`
+     （脚本化、零风险），重命名另议。
+  5. **B13 朗读双路径** / **D2 演示动画覆盖 1/26** / **F3 性能耗电** / **F4 桌面键盘** —— 体验与性能结构问题。
+  6. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 需人工决策/下载/目视（AI 无法替代，上架硬门槛）。
+  7. 决策项待拍板：**G4/G5**；**A2 的迁移 vs 收编**、**A17 是否真重命名**。
+  8. 内容项回归：**B1 达标**（21.4% → ≥30%）、**B2 中段**（6~7 题/关）、**B6 理由选项占比**，
+     结构收敛后按章继续（新题模板仍须内建 B5 规范，先过 `check_questions` 黑名单与 `sample_distractors` 抽检）。
 - **收工前必做**：跑全量校验（`check_all` / `Tests` / `smoke_scene` / `UiSmoke` / `LabSmoke` /
   `check_questions` / `check_knowledge` / `check_assets` / `LevelPreview --smoke`），并同步 §9.2 基线数字。
 
@@ -215,15 +229,18 @@
 ### [ ] A2 · 遗留关卡模块定策略（P1）
 
 **现状（证据）**
-- 当前 230 个关卡里：`LabStage` 182、`Lab3DStage` 31、`SequenceStage` 6、`SolidChallenge` 6、`ConicStage` 3。
+- 当前 275 个关卡里：`LabStage` **229**、`Lab3DStage` **31**、`SequenceStage` 6、`SolidChallenge` **6**、`ConicStage` **3**。
+- **2026-10-20 实测修正**：`SolidChallenge` 与 `ConicStage` **仍在活跃使用**（分别 6 关 / 3 关），
+  不是可以直删的死代码——旧描述「遗留模块」易被误读为已废弃。
 - 遗留实现：`scripts/modules/solid/SolidChallenge.gd`（977 行）、`scripts/modules/conic/ConicStage.gd`（528 行）
   + `scripts/modules/conic/scenes/C1.gd`（672 行）/`C2.gd`（337）/`C3.gd`（256），均为自绘关卡，不走 `StageBase`。
 - 几何章节迁移（圆/椭圆/向量/直线/立体几何/空间向量）已完成，但这两块没动。
 
 **做法（二选一，明确写进 README）**
-- **迁**：按 A1 的做法迁到 `LabStage`（若几何演示可用 `LabPlane` 表达）。
-- **冻结**：在文件头加 `## 冻结：不再新增功能，仅修复缺陷`，并在 `README.md` 的目录说明里标注，
-  防止后续继续在旧实现上加功能。
+- **迁**：按 A1 的做法迁到 `LabStage`/`Lab3DStage`（若几何演示可用 `LabPlane` 表达）；成本高（约 2770 行自绘代码）。
+- **收编（推荐先做）**：保留实现，但明确为「正式场景」——补进 `StageBase` 体系的测试与文档，
+  在 `README.md` 标注它们是**在用模块**而非遗留；把迁移列入长期项。
+- **冻结**（不推荐）：会在 9 个在用关卡上标「冻结」，语义混乱。
 
 **验收**
 - `README.md` 的模块说明与代码现状一致；遗留文件顶部有明确状态标注（或已删除）。
@@ -233,15 +250,21 @@
 ### [ ] A3 · `Battle.gd` 死代码处理（P1）
 
 **现状（证据）**
-- `scripts/screens/Battle.gd`（614 行）仅在关卡**没有** `scene` 字段时作为回退占位
-  （`GameData.gd:490 / 1275 / 1418 / 1434`，`TheoremTree.gd:1509`），而当前所有关卡都带 `scene` → 从不出现。
-- `docs/关卡游戏化方案.md` §9 决策记录第 5 条已确认：保留 `Battle.tscn` 作回退占位、未删；
+- `scripts/screens/Battle.gd`（**688 行**，TODO 旧记 614 行）仅在关卡**没有** `scene` 字段时作为回退占位
+  （`GameData.gd:490 / 1339 / 1482 / 1498`，另 `TheoremTree.gd` 1 处）。
+- **2026-10-20 实测**：`curriculum.json` 的 275 个关卡**全部带 `scene`**（`scene` 字段 275 处 / 关卡 id 275 个），
+  `Battle` 被 **0 个关卡引用** → 回退路径实际不可达。
+- `Battle.gd:50` 是 `GameData.questions_for()` 的**唯一调用点**；`data/questions.json`（14.9 KB）
+  仅由 `GameData._load_questions()` 读入 → **A3 与 A12 同源，应合并清理**。
+- `docs/关卡游戏化方案.md` §9 决策记录第 5 条（旧决策）：保留 `Battle.tscn` 作回退占位；
   `HexAvatar`/`HpBar` 已抽到 `scripts/ui/BossHud.gd`，`Battle.gd` 改为引用它。
 
-**做法**
-- 若保留回退能力：保留脚本，但补一条 `Tests.gd` 用例证明「缺 scene 的关卡能进 Battle 且不报错」，
+**做法（推荐：删除，与 A12 合并）**
+- 删除 `Battle.gd`/`Battle.tscn`、`data/questions.json`、`GameData._load_questions()` 与 `questions_for()`。
+- **必须同步改 4 处兜底默认值**（`GameData.gd:490/1339/1482/1498` 的 `"res://scenes/Battle.tscn"`）：
+  改为 `push_error` + 跳回知识体系，否则坏数据会指向不存在的场景。
+- 若仍想保留回退能力：保留脚本，但补一条 `Tests.gd` 用例证明「缺 scene 的关卡能进 Battle 且不报错」，
   并在文件头写清它是**回退关**而非历史遗留。
-- 若不保留：删除 `Battle.gd`/`Battle.tscn`，把 5 处回退改成显式报错（`push_error` + 跳回知识体系）。
 
 **验收**
 - 二选一落定，`README.md` 有说明；`check_all.gd` 0 failures。
@@ -251,11 +274,13 @@
 ### [ ] A4 · 上帝对象拆分（P2）
 
 **现状（证据）**
-- `scripts/autoload/GameData.gd` **1548 行**：课程表 + 进度 + 存档 IO + 勋章 + 称号 + 领域掌握度 + 萌宠
-  + 每日任务 + 经济 + 地图宝箱/事件 + 错题本 + 多用户，全在一个 autoload 类里。
-- `scripts/modules/line/TheoremTree.gd` **1496 行**：同一脚本同时充当 `WorldMap.tscn`（`kind="method"`）
-  与 `TheoremTree.tscn`（`kind="knowledge"`）。
-- `scripts/screens/StageBase.gd` **1092 行**：HUD + 答题 + 选项乱序 + BOSS 层 + 节奏/计时 + 结算 + 导航。
+- `scripts/autoload/GameData.gd` **1779 行**（旧记 1548）：课程表 + 进度 + 存档 IO + 勋章 + 称号 + 领域掌握度
+  + 萌宠 + 每日任务 + 经济 + 地图宝箱/事件 + 错题本 + 多用户，全在一个 autoload 类里。
+- `scripts/modules/line/TheoremTree.gd` **1655 行**（旧记 1496）：同一脚本同时充当 `WorldMap.tscn`（`kind="method"`）
+  与 `TheoremTree.tscn`（`kind="knowledge"`）；引用面仅 **4 处**，拆分风险低。
+- `scripts/screens/StageBase.gd` **1291 行**（旧记 1092）：HUD + 答题 + 选项乱序 + BOSS 层 + 节奏/计时 + 结算 + 导航；
+  被 **12 处**引用，是关卡基类，改动面最大。
+- 三文件合计 **4725 行**（2026-10-20 实测）。
 
 **做法（增量，不必一次到位）**
 - `GameData` → 组合子对象：`Curriculum`（课程/教材/章节）、`Progress`（星级/记录/掌握度）、
@@ -435,13 +460,13 @@
 ### [ ] A12 · `questions.json` 变成第二份权威题库（P1）
 
 **现状（证据）**
-- `data/questions.json`（12 组 / 42 题）的唯一消费者是 `GameData.questions_for()`，
+- `data/questions.json`（12 组 / 42 题，**14.9 KB**）的唯一消费者是 `GameData.questions_for()`，
   而后者**只被 `scripts/screens/Battle.gd:50` 调用**；`Battle` 仅在关卡缺 `scene` 时回退，
-  而 `curriculum.json` 的 228 个关卡**全部带 `scene`** → 该通道整体不可达（与 A3 同源）。
+  而 `curriculum.json` 的 **275 个关卡全部带 `scene`**（2026-10-20 实测）→ 该通道整体不可达（与 A3 同源）。
 - 更关键：其 12 组 key 里有 **5 组与 `data/set_logic_levels.json` 同名**
   （`set_ops` / `set_interval` / `logic_cond` / `logic_neg` / `logic_special`），
   但**逐题比对 5/5 组内容完全不同**（题面、题量都不同：`questions.json` 每组 5 题、
-  `set_logic_levels.json` 每组 3 轮）。
+  `set_logic_levels.json` 每组 6~8 轮）。
 - 例（`logic_cond`）：
   - `questions.json`：「'x>2' 是 'x>0' 的什么条件？」等 5 题；
   - `set_logic_levels.json`：「若集合 A 完全落在 B 内…」等 3 轮。
@@ -546,19 +571,21 @@
 - `data/solid_methods.json`（6 个 method）里的 `topic` 字段指向 **GDScript 文件**：
   `res://scripts/modules/solid/topics/{complement,inout,geom_sphere,anglepyramid,vector_sphere,insphere}.gd`，
   `SolidChallenge.gd:176 _load_topic()` 直接 `scr.new()` 实例化后 `build()`。
-- 这 6 个脚本合计 **约 1900 行**（`geom_sphere.gd` 491、`vector_sphere.gd` 313、`inout.gd` 308…），
-  即**这 6 个关卡的图形内容以代码形式存在**，而同类内容在 `lab3d` 里是 JSON 驱动的
-  （`SolidBuilder.gd` 由 JSON 描述生成网格）。
+- **2026-10-20 实测修正**：这 6 个脚本合计 **3568 行**（`geom_sphere.gd` 595、`vector_sphere.gd` 379、
+  `anglepyramid.gd` 290、`complement.gd` 341、`insphere.gd` 340、`inout.gd` 369），但**已不含题干内容**
+  （问号 0~1 处、中文字符仅几何标注）——**题目已迁至 `data/solid_methods.json`**（B2 本轮的题目就加在那里）。
+- 因此本条**前提部分失效**：不再存在「有内容没有内容」的两套管线，剩下的是**图形构建代码 vs JSON 描述**
+  的分层差异（同类内容在 `lab3d` 里由 `SolidBuilder.gd` 按 JSON 生成网格）。
 - 对应关系已核对无缺口：curriculum 的 `solid_complement/vector/geom/insphere/inout/angle`
   六个关卡 ↔ `solid_methods.json` 的 6 个 method ↔ 6 个 topic 脚本。
-- 结论：**同一个学科存在两套内容管线**（JSON 驱动 vs 代码驱动），维护者要学两种写法。
 
-**做法**
-- 与 A2 一起决策：短期在 `README.md` 明确「立几方法关属代码驱动，新增内容请优先用 lab3d JSON」；
-- 长期评估把 6 个 topic 迁到 `lab3d` 的 JSON 描述能力（若 `SolidBuilder` 已支持所需几何）。
+**做法（降级）**
+- 短期只需在 `README.md` / `docs` 明确「立几方法关：题目在 `solid_methods.json`，图形在 `topics/*.gd`」，
+  避免后来者再在代码里找题目。
+- 长期（非必需）再评估把 6 个 topic 的几何构建迁到 `lab3d` 的 JSON 描述能力。
 
 **验收**
-- `README.md` 说明两套管线的边界与选择原则；后续不再新增代码驱动关卡。
+- 文档写清 6 关的「数据/图形」分工；后续新增题目只改 JSON。
 
 ---
 
@@ -566,15 +593,22 @@
 
 **现状（证据）**
 - 同时存在且都在用的近似名：
-  - `data/conics_levels.json`（6 组，圆锥曲线综合，现行 `archetype:LAB`）
-    vs `data/conic_levels.json`（3 组 `C1/C2/C3`，旧 `ConicStage` 专用）
-  - `data/vectors_levels.json`（4 组，`vec_*`，平面向量章节）
-    vs `data/vector_levels.json`（19 组，`vector_*`，向量 LAB 章节）
-  - 另有 `data/functions_levels.json` vs `data/function_lab_levels.json`（后者仅 1 组 `piecewise_range`）。
+  - `data/conics_levels.json`（圆锥曲线综合，现行 `archetype:LAB`）
+    vs `data/conic_levels.json`（`C1`~`C6`，旧 `ConicStage` 专用）——**两章都会出现在章节看板**
+    （`圆锥曲线综合` 与 `圆锥曲线`），题量各自独立。
+  - `data/vectors_levels.json`（`vec_*`，平面向量初步章节）
+    vs `data/vector_levels.json`（`vector_*`，平面向量章节）
+  - 另有 `data/functions_levels.json` vs `data/function_lab_levels.json`（函数与分段章节）。
+  - 以及 `data/solid_basic_levels.json`（立体几何初步）vs `data/solid_methods.json`（立体几何 `solid`）。
 - 改动时极易改错文件，且错改后**静默失效**（另一份没人用/或用了另一份）。
+- **2026-10-20 已实际致误一次**：B2 扩题按文件名推进时改的是 `conics_levels.json`，
+  而章节看板里的「圆锥曲线」实际是 `conic_levels.json`，导致该章长期停留在 6/24 未被发现。
 
 **做法**
-- 结合 A2/A16 的决策统一命名（如旧模块加 `_legacy` 后缀，或直接删除）。
+- **第一步（低成本、零风险）**：把 `curriculum.json` 的「数据 key → 文件名 → 章节」映射做成
+  `tools/check_questions.gd` 的一条自检输出（或在 `check_knowledge` 里），
+  让「某章节由哪些文件构成」可一键查询；同时输出「仅差复数/后缀的成对文件」清单。
+- 第二步：结合 A2/A16 的决策统一命名（旧模块加 `_legacy` 后缀，或直接删除）。
 - 在 `README.md`「改内容」小节列出「文件名 ↔ 章节」对照表；由 A5 校验器兜底跨文件重名。
 
 **验收**
