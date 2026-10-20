@@ -134,29 +134,35 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`9534189`（`feat(E3)` 随机模拟 `prob_simulate` #15 收官；同轮 `7f94b7c` 向量的应用 `vector_physics` #14、
-  `e71ff8e` 补齐 G2 三个 `.uid`），已 push（`main` 与 `origin/main` 同步）。
-- **本轮交付（2026-10-20，第八轮）**：**E3 全条收官**（15 条全部落定：13 条成关卡、#1/#11 经用户判定教材已删跳过）。
-  - **#14 `vector_physics`**（`vectors` 章 1-7，`data/vectors_levels.json` 第 7 组 5 轮）：合力的平行四边形法则（探究轮带
-    F₁/F₂/合力的平行四边形 scene）、功的向量表达式（$$W=|F||s|\cos\theta$$，干扰项=漏乘/误用 sin/加法）、
-    斜向拉力做功（**填空**，$$25$$；解析点出 50=漏乘 cos、$$25\sqrt{3}$$=误用 sin）、收绳拉船的速度分解（**填空**，$$v=2/\cos60^{\circ}=4$$，
-    带绳-船速 scene）、合力随夹角变化（**多选** `[0,2]`，干扰项=「合力总不小于较大分力」「夹角越大合力越大」）。
-    章 `renjiao_a` 同步由 6.1–6.2 扩为 6.1–6.4。
-  - **#15 `prob_simulate`**（`probability` 章 1-12，第 12 组 5 轮）：撒豆法估 $$\pi$$（探究轮带正方形+内切圆 scene，
-    干扰项=直接拿比例 0.785）、随机数与模拟条件（**多选** `[0,1]`）、投点估不规则面积（**填空** 68）、
-    投点数与估计误差、把红绿灯到达时刻翻译成随机数（建模辨析）。
-  - 新增关卡均走 `$$…$$` 直写 LaTeX、`ans` 位置分散、轮次标签 `7-x`/`12-x` 一次到位（`fix_labels --apply` 改 0 处）。
+- **最后提交**：`0ddf55e`（`feat(B5)` 干扰项黑名单校验器 + 14 轮范畴错误干扰项整改）；
+  前一提交链：`9534189`（E3 收官 `prob_simulate`）→ `347363a`（docs），已 push（`main` 与 `origin/main` 同步）。
+- **本轮交付（2026-10-20，第九轮）**：**B5 落地第一步**（校验器 + 首批整改，14 轮）。
+  - `tools/check_questions.gd` 新增 **`BAD_DISTRACTOR` 关键词黑名单**（画折线图 / 求概率密度 / 无法判断 /
+    不能确定 / 说不清）：只查**错误选项**（正确项里出现同词是正常表述），命中即记 `干扰项黑名单「<词>」`，
+    并新增看板行「干扰项黑名单命中: N 处（B5 目标 0）」。词表刻意保守——只收全库审计确认过的通用回避句式；
+    学科专属的范畴错误（如计数题里写「错位相减」）按章逐条整改、不进黑名单。
+  - 首批 **14 轮整改**（9 个文件，全部是「无法判断」型回避项 → 错误路径型干扰项）：
+    `circle_3_1`×2（坐标各自与 r 比 / $$d^{2}$$ 当 $$d$$ 忘开方）、`circle_3_2`（分母忘开方）、
+    `circle_boss`（圆心 $$y$$ 代号错 → $$d=2.8<3$$）、`cd_scatter`（排除第三因素即可断因果的过度结论）、
+    `cd_resid`（残差符号约定记反）、`deriv_tangent`（$$f′>0$$ 误当 $$f>0$$）、`deriv_zero`（把「至少一个」当「恰有一个」）、
+    `ineq_props`（配方符号错 → $$\le$$）、`rv_props`（方差越大越精密）、`seq_sn`（下标从 0 数起）、
+    `logic_neg`（忽略 $$x\in\mathbb{R}$$ 的量词限定）、`solid_axiom`（漏「不在同一直线上」条件）、
+    `prob_stats`（三个范畴错误项整体换成：用相关系数 / 用频率目测不检验 / 用回归拟合——均为可辨识的错配）。
+  - 整改后黑名单命中 **15 → 0**，`QUESTION-CHECK` 仍 `0 new / 7 known`。
   - 全量回归绿：`CHECKED 89` / `TESTS 1245` / `SMOKE 285` / `UI-SMOKE 333` / `LabSmoke TMP_OK` /
-    `LEVEL-PREVIEW-SMOKE 6877` / `QUESTION-CHECK 269 关 949 题 0 new（warn 3 与基线同）` /
-    `KNOWLEDGE 274 点 hard-gaps=0` / `ASSETS 29.93`；
-    `LATEX-PROBE`（临时探针，按组分进程、用完已删）：`vector_physics 26 段 / 0 失败`、`prob_simulate 14 段 / 0 失败`。
-  - 上一轮（第七轮，2026-10-19）：E3 #13 相关系数 `cd_corr_coef`（`93240c1`）；第六轮 #12 `0a3aae0`；
-    第五轮 #10 `b3205f0`；第四轮 #9 `0bb0a2e`；第三轮 #7/#8 `5d784bb`；第二轮 #6/#4 `017f04b`/`d4a6a40`、#5 `1630a99`。
+    `LEVEL-PREVIEW-SMOKE 6877` / `QUESTION-CHECK 269 关 949 题 0 new` / `KNOWLEDGE 275 点 hard-gaps=0` / `ASSETS 29.94`；
+    `LATEX-PROBE`（临时探针，用完已删）：`circle_3_1 2 / circle_3_2 1 / circle_boss 3 / ineq_props 46 / logic_neg 3 段 / 0 失败`。
+  - 上一轮（第八轮，2026-10-20）：**E3 全条收官**——`vector_physics` #14（`7f94b7c`）、`prob_simulate` #15（`9534189`）、
+    补 G2 `.uid`（`e71ff8e`）；第七轮：E3 #13 `93240c1`；第六轮：#12 `0a3aae0`；第五轮：#10 `b3205f0`；
+    第四轮：#9 `0bb0a2e`；第三轮：#7/#8 `5d784bb`；第二轮：#6/#4 `017f04b`/`d4a6a40`、#5 `1630a99`。
 - **下次建议顺序**（按性价比）：
-  1. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 需人工决策/下载/目视（AI 无法替代，也是上架硬门槛）。
-  2. **B 类内容重设计**（E3 已清空，内容批产的主力转到 B）：**B1 达标**（探究轮转纯 `interact`、多选辨析）/
-     **B2 扩题**（3 → 5~8 轮）/ **B5 干扰项**（诊断性干扰项 + 关键词黑名单）——建议按章成批推进，每章一个 commit。
-  3. 决策项待拍板：**A2/A3/A12**（遗留模块与 `Battle`/`questions.json` 去留）、**A17**（数据文件命名）、**G4/G5**。
+  1. **B5 剩余整改**（继续按章推进，每章一个 commit）：黑名单只覆盖通用回避句式，
+     **学科专属范畴错误**（B5 现状里列的：`prob_hypergeo`「连续型随机变量/几何概型」、`counting`「错位相减/裂项相消」、
+     `derivative`「都趋于无穷」、`prob_freq`「无数个」…）仍需逐章换成错误路径型；验收①「抽检 30 题、每题 ≥2 个
+     干扰项对应真实错误路径」尚未系统抽检。
+  2. **B1 达标**（19.2% → ≥30%）/ **B2 扩题**（3.53 → ≥5 题/关）——大批量内容生产，建议按章成批。
+  3. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 需人工决策/下载/目视（AI 无法替代，也是上架硬门槛）。
+  4. 决策项待拍板：**A2/A3/A12**（遗留模块与 `Battle`/`questions.json` 去留）、**A17**（数据文件命名）、**G4/G5**。
 - **收工前必做**：跑全量校验（`check_all` / `Tests` / `smoke_scene` / `UiSmoke` / `LabSmoke` /
   `check_questions` / `check_knowledge` / `check_assets` / `LevelPreview --smoke`），并同步 §9.2 基线数字。
 
@@ -751,6 +757,18 @@
 **验收**
 - 抽检 30 题：每题至少 2 个干扰项可对应一条真实错误路径；
 - `check_questions.gd` 增加「干扰项关键词黑名单」检查（画折线图 / 求概率密度 / 无法判断 …）。
+
+**进度（🟡 进行中，2026-10-20）**
+- ✅ 验收②落地：`check_questions.gd` 新增 `BAD_DISTRACTOR` 黑名单（画折线图 / 求概率密度 / 无法判断 /
+  不能确定 / 说不清），**只查错误选项**，命中即记 `干扰项黑名单「<词>」`，看板新增「干扰项黑名单命中」行。
+- ✅ 首批整改 14 轮（9 文件，`0ddf55e`）：全部「无法判断」回避项换成**错误路径型**干扰项
+  （忘开方、代点符号错、残差符号记反、$$f′>0$$ 误当 $$f>0$$、「至少一个」当「恰有一个」、
+  忽略量词数集限定、漏「不在同一直线上」、方差反向理解…）；`prob_stats` 的三个范畴错误项
+  整体换成「用相关系数 / 频率目测不检验 / 用回归拟合」三种可辨识的错配。黑名单命中 **15 → 0**。
+- ⏳ 剩余：**学科专属范畴错误**未系统整改（`prob_hypergeo`「连续型随机变量/几何概型」、`counting`
+  「错位相减/裂项相消/数学归纳」、`derivative`「都趋于无穷」、`prob_freq`「无数个」等）——
+  这些不进通用黑名单，须按章逐条换成错误路径型；
+- ⏳ 验收①（抽检 30 题，每题 ≥2 个干扰项对应真实错误路径）尚未系统抽检。
 
 ---
 
@@ -1796,13 +1814,14 @@
 > `Parse Error: Could not find type "BossHud"`。用编辑器打开一次，或跑
 > `& "<godot472.exe>" --headless --editor --path . --quit`。
 
-**当前回归基线**（改完请对照，数字只能升不能降；2026-10-20 E3 收官后）：
+**当前回归基线**（改完请对照，数字只能升不能降；2026-10-20 E3 收官 + B5 首批整改后）：
 `CHECKED 89 scripts, 0 failures` / `TESTS: 1245 passed, 0 failed` / `SMOKE: 285 ok, 0 fail` /
 `UI-SMOKE: 333 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
 `LEVEL-PREVIEW-SMOKE: 6877 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
-`QUESTION-CHECK: 26 files / 269 levels / 949 questions / 0 new / 7 known / 3 warnings`（A5 校验器，存量问题见下方基线）/
-`ASSETS: 29.93 MB over 3099 files … banned=0, oversize=0`（A13 护栏）/
-`KNOWLEDGE: 27 chapters / 274 points / 274 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
+`QUESTION-CHECK: 26 files / 269 levels / 949 questions / 0 new / 7 known / 3 warnings`
+（A5 校验器，存量问题见下方基线；看板另有「干扰项黑名单命中 0 处」，见 B5）/
+`ASSETS: 29.94 MB over 3099 files … banned=0, oversize=0`（A13 护栏）/
+`KNOWLEDGE: 27 chapters / 275 points / 275 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `LATEX-PROBE: conic C4 68 / C5 76 / C6 68 段 / 0 失败`（E2 收官）、
 `vector_physics 26 段 / 0 失败`、`prob_simulate 14 段 / 0 失败`（E3 收官；**探针需按组分进程**，
 写法见 E2 的 MicroTeX 累积崩溃注：扫 `$$([^$]+)$$` 逐段调 `InlineMath._latex_bbcode(latex,26)`，
@@ -1829,10 +1848,10 @@
 - 轮次标签编号错位 **0 处**（B9 已修复：`tools/fix_labels.gd` 批量重编，规范 `<关卡序号>-<轮次> <阶段名>`）。
 - 资源体积（A13 已治理）：仓库 tracked 合计 **29.6MB**（治理前 48.4MB；`art/` 已无 `.xcf`，源文件移至 `assets_src/`，
   标题字体 13.5MB 待替换）；APK（debug）旧基线 **60.9MB**（新基线待重新导出）。见 A13。
-- 知识点矩阵（E1 已建立，E2/E3 已补齐）：`data/knowledge_map.json` 27 章 / **274 个知识点**（每关一挂）；
+- 知识点矩阵（E1 已建立，E2/E3 已补齐）：`data/knowledge_map.json` 27 章 / **275 个知识点**（每关一挂）；
   **硬缺口 0**、选学/旧课标 8（基线 `tools/knowledge_gaps_baseline.txt`；2026-10-19 两角和差/二倍角清零）；
   关卡 id `solid_angle` 跨章重名 1 处。见 E1/E2/E3。
-- 数据一致性：`curriculum` 关卡 274 / 关卡数据组 269，`lab_ref` 动态映射覆盖其余；
+- 数据一致性：`curriculum` 关卡 275 / 关卡数据组 269，`lab_ref` 动态映射覆盖其余；
   跨文件重名关卡数据 **5 组**（`questions.json` ↔ `set_logic_levels.json`，内容互不相同）。见 A12。
 - 口播字段 `speak`：**0 处**。见 B13。
 - 动效：`anim` 演示字段只出现在 **1/26** 个关卡文件（`solid_basic_levels.json`，27 处 / 12 关）；
