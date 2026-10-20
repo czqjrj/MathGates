@@ -1627,7 +1627,7 @@
           "0(零向量)",
           "res://art/vector/formulas/vec_3cdotOG_87c36519.png",
           "res://art/vector/formulas/vec_OApOBpOC_846583d6.png",
-          "无法确定"
+          "OG（把三个向量的和当成重心自身）"
         ],
         "ans": 0,
         "trap": true,
