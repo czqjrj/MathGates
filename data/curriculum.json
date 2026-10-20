@@ -918,6 +918,15 @@
           "lab": "probability",
           "lab_ref": "prob_freq",
           "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "prob_simulate",
+          "name": "1-12 随机模拟",
+          "technique": "随机数 · 频率估计 · 面积与概率",
+          "archetype": "LAB",
+          "lab": "probability",
+          "lab_ref": "prob_simulate",
+          "scene": "res://scenes/LabStage.tscn"
         }
       ]
     },

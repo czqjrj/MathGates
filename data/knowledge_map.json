@@ -202,7 +202,8 @@
         { "name": "1-8 事件的关系与运算", "levels": ["prob_event"] },
         { "name": "1-9 概率的基本性质", "levels": ["prob_props"] },
         { "name": "1-10 事件的相互独立性", "levels": ["prob_indep"] },
-        { "name": "1-11 频率与概率", "levels": ["prob_freq"] }
+        { "name": "1-11 频率与概率", "levels": ["prob_freq"] },
+        { "name": "1-12 随机模拟", "levels": ["prob_simulate"] }
       ],
       "gaps": []
     },
