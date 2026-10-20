@@ -639,6 +639,15 @@
           "lab": "vectors",
           "lab_ref": "vec_tri",
           "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "vector_physics",
+          "name": "1-7 向量的应用",
+          "technique": "力的合成 · 速度分解 · 做功",
+          "archetype": "LAB",
+          "lab": "vectors",
+          "lab_ref": "vector_physics",
+          "scene": "res://scenes/LabStage.tscn"
         }
       ]
     },
