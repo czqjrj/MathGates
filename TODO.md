@@ -31,10 +31,10 @@
 | **A5** | 关卡 JSON 校验器（schema + 编校） | **P0** | ✅ 已完成（`check_questions.gd` + 基线） |
 | **A10** | 公式来源单一化：新数据直接写 LaTeX | **P1** | 🟡 已支持 `$$…$$` 直写 LaTeX（`InlineMath` + 校验器已适配）；旧 `{f:}` 兼容，待存量迁移 |
 | **A2** | 遗留模块（`SolidChallenge` / `ConicStage`+C1~C3）定策略 | **P1** | ⚠️ 前提已变：二者仍被 curriculum.json **活跃引用**（SolidChallenge 6 关、ConicStage 3 关），不是可直删的死代码 → 改为「迁移到 LabStage 或正式收编」 |
-| **A3** | `Battle.gd` 死代码处理 | **P1** | 🟡 已确认为**真死代码**（`scenes/Battle.tscn` 被 0 个关卡引用；`Battle.gd` 688 行）；与 A12 同源，建议合并清理 |
+| **A3** | `Battle.gd` 死代码处理 | **P1** | ✅ 已完成（2026-10-20 与 A12 合并清理：删除 `Battle.gd` 688 行 + `Battle.tscn`；缺 scene 兜底改为报错/跳回主界面） |
 | **A6** | CI（headless 四件套自动化） | **P1** | ✅ 已完成（`.github/workflows/check.yml`） |
 | **A11** | UI/交互层缺自动化断言（测试只盖纯逻辑） | **P1** | ✅ 已完成（`tests/UiSmoke`：342 断言 + 反向验证 + 入 CI） |
-| **A12** | `questions.json` 变成第二份权威题库（与现行数据冲突） | **P1** | 🟡 已定性：`data/questions.json`（14.9 KB）**唯一消费者是 `Battle.gd`**（`GameData.questions_for()` 只被 `Battle.gd:50` 调用）→ 随 A3 一并删除即可连带消灭第二份题库 |
+| **A12** | `questions.json` 变成第二份权威题库（与现行数据冲突） | **P1** | ✅ 已完成（2026-10-20 随 A3 删除：`questions.json` 42 题 + `questions_for()`；跨文件重名 5→0，校验器已兜底） |
 | **A13** | 资源体积治理（`.xcf` 入库、13.8MB 字体、未排除） | **P1** | 🟡 部分完成（`.xcf` 出库 + 图标降采样：46.8→29.6MB；残留：字体替换/背景压缩） |
 | **A14** | `export_presets.cfg` 残留第三方机器路径 | **P1** | ✅ 已完成（统一 `build/…`） |
 | **A15** | 元游戏内容硬编码在 `GameData.gd` | **P2** | 与「改内容只改 JSON」相悖 |
@@ -133,31 +133,30 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`cb9bca6`（`docs(TODO)` 改为**结构优先**排序，并实测修正 A2/A3/A12/A16/A17 现状）；
-  上一轮交付：`5d73e39`（B2 成对数据的统计分析章，B2 下限全线达成）+ `d590687`（docs 回填）；
-  再往前：`12064ae`（docs）→ `3aa1d48`（B2 立体几何 `solid`）→ `f3f3406`（docs）→
-  `15af6be`（B2 平面向量初步）→ `825b7e4`（docs）→ `cf176a9`（B2 圆锥曲线 `conic`）→
-  `68ceeb3`（docs）→ `46e8f59`（B2 集合与逻辑）→ `03a9c77`（docs）→ `6894f06`（B2 数学思想综合）→
-  `9c3edb0`（docs）→ `8aa1abe`（B2 导数及其应用）→ `d023dbb`（docs）→ `6acb576`（B2 立体几何初步）→
-  `e8a5bf6`（B2 不等式）→ `515d933`（B2 函数与分段）→ `5c79298`（B2 随机变量）→
-  `b42943f`（B2 递推求通项）→ `79e4ef8`（B2 圆锥曲线 `conics`）→ `26332eb`（B2 复数）→
-  `7ccfe5d`（E3 验收补齐 #2/#3）→ `6fb59c7`（B5 收官），已 push（`main` 与 `origin/main` 同步）。
-- **本轮交付（2026-10-20，第十二轮）**：**B2 扩题启动（复数章）+ E3 验收补齐**。
-  - E3 #2/#3 补齐验收轮：`ineq_props` 补 `3-6`（对称性 a>b⇔b<a 与传递性 a>b、b>c⇒a>c 辨析；
-    首版「无法确定」干扰项命中 B5 黑名单，已改为「a=c（误把传递当相等）」），`ineq_param` 补
-    `4-6`（全体实数解需 a>0 且 Δ<0，辨析 Δ≤0 的取等混淆）、`4-7`（先比较两根 1 与 m 的大小再写解集）；
-    E3 清单 #2/#3 由「无 ✅」改为 ✅，15 条全部落定（13 条落成关卡，#1/#11 跳过）。
-  - B5 总览行仍写「四选一实际是二选一」，与标题 `[x]` 不一致 → 改 ✅ 并补证据。
-  - **B2 扩题**：复数（24 → 30）、圆锥曲线 `conics`（18 → 30）、递推求通项（18 → 30）、随机变量及其分布
-    （24 → 30）、函数与分段（28 → 30）、不等式（29 → 33）、立体几何初步（52 → 64）、
-    导数及其应用（28 → 40）、数学思想综合（22 → 34）、集合与逻辑（30 → 40）、
-    圆锥曲线 `conic`（24 → 31）、平面向量初步（27 → 35）、立体几何 `solid`（29 → 31）、
-    成对数据的统计分析（30 → 36）共补 **113 轮**（含 `solid_methods.json` 内 2 轮），新增轮次以填空为主
-    （48 填空 + 65 四选一），非四选一占比约 19.1% → 21.4%。**B2 下限全线达成（27/27 章 ≥ 5.0 题/关）。**
-  - 全量回归绿：`CHECKED 90` / `TESTS 1245` / `SMOKE 285` / `UI-SMOKE 368`（fail=0）/
-    `LabSmoke TMP_OK` / `LEVEL-PREVIEW-SMOKE 7474` / `QUESTION-CHECK 269 关 1057 题 0 new（warn 3 与基线同）` /
-    `KNOWLEDGE 275 点 hard-gaps=0` / `ASSETS 30.00`。
-  - 上一轮（第十一轮）：**B5 收官**（`6fb59c7`：抽检 30 题 + `sample_distractors.gd`）；
+- **最后提交**：`375eb1a`（`feat(A3+A12)` 删除 Battle 死代码与第二份题库 `questions.json`）；
+  本轮 docs 回填随下一提交走；上一提交链：`c6b3742`（上游第十二轮 docs 尾）→ `375eb1a`，已 push。
+- **本轮交付（2026-10-20，第十三轮）**：**A3 + A12 合并清理双清**（死代码与第二份题库一次清零，`375eb1a`）。
+  - **删除**（−1225 行 / −14.9KB）：`scripts/screens/Battle.gd`（688 行）+ `Battle.gd.uid`、
+    `scenes/Battle.tscn`、`data/questions.json`（42 题）、`GameData._load_questions()` / `questions_for()`
+    / `QUESTIONS_PATH` / `_questions`。
+  - **兜底改造**（前置风险全部落地）：`GameData` 4 处 `"res://scenes/Battle.tscn"` 默认值改为——
+    `_enter_level` 校验 `scene` 非空且 `ResourceLoader.exists`，坏数据 `push_error` + 跳回主界面；
+    `_level_nav` 缺 scene 返回 `{}`（与「关卡不存在」同语义，`pet_quests` 等既有 is_empty 过滤直接复用）；
+    两处推荐关卡（弱领域推荐 / `_first_unmastered_level`）缺 scene 直接 `continue` 不入推荐；
+    `TheoremTree._enter` 原地报错 + Toast「该关卡缺少场景数据」（校验前置于 `start_level`，不污染当前上下文）。
+  - **工具/测试同步**：`smoke_scene.gd` / `capture_scene.gd` / `UiSmoke.gd` 的 Battle 默认值改为空则跳过，
+    `UiSmoke` legacy 列表只剩在用的 `ConicStage`/`SolidChallenge`；补交 `sample_distractors.gd.uid`（此前漏交）。
+  - **文档同步**：`README.md`（模块树与「改内容」段落：全仓只有一份权威题库 `data/*_levels.json`）、
+    `docs/关卡游戏化方案.md`（现状发现①/场景表/关卡进入/§9 决策记录第 5 条 → 2026-10-20 修订为删除）。
+  - **A12 验收自动兜底确认**：「跨文件重名关卡数据」检查已在 `check_questions.gd`（`_check_cross_file_dups`），
+    删后输出 **0 组**（此前 5 组全部来自 `questions.json` ↔ `set_logic_levels.json`）。
+  - 验收达成：`grep Battle`/`questions.json` 在代码中只剩说明性注释；curriculum 复核 **275/275 全带 scene**。
+  - 全量回归绿：`CHECKED **89**`（90 − Battle.gd）/ `TESTS 1245` / `SMOKE 285` / `UI-SMOKE 367`（fail=0，
+    移除 Battle legacy 样本）/ `LabSmoke TMP_OK` / `LEVEL-PREVIEW-SMOKE 7474` /
+    `QUESTION-CHECK 269 关 1057 题 0 new（warn 3 与基线同）` / `KNOWLEDGE 275 点 hard-gaps=0` /
+    `ASSETS 29.97（3097 files，banned=0）`。
+  - 上一轮（第十二轮，上游）：**B2 扩题 13 章收官（27/27 章 ≥5.0 题/关）+ E3 验收补齐 #2/#3 + TODO 改结构优先**；
+    第十一轮：B5 收官（`6fb59c7`：抽检 30 题 + `sample_distractors.gd`）；
     第十轮：B5 批次二（`32f064e`）；第九轮：B5 批次一（`0ddf55e`）；
     第八轮：E3 全条收官 `vector_physics` #14（`7f94b7c`）、`prob_simulate` #15（`9534189`）；
     第七轮：E3 #13 `93240c1`；第六轮：#12 `0a3aae0`；第五轮：#10 `b3205f0`；第四轮：#9 `0bb0a2e`；
@@ -165,25 +164,19 @@
 - **下次建议顺序**（按性价比）：
   > **2026-10-20 用户决策：暂停题目扩产，先做结构收敛。** B2 下限已全线达成（27/27 章 ≥ 5.0 题/关），
   > B1（21.4% → ≥30%）与 B2「上探 6~7 题/关中段」均为**纯内容批量生产**，可随时回归；当前转向 A/D/F 类结构问题。
-  1. **A3 + A12 合并清理（死代码与第二份题库双清）** —— 最高性价比：
-     `Battle.gd` 688 行 + `scenes/Battle.tscn`（被 0 关卡引用）+ `data/questions.json` 14.9 KB
-     + `GameData._load_questions()` / `questions_for()`。**前置风险**：`GameData.gd` 有 4 处把
-     `"res://scenes/Battle.tscn"` 当兜底默认场景（:490/:1339/:1482/:1498），删场景前必须把这些兜底改为
-     显式报错或空场景，否则坏数据会指向不存在的路径。验收：`check_all` + `Tests` + `UiSmoke` 全绿，
-     且 `grep Battle` 只剩历史文档。
-  2. **A4 上帝对象拆分** —— 实测 `GameData.gd` **1779 行**、`TheoremTree.gd` **1655 行**、
+  1. **A4 上帝对象拆分** —— 实测 `GameData.gd` **1779 行**、`TheoremTree.gd` **1655 行**、
      `StageBase.gd` **1291 行**（合计 4725 行）。策略：**不做大重写**，只把可独立测试的纯逻辑切出
-     （如进度/星级计算、题目加载、几何构造），每切一块先补测试再搬。
-  3. **A2 遗留模块定策略（前提已变）** —— `SolidChallenge.tscn` 仍被 6 关引用、`ConicStage.tscn` 被 3 关引用，
+     （如进度/星级计算、几何构造），每切一块先补测试再搬。
+  2. **A2 遗留模块定策略（前提已变）** —— `SolidChallenge.tscn` 仍被 6 关引用、`ConicStage.tscn` 被 3 关引用，
      **不能删**。二选一：迁到 `LabStage`（与 229 关统一）或明确「收编为正式场景」并补测试；
      建议先做后者（低成本），把迁移列入长期项。
-  4. **A17 数据文件命名（已实际致误）** —— `conic`/`conics`、`vector`/`vectors`、`solid`/`solid_basic` 混用，
-     本轮 B2 已因它漏改一章（见上方「口径纠偏」）。做法：加**文件名/章节映射自检**到 `check_questions`
+  3. **A17 数据文件命名（已实际致误）** —— `conic`/`conics`、`vector`/`vectors`、`solid`/`solid_basic` 混用，
+     上一轮 B2 已因它漏改一章（见上方「口径纠偏」）。做法：加**文件名/章节映射自检**到 `check_questions`
      （脚本化、零风险），重命名另议。
-  5. **B13 朗读双路径** / **D2 演示动画覆盖 1/26** / **F3 性能耗电** / **F4 桌面键盘** —— 体验与性能结构问题。
-  6. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 需人工决策/下载/目视（AI 无法替代，上架硬门槛）。
-  7. 决策项待拍板：**G4/G5**；**A2 的迁移 vs 收编**、**A17 是否真重命名**。
-  8. 内容项回归：**B1 达标**（21.4% → ≥30%）、**B2 中段**（6~7 题/关）、**B6 理由选项占比**，
+  4. **B13 朗读双路径** / **D2 演示动画覆盖 1/26** / **F3 性能耗电** / **F4 桌面键盘** —— 体验与性能结构问题。
+  5. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 需人工决策/下载/目视（AI 无法替代，上架硬门槛）。
+  6. 决策项待拍板：**G4/G5**；**A2 的迁移 vs 收编**、**A17 是否真重命名**。
+  7. 内容项回归：**B1 达标**（21.4% → ≥30%）、**B2 中段**（6~7 题/关）、**B6 理由选项占比**，
      结构收敛后按章继续（新题模板仍须内建 B5 规范，先过 `check_questions` 黑名单与 `sample_distractors` 抽检）。
 - **收工前必做**：跑全量校验（`check_all` / `Tests` / `smoke_scene` / `UiSmoke` / `LabSmoke` /
   `check_questions` / `check_knowledge` / `check_assets` / `LevelPreview --smoke`），并同步 §9.2 基线数字。
@@ -246,7 +239,7 @@
 
 ---
 
-### [ ] A3 · `Battle.gd` 死代码处理（P1）
+### [x] A3 · `Battle.gd` 死代码处理（P1）✅ 2026-10-20 与 A12 合并清理完成（第十三轮，`375eb1a`）
 
 **现状（证据）**
 - `scripts/screens/Battle.gd`（**688 行**，TODO 旧记 614 行）仅在关卡**没有** `scene` 字段时作为回退占位
@@ -267,6 +260,19 @@
 
 **验收**
 - 二选一落定，`README.md` 有说明；`check_all.gd` 0 failures。
+
+**已实施（记录，2026-10-20 第十三轮）**
+- **采用「删除」路线**（与 A12 合并，commit `375eb1a`，−1225 行）：
+  - 删除 `scripts/screens/Battle.gd`（688 行）+ `Battle.gd.uid` + `scenes/Battle.tscn`；
+  - **4 处兜底默认值全部改造**（`GameData._enter_level` 校验 scene 非空且路径存在，坏数据
+    `push_error` + 跳回主界面；`_level_nav` 缺 scene 返回 `{}`，与「关卡不存在」同语义；
+    弱领域推荐与 `_first_unmastered_level` 缺 scene 直接 `continue`；`TheoremTree._enter`
+    校验前置于 `start_level`，坏数据原地报错 + Toast，不污染当前上下文）；
+  - 同步：`smoke_scene.gd` / `capture_scene.gd` / `UiSmoke.gd` 空 scene 跳过，`UiSmoke` legacy
+    列表只剩在用的 `ConicStage`/`SolidChallenge`；`README.md` 模块树与 `docs/关卡游戏化方案.md`
+    （现状发现①/场景表/关卡进入/§9 决策记录第 5 条）全部改为与现状一致。
+- 验收达成：`check_all` 0 failures（`CHECKED 89` = 90 − Battle.gd）；curriculum 复核 **275/275 全带 scene**；
+  `grep Battle` 在代码中只剩说明性注释；`BossHud`（BOSS 关在用）不受影响。
 
 ---
 
@@ -449,14 +455,14 @@
   6. **乱序确实生效**：同一轮重建 12 次，出现 ≥2 种顺序（保护 B8）；
   7. `_finish()` → 结算面板/遮罩可见、星级行已渲染、标题非空；
   8. `UI.fs()` 随 `UI.S` 线性生效（1.0/1.4/2.0 → 20/28/40，最小 1）；
-  9. legacy 场景（`ConicStage`/`SolidChallenge`/`Battle`）能构建出子节点。
+  9. legacy 场景（`ConicStage`/`SolidChallenge`；原含 `Battle`，已随 A3 删除后移出冒烟范围）能构建出子节点。
 - **反向验证通过**：临时注释 `StageBase._ready()` 的 `_build_ui()`，`UiSmoke` 立即红灯（`EXIT=1`，14 条节点断言失败），恢复后回到全绿。
 - 已纳入 CI（`.github/workflows/check.yml` 新增 UiSmoke 步骤，`pipefail` + 断言 `0 fail`）。
-- 说明：`Battle.tscn` 无课程表样本（占位/死代码，见 A3），用任意真实关卡上下文实例化验证。
+- 说明：`Battle.tscn` 无课程表样本（占位/死代码，见 A3；**已于 2026-10-20 随 A3 删除**），用任意真实关卡上下文实例化验证。
 
 ---
 
-### [ ] A12 · `questions.json` 变成第二份权威题库（P1）
+### [x] A12 · `questions.json` 变成第二份权威题库（P1）✅ 2026-10-20 随 A3 删除完成（第十三轮，`375eb1a`）
 
 **现状（证据）**
 - `data/questions.json`（12 组 / 42 题，**14.9 KB**）的唯一消费者是 `GameData.questions_for()`，
@@ -479,6 +485,15 @@
 
 **验收**
 - 全仓只剩一份权威题库；A5 校验器输出「跨文件重名」为 0。
+
+**已实施（记录，2026-10-20 第十三轮，commit `375eb1a`）**
+- **采用「删除」**：`data/questions.json`（42 题 / 14.9KB）与 `GameData._load_questions()` /
+  `questions_for()` / `QUESTIONS_PATH` / `_questions` 全部删除——随 A3 删 Battle 后该通道彻底不可达。
+- 「跨文件重名关卡数据」检查确认已在 `check_questions.gd`（`_check_cross_file_dups`，A5 已建）：
+  删除前 5 组重名全部来自 `questions.json` ↔ `set_logic_levels.json`，删除后输出 **0 组**。
+- 全仓现在只有一份权威题库 `data/*_levels.json`；`README.md`「改内容」段落已同步。
+- 附带影响：B7 的图片选项范围缩小（`questions.json` 的 66 处随文件移除，关卡文件剩 114 处）；
+  B5 审计中的「`prob_freq` 无数个」题随文件一并移除。
 
 ---
 
@@ -674,7 +689,8 @@
 
 ## 2. B 类 · 题目与内容质量
 
-> 本节所有数字来自 26 个 `data/*_levels.json` + `data/questions.json` 的全量扫描，
+> 本节所有数字来自 26 个 `data/*_levels.json` + `data/questions.json` 的全量扫描
+> （**注**：`questions.json` 已随 A12 于 2026-10-20 删除，涉它的数字只剩历史意义；现行为 1057 题 / 269 组），
 > 口径与复现方法见第 9 节。**题数合计 754**（关卡文件 712 + 通用题库 42），**关卡组 222**。
 
 ### [ ] B1 · 题型单一 → 把已有非选择题型用起来（P0）
@@ -882,7 +898,7 @@
   单次 0-1 结果/总体比例 $$M/N$$）；顺手修正 `conic_line_circle` 题干问「几个交点」但选项是位置关系词的错位。
   两批累计 **42 轮、黑名单命中清零**。
 - ✅ 审计澄清：B5 现状列的 `prob_freq`「无数个」实际在遗留题库 `questions.json`，对应「区间内实数
-  无穷多」的真实误解，判定为**合格错误路径，不改**；该文件去留待 A2/A3/A12 拍板。
+  无穷多」的真实误解，判定为**合格错误路径，不改**；该文件已随 A12 于 2026-10-20 整体删除（第十三轮）。
 - ✅ **验收①已达成**（`6fb59c7`）：新增可复现抽样工具 `tools/sample_distractors.gd`
   （确定性等间隔抽样：770 道四选一轮中取 30 道，explore 轮取 `ask` 题干；`-- n` 可调样本量）。
   逐题判定结果：**26 题达标 / 4 题整改后达标**，整改明细：
@@ -919,7 +935,7 @@
 
 **现状（证据）**
 - **180 处图片选项**：关卡文件 114 处（`vector` 44 / `recurrence` 42 / `ellipse` 22 / `conic` 6），
-  `questions.json` 66 处（其中 15 道题**四个选项全是图片**）。
+  `questions.json` 66 处（其中 15 道题**四个选项全是图片**；**已随 A12 删除，B7 现存范围只剩关卡文件 114 处**）。
 - 同一题的四张图文件名形如 `qn_m12_c1ac7ac3.png` / `qn_m12_95c9f3ef.png` / `qn_m12_f28da539.png` /
   `qn_m12_bda148b9.png` —— 即四个**近乎同形**的区间记法（`[-1,2)` / `(-1,2]` / `[-1,2]` / `(-1,2)`），
   题目退化为「比眼力辨形」。
@@ -1943,13 +1959,13 @@
 > `Parse Error: Could not find type "BossHud"`。用编辑器打开一次，或跑
 > `& "<godot472.exe>" --headless --editor --path . --quit`。
 
-**当前回归基线**（改完请对照，数字只能升不能降；2026-10-20 B2 复数章 + 圆锥曲线章扩题后）：
-`CHECKED 90 scripts, 0 failures` / `TESTS: 1245 passed, 0 failed` / `SMOKE: 285 ok, 0 fail` /
-`UI-SMOKE: 340 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
+**当前回归基线**（改完请对照，数字只能升不能降；2026-10-20 第十三轮 A3+A12 双清后）：
+`CHECKED 89 scripts, 0 failures`（A3 删 `Battle.gd`，90→89）/ `TESTS: 1245 passed, 0 failed` / `SMOKE: 285 ok, 0 fail` /
+`UI-SMOKE: 367 ok, 0 fail`（取样漂移，见下方注；A3 后 legacy 列表移除 Battle）/ `LabSmoke` 末尾 `TMP_OK` /
 `LEVEL-PREVIEW-SMOKE: 7474 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
 `QUESTION-CHECK: 26 files / 269 levels / 1057 questions / 0 new / 7 known / 3 warnings`
 （A5 校验器，存量问题见下方基线；看板另有「干扰项黑名单命中 0 处」，见 B5）/
-`ASSETS: 29.95 MB over 3100 files … banned=0, oversize=0`（A13 护栏）/
+`ASSETS: 29.97 MB over 3097 files … banned=0, oversize=0`（A13 护栏；A12 删 `questions.json` 后 −3 文件）/
 `KNOWLEDGE: 27 chapters / 275 points / 275 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `LATEX-PROBE: conic C4 68 / C5 76 / C6 68 段 / 0 失败`（E2 收官）、
 `vector_physics 26 段 / 0 失败`、`prob_simulate 14 段 / 0 失败`（E3 收官；**探针需按组分进程**，
@@ -1967,7 +1983,7 @@
 
 ### 9.2 本文件基线数字（改完请同步更新）
 
-- 题目总数 **1099**（关卡文件 1057 + `questions.json` 42）；关卡组 **269**；
+- 题目总数 **1057**（全仓唯一权威题库 `data/*_levels.json`；原 `questions.json` 42 题已随 A12 于 2026-10-20 删除）；关卡组 **269**；
   平均 **3.93 题/关**（`check_questions` 口径：1057 = 单选 834 + 多选 4 + 填空 219；无选项 `interact` 4 另计）。
 - 题型分布（`check_questions.gd` 看板）：单选 **834**，多选 **4**，`interact` **4**，填空 **219**；
   非四选一占比 **21.4%**（B1 目标 ≥30%；B2 扩题时新增轮次一律用填空/多选/`interact`，可同步抬高此值）。
@@ -1980,7 +1996,7 @@
   **硬缺口 0**、选学/旧课标 8（基线 `tools/knowledge_gaps_baseline.txt`；2026-10-19 两角和差/二倍角清零）；
   关卡 id `solid_angle` 跨章重名 1 处。见 E1/E2/E3。
 - 数据一致性：`curriculum` 关卡 275 / 关卡数据组 269，`lab_ref` 动态映射覆盖其余；
-  跨文件重名关卡数据 **5 组**（`questions.json` ↔ `set_logic_levels.json`，内容互不相同）。见 A12。
+  跨文件重名关卡数据 **0 组**（原 5 组全部来自已删除的 `questions.json` ↔ `set_logic_levels.json`，随 A12 清零）。见 A12。
 - 口播字段 `speak`：**0 处**。见 B13。
 - 动效：`anim` 演示字段只出现在 **1/26** 个关卡文件（`solid_basic_levels.json`，27 处 / 12 关）；
   `Lab3DView.play_anim` 支持 7 种步骤（`highlight` 50 / `view` 38 / `reveal` 25 / `a` 22 / `vars` 21 / `rotate` 7 / `pulse` 4）；
@@ -1992,7 +2008,7 @@
 
 本轮统计用一次性 Node 脚本完成（**未入库**，若需要建议按 A5 落成 `tools/check_questions.gd` 的 GDScript 版）：
 
-1. 扫描范围：`data/*_levels.json`（26 个）+ `data/questions.json`；
+1. 扫描范围：`data/*_levels.json`（26 个；`questions.json` 已随 A12 删除）；
 2. 「一题」判定：对象同时含 `q` 与 `opts`；
 3. 「一关」判定：顶层键下含 `levels[]` 数组；
 4. 统计项：题量、选项数、`ans` 取值分布、选项是否图片（`res://*.png`）、
