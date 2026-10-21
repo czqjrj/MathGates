@@ -1,6 +1,8 @@
 extends Node3D
 ## 立体几何 · 方法闯关(整合自 SolidGeometryDemo，统一极简未来科技风)
 ## 从世界地图进入：按 GameData.current_level["method"] 载入对应方法的三维模型与关卡。
+## 状态：**官方场景（TODO A2 已收编，2026-10-21）**——被课程表 6 关活跃引用，
+## 数据绑定由 Tests._test_legacy_binding 与 UiSmoke 守护；迁移到 LabStage 列为长期项。
 
 const METHODS_PATH := "res://data/solid_methods.json"
 ## 相对原演示的取景缩放(为右侧留出 UI 空间并把整体收进 720p 画面)

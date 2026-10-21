@@ -9,7 +9,7 @@ extends Node
 ##   4. 乱序确实生效（同一轮多次构建顺序不恒定，保护 B8）；
 ##   5. 结算面板可弹出（_finish → _victory/_dim 可见）；
 ##   6. 字号随 UI.S 线性生效；
-##   7. legacy 舞台（ConicStage/SolidChallenge，仍在用；Battle 已随 A3 删除）可构建。
+##   7. 官方收编舞台（ConicStage/SolidChallenge，TODO A2 收编）可构建且关卡数据已载入。
 ##
 ## 退出码：0 = 全通过；1 = 有失败（供 CI 判定）。
 ## 反向验证：故意注释掉 StageBase._ready() 里的 _build_ui() 调用，本测试应红灯。
@@ -219,6 +219,8 @@ func _test_legacy(scene_path: String, picks: Array) -> void:
 		await get_tree().process_frame
 		await get_tree().process_frame
 		_ok(st.get_child_count() > 0, tag + " 构建出子节点")
+		var stages = st.get("_stages")
+		_ok(stages is Array and (stages as Array).size() > 0, tag + " 关卡数据已载入")
 		st.queue_free()
 		await get_tree().process_frame
 

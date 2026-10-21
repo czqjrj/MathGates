@@ -40,6 +40,7 @@ func _run() -> void:
 	_test_mastery_rules()
 	_test_stage_rules()
 	_test_tree_rules()
+	_test_legacy_binding()
 	_test_adventure()
 	_test_inline_math()
 	print("TESTS: %d passed, %d failed" % [_pass, _fail])
@@ -812,6 +813,38 @@ func _test_tree_rules() -> void:
 	]
 	_ok(not TreeRules.level_unlocked(1, ulv, {}, false), "unlock gate=0 回退上一关")
 	_ok(TreeRules.level_unlocked(1, ulv, { "l1": 1 }, false), "unlock gate=0 上一关星解锁")
+
+## A2 收编：legacy 场景（SolidChallenge/ConicStage）仍是官方场景——课程表引用的
+## method/conic key 必须在对应数据文件里存在（打错 key = 静默空关），且两类场景保持在用。
+func _test_legacy_binding() -> void:
+	var solid_ids := {}
+	var solid = JSON.parse_string(FileAccess.get_file_as_string("res://data/solid_methods.json"))
+	if typeof(solid) == TYPE_DICTIONARY and (solid as Dictionary).has("methods"):
+		for k in ((solid as Dictionary)["methods"] as Dictionary).keys():
+			solid_ids[str(k)] = true
+	var conic_ids := {}
+	var conic = JSON.parse_string(FileAccess.get_file_as_string("res://data/conic_levels.json"))
+	if typeof(conic) == TYPE_DICTIONARY:
+		for k in (conic as Dictionary).keys():
+			conic_ids[str(k)] = true
+	_ok(solid_ids.size() > 0, "收编 solid_methods.json 可解析出 methods")
+	_ok(conic_ids.size() > 0, "收编 conic_levels.json 可解析出关卡")
+	var n_solid := 0
+	var n_conic := 0
+	for ch in GameData.chapters:
+		for lv in (ch as Dictionary).get("levels", []):
+			if typeof(lv) != TYPE_DICTIONARY:
+				continue
+			var sc := str((lv as Dictionary).get("scene", ""))
+			var lid := str((lv as Dictionary).get("id", "?"))
+			if sc.ends_with("SolidChallenge.tscn"):
+				n_solid += 1
+				_ok(solid_ids.has(str((lv as Dictionary).get("method", ""))), "收编 SolidChallenge 绑定 " + lid)
+			elif sc.ends_with("ConicStage.tscn"):
+				n_conic += 1
+				_ok(conic_ids.has(str((lv as Dictionary).get("conic", ""))), "收编 ConicStage 绑定 " + lid)
+	_ok(n_solid > 0, "收编 SolidChallenge 仍被课程表引用（%d 关）" % n_solid)
+	_ok(n_conic > 0, "收编 ConicStage 仍被课程表引用（%d 关）" % n_conic)
 
 ## C1/C2：重复通关不再无限刷经验/金币；当日重试降级星级上限。
 func _test_anti_farm() -> void:

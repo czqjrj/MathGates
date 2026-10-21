@@ -1,6 +1,8 @@
 extends Control
 ## 圆锥曲线 · 游戏化闯关：左侧答题面板 + 右侧复用的原场景动画。
 ## 由世界地图进入：按 GameData.current_level["conic"] 载入 C1/C2/C3 对应场景。
+## 状态：**官方场景（TODO A2 已收编，2026-10-21）**——被课程表 3 关活跃引用，
+## 数据绑定由 Tests._test_legacy_binding 与 UiSmoke 守护；迁移到 LabStage 列为长期项。
 
 const DATA_PATH := "res://data/conic_levels.json"
 

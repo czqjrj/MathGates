@@ -90,7 +90,7 @@ build/           导出产物(APK,git 忽略)
    - 数据文件被外部修改后 ~0.7s **自动热重载**；
    - 内置 A5 轻量校验（轮次编号/ans 范围/选项重复/题干缺失），写回后自动复检；
    - 写回走 `tools/json_text.gd` **文本级修改**，只动目标字段、不重排文件（diff 最小）；
-   - 代码驱动的遗留关（SolidChallenge 方法关 / ConicStage C1~C3）只读预览。
+   - 代码驱动的官方收编关（SolidChallenge 方法关 / ConicStage C1~C3，TODO A2 收编）只读预览。
 3. 填完内容后按「自检与 CI」一节跑全量校验，别忘了 `fix_labels --apply` 规范轮次标签。
 
 ## 运行
@@ -127,6 +127,21 @@ build/           导出产物(APK,git 忽略)
 - 各模块关卡:**全仓只有一份权威题库 `data/*_levels.json`**(原通用题库 `data/questions.json` 与 Battle 兜底关卡已于 2026-10-20 随 TODO A3/A12 删除——其 42 题仅被 Battle.gd 消费且 275 关全部带 scene,通道不可达)。几何类章节(圆/椭圆/向量/直线)已统一为 `lab` 三阶段格式,对应 `circle_levels.json / ellipse_levels.json / vector_levels.json / line_levels.json`,场景统一为 `res://scenes/LabStage.tscn`
 - 立体几何 / 空间向量章节已统一为 `lab3d` 三阶段真实 3D 格式,对应 `solid_basic_levels.json`(立体几何初步,含「基本事实(公理)」旗舰关 `solid_axiom`)与 `space_levels.json`(空间向量与立体几何),场景统一为 `res://scenes/Lab3DStage.tscn`。3D 场景描述见 `scripts/modules/lab3d/SolidBuilder.gd`
 - 立体几何方法讲解:`data/solid_methods.json` + `scripts/modules/solid/topics/*.gd`
+- **文件名 ↔ 场景/章节对照表（A17 防呆）**：
+
+  | 场景 | 数据文件 | 关卡字段 |
+  |---|---|---|
+  | `LabStage.tscn` | `data/<lab>_levels.json`（`set_logic`/`functions`/`vector`/`line`/`ellipse`/`circle`…） | `lab` |
+  | `Lab3DStage.tscn` | `data/<lab>_levels.json`（`solid_basic`/`space`） | `lab` |
+  | `SequenceStage.tscn` | `data/recurrence_levels.json` | `sequence` |
+  | `SolidChallenge.tscn`（**官方收编**，A2） | `data/solid_methods.json`（嵌套 `methods.{id}.levels`） | `method` |
+  | `ConicStage.tscn`（**官方收编**，A2） | `data/conic_levels.json` | `conic` |
+
+  ⚠️ **易混文件名**：`conic_levels.json`（ConicStage 专用）≠ `conics_levels.json`（圆锥曲线综合章）；
+  `vector_levels.json`（平面向量章）≠ `vectors_levels.json`（平面向量初步章）；
+  `solid_basic_levels.json`（立体几何初步章）≠ `solid_methods.json`（方法章）。
+  改错文件会**静默失效**——`check_questions` 已加自检兜底（章节 lab→文件存在性 / 孤儿文件 /
+  近名对半引用即红灯）。
 - **公式写法(A10)**:新题/文案里的数学式子**直接写 LaTeX,并用 `$$…$$` 包裹**(运行时由 MicroTeX 渲染成内联公式图)。例:`"q": "不等式 $$x^{2}-2x-3>0$$ 的解集是?"`。旧的 `{f:名称}`(命名表 `scripts/ui/InlineMath.gd` 的 `FORMULA_LATEX`)仍兼容,但**新内容不再新增命名**、也**不再写 Unicode 数学片段**(`²`/`≤`/`α` 等;`data/inline_math.json` 已冻结为历史兼容层)。校验器 `check_questions.gd` 会忽略 `$$…$$` 区段(见 A5/A10)。
 
 ## 内容与教材的关系
