@@ -16,6 +16,7 @@ extends SceneTree
 ## 覆盖的 TODO 条目：
 ##   A5  结构 / ans 范围 / 选项重复 / 题干重复 / 轮次编号 / inline 覆盖
 ##   A12 跨文件重名关卡数据
+##   A17 命名/映射自检（章节 lab → 数据文件存在性 / 孤儿数据文件 / 单复数近名文件对）
 ##   B7  图片选项计数（看板）      B9  轮次标签编号错位（清单）
 ##   B13 speak 口播字段计数（看板） D2  anim 演示覆盖率（看板）
 
@@ -57,6 +58,8 @@ var _bad_distractor := 0
 var _key_owner := {}
 var _inline_missing := {}
 var _inline_checked := 0
+## A17：近名文件对（单复数）看板信息，如 "conic/conics(均在用)"。
+var _naming_pairs: Array[String] = []
 ## A10：剥离正文里的 $$LaTeX$$ 片段（已由运行时渲染，不再走 inline_math.json 覆盖检查）。
 var _dollar: RegEx
 ## 每个关卡数据 key 的题目数 / 所属文件（供 E2 的「每章关卡数/题数」看板）。
@@ -77,6 +80,7 @@ func _initialize() -> void:
 	for f in _level_files():
 		_check_file(f)
 	_check_cross_file_dups()
+	_check_naming()
 	_report()
 
 # ---------------------------------------------------------------- 文件收集
@@ -283,6 +287,94 @@ func _check_cross_file_dups() -> void:
 		var owners: Array = _key_owner[k]
 		if owners.size() > 1:
 			_add("res://data/*_levels.json", str(k), "关卡数据 key 跨文件重复：%s" % ", ".join(owners))
+
+# ---------------------------------------------------------------- 命名/映射自检（A17）
+
+## A17：数据文件命名易混（conic/conics、vector/vectors、solid/solid_basic），改错文件会**静默失效**。
+## 四件事：
+##   ① 章节 lab → data/<lab>_levels.json 必须存在（LabStage/Lab3DStage 载入口径，缺了 = 静默空章）；
+##   ② 代码里的显式 res://data/*.json 路径同样登记为「已引用」；
+##   ③ 每个 *_levels.json 必须被 curriculum 的 lab 或代码显式路径引用，否则记孤儿；
+##   ④ 单复数近名文件对若恰好只有一半被引用 → 记错（另一半疑似「改错文件名」的受害者）。
+func _check_naming() -> void:
+	var referenced := {}
+	# ① curriculum：lab → <lab>_levels.json
+	var raw := FileAccess.get_file_as_string("res://data/curriculum.json")
+	var data = JSON.parse_string(raw)
+	if typeof(data) == TYPE_DICTIONARY:
+		for ch in (data as Dictionary).get("chapters", []):
+			if typeof(ch) != TYPE_DICTIONARY:
+				continue
+			for lv in (ch as Dictionary).get("levels", []):
+				if typeof(lv) != TYPE_DICTIONARY:
+					continue
+				var lvd: Dictionary = lv
+				var lab := str(lvd.get("lab", ""))
+				if lab == "":
+					continue
+				var f := "%s_levels.json" % lab
+				referenced[f] = "curriculum:" + str(lvd.get("id", "?"))
+				if not FileAccess.file_exists(DATA_DIR + "/" + f):
+					_add("res://data/curriculum.json", str(lvd.get("id", "?")),
+						"章节 lab=%s 指向的 %s 不存在（LabStage 静默空章）" % [lab, f])
+	# ② 代码里的显式路径（scripts/tests/tools 的 *.gd）
+	var re := RegEx.new()
+	re.compile("res://data/([A-Za-z0-9_]+\\.json)")
+	for sub in ["scripts", "tests", "tools"]:
+		_scan_dir_refs(DirAccess.open("res://" + sub), "res://" + sub, re, referenced)
+	# ③④ 近名对与孤儿
+	var present: Array[String] = []
+	var bases := {}
+	var dd := DirAccess.open(DATA_DIR)
+	if dd != null:
+		for f in dd.get_files():
+			if f.ends_with("_levels.json"):
+				present.append(f)
+				bases[f.substr(0, f.length() - "_levels.json".length())] = f
+	if not referenced.is_empty():
+		for f in present:
+			if not referenced.has(f):
+				_add(DATA_DIR + "/" + f, "*",
+					"孤儿数据文件：无任何章节 lab/代码路径引用（疑似改错文件名或遗留）")
+	var pair_seen := {}
+	for f in present:
+		var b := f.substr(0, f.length() - "_levels.json".length())
+		if not b.ends_with("s"):
+			continue
+		var sg := b.substr(0, b.length() - 1)
+		if not bases.has(sg):
+			continue
+		var pk := sg + "|" + b
+		if pair_seen.has(pk):
+			continue
+		pair_seen[pk] = true
+		var ref_sg: bool = referenced.has(sg + "_levels.json")
+		var ref_pl: bool = referenced.has(b + "_levels.json")
+		if ref_sg != ref_pl:
+			# 只有一半在用：改错文件名的典型事故（如把 conics 章误写进 conic_levels.json）
+			var used := (sg if ref_sg else b) + "_levels.json"
+			var dead := (b if ref_sg else sg) + "_levels.json"
+			_add(DATA_DIR + "/" + dead, "*",
+				"近名文件对 %s/%s 只有 %s 被引用，%s 疑似改错文件名的受害者" % [sg, b, used, dead])
+		else:
+			_naming_pairs.append("%s/%s(%s)" % [sg, b, "均在用" if ref_sg else "均未引用"])
+
+## 递归扫 *.gd 里的 res://data/*.json 显式路径，登记为「已引用」。
+func _scan_dir_refs(d: DirAccess, base: String, re: RegEx, referenced: Dictionary) -> void:
+	if d == null:
+		return
+	d.list_dir_begin()
+	var f := d.get_next()
+	while f != "":
+		var p := base + "/" + f
+		if d.current_is_dir():
+			if f != "." and f != "..":
+				_scan_dir_refs(DirAccess.open(p), p, re, referenced)
+		elif f.ends_with(".gd"):
+			for m in re.search_all(FileAccess.get_file_as_string(p)):
+				referenced[m.get_string(1)] = p
+		f = d.get_next()
+	d.list_dir_end()
 
 # ---------------------------------------------------------------- 公式覆盖
 
@@ -498,6 +590,8 @@ func _report() -> void:
 	print("[看板] speak 口播字段: %d 处（见 B13）" % _speak_count)
 	print("[看板] 轮次编号错位: %d 处（%d 文件，见 B9）" % [_num_mismatch, _num_mismatch_files.size()])
 	print("[看板] 干扰项黑名单命中: %d 处（B5 目标 0；范畴错误型干扰项须换成错误路径型）" % _bad_distractor)
+	if not _naming_pairs.is_empty():
+		print("[看板] A17 近名文件对: %s（编辑时勿改错）" % "，".join(_naming_pairs))
 	_chapter_board()
 	if _inline_missing.size() > 0:
 		var tops: Array = _inline_missing.keys()
