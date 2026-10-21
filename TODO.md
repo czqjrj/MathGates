@@ -2400,7 +2400,7 @@
 - **回归基线**：`CHECKED 105 scripts, 0 failures` / `TESTS: 1976 passed, 0 failed`（+76）/
   `SMOKE: 286 ok, 0 fail` / `UI-SMOKE: 405 ok, 0 fail`（+12）/ `LabSmoke TMP_OK` /
   `LEVEL-PREVIEW-SMOKE: 7474 ok, 0 fail` / `QUESTION-CHECK 0 new（7 known）` /
-  `KNOWLEDGE hard-gaps=0` / `ASSETS 30.20 MB（3131 files）banned=0`。
+  `KNOWLEDGE hard-gaps=0` / `ASSETS ≈30.2 MB（3131 files）banned=0`（末位随测试产物微漂移）。
 - ⚠️ **残留**：「复习完成率」「错题净增」「薄弱领域变化（环比）」三项**未单列**——
   当前复习量按「进入复习计划的题数」计，不是「到期且已复习」的完成率；
   薄弱点取的是**当前诊断**（领域级快照），不是周期内的**变化量**。若要补，需要给
@@ -2512,7 +2512,8 @@
 `QUESTION-CHECK: 26 files / 269 levels / 1057 questions / 0 new / 7 known / 3 warnings`
 （A5 校验器，存量问题见下方基线；看板另有「干扰项黑名单命中 0 处」见 B5、「anim 演示覆盖 **13/26 文件**」见 D2）/
 `PERF idle 171 / lab_plane 259 / lab3d 251`（µs，headless CPU 处理耗时，见 `tools/perf_probe.tscn`）/
-`ASSETS: 30.20 MB over 3131 files … banned=0, oversize=0`（A13 护栏）/
+`ASSETS: ≈30.2 MB over 3131 files … banned=0, oversize=0`（A13 护栏；末位随测试产物微漂移，
+看 `banned` / `oversize` 即可）/
 `KNOWLEDGE: 27 chapters / 275 points / 275 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `LATEX-PROBE: conic C4 68 / C5 76 / C6 68 段 / 0 失败`（E2 收官）、
 `vector_physics 26 段 / 0 失败`、`prob_simulate 14 段 / 0 失败`（E3 收官；**探针需按组分进程**，
