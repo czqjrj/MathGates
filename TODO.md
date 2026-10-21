@@ -40,7 +40,7 @@
 | **A15** | 元游戏内容硬编码在 `GameData.gd` | **P2** | 与「改内容只改 JSON」相悖 |
 | **A16** | 立几方法关内容在 GDScript（两套内容管线） | **P2** | 🟡 前提部分失效：题目已迁至 `data/solid_methods.json`；`scripts/modules/solid/topics/*.gd`（6 文件 3568 行）现为**纯几何/标注逻辑**（问号 0~1 处、无题干）→ 降级为「3D 场景代码与数据的分层整理」 |
 | **A17** | 数据文件命名易混（`conic`/`conics`、`vector`/`vectors`） | **P2** | 🟡 两步已落一（2026-10-21）：`463d06e` 校验器自检（孤儿/近名对半引用即红灯+反向验证）、`43a11f9` README 对照表；余「真重命名」为可选决策（两对文件均在用，重命名收益低） |
-| **A18** | 内容数据异常时缺用户可见兜底 | **P1** | 坏档 → 空白知识体系 |
+| **A18** | 内容数据异常时缺用户可见兜底 | **P1** | ✅ 已完成（2026-10-21 第三十五轮 `rules/ContentHealth.gd` 体检 + `ui/ContentFallback.gd` 兜底卡/横幅 + `tools/check_content_health.gd` CI 闸门；顺带修真 bug：关卡 id `solid_angle` 被两章共用） |
 | **A19** | 多用户切换的会话状态残留 | **P2** | 切用户丢萌宠问候 |
 | **B2** | 每关题量 3 → 5~8 | **P1** | 🟡 下限全线达标（2026-10-20：27/27 章 ≥ 5.0 题/关，全库平均 3.93；上探 6~7 题/关中段待续）。**2026-10-20 起暂缓，先做结构收敛** |
 | **B4** | 实验与追问不闭环 | **P1** | 探究轮形同虚设 |
@@ -133,13 +133,51 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`0d5cde4`（`feat(G3)` 学习报告 / 家长视图）；前一提交链：
+- **最后提交**：`12df3c2`（`feat(A18)` 内容数据体检 / 用户可见兜底）；前一提交链：
+  `6abe822`（docs ASSETS 口径）→ `3029ee8`（docs 第三十四轮）→ `0d5cde4`（feat G3 学习报告）→
   `8fdc5f0`（feat G1 错题间隔重复）→ `a885756`（docs 第三十三轮）→
-  `28a235f`（docs 第三十二轮）→ `b6e98d9`（F3 静止降耗）→ `eb56513`（docs 第三十一轮）→
-  `1bd050c`（F4 键盘）→ `05f8073`（docs）→
-  `aca0897`（D4 动效令牌/控制）→ `199bdce`（docs）→ `439d685`（D3 表意动效）→…，
+  `28a235f`（docs 第三十二轮）→ `b6e98d9`（F3 静止降耗）→…，
   已 push（`main` 与 `origin/main` 同步）。
-- **本轮交付（2026-10-21，第三十四轮）**：**G3 学习报告 / 家长视图**（`0d5cde4`）。
+- **本轮交付（2026-10-21，第三十五轮）**：**A18 内容数据体检 / 用户可见兜底**（`12df3c2`）。
+  - **体检规则**：`rules/ContentHealth.gd`（122 行，纯规则：不读文件、不碰 autoload，
+    入参 = 章节数组 + 已知场景集合 + 内容组键表）。七种问题码
+    `E_EMPTY`/`E_DUP_ID`/`E_NO_LEVEL`/`E_NO_TITLE`/`E_NO_SCENE`/`E_BAD_REF`/`E_LOAD`，
+    `MESSAGES` + `describe()` 让 **UI 文案与 CI 输出共用一套**，不再两处各说各话。
+  - **运行时（轻量）**：`GameData._load_curriculum()` 失败时写 `content_problems`
+    （不再只有 `push_error`），成功后跑一次 `ContentHealth.check(chapters)`；
+    门面 `content_ok()` / `content_health()` / `reload_content()`。
+    只遍历课程表（O(关卡数) 纯字典操作），**不打开** 26 个 `*_levels.json`，启动开销可忽略。
+  - **兜底界面**：`ui/ContentFallback.gd` —— `card()`（人话说明 + 最多 5 条明细 +
+    「重试加载」/「复制错误信息」）、`banner()`（主城顶部一句话）、`fill(root)`（铺页）。
+    `TheoremTree` 的 `chapters.is_empty()` 从**静默 return** 改为铺兜底卡；
+    `MainHub._build_center()` 内容不健康时挂横幅。详情只写本地剪贴板（同 F1 隐私）。
+  - **发版闸门**：`tools/check_content_health.gd`（深度：`ResourceLoader.exists` 场景、
+    引用定位到组键、孤儿组提示）→ `.github/workflows/check.yml` 新增一步
+    （`CONTENT-HEALTH-FAIL` 即红灯）+ `build/run_checks.ps1` 增 `content` 一档。
+    本仓库没有自动导出步骤，CI 即「导出前那一次调用」。
+  - **顺带修真 bug**：体检首次运行即报 `E_DUP_ID solid_angle` ——`solid` 章「线面角 · 二面角」
+    与 `solid_basic` 章「11-1 空间角（几何法）」**共用同一个关卡 id**；星标按 id 存 →
+    两关共用一条记录（一关通关另一关跟着亮），`level_name()` 也会取错名字。
+    后者改名 `solid_basic_angle`（`lab_ref` 保持 `solid_angle` 不变，
+    `data/knowledge_map.json` 与覆盖矩阵同步）。**id 全局唯一已被单测守住**。
+  - **测试**：`Tests._test_content_health`（24 断言）+ `UiSmoke._test_content_fallback`（11 断言，
+    含「铺页替代空白页」）。
+  - **验收实测**：把 `data/curriculum.json` 写成非法 JSON → `content_ok=false` / `chapters=0` /
+    `E_LOAD 课程表格式损坏`；还原后 `reload_content()` → `true` / 23 章。
+    （「重置内容缓存」未按字面实现：内容是 `res://` 只读，没有可重置的缓存 →
+    改为语义正确的「重试加载」+「复制错误信息」，理由记在 §7 A18。）
+  - 全量回归绿：`CHECKED 108`（+3 脚本）/ `TESTS 2000`（+24）/ `SMOKE 286` /
+    `UI-SMOKE 416`（+11）/ `LabSmoke TMP_OK` / `LEVEL-PREVIEW 7474` /
+    `QUESTION-CHECK 0 new（7 known）` / `KNOWLEDGE hard-gaps=0` /
+    `CONTENT-HEALTH 27 chapters / 275 levels / 0 problems (orphans=0)` /
+    `ASSETS 30.24 banned=0`。
+  - **A18 转 ✅**；⚠️ 行数余量提醒：`GameData 1579/1600`（余 21）、
+    `TheoremTree 1544/1550`（余 6）、`StageBase 1197/1200`（余 3）——
+    **下一轮若再碰这三个文件，必须先拆纯规则**。
+  - **下一项建议**：**A19**（多用户切换的会话状态残留，小而完整）或
+    **A10 的存量迁移**（剩余 24 处 `{f:}` 在 `function_lab_levels.json`，脚本化可做）；
+    `StageBase 1197/1200` 应优先拆（余量只剩 3 行）。
+- **上一轮（第三十四轮）**：**G3 学习报告 / 家长视图**（`0d5cde4`）。
   - **先还 A4 欠账——存档层拆分**：新增 `rules/UserStore.gd`（140 行）接管存档 dict ⇄ 运行时字段的
     全部转换（`blank_user` / `snapshot` / `parse` / `normalize_wrong_modules`），
     `GameData.gd` 只剩 `_state()` / `_avatar_ids()` 两个薄门面 → **1593 → 1558 行**（红线 1600，余 42）。
@@ -1019,7 +1057,7 @@
 
 ---
 
-### [ ] A18 · 内容数据异常时缺用户可见兜底（P1）
+### [x] A18 · 内容数据异常时缺用户可见兜底（P1）
 
 **现状（证据）**
 - `GameData._load_curriculum()`（`GameData.gd:362`）：文件缺失或 JSON 损坏时**只 `push_error` 然后 `return`**，
@@ -1046,6 +1084,38 @@
 - 手动把 `data/curriculum.json` 改成非法 JSON → 运行得到**明确提示**（而非空白页），
   且「重置」后能恢复；
 - 校验器在导出流程中被调用一次。
+
+**实施记录（2026-10-21 第三十五轮）**
+- **体检规则**：`scripts/rules/ContentHealth.gd`（122 行，纯规则：不读文件、不碰 autoload，
+  入参 = 章节数组 + 已知场景集合 + 内容组键表）。七种问题码
+  `E_EMPTY`/`E_DUP_ID`/`E_NO_LEVEL`/`E_NO_TITLE`/`E_NO_SCENE`/`E_BAD_REF`/`E_LOAD`，
+  UI 文案与 CI 输出**共用一套**（`MESSAGES` + `describe()`）。
+- **运行时**（轻量）：`GameData._load_curriculum()` 失败时写 `content_problems`（不再只有 `push_error`），
+  成功后跑一次 `ContentHealth.check(chapters)`；门面 `content_ok()` / `content_health()` / `reload_content()`。
+  只查课程表结构（O(关卡数) 的纯字典遍历），**不打开** 26 个 `*_levels.json`，启动开销可忽略。
+- **兜底界面**：`scripts/ui/ContentFallback.gd` —— `card()`（兜底卡：人话说明 + 最多 5 条明细 +
+  「重试加载」/「复制错误信息」）、`banner()`（主城顶部一句话横幅）、`fill(root)`（铺页）。
+  `TheoremTree._ready()` 的 `chapters.is_empty()` 分支从「静默 return」改为铺兜底卡；
+  `MainHub._build_center()` 在内容不健康时加横幅。
+- **发版闸门**：`tools/check_content_health.gd`（深度：场景文件 `ResourceLoader.exists`、
+  引用能否定位到数据文件组键、孤儿组提示）→ 接进 `.github/workflows/check.yml`
+  （`CONTENT-HEALTH-FAIL` 即红灯）与 `build/run_checks.ps1`。CI 即「导出流程前的那一次调用」
+  （本仓库没有导出步骤，发版走本地 `bump_version` + Godot 导出；CI 是唯一的自动闸门）。
+- **验收实测**：把 `data/curriculum.json` 写成非法 JSON →
+  `content_ok=false`、`chapters=0`、问题 `E_LOAD/课程表格式损坏`；还原文件后 `reload_content()` → `true`、23 章。
+  （「重置内容缓存」未按字面实现：内容是 `res://` 只读，没有可重置的缓存；改为语义正确的
+  「重试加载」+「复制错误信息」，理由记在此处。）
+- **顺带修真 bug**：体检首次运行即报 `E_DUP_ID solid_angle` —— `solid` 章「线面角 · 二面角」与
+  `solid_basic` 章「11-1 空间角（几何法）」**共用同一个关卡 id**；星标按 id 存 → 两关共用一条记录
+  （一关通关另一关跟着亮），`level_name()` 也会返回错的名字。已把后者改名 `solid_basic_angle`
+  （`lab_ref` 保持 `solid_angle` 不变，`data/knowledge_map.json` 与覆盖矩阵同步）。
+- **测试**：`Tests._test_content_health`（24 断言：空表 / 重复 id / 空章节 / 缺名字 / 缺场景 /
+  场景不存在 / 引用定位不到 / 引用映射 / **真数据必须体检通过**）+
+  `UiSmoke._test_content_fallback`（11 断言：兜底卡文案与按钮、横幅、铺页替代空白页、复制文本只含结构信息）。
+- **回归**：`check_all` 108 scripts 0 failures / `Tests` 2000 passed / `SMOKE` 286 / `UI-SMOKE` 416 /
+  `LabSmoke TMP_OK` / `QUESTION-CHECK` 无新增 / `KNOWLEDGE` 硬缺口 0 /
+  `CONTENT-HEALTH` 27 chapters 275 levels 0 problems / `ASSETS` ≈30.23 MB banned=0 /
+  `LEVEL-PREVIEW-SMOKE` 7474 ok。
 
 ---
 
@@ -2542,7 +2612,7 @@
   标题字体 13.5MB 待替换）；APK（debug）旧基线 **60.9MB**（新基线待重新导出）。见 A13。
 - 知识点矩阵（E1 已建立，E2/E3 已补齐）：`data/knowledge_map.json` 27 章 / **275 个知识点**（每关一挂）；
   **硬缺口 0**、选学/旧课标 8（基线 `tools/knowledge_gaps_baseline.txt`；2026-10-19 两角和差/二倍角清零）；
-  关卡 id `solid_angle` 跨章重名 1 处。见 E1/E2/E3。
+  关卡 id 跨章重名 **0 处**（2026-10-21 A18 体检发现 `solid_angle` 被两章共用，后者改名 `solid_basic_angle`）。见 E1/E2/E3。
 - 数据一致性：`curriculum` 关卡 275 / 关卡数据组 269，`lab_ref` 动态映射覆盖其余；
   跨文件重名关卡数据 **0 组**（原 5 组全部来自已删除的 `questions.json` ↔ `set_logic_levels.json`，随 A12 清零）。见 A12。
 - 口播字段 `speak`：**0 处**。见 B13。
@@ -2561,9 +2631,14 @@
   `{date, answered, correct, stars, clears, reviews}`，**保留 120 天**）——旧档缺该字段时天然为空，
   载入即用、无需迁移；报告窗口「本周 7 天 / 本月 30 天」，导出 CSV/JSON **只含日期与计数**，
   家长视图**只含汇总量与领域级薄弱点名**（无题目原文 / 关卡名）。见 G3。
-- 代码结构红线（A4，2026-10-21 G3 后）：`scripts/rules/*.gd` 每文件 ≤200（当前最大 **PlayerRules 195**，
-  新增 `UserStore 140` / `ReportRules 150` / `ReportExport 54`）、`GameData.gd` ≤1600（当前 **1558**，
-  存档层已拆到 `rules/UserStore.gd`）、`TheoremTree.gd` ≤1550（1541）、`StageBase.gd` ≤1200（1195）。
+- 内容数据体检（A18 已建立）：`tools/check_content_health.gd` 输出
+  `CONTENT-HEALTH: 27 chapters / 275 levels / 0 problems (orphans=0)`——
+  27 章 / 275 关全部有名字与场景、场景文件都存在、内容引用（lab/sequence/conic/method）都能定位到组键、
+  关卡 id 全局唯一、无孤儿组。运行时只做轻量版（课程表结构），深度版在 CI 与发版前。见 A18。
+- 代码结构红线（A4，2026-10-21 A18 后）：`scripts/rules/*.gd` 每文件 ≤200（当前最大 **PlayerRules 195**，
+  本轮新增 `ContentHealth 122`；`UserStore 164` / `ReportRules 168` / `ReportExport 54`）、
+  `GameData.gd` ≤1600（当前 **1579**，存档层已拆到 `rules/UserStore.gd`）、
+  `TheoremTree.gd` ≤1550（**1544**）、`StageBase.gd` ≤1200（**1197**）。
   `tools/check_all.gd` 超限即红灯。
 
 ### 9.3 审计数据的复现方法
