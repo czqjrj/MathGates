@@ -38,6 +38,7 @@ func _run() -> void:
 	_test_economy_rules()
 	_test_pet_rules()
 	_test_mastery_rules()
+	_test_stage_rules()
 	_test_adventure()
 	_test_inline_math()
 	print("TESTS: %d passed, %d failed" % [_pass, _fail])
@@ -567,6 +568,80 @@ func _test_mastery_rules() -> void:
 	# —— 达标/生疏阈值(萌宠部件解锁与生疏判定的单一来源) ——
 	_ok(is_equal_approx(MasteryRules.MASTERY_UNLOCK, 0.5), "解锁阈值 0.5")
 	_ok(is_equal_approx(MasteryRules.MASTERY_STALE, 0.35), "生疏阈值 0.35")
+
+## A4 第四刀：StageBase 结算纯规则 StageRules(星级判定/奖励合成/评级/首通/极速)。全部构造数据单测。
+func _test_stage_rules() -> void:
+	# —— 星级判定：正确率 0.8 / 0.6 分界 ——
+	_eq(StageRules.judge_stars(8, 10, false, false, 0.0, 0.0, false, 3)["stars"], 3, "stars 8/10 = 3")
+	_eq(StageRules.judge_stars(6, 10, false, false, 0.0, 0.0, false, 3)["stars"], 2, "stars 6/10 = 2")
+	_eq(StageRules.judge_stars(5, 10, false, false, 0.0, 0.0, false, 3)["stars"], 0, "stars 5/10 = 0")
+	_eq(StageRules.judge_stars(0, 0, false, false, 0.0, 0.0, false, 3)["stars"], 0, "stars 0 关 = 0")
+	# 陷阱扣 1 星
+	_eq(StageRules.judge_stars(8, 10, true, false, 0.0, 0.0, false, 3)["stars"], 2, "stars 陷阱 3->2")
+	_eq(StageRules.judge_stars(6, 10, true, false, 0.0, 0.0, false, 3)["stars"], 1, "stars 陷阱 2->1")
+	_eq(StageRules.judge_stars(5, 10, true, false, 0.0, 0.0, false, 3)["stars"], 0, "stars 陷阱 0 不变")
+	# 超时降 1 星（保底 1）
+	var j: Dictionary = StageRules.judge_stars(8, 10, false, true, 30.0, 40.0, false, 3)
+	_eq(j["stars"], 2, "stars 超时 3->2")
+	_ok(bool(j["time_capped"]), "time_capped 超时置位")
+	j = StageRules.judge_stars(6, 10, false, true, 30.0, 40.0, false, 3)
+	_eq(j["stars"], 1, "stars 超时 2->1 保底")
+	# 用时刚好等于限时不降
+	j = StageRules.judge_stars(8, 10, false, true, 30.0, 30.0, false, 3)
+	_eq(j["stars"], 3, "stars 用时=限时不降")
+	_ok(not bool(j["time_capped"]), "time_capped 未超时不置位")
+	# 0 星不判超时
+	j = StageRules.judge_stars(5, 10, false, true, 30.0, 40.0, false, 3)
+	_ok(not bool(j["time_capped"]), "time_capped 0 星不置位")
+	# 守关失败归 0
+	_eq(StageRules.judge_stars(8, 10, false, false, 0.0, 0.0, true, 3)["stars"], 0, "stars 守关失败归 0")
+	# 当日重试上限（C2）
+	j = StageRules.judge_stars(8, 10, false, false, 0.0, 0.0, false, 2)
+	_eq(j["stars"], 2, "stars 重试上限 2")
+	_ok(bool(j["star_capped"]), "star_capped 置位")
+	j = StageRules.judge_stars(6, 10, false, false, 0.0, 0.0, false, 2)
+	_ok(not bool(j["star_capped"]), "star_capped 未超上限不置位")
+
+	# —— 奖励合成 ——
+	# 2 关零失误 3 星 连击 3：30+30+60 → +60 满星 → +30 无陷阱 → +9 连击 = 219
+	var rw: Dictionary = StageRules.compose_reward(2, 3, false, 3, 0, false, 1.0, false)
+	_eq(rw["reward"], 219, "reward 基础合成 219")
+	_eq(rw["speed_bonus"], 0, "reward 无极速 0")
+	_eq(rw["combo_bonus"], 0, "reward 无连击倍率 0")
+	# 极速 +40 → 259；连击 ×1.2 → +round(259×0.2)=52 → 311；翻倍 → 622
+	rw = StageRules.compose_reward(2, 3, false, 3, 0, true, 1.2, false)
+	_eq(rw["reward"], 311, "reward 极速+连击 311")
+	_eq(rw["speed_bonus"], 40, "reward 极速 40")
+	_eq(rw["combo_bonus"], 52, "reward 连击 52")
+	rw = StageRules.compose_reward(2, 3, false, 3, 0, true, 1.2, true)
+	_eq(rw["reward"], 622, "reward 翻倍 622")
+	# 0 星踩陷阱：只剩基础 30
+	rw = StageRules.compose_reward(0, 0, true, 0, 0, false, 1.0, false)
+	_eq(rw["reward"], 30, "reward 失败底价 30")
+	# 首通 +200：30+15+60+60+200 = 365
+	rw = StageRules.compose_reward(1, 3, true, 0, 200, false, 1.0, false)
+	_eq(rw["reward"], 365, "reward 首通 +200")
+
+	# —— Boss 首通判定 ——
+	_ok(StageRules.boss_first_clear(true, 3, 0), "首通 boss 3 星 prev0")
+	_ok(not StageRules.boss_first_clear(true, 0, 0), "首通 0 星不算")
+	_ok(not StageRules.boss_first_clear(true, 3, 2), "首通 有历史不算")
+	_ok(not StageRules.boss_first_clear(false, 3, 0), "首通 非 boss 不算")
+
+	# —— 极速奖励判定 ——
+	_ok(StageRules.speed_bonus_ok(3, true, 30.0, 30.0), "speed 用时=星时可拿")
+	_ok(not StageRules.speed_bonus_ok(3, true, 30.0, 30.1), "speed 超时不可拿")
+	_ok(not StageRules.speed_bonus_ok(0, true, 30.0, 10.0), "speed 0 星不可拿")
+	_ok(not StageRules.speed_bonus_ok(3, false, 30.0, 10.0), "speed 非限时不可拿")
+	_ok(not StageRules.speed_bonus_ok(3, true, 0.0, 10.0), "speed 星时未设不可拿")
+
+	# —— 评级 ——
+	_eq(StageRules.grade(3, 3, 3, false), "S", "grade 3星全对无陷阱 S")
+	_eq(StageRules.grade(3, 2, 3, false), "A", "grade 3星非全对 A")
+	_eq(StageRules.grade(3, 3, 3, true), "A", "grade 3星踩陷阱 A")
+	_eq(StageRules.grade(2, 3, 3, false), "B", "grade 2星 B")
+	_eq(StageRules.grade(1, 3, 3, false), "C", "grade 1星 C")
+	_eq(StageRules.grade(0, 3, 3, false), "C", "grade 0星 C")
 
 ## C1/C2：重复通关不再无限刷经验/金币；当日重试降级星级上限。
 func _test_anti_farm() -> void:

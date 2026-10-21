@@ -791,13 +791,7 @@ func _boss_player_down() -> void:
 
 ## 结算评级：S(全对满分无陷阱) / A(三星) / B(二星) / C(其余)
 func _grade(st: int, clean: int, total: int, trap_missed: bool) -> String:
-	if st >= 3 and clean == total and not trap_missed:
-		return "S"
-	if st >= 3:
-		return "A"
-	if st == 2:
-		return "B"
-	return "C"
+	return StageRules.grade(st, clean, total, trap_missed)
 
 ## P2 · 三星条件显式化：结算给出「下一星差在哪」的引导文案(无引导返回空串)。
 func _next_star_hint(st: int, clean: int, total: int) -> String:
@@ -828,56 +822,28 @@ func _finish() -> void:
 	for c in _clean:
 		clean += c
 	var ratio := float(clean) / float(maxi(1, total))
-	var st := 0
-	if ratio >= 0.8:
-		st = 3
-	elif ratio >= 0.6:
-		st = 2
-	if _trap_missed and st > 0:
-		st -= 1
-	# P2 · 限时：超时不判负，只降一级星(最低保底 1 星，避免挫败)。
-	_time_capped = false
-	if st > 0 and _timing and _time_limit > 0.0 and _elapsed > _time_limit:
-		if st > 1:
-			st -= 1
-		_time_capped = true
-	var star_capped := false
-	if _boss_failed:
-		st = 0
-	var lv0 := GameData.player_level()
 	var lid := GameData.current_level_id()
-	# C2 · 当日重试降级：同一关当天第 3 次尝试起，星级上限降为 2（抑制盲猜刷三星）。
-	if lid != "" and st > 0:
-		var cap := GameData.star_cap_for_attempt(lid)
-		if st > cap:
-			st = cap
-			star_capped = true
+	# C2 · 当日重试降级 + P2 超时/陷阱/守关失败：星级判定收口在 StageRules。
+	var cap := GameData.star_cap_for_attempt(lid) if lid != "" else 3
+	var judged := StageRules.judge_stars(clean, total, _trap_missed, _timing, _time_limit,
+		_elapsed, _boss_failed, cap)
+	var st := int(judged["stars"])
+	_time_capped = bool(judged["time_capped"])
+	var star_capped := bool(judged["star_capped"])
+	var lv0 := GameData.player_level()
 	var prev_best := int(GameData.level_records.get(lid, {}).get("best_stars", 0)) if lid != "" else 0
 	# P2 · 读取历史最快用时(在写入前)，用于结算展示与「新速度纪录」判定。
 	_prev_best_time = GameData.best_time_of(lid) if (lid != "" and _timing) else 0.0
-	var reward := 30 + clean * 15 + st * 20
-	if st >= 3:
-		reward += 60
-	if not _trap_missed:
-		reward += 30
-	reward += _max_streak * 3
-	var first_clear := _boss_mode and st > 0 and prev_best == 0
-	if first_clear:
-		reward += _boss_first_clear_coins()
-	# P2 · 极速奖励：在星时内通关 → 额外金币。
-	_speed_bonus = 0
-	if st > 0 and _timing and _star_time > 0.0 and _elapsed <= _star_time:
-		_speed_bonus = 40
-		reward += _speed_bonus
-	# P2 · 连击倍率：以本关最高连击结算，奖励额外金币(上限 ×1.5)。
-	var combo_mult := ComboBar.multiplier(_max_streak)
-	var combo_bonus := 0
-	if combo_mult > 1.0:
-		combo_bonus = int(round(float(reward) * (combo_mult - 1.0)))
-		reward += combo_bonus
+	# 奖励合成收口在 StageRules：基础/零失误/星级/连击/首通/极速/倍率/翻倍。
+	var first_clear := StageRules.boss_first_clear(_boss_mode, st, prev_best)
 	var boosted := GameData.consume_coin_boost()
-	if boosted:
-		reward *= 2
+	var combo_mult := ComboBar.multiplier(_max_streak)
+	var rw := StageRules.compose_reward(clean, st, _trap_missed, _max_streak,
+		_boss_first_clear_coins() if first_clear else 0,
+		StageRules.speed_bonus_ok(st, _timing, _star_time, _elapsed), combo_mult, boosted)
+	var reward := int(rw["reward"])
+	_speed_bonus = int(rw["speed_bonus"])
+	var combo_bonus := int(rw["combo_bonus"])
 	if _max_streak > GameData.best_streak:
 		GameData.best_streak = _max_streak
 	# C1/C2 · 星级/经验/金币/记录收口结算：首次达成给全额，重复通关给折扣且每日封顶。
