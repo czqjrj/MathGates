@@ -643,6 +643,40 @@ func _test_stage_rules() -> void:
 	_eq(StageRules.grade(1, 3, 3, false), "C", "grade 1星 C")
 	_eq(StageRules.grade(0, 3, 3, false), "C", "grade 0星 C")
 
+	# —— 选项乱序判定 ——
+	_ok(StageRules.shuffle_allowed({}, ["A", "B"]), "shuffle 默认可乱序")
+	_ok(not StageRules.shuffle_allowed({ "shuffle": false }, ["A", "B"]), "shuffle:false 关闭")
+	_ok(not StageRules.shuffle_allowed({ "fixed": true }, ["A", "B"]), "fixed:true 关闭")
+	_ok(not StageRules.shuffle_allowed({}, ["A"]), "shuffle 单选项关闭")
+	_ok(not StageRules.shuffle_allowed({}, ["A", "以上都对"]), "shuffle 含『以上』关闭")
+	_ok(not StageRules.shuffle_allowed({}, ["A", "B", "以下都不正确"]), "shuffle 含『以下』关闭")
+	_ok(not StageRules.shuffle_allowed({}, ["A", "都对"]), "shuffle 含『都对』关闭")
+
+	# 顺序：禁止乱序 → 恒等；允许 → 仍是 0..n-1 的排列
+	_eq(StageRules.order_for({ "shuffle": false }, ["A", "B", "C"]), [0, 1, 2], "order 关闭乱序恒等")
+	var perm: Array = StageRules.order_for({}, ["A", "B", "C", "D"])
+	_eq(perm.size(), 4, "order 乱序长度不变")
+	var sorted_perm := perm.duplicate()
+	sorted_perm.sort()
+	_eq(sorted_perm, [0, 1, 2, 3], "order 乱序是排列(不丢不重)")
+	_eq(StageRules.order_for({}, ["A"]), [0], "order 单选项恒等")
+
+	# —— 多选判定(集合语义) ——
+	_ok(StageRules.multi_ok([0, 2], [2, 0]), "multi 顺序无关")
+	_ok(StageRules.multi_ok([], []), "multi 双空为真")
+	_ok(not StageRules.multi_ok([0], [0, 2]), "multi 漏选为假")
+	_ok(not StageRules.multi_ok([0, 1, 2], [0, 2]), "multi 多选为假")
+	_ok(not StageRules.multi_ok([0, 0], [0, 2]), "multi 重复选不凑数")
+	_ok(StageRules.multi_ok([1], [1]), "multi 单选集合")
+
+	# —— 填空容差 ——
+	_ok(StageRules.num_ok(1.0, 1.0, 0.05), "num 完全相等")
+	_ok(StageRules.num_ok(1.04, 1.0, 0.05), "num 容差内")
+	_ok(StageRules.num_ok(1.5, 1.0, 0.5), "num 恰好容差(精确可表示)")
+	_ok(not StageRules.num_ok(1.06, 1.0, 0.05), "num 超出容差")
+	_ok(StageRules.num_ok(-2.0, -2.03, 0.05), "num 负数容差")
+	_ok(not StageRules.num_ok(2.0, -2.0, 0.05), "num 正负号不同")
+
 ## C1/C2：重复通关不再无限刷经验/金币；当日重试降级星级上限。
 func _test_anti_farm() -> void:
 	var saved_user := GameData.current_user

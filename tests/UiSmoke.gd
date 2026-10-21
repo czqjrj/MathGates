@@ -178,7 +178,7 @@ func _expect_rounds(st: Node, tag: String) -> void:
 			non_identity += 1
 		if _has_order_marker(opts):
 			_ok(_is_identity(st._opt_order), "%s 轮%d 顺序相关选项不打乱" % [tag, i])
-		elif shuffle_candidate < 0 and opts.size() >= 3 and st._shuffle_allowed(s, opts):
+		elif shuffle_candidate < 0 and opts.size() >= 3 and StageRules.shuffle_allowed(s, opts):
 			shuffle_candidate = i
 	_ok(choice_rounds > 0, tag + " 至少 1 轮构建出选项")
 	if shuffle_candidate >= 0:

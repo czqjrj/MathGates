@@ -75,6 +75,51 @@ static func compose_reward(clean: int, stars: int, trap_missed: bool, max_streak
 		r *= 2
 	return { "reward": r, "speed_bonus": speed, "combo_bonus": combo }
 
+# ---------------------------------------------------------------- 选项乱序 / 答题判定
+## 顺序相关标记：选项含这些措辞时乱序自动关闭（「以上都对」等）。
+const SHUFFLE_MARKERS := ["以上", "都对", "都错", "都正确", "都不正确", "上述", "以下"]
+
+## 是否允许乱序（纯）：题面 shuffle:false / fixed:true 关闭；选项 <2 关闭；含顺序相关标记关闭。
+static func shuffle_allowed(s: Dictionary, opts: Array) -> bool:
+	if not bool(s.get("shuffle", true)) or bool(s.get("fixed", false)):
+		return false
+	if opts.size() < 2:
+		return false
+	for o in opts:
+		var t := str(o)
+		for marker in SHUFFLE_MARKERS:
+			if t.find(marker) >= 0:
+				return false
+	return true
+
+## 显示顺序（纯）：_opt_order[显示位置] = 原始下标；不允许乱序时恒等。
+static func order_for(s: Dictionary, opts: Array) -> Array[int]:
+	var order: Array[int] = []
+	for i in opts.size():
+		order.append(i)
+	if shuffle_allowed(s, opts):
+		order.shuffle()
+	return order
+
+## 多选判定（纯）：所选集与答案集完全一致才为真（集合语义，顺序无关）。
+static func multi_ok(picked_orig: Array, ans: Array) -> bool:
+	var want: Dictionary = {}
+	for a in ans:
+		want[int(a)] = true
+	var got: Dictionary = {}
+	for p in picked_orig:
+		got[int(p)] = true
+	if got.size() != want.size():
+		return false
+	for k in got.keys():
+		if not want.has(k):
+			return false
+	return true
+
+## 填空判定（纯）：数值在容差内视为答对（|差值| <= tol）。
+static func num_ok(val: float, ans: float, tol: float) -> bool:
+	return absf(val - ans) <= tol
+
 # ---------------------------------------------------------------- 评级
 ## 结算评级(纯)：S = 3 星 + 全程零失误 + 不踩陷阱；3 星 A；2 星 B；其余 C。
 static func grade(stars: int, clean: int, total: int, trap_missed: bool) -> String:

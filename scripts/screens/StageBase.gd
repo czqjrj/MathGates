@@ -365,7 +365,7 @@ func _submit_input() -> void:
 		_wrong("没看懂这个式子，试试输入数值或 sqrt(2)。")
 		return
 	var tol := float(s.get("tol", 0.05))
-	if absf(float(val) - float(s.get("ans", 0.0))) <= tol:
+	if StageRules.num_ok(float(val), float(s.get("ans", 0.0)), tol):
 		_level_ok()
 	else:
 		_wrong(str(s.get("wrong", "还差一点，再算算？")))
@@ -413,24 +413,7 @@ func _parse_math(text: String) -> Variant:
 ## 选项乱序：默认打乱，防止学生记住答案位置；题面写 "shuffle": false 或 "fixed": true
 ## 可关闭，含「以上都对」等顺序相关选项时也自动关闭。返回 [显示位置 -> 原始下标]。
 func _opt_order_for(s: Dictionary, opts: Array) -> Array:
-	var order: Array[int] = []
-	for i in opts.size():
-		order.append(i)
-	if _shuffle_allowed(s, opts):
-		order.shuffle()
-	return order
-
-func _shuffle_allowed(s: Dictionary, opts: Array) -> bool:
-	if not bool(s.get("shuffle", true)) or bool(s.get("fixed", false)):
-		return false
-	if opts.size() < 2:
-		return false
-	for o in opts:
-		var t := str(o)
-		for marker in ["以上", "都对", "都错", "都正确", "都不正确", "上述", "以下"]:
-			if t.find(marker) >= 0:
-				return false
-	return true
+	return StageRules.order_for(s, opts)
 
 ## 显示位置 -> 原始下标(乱序关闭时恒等)。
 func _orig_of(k: int) -> int:
@@ -563,15 +546,10 @@ func _multi_confirm() -> void:
 	var correct_set: Dictionary = {}
 	for a in arr:
 		correct_set[int(a)] = true
-	var picked_set: Dictionary = {}
+	var picked_orig: Array = []
 	for kk in _multi_sel.keys():
-		picked_set[_orig_of(int(kk))] = true
-	var ok := picked_set.size() == correct_set.size()
-	if ok:
-		for kk in picked_set.keys():
-			if not correct_set.has(kk):
-				ok = false
-				break
+		picked_orig.append(_orig_of(int(kk)))
+	var ok := StageRules.multi_ok(picked_orig, arr)
 	var correct_disp: Dictionary = {}
 	for o in correct_set.keys():
 		correct_disp[_disp_of(int(o))] = true
