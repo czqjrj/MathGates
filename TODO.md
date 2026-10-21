@@ -133,8 +133,20 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`02cc149`（`feat(A4)` 第五刀：答题/选项乱序纯逻辑并入 `StageRules`）；本条 §0.3 更新随后以 `docs(TODO)` 提交并 push。
-- **本轮交付（2026-10-21，第十八轮）**：**A4 第五刀——StageBase 答题/选项乱序纯逻辑并入 StageRules**（`02cc149`）。
+- **最后提交**：`56f1e23`（`feat(A4)` 第六刀：TheoremTree 布局纯规则 `TreeRules`）；本条 §0.3 更新随后以 `docs(TODO)` 提交并 push。
+- **本轮交付（2026-10-21，第十九轮）**：**A4 第六刀——TheoremTree 布局纯规则 TreeRules**（`56f1e23`）。
+  - **新增** `scripts/rules/TreeRules.gd`（97 行）：`disasm_groups`（显式 `group` 优先 / "N-M" 按 N 分单元 /
+    无编号用顺序号 "01" / Boss 殿后 / 组名回退 `group_names`→模块名→「单元 N」，元数据
+    li/code/title/technique/optional/after 透传）+ `catmull_rom`（路径平滑，首尾保留、每段 per_seg 采样）。
+  - **TheoremTree.gd 1655 → 1563 行**：删除 `_disasm_groups`（约 72 行）与 `_catmull_rom`（约 26 行），
+    改调 `TreeRules`；节点创建/绘制/滚动不动，行为零变化。
+  - **测试**：`_test_tree_rules` 约 39 条构造断言（三种分组路径/Boss 殿后/单组与多组标题回退/空列表/
+    元数据透传/曲线端点与直线性/per_seg=1 恒等）。踩坑：`"3-1 推理"` 有编号应保持 "3-1"，
+    顺序号仅用于无编号关卡（首版测试预期写错已改）。
+  - 全量回归绿：`CHECKED **95**`（0 failures）/ `TESTS **1481**`（+39）/ `SMOKE 285` / `UI-SMOKE 367` /
+    `LabSmoke TMP_OK` / `LEVEL-PREVIEW-SMOKE 7474` / `QUESTION-CHECK 1057 题 0 new` /
+    `KNOWLEDGE 275 点 hard-gaps=0` / `ASSETS 30.03（3109 files，banned=0）`。
+- **第十八轮（2026-10-21）**：**A4 第五刀——StageBase 答题/选项乱序并入 StageRules**（`02cc149`）。
   - **`StageRules.gd` 72 → 112 行**：`shuffle_allowed`（题面 `shuffle:false`/`fixed:true`、<2 选项、
     顺序相关标记「以上/都对/都错/都正确/都不正确/上述/以下」自动关闭）、`order_for`（显示位置→原始下标，
     关闭时恒等）、`multi_ok`（多选集合语义判定，顺序无关、重复选不凑数）、`num_ok`（填空容差判定）。
@@ -146,7 +158,7 @@
   - 全量回归绿：`CHECKED **94**`（0 failures）/ `TESTS **1442**`（+23）/ `SMOKE 285` / `UI-SMOKE 367` /
     `LabSmoke TMP_OK` / `LEVEL-PREVIEW-SMOKE 7474` / `QUESTION-CHECK 1057 题 0 new` /
     `KNOWLEDGE 275 点 hard-gaps=0` / `ASSETS 30.02（3107 files，banned=0）`。
-- **第十七轮（2026-10-21，上一轮）**：**A4 第四刀——StageBase 结算纯规则 StageRules**（`b17edfc`）。
+- **第十七轮（2026-10-21）**：**A4 第四刀——StageBase 结算纯规则 StageRules**（`b17edfc`）。
   - **新增** `scripts/rules/StageRules.gd`（72 行）：星级判定 `judge_stars`（正确率 0.8/0.6 分界 →
     陷阱扣 1 → 超时降 1 保底 1 星 → 守关失败归 0 → 当日重试上限，返回 `time_capped`/`star_capped`）；
     奖励合成 `compose_reward`（基础 30 + 零失误×15 + 星级×20 + 满星 60 + 无陷阱 30 + 连击×3 +
@@ -160,7 +172,7 @@
   - 全量回归绿：`CHECKED **94**`（0 failures）/ `TESTS **1419**`（+41）/ `SMOKE 285` / `UI-SMOKE 367` /
     `LabSmoke TMP_OK` / `LEVEL-PREVIEW-SMOKE 7474` / `QUESTION-CHECK 1057 题 0 new` /
     `KNOWLEDGE 275 点 hard-gaps=0` / `ASSETS 30.02（3107 files，banned=0）`。
-- **第十六轮（2026-10-21，上一轮）**：**A4 第三刀——萌宠养成 PetRules + 掌握度 MasteryRules 双切**（`09540b4`）。
+- **第十六轮（2026-10-21）**：**A4 第三刀——萌宠养成 PetRules + 掌握度 MasteryRules 双切**（`09540b4`）。
   - **新增** `scripts/rules/PetRules.gd`（49 行）：好感分层（投喂 3/8 次）、饥饿判定（0.35）、状态标签、
     跨会话衰减 `decay`（饱食 −0.32/天地板 0.15、心情向 0.55 回落/地板 0.2、离线天数 lerp 封顶 1 天）、
     投喂效果（饱食置满、心情 +0.12 封顶）。
@@ -175,7 +187,7 @@
   - 全量回归绿：`CHECKED **93**`（0 failures）/ `TESTS **1378**`（+40）/ `SMOKE 285` / `UI-SMOKE 367` /
     `LabSmoke TMP_OK` / `LEVEL-PREVIEW-SMOKE 7474` / `QUESTION-CHECK 1057 题 0 new` /
     `KNOWLEDGE 275 点 hard-gaps=0` / `ASSETS 30.01（3105 files，banned=0）`。
-- **第十五轮（2026-10-21，上一轮）**：**A4 第二刀——经济结算纯规则 EconomyRules**（`41f879e`）。
+- **第十五轮（2026-10-21）**：**A4 第二刀——经济结算纯规则 EconomyRules**（`41f879e`）。
   - **新增** `scripts/rules/EconomyRules.gd`（48 行，无状态静态纯函数）：星级经验公式（`EXP_PER_STAR`，
     只按新增星计发）、每日登录（`next_login_streak` 断签归 1 + `login_reward` 基数 50/20 每日 +20%）、
     通关结算纯判定 `settle_grant`（首达全额 / 重复折扣 / 跨天重置，把 level_records 字段读写收成纯函数）、
@@ -189,7 +201,7 @@
   - 全量回归绿：`CHECKED **91**`（0 failures）/ `TESTS **1338**`（+38）/ `SMOKE 285` / `UI-SMOKE 367` /
     `LabSmoke TMP_OK` / `LEVEL-PREVIEW-SMOKE 7474` / `QUESTION-CHECK 1057 题 0 new` /
     `KNOWLEDGE 275 点 hard-gaps=0` / `ASSETS 30.00（3101 files，banned=0）`。
-- **第十四轮（2026-10-20，上一轮）**：**A4 第一刀——纯规则层 PlayerRules**（`af14e73`；称号/勋章/等级/
+- **第十四轮（2026-10-20）**：**A4 第一刀——纯规则层 PlayerRules**（`af14e73`；称号/勋章/等级/
   星级统计/防刷公式切出，GameData 1779→1681；CHECKED 90 / TESTS 1300；踩坑：headless 跑 .gd 必须 `--script`）。
   - **新增** `scripts/rules/PlayerRules.gd`（194 行，无状态静态纯函数）：称号阶梯 `RANKS`、勋章定义与达成判定
     `MEDALS`/`medal_met(ctx)`、玩家等级曲线（每 8 星）、星级统计（chapter_stars / 满星 / boss / 整章满星）、
@@ -208,7 +220,7 @@
     `UI-SMOKE 367` / `LabSmoke TMP_OK` / `LEVEL-PREVIEW-SMOKE 7474` /
     `QUESTION-CHECK 269 关 1057 题 0 new（warn 3 与基线同）` / `KNOWLEDGE 275 点 hard-gaps=0` /
     `ASSETS 29.99（3099 files，banned=0）`。
-- **第十三轮（2026-10-20，上一轮）**：**A3 + A12 合并清理双清**（死代码与第二份题库一次清零，`375eb1a`）。
+- **第十三轮（2026-10-20）**：**A3 + A12 合并清理双清**（死代码与第二份题库一次清零，`375eb1a`）。
   - **删除**（−1225 行 / −14.9KB）：`scripts/screens/Battle.gd`（688 行）+ `Battle.gd.uid`、
     `scenes/Battle.tscn`、`data/questions.json`（42 题）、`GameData._load_questions()` / `questions_for()`
     / `QUESTIONS_PATH` / `_questions`。
@@ -237,10 +249,10 @@
 - **下次建议顺序**（按性价比）：
   > **2026-10-20 用户决策：暂停题目扩产，先做结构收敛。** B2 下限已全线达成（27/27 章 ≥ 5.0 题/关），
   > B1（21.4% → ≥30%）与 B2「上探 6~7 题/关中段」均为**纯内容批量生产**，可随时回归；当前转向 A/D/F 类结构问题。
-  1. **A4 继续第六刀** —— 五刀已落：`PlayerRules`/`EconomyRules`/`PetRules`+`MasteryRules`/`StageRules`
-     （第五刀 `02cc149`，StageBase 1257→1235，规则层五文件合计 427 行），全量九件套绿。
-     **StageBase 结算 + 答题/乱序层已收口**；下一刀候选：`TheoremTree`（1655 行，引用面仅 4 处，
-     风险低）或 `StageBase` 填空解析（`_norm_math`/`_parse_math`）——同样**先补测试再搬**。
+  1. **A4 继续第七刀** —— 六刀已落：`PlayerRules`/`EconomyRules`/`PetRules`+`MasteryRules`/`StageRules`/`TreeRules`
+     （第六刀 `56f1e23`，TheoremTree 1655→1563，规则层六文件合计 524 行），全量九件套绿。
+     下一刀候选：`TheoremTree` 解锁/面板判定（`_level_unlocked`）、`StageBase` 填空解析
+     （`_norm_math`/`_parse_math`）——同样**先补测试再搬**。
   2. **A2 遗留模块定策略（前提已变）** —— `SolidChallenge.tscn` 仍被 6 关引用、`ConicStage.tscn` 被 3 关引用，
      **不能删**。二选一：迁到 `LabStage`（与 229 关统一）或明确「收编为正式场景」并补测试；
      建议先做后者（低成本），把迁移列入长期项。
@@ -358,14 +370,18 @@
   `PetRules.gd`/`MasteryRules.gd`；旧记 1548）：
   课程表 + 进度 + 存档 IO + 勋章 + 称号 + 领域掌握度
   + 萌宠 + 每日任务 + 经济 + 地图宝箱/事件 + 错题本 + 多用户，全在一个 autoload 类里。
-- `scripts/modules/line/TheoremTree.gd` **1655 行**（旧记 1496）：同一脚本同时充当 `WorldMap.tscn`（`kind="method"`）
-  与 `TheoremTree.tscn`（`kind="knowledge"`）；引用面仅 **4 处**，拆分风险低。
+- `scripts/modules/line/TheoremTree.gd` **1563 行**（旧记 1496；A4 第六刀切出布局规则 `TreeRules` 后 −92）：
+  同一脚本同时充当 `WorldMap.tscn`（`kind="method"`）与 `TheoremTree.tscn`（`kind="knowledge"`）；
+  引用面仅 **4 处**，拆分风险低。
 - `scripts/screens/StageBase.gd` **1235 行**（旧记 1092；A4 第四/五刀切出结算与答题规则后 −56）：
   HUD + 答题 + 选项乱序 + BOSS 层 + 节奏/计时 + 结算 + 导航；
   被 **12 处**引用，是关卡基类，改动面最大。
-- 三文件合计 **4537 行**（2026-10-21 五刀后实测 1647+1655+1235；第一刀前 4725）。规则层五文件合计 427 行。
+- 三文件合计 **4445 行**（2026-10-21 六刀后实测 1647+1563+1235；第一刀前 4725）。规则层六文件合计 524 行。
 
 **进度**
+- 2026-10-21 第十九轮 · **第六刀（`56f1e23`）**：知识树布局纯规则 `scripts/rules/TreeRules.gd` 切出
+  （关卡分组/组名回退/Catmull-Rom 平滑），TheoremTree 1655→1563；`_test_tree_rules` 约 39 断言
+  （TESTS 1481 / CHECKED 95）。
 - 2026-10-21 第十八轮 · **第五刀（`02cc149`）**：答题/选项乱序纯逻辑并入 `scripts/rules/StageRules.gd`
   （`shuffle_allowed`/`order_for`/`multi_ok`/`num_ok`），StageBase 1257→1235，删私有 `_shuffle_allowed`；
   `UiSmoke` 改引规则层；`_test_stage_rules` 增补约 23 断言（TESTS 1442 / CHECKED 94）。
