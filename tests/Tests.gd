@@ -41,6 +41,7 @@ func _run() -> void:
 	_test_stage_rules()
 	_test_tree_rules()
 	_test_legacy_binding()
+	_test_curriculum_rules()
 	_test_adventure()
 	_test_inline_math()
 	print("TESTS: %d passed, %d failed" % [_pass, _fail])
@@ -845,6 +846,57 @@ func _test_legacy_binding() -> void:
 				_ok(conic_ids.has(str((lv as Dictionary).get("conic", ""))), "收编 ConicStage 绑定 " + lid)
 	_ok(n_solid > 0, "收编 SolidChallenge 仍被课程表引用（%d 关）" % n_solid)
 	_ok(n_conic > 0, "收编 ConicStage 仍被课程表引用（%d 关）" % n_conic)
+
+## A4 第九刀：教材章节重排/合并纯规则 CurriculumRules(纯单测,输入显式,不依赖 GameData 状态)。
+func _test_curriculum_rules() -> void:
+	var raw := [
+		{ "id": "k_line", "kind": "knowledge", "title": "直线方程", "levels": [{ "id": "l1" }] },
+		{ "id": "m_vec", "kind": "method", "title": "向量法", "levels": [] },
+		{ "id": "k_circle", "kind": "knowledge", "title": "圆的方程", "levels": [{ "id": "c1" }] },
+	]
+	var tb := {
+		"method_order": ["m_vec"],
+		"knowledge_order": ["k_circle", "k_line"],
+		"chapter_book": { "k_line": "b1", "k_circle": "b1", "m_vec": "b2" },
+		"chapter_no": { "k_line": "第2章", "k_circle": "第2章", "m_vec": "第1章" },
+		"unit_titles": { "b1|第2章": "直线和圆的方程" },
+	}
+	# —— apply_order：方法在前、知识按版本序；未知版本原样复制 ——
+	var out := CurriculumRules.apply_order(raw, tb)
+	_eq(out.size(), 3, "order 3 章")
+	_eq(out[0]["id"], "m_vec", "order 方法在前")
+	_eq(out[1]["id"], "k_circle", "order 知识按版本序")
+	_eq(out[2]["id"], "k_line", "order 末位")
+	var keep := CurriculumRules.apply_order(raw, {})
+	_eq(keep.size(), 3, "order 空定义原样")
+	_eq(keep[0]["id"], "k_line", "order 空定义保序")
+	# 未列出的章节按原始顺序补齐且不丢；重复列出不重复出现
+	var out2 := CurriculumRules.apply_order(raw, { "knowledge_order": ["k_circle"] })
+	_eq(out2.size(), 3, "order 未列不丢")
+	_eq(out2[0]["id"], "k_circle", "order 列出优先")
+	_eq(CurriculumRules.apply_order(raw, { "knowledge_order": ["k_line", "k_line"] }).size(), 3,
+		"order 重复列出不重复")
+	# —— group_key_of：method/缺项返回 {} ——
+	_eq(CurriculumRules.group_key_of({ "id": "m_vec", "kind": "method" }, tb).size(), 0, "gk method 空")
+	_eq(CurriculumRules.group_key_of({ "id": "x" }, tb).size(), 0, "gk 缺分册章号 空")
+	_eq(str(CurriculumRules.group_key_of({ "id": "k_line" }, tb)["key"]), "b1|第2章", "gk 合并键")
+	# —— group_chapters：同分册同章号合并；method 不合并；unit_titles 覆盖标题 ——
+	var res := CurriculumRules.group_chapters(out, tb)
+	var chs: Array = res["chapters"]
+	_eq(chs.size(), 2, "merge 2 卡(直线圆合并+向量)")
+	_eq(chs[0]["id"], "m_vec", "merge 方法章独立")
+	_eq(chs[1]["id"], "k_circle", "merge 首成员为卡 id")
+	_eq(chs[1]["title"], "直线和圆的方程", "merge unit_titles 覆盖标题")
+	_eq((chs[1]["levels"] as Array).size(), 2, "merge 两关保留")
+	_eq(str((chs[1]["levels"] as Array)[0]["group"]), "圆的方程", "merge 首关 group=原章标题")
+	_eq(str((chs[1]["levels"] as Array)[1]["group"]), "直线方程", "merge 次关 group=原章标题")
+	var members: Dictionary = res["members"]
+	_eq(members["k_circle"].size(), 2, "merge members 两成员")
+	# —— chapter_in_domain：合并章按成员归属；无映射按自身 ——
+	var d := { "chapters": ["k_line"] }   # domain 列表里是原章 id
+	_ok(CurriculumRules.chapter_in_domain("k_circle", d, members), "domain 合并卡按成员归属")
+	_ok(not CurriculumRules.chapter_in_domain("m_vec", d, members), "domain 方法章不归属")
+	_ok(CurriculumRules.chapter_in_domain("k_line", d, {}), "domain 无合并映射按自身")
 
 ## C1/C2：重复通关不再无限刷经验/金币；当日重试降级星级上限。
 func _test_anti_farm() -> void:

@@ -172,15 +172,13 @@ func book_defs() -> Array:
 	var arr = textbook_def(textbook).get("books", [])
 	return arr if typeof(arr) == TYPE_ARRAY else []
 
-## 章节所属分册 id；未定义返回 ""
+## 章节所属分册 id；未定义返回 ""（纯规则见 CurriculumRules.book_of_chapter）
 func book_of_chapter(chapter_id: String) -> String:
-	var m = textbook_def(textbook).get("chapter_book", {})
-	return str(m.get(chapter_id, "")) if typeof(m) == TYPE_DICTIONARY else ""
+	return CurriculumRules.book_of_chapter(chapter_id, textbook_def(textbook))
 
 ## 章节的教材章号文案(如 "第5章")；未定义返回 ""
 func chapter_no(chapter_id: String) -> String:
-	var m = textbook_def(textbook).get("chapter_no", {})
-	return str(m.get(chapter_id, "")) if typeof(m) == TYPE_DICTIONARY else ""
+	return CurriculumRules.chapter_no(chapter_id, textbook_def(textbook))
 
 ## 切换教材版本：按新版本重排章节，清空用户自定义排序并落盘/广播。
 func set_textbook(id: String) -> void:
@@ -222,104 +220,34 @@ func _read_textbook_setting() -> String:
 
 ## 按当前版本重排 chapters：方法推演在前、知识体系在后，各自遵循版本顺序；
 ## 未在版本配置中列出的章节按原始顺序补齐(新增章节不会丢失)。
+## 排序/合并的纯规则见 CurriculumRules(A4 第九刀迁出)。
 func _apply_curriculum_order() -> void:
 	var cfg := textbook_def(textbook)
 	if cfg.is_empty():
 		chapters = _chapters_raw.duplicate()
 		_chapter_members.clear()
 		return
-	var by_id: Dictionary = {}
-	for ch in _chapters_raw:
-		by_id[str(ch.get("id", ""))] = ch
-	var out: Array = []
-	var used: Dictionary = {}
-	for key in ["method_order", "knowledge_order"]:
-		var ids = cfg.get(key, [])
-		if typeof(ids) != TYPE_ARRAY:
-			continue
-		for id in ids:
-			var sid := str(id)
-			if by_id.has(sid) and not used.has(sid):
-				out.append(by_id[sid])
-				used[sid] = true
-	for ch in _chapters_raw:
-		var sid := str(ch.get("id", ""))
-		if not used.has(sid):
-			out.append(ch)
-			used[sid] = true
-	chapters = out
+	chapters = CurriculumRules.apply_order(_chapters_raw, cfg)
 	_apply_chapter_grouping()
 
 ## 按教材章号合并知识章节：同「分册 + 章号」的知识章节合并为一张章节卡片，
-## 关卡数据全部保留，仅调整归类。例如人教A选必一：
-##   第2章 直线和圆的方程 = 直线方程 + 圆的方程；
-##   第3章 圆锥曲线的方程 = 椭圆 + 双曲线 + 抛物线 + 解析几何。
-## 合并后每关的 "group" 记为其原章节标题，供知识地图按「单元」分组显示。
-## 方法推演章节不参与合并。
+## 关卡数据全部保留，仅调整归类(规则见 CurriculumRules.group_chapters)。
 func _apply_chapter_grouping() -> void:
-	_chapter_members.clear()
-	if textbook_def(textbook).is_empty():
-		return
-	var counts: Dictionary = {}
-	for ch in chapters:
-		var info := _group_key_of(ch)
-		if not info.is_empty():
-			var k := str(info["key"])
-			counts[k] = int(counts.get(k, 0)) + 1
-	var out: Array = []
-	var pos: Dictionary = {}
-	for ch in chapters:
-		var info := _group_key_of(ch)
-		if info.is_empty() or int(counts.get(str(info["key"]), 0)) <= 1:
-			out.append(ch)
-			continue
-		var key := str(info["key"])
-		if pos.has(key):
-			var g: Dictionary = out[int(pos[key])]
-			var lvs: Array = g["levels"]
-			for lv in ch.get("levels", []):
-				var lv2: Dictionary = (lv as Dictionary).duplicate(true)
-				lv2["group"] = str(ch.get("title", ""))
-				lvs.append(lv2)
-			g["levels"] = lvs
-			(_chapter_members[str(g["id"])] as Array).append(str(ch.get("id", "")))
-		else:
-			var g2: Dictionary = ch.duplicate(true)
-			var lvarr: Array = g2.get("levels", [])
-			for i in lvarr.size():
-				(lvarr[i] as Dictionary)["group"] = str(ch.get("title", ""))
-			g2["levels"] = lvarr
-			g2["title"] = _unit_title(str(info["bk"]), str(info["no"]), str(ch.get("title", "")))
-			pos[key] = out.size()
-			out.append(g2)
-			_chapter_members[str(g2["id"])] = [str(ch.get("id", ""))]
-	chapters = out
+	var res := CurriculumRules.group_chapters(chapters, textbook_def(textbook))
+	chapters = res["chapters"]
+	_chapter_members = res["members"]
 
 ## 章节的合并键(分册 + 章号)；非知识章节或缺少分册/章号时返回 {}。
 func _group_key_of(ch: Dictionary) -> Dictionary:
-	if str(ch.get("kind", "knowledge")) == "method":
-		return {}
-	var cid := str(ch.get("id", ""))
-	var no := chapter_no(cid)
-	var bk := book_of_chapter(cid)
-	if no == "" or bk == "":
-		return {}
-	return { "key": bk + "|" + no, "bk": bk, "no": no }
+	return CurriculumRules.group_key_of(ch, textbook_def(textbook))
 
 ## 合并章节的显示标题：优先取教材版本的 unit_titles 覆盖，否则沿用首个成员标题。
 func _unit_title(bk: String, no: String, fallback: String) -> String:
-	var m = textbook_def(textbook).get("unit_titles", {})
-	if typeof(m) == TYPE_DICTIONARY and m.has(bk + "|" + no):
-		return str(m[bk + "|" + no])
-	return fallback
+	return CurriculumRules.unit_title(bk, no, fallback, textbook_def(textbook))
 
 ## 章节(可能是合并章节)是否归属于某知识领域。
 func _chapter_in_domain(chapter_id: String, d: Dictionary) -> bool:
-	var members: Array = _chapter_members.get(chapter_id, [chapter_id])
-	for m in members:
-		if str(m) in d["chapters"]:
-			return true
-	return false
+	return CurriculumRules.chapter_in_domain(chapter_id, d, _chapter_members)
 
 # ---------------------------------------------------------------- 课程
 func _load_curriculum() -> void:
