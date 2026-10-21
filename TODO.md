@@ -39,7 +39,7 @@
 | **A14** | `export_presets.cfg` 残留第三方机器路径 | **P1** | ✅ 已完成（统一 `build/…`） |
 | **A15** | 元游戏内容硬编码在 `GameData.gd` | **P2** | 与「改内容只改 JSON」相悖 |
 | **A16** | 立几方法关内容在 GDScript（两套内容管线） | **P2** | 🟡 前提部分失效：题目已迁至 `data/solid_methods.json`；`scripts/modules/solid/topics/*.gd`（6 文件 3568 行）现为**纯几何/标注逻辑**（问号 0~1 处、无题干）→ 降级为「3D 场景代码与数据的分层整理」 |
-| **A17** | 数据文件命名易混（`conic`/`conics`、`vector`/`vectors`） | **P2** | 改错文件静默失效 |
+| **A17** | 数据文件命名易混（`conic`/`conics`、`vector`/`vectors`） | **P2** | 🟡 自检已进 `check_questions`（2026-10-21 `463d06e`：lab→文件存在性/孤儿文件/近名对半引用即红灯+反向验证）；真重命名与 README 对照表待 A2 决策后一并做 |
 | **A18** | 内容数据异常时缺用户可见兜底 | **P1** | 坏档 → 空白知识体系 |
 | **A19** | 多用户切换的会话状态残留 | **P2** | 切用户丢萌宠问候 |
 | **B2** | 每关题量 3 → 5~8 | **P1** | 🟡 下限全线达标（2026-10-20：27/27 章 ≥ 5.0 题/关，全库平均 3.93；上探 6~7 题/关中段待续）。**2026-10-20 起暂缓，先做结构收敛** |
@@ -133,8 +133,17 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`cb6a915`（`feat(A4)` 第八刀：填空解析并入 `StageRules`，顺带修分数整数除法）；本条 §0.3 更新随后以 `docs(TODO)` 提交并 push。
-- **本轮交付（2026-10-21，第二十一轮）**：**A4 第八刀——填空解析并入 StageRules + 修分数 bug**（`cb6a915`）。
+- **最后提交**：`463d06e`（`feat(A17)` 数据文件命名/映射自检）；本条 §0.3 更新随后以 `docs(TODO)` 提交并 push。
+- **本轮交付（2026-10-21，第二十二轮）**：**A17 第一步——数据文件命名/映射自检进 check_questions**（`463d06e`）。
+  - **`check_questions.gd` 新增 `_check_naming()`**（+94 行）：① 章节 `lab` → `data/<lab>_levels.json`
+    存在性（缺失 = LabStage 静默空章，记错）；② 递归扫 `scripts/tests/tools` 的 `*.gd`，
+    显式 `res://data/*.json` 路径登记为已引用；③ 孤儿 `*_levels.json`（无任何引用）记错；
+    ④ 单复数近名对**只有一半被引用即记错**，均在用上看板（现状 `conic/conics`、`vector/vectors` 均在用）。
+  - **反向验证**：植入假孤儿文件 → 2 new / EXIT=1；删除恢复 0 new / EXIT=0——自检真能红灯。
+  - 全量回归绿：`CHECKED 95` / `TESTS 1520` / `SMOKE 285` / `UI-SMOKE 367` / `LabSmoke TMP_OK` /
+    `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 26 files 0 new` / `KNOWLEDGE hard-gaps=0` / `ASSETS 30.04 banned=0`。
+  - 余下（真重命名 + README 对照表）待 A2 收编/迁移决策后一并做。
+- **第二十一轮（2026-10-21）**：**A4 第八刀——填空解析并入 StageRules + 修分数 bug**（`cb6a915`）。
   - **StageRules.gd 126 → 155 行**：新增 `norm_math`（√/²/³/×/÷/π/隐式乘法归一化）+
     `parse_math`（归一化后 Expression 求值，空串/语法错/非数值 null）。
   - **去重**：`StageBase` 删 `_norm_math`/`_parse_math`；**`SolidChallenge` 删同名重复副本**（约 40 行），
@@ -272,22 +281,20 @@
 - **下次建议顺序**（按性价比）：
   > **2026-10-20 用户决策：暂停题目扩产，先做结构收敛。** B2 下限已全线达成（27/27 章 ≥ 5.0 题/关），
   > B1（21.4% → ≥30%）与 B2「上探 6~7 题/关中段」均为**纯内容批量生产**，可随时回归；当前转向 A/D/F 类结构问题。
-  1. **A4 继续第九刀或转 A2 收编** —— 八刀已落，规则层六文件合计 **596 行**，三文件合计 **4383 行**
-     （第一刀前 4725），全量九件套绿。候选：
-     ① `GameplayNode`（729 行）等剩余大文件先摸底找纯逻辑；
+  1. **A4 收尾或 A2 收编** —— 八刀已落 + A17 自检已进校验器（`463d06e`），全量九件套绿。
+     候选：① A4 第九刀——三大文件（GameData 1647 / TheoremTree 1541 / StageBase 1195）余下主要是
+     UI 面板代码（非纯逻辑），第九刀优先摸底确认是否还有可切片；范围外大文件
+     （`Pet.gd` 991、`LabPlane.gd` 1064、`SolidBuilder.gd` 930）暂不纳入 A4；
      ② **A2 收编成本已降低**（SolidChallenge 已改走 StageRules，重复副本已删）——把
-     `SolidChallenge`/`ConicStage` 在 README 标为官方场景 + 纳入 StageBase 家族测试；
-     ③ A17 文件名/章节映射自检（`check_questions.gd` 加自检，conic/vector/solid 混淆已实际致误）。
+     `SolidChallenge`/`ConicStage` 在 README 标为官方场景 + 纳入 StageBase 家族测试，
+     并顺带完成 A17 的 README「文件名 ↔ 章节」对照表。
   2. **A2 遗留模块定策略（前提已变）** —— `SolidChallenge.tscn` 仍被 6 关引用、`ConicStage.tscn` 被 3 关引用，
      **不能删**。二选一：迁到 `LabStage`（与 229 关统一）或明确「收编为正式场景」并补测试；
      建议先做后者（低成本），把迁移列入长期项。
-  3. **A17 数据文件命名（已实际致误）** —— `conic`/`conics`、`vector`/`vectors`、`solid`/`solid_basic` 混用，
-     上一轮 B2 已因它漏改一章（见上方「口径纠偏」）。做法：加**文件名/章节映射自检**到 `check_questions`
-     （脚本化、零风险），重命名另议。
-  4. **B13 朗读双路径** / **D2 演示动画覆盖 1/26** / **F3 性能耗电** / **F4 桌面键盘** —— 体验与性能结构问题。
-  5. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 需人工决策/下载/目视（AI 无法替代，上架硬门槛）。
-  6. 决策项待拍板：**G4/G5**；**A2 的迁移 vs 收编**、**A17 是否真重命名**。
-  7. 内容项回归：**B1 达标**（21.4% → ≥30%）、**B2 中段**（6~7 题/关）、**B6 理由选项占比**，
+  3. **B13 朗读双路径** / **D2 演示动画覆盖 1/26** / **F3 性能耗电** / **F4 桌面键盘** —— 体验与性能结构问题。
+  4. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 需人工决策/下载/目视（AI 无法替代，上架硬门槛）。
+  5. 决策项待拍板：**G4/G5**；**A2 的迁移 vs 收编**、**A17 是否真重命名**。
+  6. 内容项回归：**B1 达标**（21.4% → ≥30%）、**B2 中段**（6~7 题/关）、**B6 理由选项占比**，
      结构收敛后按章继续（新题模板仍须内建 B5 规范，先过 `check_questions` 黑名单与 `sample_distractors` 抽检）。
 - **收工前必做**：跑全量校验（`check_all` / `Tests` / `smoke_scene` / `UiSmoke` / `LabSmoke` /
   `check_questions` / `check_knowledge` / `check_assets` / `LevelPreview --smoke`），并同步 §9.2 基线数字。
@@ -772,8 +779,17 @@
 - 第二步：结合 A2/A16 的决策统一命名（旧模块加 `_legacy` 后缀，或直接删除）。
 - 在 `README.md`「改内容」小节列出「文件名 ↔ 章节」对照表；由 A5 校验器兜底跨文件重名。
 
+**完成记录（2026-10-21 第一步，`463d06e`）**
+- `check_questions.gd` 新增 `_check_naming()`：① 章节 `lab` → `data/<lab>_levels.json` 存在性
+  （缺失 = LabStage 静默空章，记错）；② 递归扫 `scripts/tests/tools` 的 `*.gd`，显式
+  `res://data/*.json` 路径登记为已引用；③ 孤儿 `*_levels.json` 记错；④ 单复数近名对只有一半
+  被引用即记错（另一半 = 改错文件名的受害者），均在用上看板。
+- **反向验证**：植入假孤儿文件 → 2 new / EXIT=1；删除恢复 0 new / EXIT=0。
+- 现状：近名对 `conic/conics`、`vector/vectors` 均在用；26 个数据文件无孤儿。
+
 **验收**
 - 不再存在仅差复数/后缀的成对数据文件；README 有对照表。
+- ~~第一步自检~~ ✅ 已完成；余下（真重命名 + README 对照表）待 A2 收编/迁移决策后一并做。
 
 ---
 
