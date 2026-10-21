@@ -133,8 +133,23 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`af14e73`（`feat(A4)` 第一刀：从 GameData 切出纯规则层 `PlayerRules`）；本条 §0.3 更新随后以 `docs(TODO)` 提交并 push。
-- **本轮交付（2026-10-20，第十四轮）**：**A4 上帝对象拆分第一刀——纯规则层 PlayerRules**（`af14e73`）。
+- **最后提交**：`41f879e`（`feat(A4)` 第二刀：经济结算纯规则 `EconomyRules`）；本条 §0.3 更新随后以 `docs(TODO)` 提交并 push。
+- **本轮交付（2026-10-21，第十五轮）**：**A4 第二刀——经济结算纯规则 EconomyRules**（`41f879e`）。
+  - **新增** `scripts/rules/EconomyRules.gd`（48 行，无状态静态纯函数）：星级经验公式（`EXP_PER_STAR`，
+    只按新增星计发）、每日登录（`next_login_streak` 断签归 1 + `login_reward` 基数 50/20 每日 +20%）、
+    通关结算纯判定 `settle_grant`（首达全额 / 重复折扣 / 跨天重置，把 level_records 字段读写收成纯函数）、
+    消费判定 `can_spend`、每日任务进度 `mission_progress`。
+  - **GameData.gd 1681 → 1670 行**：`grant_stars` 经验、`spend_coins`、`settle_level`、`claim_daily`、
+    `daily_mission_progress` 五处门面委托，行为零变化（`_test_economy`/`_test_anti_farm`/`_test_daily` 回归保护）。
+  - **消灭第二份公式**：`MainHub._maybe_daily` 原在 UI 侧本地复算 `mult/50/20` 登录奖励，
+    改与 `claim_daily` 同源 `EconomyRules`（单一来源）。
+  - **新测试**：`Tests._test_economy_rules()` 约 38 条构造断言——首达不动 paid 字段、当日封顶不再计数、
+    跨天重置、负基数守卫、断签归 1、任务进度封顶/回退守卫等。
+  - 全量回归绿：`CHECKED **91**`（0 failures）/ `TESTS **1338**`（+38）/ `SMOKE 285` / `UI-SMOKE 367` /
+    `LabSmoke TMP_OK` / `LEVEL-PREVIEW-SMOKE 7474` / `QUESTION-CHECK 1057 题 0 new` /
+    `KNOWLEDGE 275 点 hard-gaps=0` / `ASSETS 30.00（3101 files，banned=0）`。
+- **第十四轮（2026-10-20，上一轮）**：**A4 第一刀——纯规则层 PlayerRules**（`af14e73`；称号/勋章/等级/
+  星级统计/防刷公式切出，GameData 1779→1681；CHECKED 90 / TESTS 1300；踩坑：headless 跑 .gd 必须 `--script`）。
   - **新增** `scripts/rules/PlayerRules.gd`（194 行，无状态静态纯函数）：称号阶梯 `RANKS`、勋章定义与达成判定
     `MEDALS`/`medal_met(ctx)`、玩家等级曲线（每 8 星）、星级统计（chapter_stars / 满星 / boss / 整章满星）、
     防刷公式 `star_cap` / `repeat_grant`。
@@ -181,10 +196,10 @@
 - **下次建议顺序**（按性价比）：
   > **2026-10-20 用户决策：暂停题目扩产，先做结构收敛。** B2 下限已全线达成（27/27 章 ≥ 5.0 题/关），
   > B1（21.4% → ≥30%）与 B2「上探 6~7 题/关中段」均为**纯内容批量生产**，可随时回归；当前转向 A/D/F 类结构问题。
-  1. **A4 继续第二刀** —— 第一刀已切出纯规则层 `PlayerRules.gd`（`af14e73`，GameData 1779→1681 行，
-     +55 条单测全绿）；下一刀候选：**经济结算公式**（`settle_level`/`grant_stars` 纯公式部分）或
-     **StageBase 节奏层**（`ComboBar`/计时/`_grade`）——同样**先补测试再搬**；
-     `TheoremTree.gd` **1655 行**、`StageBase.gd` **1291 行** 未动。
+  1. **A4 继续第三刀** —— 两刀已落：`PlayerRules.gd`（第一刀）+ `EconomyRules.gd`（第二刀，
+     `41f879e`，GameData 1681→1670），全量九件套绿。下一刀候选：**萌宠养成公式**（饱食度衰减
+     `PET_DECAY_PER_DAY`/心情/好感度分层）或**领域掌握度公式**；或转攻 `StageBase`（1291 行）
+     节奏层/结算面板、`TheoremTree`（1655 行）——同样**先补测试再搬**。
   2. **A2 遗留模块定策略（前提已变）** —— `SolidChallenge.tscn` 仍被 6 关引用、`ConicStage.tscn` 被 3 关引用，
      **不能删**。二选一：迁到 `LabStage`（与 229 关统一）或明确「收编为正式场景」并补测试；
      建议先做后者（低成本），把迁移列入长期项。
@@ -297,16 +312,20 @@
 ### [ ] A4 · 上帝对象拆分（P2）
 
 **现状（证据）**
-- `scripts/autoload/GameData.gd` **1681 行**（A4 第一刀后；原 1779，称号/勋章/等级/星级统计/防刷公式
-  已切到 `scripts/rules/PlayerRules.gd` 194 行；旧记 1548）：课程表 + 进度 + 存档 IO + 勋章 + 称号 + 领域掌握度
+- `scripts/autoload/GameData.gd` **1670 行**（A4 前两刀后；原 1779，称号/勋章/等级/星级统计/防刷公式
+  已切到 `scripts/rules/PlayerRules.gd`，经济结算公式已切到 `scripts/rules/EconomyRules.gd`；旧记 1548）：
+  课程表 + 进度 + 存档 IO + 勋章 + 称号 + 领域掌握度
   + 萌宠 + 每日任务 + 经济 + 地图宝箱/事件 + 错题本 + 多用户，全在一个 autoload 类里。
 - `scripts/modules/line/TheoremTree.gd` **1655 行**（旧记 1496）：同一脚本同时充当 `WorldMap.tscn`（`kind="method"`）
   与 `TheoremTree.tscn`（`kind="knowledge"`）；引用面仅 **4 处**，拆分风险低。
 - `scripts/screens/StageBase.gd` **1291 行**（旧记 1092）：HUD + 答题 + 选项乱序 + BOSS 层 + 节奏/计时 + 结算 + 导航；
   被 **12 处**引用，是关卡基类，改动面最大。
-- 三文件合计 **4627 行**（2026-10-20 第一刀后实测 1681+1655+1291；第一刀前 4725）。
+- 三文件合计 **4616 行**（2026-10-21 两刀后实测 1670+1655+1291；第一刀前 4725）。
 
 **进度**
+- 2026-10-21 第十五轮 · **第二刀（`41f879e`）**：经济结算纯规则 `scripts/rules/EconomyRules.gd` 切出
+  （星级经验/登录连击与奖励/结算判定/消费判定/任务进度），`MainHub` 重复登录奖励公式并案消灭；
+  `Tests._test_economy_rules()` 约 38 断言，门面零破坏（TESTS 1338 / CHECKED 91）。
 - 2026-10-20 第十四轮 · **第一刀（`af14e73`）**：纯规则层 `scripts/rules/PlayerRules.gd`（称号/勋章/等级/
   星级统计/防刷公式）切出，`Tests._test_player_rules()` 先行约 55 断言，GameData 门面零破坏、
   全量九件套绿（CHECKED 90 / TESTS 1300）。后续按同一手法增量继续，不必一次到位。
