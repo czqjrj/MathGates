@@ -133,8 +133,20 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`b17edfc`（`feat(A4)` 第四刀：StageBase 结算纯规则 `StageRules`）；本条 §0.3 更新随后以 `docs(TODO)` 提交并 push。
-- **本轮交付（2026-10-21，第十七轮）**：**A4 第四刀——StageBase 结算纯规则 StageRules**（`b17edfc`）。
+- **最后提交**：`02cc149`（`feat(A4)` 第五刀：答题/选项乱序纯逻辑并入 `StageRules`）；本条 §0.3 更新随后以 `docs(TODO)` 提交并 push。
+- **本轮交付（2026-10-21，第十八轮）**：**A4 第五刀——StageBase 答题/选项乱序纯逻辑并入 StageRules**（`02cc149`）。
+  - **`StageRules.gd` 72 → 112 行**：`shuffle_allowed`（题面 `shuffle:false`/`fixed:true`、<2 选项、
+    顺序相关标记「以上/都对/都错/都正确/都不正确/上述/以下」自动关闭）、`order_for`（显示位置→原始下标，
+    关闭时恒等）、`multi_ok`（多选集合语义判定，顺序无关、重复选不凑数）、`num_ok`（填空容差判定）。
+  - **StageBase.gd 1257 → 1235 行**：删除 `_shuffle_allowed` 私有实现；`_opt_order_for`/`_multi_confirm`/
+    `_submit_input` 改走规则层；选项展示与作答反馈的 UI 标记/动效不动，行为零变化。
+  - **测试**：`_test_stage_rules` 增补约 23 条断言（乱序开关/标记黑名单/排列不丢不重/集合语义/容差含负数）；
+    `UiSmoke` 改引 `StageRules.shuffle_allowed`（原直接调 StageBase 私有方法）。踩坑：容差边界断言
+    需用二进制精确可表示值（1.05−1.0 有浮点误差），已改 1.5/1.0 边界。
+  - 全量回归绿：`CHECKED **94**`（0 failures）/ `TESTS **1442**`（+23）/ `SMOKE 285` / `UI-SMOKE 367` /
+    `LabSmoke TMP_OK` / `LEVEL-PREVIEW-SMOKE 7474` / `QUESTION-CHECK 1057 题 0 new` /
+    `KNOWLEDGE 275 点 hard-gaps=0` / `ASSETS 30.02（3107 files，banned=0）`。
+- **第十七轮（2026-10-21，上一轮）**：**A4 第四刀——StageBase 结算纯规则 StageRules**（`b17edfc`）。
   - **新增** `scripts/rules/StageRules.gd`（72 行）：星级判定 `judge_stars`（正确率 0.8/0.6 分界 →
     陷阱扣 1 → 超时降 1 保底 1 星 → 守关失败归 0 → 当日重试上限，返回 `time_capped`/`star_capped`）；
     奖励合成 `compose_reward`（基础 30 + 零失误×15 + 星级×20 + 满星 60 + 无陷阱 30 + 连击×3 +
@@ -225,10 +237,10 @@
 - **下次建议顺序**（按性价比）：
   > **2026-10-20 用户决策：暂停题目扩产，先做结构收敛。** B2 下限已全线达成（27/27 章 ≥ 5.0 题/关），
   > B1（21.4% → ≥30%）与 B2「上探 6~7 题/关中段」均为**纯内容批量生产**，可随时回归；当前转向 A/D/F 类结构问题。
-  1. **A4 继续第五刀** —— 四刀已落：`PlayerRules`/`EconomyRules`/`PetRules`+`MasteryRules`/`StageRules`
-     （第四刀 `b17edfc`，StageBase 1291→1257，规则层五文件合计 387 行），全量九件套绿。
-     **StageBase 结算段已收口**；下一刀候选：`StageBase` 答题/选项乱序层、`TheoremTree`（1655 行）
-     ——同样**先补测试再搬**。
+  1. **A4 继续第六刀** —— 五刀已落：`PlayerRules`/`EconomyRules`/`PetRules`+`MasteryRules`/`StageRules`
+     （第五刀 `02cc149`，StageBase 1257→1235，规则层五文件合计 427 行），全量九件套绿。
+     **StageBase 结算 + 答题/乱序层已收口**；下一刀候选：`TheoremTree`（1655 行，引用面仅 4 处，
+     风险低）或 `StageBase` 填空解析（`_norm_math`/`_parse_math`）——同样**先补测试再搬**。
   2. **A2 遗留模块定策略（前提已变）** —— `SolidChallenge.tscn` 仍被 6 关引用、`ConicStage.tscn` 被 3 关引用，
      **不能删**。二选一：迁到 `LabStage`（与 229 关统一）或明确「收编为正式场景」并补测试；
      建议先做后者（低成本），把迁移列入长期项。
@@ -348,12 +360,15 @@
   + 萌宠 + 每日任务 + 经济 + 地图宝箱/事件 + 错题本 + 多用户，全在一个 autoload 类里。
 - `scripts/modules/line/TheoremTree.gd` **1655 行**（旧记 1496）：同一脚本同时充当 `WorldMap.tscn`（`kind="method"`）
   与 `TheoremTree.tscn`（`kind="knowledge"`）；引用面仅 **4 处**，拆分风险低。
-- `scripts/screens/StageBase.gd` **1257 行**（旧记 1092；A4 第四刀切出结算规则 `StageRules` 后 −34）：
+- `scripts/screens/StageBase.gd` **1235 行**（旧记 1092；A4 第四/五刀切出结算与答题规则后 −56）：
   HUD + 答题 + 选项乱序 + BOSS 层 + 节奏/计时 + 结算 + 导航；
   被 **12 处**引用，是关卡基类，改动面最大。
-- 三文件合计 **4559 行**（2026-10-21 四刀后实测 1647+1655+1257；第一刀前 4725）。规则层五文件合计 387 行。
+- 三文件合计 **4537 行**（2026-10-21 五刀后实测 1647+1655+1235；第一刀前 4725）。规则层五文件合计 427 行。
 
 **进度**
+- 2026-10-21 第十八轮 · **第五刀（`02cc149`）**：答题/选项乱序纯逻辑并入 `scripts/rules/StageRules.gd`
+  （`shuffle_allowed`/`order_for`/`multi_ok`/`num_ok`），StageBase 1257→1235，删私有 `_shuffle_allowed`；
+  `UiSmoke` 改引规则层；`_test_stage_rules` 增补约 23 断言（TESTS 1442 / CHECKED 94）。
 - 2026-10-21 第十七轮 · **第四刀（`b17edfc`）**：结算纯规则 `scripts/rules/StageRules.gd` 切出
   （星级判定/奖励合成/评级/首通/极速判定），StageBase 1291→1257；`_test_stage_rules` 约 41 断言，
   HUD/存档/面板零改动（TESTS 1419 / CHECKED 94）。
