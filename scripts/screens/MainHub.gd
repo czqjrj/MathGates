@@ -184,6 +184,10 @@ func _build_center() -> void:
 	vb.add_theme_constant_override("separation", 12)
 	center.add_child(vb)
 
+	# A18：内容数据异常时先给一句明确提示，别让学生一头雾水。
+	if not GameData.content_ok():
+		vb.add_child(ContentFallback.banner())
+
 	var mark := BrandMark.new()
 	mark.custom_minimum_size = Vector2(118, 118)
 	mark.size_flags_horizontal = Control.SIZE_SHRINK_CENTER

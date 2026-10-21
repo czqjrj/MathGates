@@ -516,7 +516,7 @@
         { "name": "8-1 空间点线面位置关系", "levels": ["solid_axiom"] },
         { "name": "9-1 平行关系", "levels": ["solid_parallel"] },
         { "name": "10-1 垂直关系", "levels": ["solid_perp_prop"] },
-        { "name": "11-1 空间角（几何法）", "levels": ["solid_angle"] },
+        { "name": "11-1 空间角（几何法）", "levels": ["solid_basic_angle"] },
         { "name": "12-1 空间距离（几何法）", "levels": ["solid_distance"] }
       ],
       "gaps": []

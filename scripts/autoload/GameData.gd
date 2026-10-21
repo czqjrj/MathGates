@@ -83,6 +83,7 @@ var _chapters_raw: Array = []            # curriculum.json 原始章节(未按�
 var _textbooks: Array = []               # 教材版本定义(见 data/textbooks.json)
 var _textbook_default: String = "sujiao"
 var _chapter_members: Dictionary = {}    # 合并章节 id -> 成员原始章节 id 数组(仅合并章节存在)
+var content_problems: Array = []         # A18：内容数据健康检查的问题列表(空 = 正常)
 var stars: Dictionary = {}      # level_id -> int(0..3)
 var player_exp: int = 0
 var coins: int = 0
@@ -256,12 +257,15 @@ func _chapter_in_domain(chapter_id: String, d: Dictionary) -> bool:
 
 # ---------------------------------------------------------------- 课程
 func _load_curriculum() -> void:
+	content_problems = []
 	if not FileAccess.file_exists(CURRICULUM_PATH):
+		content_problems = [ContentHealth.problem("E_LOAD", CURRICULUM_PATH, "找不到课程表文件")]
 		push_error("找不到 curriculum.json")
 		return
 	var f := FileAccess.open(CURRICULUM_PATH, FileAccess.READ)
 	var data = JSON.parse_string(f.get_as_text())
 	if typeof(data) != TYPE_DICTIONARY or not data.has("chapters"):
+		content_problems = [ContentHealth.problem("E_LOAD", CURRICULUM_PATH, "课程表格式损坏，无法解析")]
 		push_error("curriculum.json 格式错误")
 		return
 	_chapters_raw = data["chapters"]
@@ -271,6 +275,23 @@ func _load_curriculum() -> void:
 		for lv in ch.get("levels", []):
 			if not stars.has(lv["id"]):
 				stars[lv["id"]] = 0
+	# A18：内容数据体检——坏数据不再只有控制台的一句 push_error（见 content_health）。
+	content_problems = ContentHealth.check(chapters)["problems"]
+
+# ---------------------------------------------------------------- A18 内容健康
+## 内容数据是否健康（没有问题即为真）。
+func content_ok() -> bool:
+	return content_problems.is_empty()
+
+## 内容数据体检结果：{ok, problems:[{code, where, message}], count}。
+func content_health() -> Dictionary:
+	return ContentHealth.result(content_problems)
+
+## 重新加载内容数据（用户在兜底页点「重试」时调用）；返回是否恢复正常。
+func reload_content() -> bool:
+	_load_textbooks()
+	_load_curriculum()
+	return content_ok()
 
 func level_name(level_id: String) -> String:
 	for ch in chapters:

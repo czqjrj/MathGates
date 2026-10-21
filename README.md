@@ -17,7 +17,8 @@ scripts/         总控与共享逻辑(按职责分目录)
 				   Palette.gd(绘图统一配色)、Confetti.gd(通关彩带)、Pet.gd(萌宠,全代码绘制)、
 				   TechBg.gd(科技背景)、Tts.gd(语音朗读:TTS 子系统,UI.tts_* 为薄转发)、
 				   InlineMath.gd(内联公式:{f:名称} 与 data/inline_math.json,UI.inline*/strip_formulas 为薄转发)、
-				   TtsOnline.gd(在线语音)
+				   TtsOnline.gd(在线语音)、
+				   ContentFallback.gd(A18 内容数据异常时的用户可见兜底:兜底卡/主城横幅/复制错误信息)
   save/            SaveIO.gd(存档原子读写:临时文件校验 + 备份 + 替换;GameData 存档 IO 委托于此)
   screens/         BootSplash.gd(品牌启动屏,规避引擎启动屏缩放 bug)、Login.gd、MainHub.gd、
 				   WorldMap.gd、UserProfile.gd、LearningReport.gd(学习报告/家长视图 G3)、
@@ -39,7 +40,8 @@ scripts/         总控与共享逻辑(按职责分目录)
 				   CurriculumRules(教材排序/章节合并)、
 				   SrsRules/SrsStore(G1 错题间隔重复:阶梯/到期/毕业 + 排程存取)、
 				   UserStore(存档层:存档 dict ⇄ 运行时字段转换 + 脏档兜底)、
-				   ReportRules/ReportExport(G3 学习报告:日历日/活动日志/汇总/家长视图 + 文本·CSV·JSON 导出);
+				   ReportRules/ReportExport(G3 学习报告:日历日/活动日志/汇总/家长视图 + 文本·CSV·JSON 导出)、
+				   ContentHealth(A18 内容数据完整性检查:章节结构/关卡 id 唯一/场景存在/内容引用定位);
 				   单文件 ≤200 行红线
 data/            课程表与题库 JSON(curriculum/questions + 各模块 *_levels.json)
 art/             美术 PNG/WebP + 公式小图 + Android 图标 + 标题字体(art/fonts/,放入行书 ttf 即自动启用)
@@ -52,6 +54,8 @@ tools/           开发/测试脚本:check_all.gd(脚本检查)、check_question
 				 optimize_art(A13 降采样超大图,默认 dry-run)、check_assets(A13 资源入库/体积护栏)、
 				 check_knowledge(E1 知识点覆盖矩阵校验+生成 docs/知识点覆盖矩阵.md,
 				 关卡↔知识点同步/未覆盖缺口基线)、knowledge_gaps_baseline.txt(硬缺口基线)、
+				 check_content_health(A18 内容数据完整性闸门:章节结构/关卡 id 唯一/场景存在/内容引用定位,
+				 CI 与发版前各跑一次,坏数据不许出包)、
 				 bump_version(F2 发版:一处改版本,多预设同步)、
 				 capture_scene(截图)、dev_seq(单关调试)、
 				 lab3d_render_check(立体几何/空间向量 3D 场景渲染自检,需真实窗口)、
@@ -70,9 +74,9 @@ build/           导出产物(APK,git 忽略)
 | 文件 | 上限 | 现状(2026-10-21) |
 |---|---|---|
 | `scripts/rules/*.gd`(每文件) | 200 | 最大 PlayerRules 195 |
-| `scripts/autoload/GameData.gd` | 1600 | 1558 |
-| `scripts/modules/line/TheoremTree.gd` | 1550 | 1541 |
-| `scripts/screens/StageBase.gd` | 1200 | 1195 |
+| `scripts/autoload/GameData.gd` | 1600 | 1579 |
+| `scripts/modules/line/TheoremTree.gd` | 1550 | 1544 |
+| `scripts/screens/StageBase.gd` | 1200 | 1197 |
 
 超限的处理:**先拆纯规则**(可单测逻辑进 rules/,门面转发留原处),而不是改上限;
 确需上调上限时须在 `TODO.md` 记录理由。
@@ -226,6 +230,36 @@ build/           导出产物(APK,git 忽略)
 活动日志累加与排序、汇总正确率与活跃天、家长视图**不泄露题号与题目原文**、三种导出可用、存档往返）
 + `UiSmoke._test_report_screen`（报告页真实构建、周期切换切到 30 天、导出按钮存在、隐私说明可见）。
 
+## 内容数据体检 / 用户可见兜底（A18）
+
+内容数据一旦出问题（课程表损坏、关卡 id 撞车、题目引用指向不存在的组），以前的表现是
+控制台一句 `push_error` + **一张空白页**——学生只看到没有任何解释的空知识体系。
+现在：**体检**把坏数据翻译成问题码，**运行时**给说人话的兜底卡，**发版前**由 CI 闸门挡住。
+
+| 环节 | 做法 |
+|---|---|
+| 体检规则 | `scripts/rules/ContentHealth.gd`（纯规则，可单测）：课程表非空、每章至少 1 关、**关卡 id 全局唯一**、关卡有名字与场景、场景文件存在、内容引用（lab/sequence/conic/method）能定位到数据文件里的组键 |
+| 问题码 | `E_EMPTY` / `E_DUP_ID` / `E_NO_LEVEL` / `E_NO_TITLE` / `E_NO_SCENE` / `E_BAD_REF` / `E_LOAD`——UI 文案与 CI 输出**共用一套**，不两处各说各话 |
+| 运行时兜底 | 内容坏掉时知识体系页不再空白：铺一张兜底卡（发生了什么 / 出在哪 / 怎么办），主城顶部挂一条横幅；动作有「**重试加载**」与「**复制错误信息**」 |
+| 隐私 | 错误详情**只写进用户自己的剪贴板**，不联网、不上传（与 F1 一致）；详情里只有内容结构信息，不含任何作答数据 |
+| 发版闸门 | `tools/check_content_health.gd`：深度体检（场景文件是否存在、引用能否定位）+ 孤儿组提示；接进 CI（`CONTENT-HEALTH-FAIL` 即红灯），坏数据不许出包 |
+
+体检**运行时只做轻量版**（只查课程表结构，启动开销小），深度版留给 CI 与发版前。
+
+代码分层（守 A4 行数红线）：判定全在 `scripts/rules/ContentHealth.gd`（不读文件、不碰 autoload，
+入参是章节数组 + 已知场景集合 + 内容组键表）；`GameData` 只留门面
+（`content_ok()` / `content_health()` / `reload_content()`）；界面兜底在 `scripts/ui/ContentFallback.gd`
+（兜底卡 / 主城横幅 / 复制文本）。
+
+**体检一上线就抓到一个真 bug**：`solid_angle` 这个关卡 id **被两个章节同时占用**
+（`solid` 章的「线面角 · 二面角」与 `solid_basic` 章的「11-1 空间角（几何法）」）——
+星标按 id 存，两关共用一条记录，一关通关另一关会跟着亮。已把后者改名为 `solid_basic_angle`
+（知识点覆盖矩阵同步更新），并用单测**守住「id 全局唯一」**。
+
+覆盖：`Tests._test_content_health`（空表 / 重复 id / 空章节 / 缺名字 / 缺场景 / 场景不存在 /
+引用定位不到 / 引用映射 / 真数据必须体检通过）+ `UiSmoke._test_content_fallback`
+（兜底卡文案与按钮、主城横幅、铺页替代空白页、复制文本只含结构信息）。
+
 ## 自检与 CI
 
 改完**必跑**（顺序任意，全绿才提交）：
@@ -236,13 +270,17 @@ build/           导出产物(APK,git 忽略)
 & "<godot4.7.2.exe>" --headless --path . res://tools/smoke_scene.tscn
 & "<godot4.7.2.exe>" --headless --path . res://tests/LabSmoke.tscn
 & "<godot4.7.2.exe>" --headless --path . --script res://tools/check_questions.gd
+& "<godot4.7.2.exe>" --headless --path . --script res://tools/check_content_health.gd
 ```
 
 - `check_questions.gd`：有**新增**内容问题即退出码 1；存量问题记在
   `tools/check_questions_baseline.txt`（修完删对应行）。
   确认新问题是历史遗留而非本次引入时，可 `-- --write-baseline` 记入基线。
+- `check_content_health.gd`：内容数据完整性闸门，输出
+  `CONTENT-HEALTH: N chapters / N levels / 0 problems`；有问题是 `CONTENT-HEALTH-FAIL` + 非零退出。
+  改 `curriculum.json` / `*_levels.json` 后**必跑**（改坏了的引用与重复 id 靠它兜）。
 - 以上检查已接入 CI（`.github/workflows/check.yml`，push/PR 自动跑）：五件套 + UiSmoke + check_assets +
-  check_questions + check_knowledge + LevelPreview 自检（`-- --smoke`）+ scaffold dry-run。
+  check_questions + check_knowledge + check_content_health + LevelPreview 自检（`-- --smoke`）+ scaffold dry-run。
 
 ## 关卡作者工具链（G2）
 

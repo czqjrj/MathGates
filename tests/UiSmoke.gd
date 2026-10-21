@@ -62,6 +62,7 @@ func _ready() -> void:
 	await _test_keyboard_stage()
 	await _test_srs_review_entry()
 	await _test_report_screen()
+	await _test_content_fallback()
 
 	print("UI-SMOKE: %d ok, %d fail" % [_pass, _fail])
 	GameData.logout()
@@ -366,6 +367,72 @@ func _test_report_screen() -> void:
 		_ok((mo as Button).text.find("✓") >= 0, "report ui: 本月按钮显示选中态")
 	scr.queue_free()
 	await get_tree().process_frame
+
+## A18：内容数据异常时的用户可见兜底——卡片 / 横幅 / 复制文本。
+func _test_content_fallback() -> void:
+	var problems := [
+		{"code": "E_DUP_ID", "where": "ch1/lv1", "message": "关卡 id「lv1」重复"},
+		{"code": "E_NO_SCENE", "where": "ch2/lv2", "message": "关卡没有场景"},
+	]
+	var card := ContentFallback.card(problems, Callable(), Callable())
+	add_child(card)
+	await get_tree().process_frame
+	var labels := ""
+	var btns := []
+	for n in _walk(card):
+		if n is Label:
+			labels += (n as Label).text + "\n"
+		elif n is Button:
+			btns.append(str((n as Button).text))
+	_ok(labels.find("内容数据加载失败") >= 0, "content ui: 兜底卡有标题")
+	_ok(labels.find("E_DUP_ID") >= 0, "content ui: 兜底卡列出问题码")
+	_ok(labels.find("ch1/lv1") >= 0, "content ui: 兜底卡列出问题位置")
+	_ok(labels.find("不联网") >= 0, "content ui: 兜底卡标注了不联网")
+	var has_retry := false
+	var has_copy := false
+	for b in btns:
+		if b.find("重试加载") >= 0:
+			has_retry = true
+		if b.find("复制错误信息") >= 0:
+			has_copy = true
+	_ok(has_retry, "content ui: 兜底卡有重试按钮")
+	_ok(has_copy, "content ui: 兜底卡有复制按钮")
+	card.queue_free()
+	await get_tree().process_frame
+
+	# 复制文本：只含内容结构信息
+	var txt := ContentFallback.detail_text(problems)
+	_ok(txt.find("E_NO_SCENE") >= 0, "content ui: 复制文本含问题码")
+	_ok(txt.find("问题数：2") >= 0, "content ui: 复制文本含问题数")
+	_ok(txt.find("不对外发送") >= 0 or txt.find("不联网") >= 0, "content ui: 复制文本标注本地生成")
+
+	# 横幅：主城顶部的一句提示
+	var ban := ContentFallback.banner()
+	add_child(ban)
+	await get_tree().process_frame
+	var blabels := ""
+	for n in _walk(ban):
+		if n is Label:
+			blabels += (n as Label).text + "\n"
+	_ok(blabels.find("内容数据异常") >= 0, "content ui: 横幅有提示语")
+	ban.queue_free()
+	await get_tree().process_frame
+
+	# 铺页：内容坏掉时知识体系页走这条路径（原来是一张空白页）
+	var saved := GameData.content_problems
+	GameData.content_problems = problems
+	var holder := Control.new()
+	add_child(holder)
+	ContentFallback.fill(holder, 0)
+	await get_tree().process_frame
+	var hl := ""
+	for n in _walk(holder):
+		if n is Label:
+			hl += (n as Label).text + "\n"
+	_ok(hl.find("内容数据加载失败") >= 0, "content ui: 铺页后有兜底卡")
+	holder.queue_free()
+	await get_tree().process_frame
+	GameData.content_problems = saved
 
 # ---------------------------------------------------------------- 工具
 

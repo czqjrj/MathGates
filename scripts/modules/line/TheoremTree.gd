@@ -654,6 +654,8 @@ func _ready() -> void:
 	_compute_books()
 	_build_topbar()
 	if GameData.chapters.is_empty():
+		# A18：内容数据坏了 → 给一张说人话的兜底卡，而不是空白页。
+		ContentFallback.fill(self, 70)
 		return
 	_build_scroll()
 	_build_map(true)

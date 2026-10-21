@@ -2668,7 +2668,7 @@
           "scene": "res://scenes/Lab3DStage.tscn"
         },
         {
-          "id": "solid_angle",
+          "id": "solid_basic_angle",
           "name": "11-1 空间角（几何法）",
           "technique": "异面角 · 线面角 · 二面角",
           "archetype": "LAB",

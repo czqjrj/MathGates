@@ -89,6 +89,13 @@ jobs:
           grep -Eq "KNOWLEDGE: [0-9]+ chapters" out.log
           ! grep -Eq "KNOWLEDGE-FAIL" out.log
 
+      - name: check_content_health（内容数据完整性闸门，A18）
+        run: |
+          set -euo pipefail
+          ./godot --headless --path . --script res://tools/check_content_health.gd 2>&1 | tee out.log
+          grep -Eq "CONTENT-HEALTH: [0-9]+ chapters / [0-9]+ levels / 0 problems" out.log
+          ! grep -Eq "CONTENT-HEALTH-FAIL" out.log
+
       - name: LevelPreview 自检（作者工具链，G2）
         run: |
           set -euo pipefail

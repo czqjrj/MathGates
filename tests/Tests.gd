@@ -58,6 +58,7 @@ func _run() -> void:
 	_test_speech_rules()
 	_test_adventure()
 	_test_inline_math()
+	_test_content_health()
 	print("TESTS: %d passed, %d failed" % [_pass, _fail])
 	get_tree().quit(1 if _fail > 0 else 0)
 
@@ -1983,3 +1984,72 @@ func _test_inline_math() -> void:
 	_ok(r.find("[img=") >= 0 or r.find("x>0") >= 0, "$$ 渲染或回退")
 	# {f:名称} 老路径仍可用
 	_ok(InlineMath.inline_formulas("看 {f:pw_xge_a}").find("{f:") < 0, "{f:} 仍被替换")
+
+## A18：内容数据体检——坏数据要能变成「问题码 + 位置 + 人话」，好数据不许误报。
+func _test_content_health() -> void:
+	# 空课程表
+	var empty := ContentHealth.check([])
+	_eq(empty["ok"], false, "content: an empty curriculum is not healthy")
+	_eq(str((empty["problems"][0] as Dictionary)["code"]), "E_EMPTY", "content: empty code")
+	_eq(ContentHealth.describe([]), "内容数据完整", "content: describe on a clean list")
+
+	# 好数据：一切齐全，不许误报
+	var good := [{
+		"id": "ch1", "title": "第一章", "levels": [
+			{"id": "lv1", "name": "第一关", "scene": "res://scenes/A.tscn", "lab": "circle", "lab_ref": "circle_1_1"},
+		],
+	}]
+	var ok_res := ContentHealth.check(good, {"res://scenes/A.tscn": true}, {"lab:circle": ["circle_1_1"]})
+	_eq(ok_res["ok"], true, "content: well-formed data is healthy")
+	_eq(int(ok_res["count"]), 0, "content: no false positives")
+
+	# 关卡 id 重复
+	var dup := ContentHealth.check([{
+		"id": "ch1", "title": "第一章", "levels": [
+			{"id": "lv1", "name": "甲", "scene": "s", "lab": "circle", "lab_ref": "k"},
+			{"id": "lv1", "name": "乙", "scene": "s", "lab": "circle", "lab_ref": "k"},
+		],
+	}])
+	_eq(dup["ok"], false, "content: duplicate ids are rejected")
+	_ok(ContentHealth.codes(dup["problems"]).has("E_DUP_ID"), "content: duplicate id code")
+	_eq(ContentHealth.codes(dup["problems"]).size(), 1, "content: codes are de-duplicated")
+
+	# 空章节
+	var no_lv := ContentHealth.check([{"id": "ch1", "title": "第一章", "levels": []}])
+	_ok(ContentHealth.codes(no_lv["problems"]).has("E_NO_LEVEL"), "content: a chapter without levels is rejected")
+
+	# 缺名字 / 缺场景 / 场景文件不存在
+	var no_name := ContentHealth.check([{"id": "ch1", "levels": [{"id": "lv1", "scene": "s", "lab": "circle", "lab_ref": "k"}]}])
+	_ok(ContentHealth.codes(no_name["problems"]).has("E_NO_TITLE"), "content: a level without a name is rejected")
+	var no_scene := ContentHealth.check([{"id": "ch1", "levels": [{"id": "lv1", "name": "甲", "lab": "circle", "lab_ref": "k"}]}])
+	_ok(ContentHealth.codes(no_scene["problems"]).has("E_NO_SCENE"), "content: a level without a scene is rejected")
+	var ghost_scene := ContentHealth.check(
+		[{"id": "ch1", "levels": [{"id": "lv1", "name": "甲", "scene": "s", "lab": "circle", "lab_ref": "k"}]}],
+		{"other": true})
+	_ok(ContentHealth.codes(ghost_scene["problems"]).has("E_NO_SCENE"), "content: a missing scene file is rejected")
+
+	# 引用定位不到
+	var no_ref := ContentHealth.check([{"id": "ch1", "levels": [{"id": "lv1", "name": "甲", "scene": "s"}]}])
+	_ok(ContentHealth.codes(no_ref["problems"]).has("E_BAD_REF"), "content: a level without content is rejected")
+	var lost_key := ContentHealth.check(
+		[{"id": "ch1", "levels": [{"id": "lv1", "name": "甲", "scene": "s", "lab": "circle", "lab_ref": "nope"}]}],
+		{}, {"lab:circle": ["k"]})
+	_ok(ContentHealth.codes(lost_key["problems"]).has("E_BAD_REF"), "content: an unresolvable group key is rejected")
+	var lost_src := ContentHealth.check(
+		[{"id": "ch1", "levels": [{"id": "lv1", "name": "甲", "scene": "s", "lab": "circle", "lab_ref": "k"}]}],
+		{}, {"lab:other": ["k"]})
+	_ok(ContentHealth.codes(lost_src["problems"]).has("E_BAD_REF"), "content: a missing data source is rejected")
+
+	# 引用映射：lab 取 lab_ref，其余同名
+	_eq(str((ContentHealth.ref_of({"lab": "circle", "lab_ref": "circle_1_1"})[0])), "lab:circle", "content: lab source key")
+	_eq(str((ContentHealth.ref_of({"lab": "circle", "lab_ref": "circle_1_1"})[1])), "circle_1_1", "content: lab group key")
+	_eq(str((ContentHealth.ref_of({"sequence": "recur_add"})[0])), "sequence", "content: sequence source key")
+	_eq(str((ContentHealth.ref_of({"conic": "C1"})[0])), "conic", "content: conic source key")
+	_eq(str((ContentHealth.ref_of({"method": "complement"})[0])), "method", "content: method source key")
+	_eq(ContentHealth.ref_of({"id": "lv1", "name": "甲", "scene": "s"}).size(), 0, "content: a level without a reference has none")
+
+	# 真数据必须体检通过（改数据改坏了要红）
+	var real := ContentHealth.check(GameData.chapters)
+	_eq(real["ok"], true, "content: the shipped curriculum passes the health check")
+	_eq(GameData.content_ok(), true, "content: GameData reports healthy content")
+	_eq((GameData.content_health()["problems"] as Array).size(), 0, "content: GameData has no problems")
