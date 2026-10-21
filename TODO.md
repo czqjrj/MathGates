@@ -133,11 +133,35 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`b6e98d9`（`feat(F3)` 静止降耗 + `perf_probe` 基线）；前一提交链：
-  `eb56513`（docs 第三十一轮）→ `1bd050c`（F4 键盘）→ `05f8073`（docs）→
+- **最后提交**：`8fdc5f0`（`feat(G1)` 错题间隔重复（SRS））；前一提交链：
+  `28a235f`（docs 第三十二轮）→ `b6e98d9`（F3 静止降耗）→ `eb56513`（docs 第三十一轮）→
+  `1bd050c`（F4 键盘）→ `05f8073`（docs）→
   `aca0897`（D4 动效令牌/控制）→ `199bdce`（docs）→ `439d685`（D3 表意动效）→…，
   已 push（`main` 与 `origin/main` 同步）。
-- **本轮交付（2026-10-21，第三十二轮）**：**F3 性能与静止降耗**（`b6e98d9`）。
+- **本轮交付（2026-10-21，第三十三轮）**：**G1 错题间隔重复（SRS 遗忘曲线排程）**（`8fdc5f0`）。
+  - **阶梯**：Leitner 5 档 `1/3/7/16/35` 天（`SrsRules.INTERVALS`），`step` 0→4；答对进阶、
+    答错回退到 0 并重排 `due_day`；连对 `GRADUATE_OK=4` **毕业**（移出排程，进 `wrong_log` 归档）。
+  - **日期用「日序号」不用时间戳**：`GameData.today_day()` 取本地日历日序号（`Time` 零时化后 ÷86400），
+    避开时区/夏令时漂移；奖励去重另用日期串 `last_reward_day`。
+  - **规则分层（守 A4 红线）**：`rules/SrsRules.gd`（113 行）只算单条排程，
+    `rules/SrsStore.gd`（177 行）管整本排程（存/查/推进/迁移/排序/派单），
+    `GameData` 只留**门面**（`srs_due_list` / `srs_due_count` / `srs_due_text` / `srs_plan_for` /
+    `review_order` / `pet_quests`），行为零变更。
+  - **兼容**：`srs_plan` 与旧 `wrong_log` **并存**；旧档无排程者由 `SrsStore.legacy_plan()`
+    合成 `due_day = 0` 的「立即到期」计划 → 零迁移、天然兼容；`normalize()` 钳制越界字段。
+  - **即时复练语义保留**：今天刚做错的题 `eff_due_day = 今天`（不是明天）→「错题优先」不被推迟。
+  - **奖励**：复习答对 `+2`（同题当日只发一次，防刷）、毕业 `+5`；旧「答对清错账」的 `+5`
+    提为常量 `GameData.WRONG_CLEAR_COINS`（语义不变）。
+  - **入口**：首页顶栏「复习 N」（今日无到期则隐藏）+ 首页「待复习 N」卡片角标 + 错题本
+    「今日待复习」卡片（按到期排序 + 一键「开始复习」深链到题号）+ 每条错题标注
+    「今天到期 / N 天后复习 / 已逾期 N 天」；萌宠派单也改为到期优先。
+  - **测试**：`Tests._test_srs_rules` / `_test_srs_store` / `_test_srs_flow`（+96 断言）+
+    `UiSmoke._test_srs_review_entry`（首页与错题本**真实构建** 8 断言）。
+  - 全量回归绿：`CHECKED 101` / `TESTS 1900`（+96）/ `SMOKE 285` / `UI-SMOKE 393`（+8）/
+    `LabSmoke TMP_OK` / `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new` /
+    `KNOWLEDGE hard-gaps=0` / `ASSETS 30.15 banned=0`。
+  - **G1 转 ✅**；⚠️ `GameData.gd` 已到 **1593/1600**，下轮动它先拆存档层（见 §7 G1 的 A4 遗留注）。
+- **上一轮（第三十二轮）**：**F3 性能与静止降耗**（`b6e98d9`）。
   - **3D**：空闲 8s 停自转、相机稳且空闲 10s → `SubViewport.UPDATE_DISABLED`（保留末帧）；
     停帧后 `_process` early-return；`_wake()` 在拖动/键盘/演示/换场景时立即恢复；
     前后台（PAUSED/FOCUS_OUT）停帧、恢复时重启。
