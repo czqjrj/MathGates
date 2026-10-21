@@ -133,8 +133,20 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`8092fa4`（`feat(A4)` 第七刀：TheoremTree 解锁判定并入 `TreeRules`）；本条 §0.3 更新随后以 `docs(TODO)` 提交并 push。
-- **本轮交付（2026-10-21，第二十轮）**：**A4 第七刀——TheoremTree 解锁判定并入 TreeRules**（`8092fa4`）。
+- **最后提交**：`cb6a915`（`feat(A4)` 第八刀：填空解析并入 `StageRules`，顺带修分数整数除法）；本条 §0.3 更新随后以 `docs(TODO)` 提交并 push。
+- **本轮交付（2026-10-21，第二十一轮）**：**A4 第八刀——填空解析并入 StageRules + 修分数 bug**（`cb6a915`）。
+  - **StageRules.gd 126 → 155 行**：新增 `norm_math`（√/²/³/×/÷/π/隐式乘法归一化）+
+    `parse_math`（归一化后 Expression 求值，空串/语法错/非数值 null）。
+  - **去重**：`StageBase` 删 `_norm_math`/`_parse_math`；**`SolidChallenge` 删同名重复副本**（约 40 行），
+    容差判定改用 `StageRules.num_ok`——填空解析自此单一来源（对 A2 收编也更有利）。
+  - **fix(B1)**：`parse_math` 内整数字面量统一转 float（前后视保护小数），修复 Expression 整数除法
+    把 `1/2` 算成 0 导致**分数填空被误判错**（本次搬移测试时发现的存量学生侧 bug）。
+  - **测试**：`_test_stage_rules` 扩充约 24 条（小数/分数/上下标/幂/乘除号/负号/括号/√/π/空串/
+    非法式/连续除法左结合/小数不受 float 化影响）。
+  - 全量回归绿：`CHECKED **95**` / `TESTS **1520**`（+24）/ `SMOKE 285` / `UI-SMOKE 367` /
+    `LabSmoke TMP_OK` / `LEVEL-PREVIEW-SMOKE 7474` / `QUESTION-CHECK 1057 题 0 new` /
+    `KNOWLEDGE 275 点 hard-gaps=0` / `ASSETS 30.03（3109 files，banned=0）`。
+- **第二十轮（2026-10-21）**：**A4 第七刀——TheoremTree 解锁判定并入 TreeRules**（`8092fa4`）。
   - **TreeRules.gd 97 → 126 行**：新增 `region_stars`（本单元累计星数，等价原 `GameData.stars_of` 求和）、
     `level_li_by_id`（按 id 查索引，找不到 -1）、`level_unlocked`（自由模式/首关恒开；已通关可重玩；
     Boss 门 `gate.need_stars>0` 以本单元累计星数为唯一条件；否则要求上一关 ≥1 星）。
@@ -260,11 +272,12 @@
 - **下次建议顺序**（按性价比）：
   > **2026-10-20 用户决策：暂停题目扩产，先做结构收敛。** B2 下限已全线达成（27/27 章 ≥ 5.0 题/关），
   > B1（21.4% → ≥30%）与 B2「上探 6~7 题/关中段」均为**纯内容批量生产**，可随时回归；当前转向 A/D/F 类结构问题。
-  1. **A4 继续第八刀** —— 七刀已落：`PlayerRules`/`EconomyRules`/`PetRules`+`MasteryRules`/`StageRules`/
-     `TreeRules`（第六刀 `56f1e23` 布局 + 第七刀 `8092fa4` 解锁判定，TheoremTree 1655→1541，
-     规则层六文件合计 553 行），全量九件套绿。
-     下一刀候选：`StageBase` 填空解析（`_norm_math`/`_parse_math`，纯文本规范化 + Expression 解析）——
-     同样**先补测试再搬**。TheoremTree 余下主要是 `_open_panel` 面板 UI（非纯逻辑），可暂缓。
+  1. **A4 继续第九刀或转 A2 收编** —— 八刀已落，规则层六文件合计 **596 行**，三文件合计 **4383 行**
+     （第一刀前 4725），全量九件套绿。候选：
+     ① `GameplayNode`（729 行）等剩余大文件先摸底找纯逻辑；
+     ② **A2 收编成本已降低**（SolidChallenge 已改走 StageRules，重复副本已删）——把
+     `SolidChallenge`/`ConicStage` 在 README 标为官方场景 + 纳入 StageBase 家族测试；
+     ③ A17 文件名/章节映射自检（`check_questions.gd` 加自检，conic/vector/solid 混淆已实际致误）。
   2. **A2 遗留模块定策略（前提已变）** —— `SolidChallenge.tscn` 仍被 6 关引用、`ConicStage.tscn` 被 3 关引用，
      **不能删**。二选一：迁到 `LabStage`（与 229 关统一）或明确「收编为正式场景」并补测试；
      建议先做后者（低成本），把迁移列入长期项。
@@ -385,12 +398,19 @@
 - `scripts/modules/line/TheoremTree.gd` **1541 行**（旧记 1496；A4 第六/七刀切出 `TreeRules` 后 −114）：
   同一脚本同时充当 `WorldMap.tscn`（`kind="method"`）与 `TheoremTree.tscn`（`kind="knowledge"`）；
   余下主要是 `_open_panel` 面板 UI（非纯逻辑）。
-- `scripts/screens/StageBase.gd` **1235 行**（旧记 1092；A4 第四/五刀切出结算与答题规则后 −56）：
+- `scripts/screens/StageBase.gd` **1195 行**（旧记 1092；A4 第四/五/八刀切出结算/答题/填空解析规则后 −40）：
   HUD + 答题 + 选项乱序 + BOSS 层 + 节奏/计时 + 结算 + 导航；
   被 **12 处**引用，是关卡基类，改动面最大。
-- 三文件合计 **4423 行**（2026-10-21 七刀后实测 1647+1541+1235；第一刀前 4725）。规则层六文件合计 553 行。
+- `scripts/modules/solid/SolidChallenge.gd` **1017 行**（第八刀删重复 `_parse_math`/`_norm_math` 副本后）：
+  与 StageBase 独立实现，A2 收编决策相关。
+- 三文件合计 **4383 行**（2026-10-21 八刀后实测 1647+1541+1195；第一刀前 4725）。规则层六文件合计 596 行。
 
 **进度**
+- 2026-10-21 第二十一轮 · **第八刀（`cb6a915`）**：填空解析（`norm_math`/`parse_math`）并入 `StageRules`
+  （126→155），StageBase 1235→1195，**SolidChallenge 删重复副本**（约 40 行，容差判定改走
+  `StageRules.num_ok`）；顺带 **fix(B1)** 整数字面量转 float，修复 Expression 整数除法把 `1/2` 算成 0
+  的分数填空误判（搬移测试时发现的存量 bug）；`_test_stage_rules` 扩充约 24 断言
+  （TESTS 1520 / CHECKED 95）。
 - 2026-10-21 第二十轮 · **第七刀（`8092fa4`）**：TheoremTree 解锁判定（`region_stars`/`level_li_by_id`/
   `level_unlocked`）并入 `TreeRules`（97→126），TheoremTree 1563→1541；`_test_tree_rules` 扩充约 15 断言
   （TESTS 1496 / CHECKED 95）。跨章节判定 `GameData.is_level_unlocked` 语义不同，不合并。
