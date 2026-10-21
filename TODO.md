@@ -133,12 +133,47 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`8fdc5f0`（`feat(G1)` 错题间隔重复（SRS））；前一提交链：
+- **最后提交**：`0d5cde4`（`feat(G3)` 学习报告 / 家长视图）；前一提交链：
+  `8fdc5f0`（feat G1 错题间隔重复）→ `a885756`（docs 第三十三轮）→
   `28a235f`（docs 第三十二轮）→ `b6e98d9`（F3 静止降耗）→ `eb56513`（docs 第三十一轮）→
   `1bd050c`（F4 键盘）→ `05f8073`（docs）→
   `aca0897`（D4 动效令牌/控制）→ `199bdce`（docs）→ `439d685`（D3 表意动效）→…，
   已 push（`main` 与 `origin/main` 同步）。
-- **本轮交付（2026-10-21，第三十三轮）**：**G1 错题间隔重复（SRS 遗忘曲线排程）**（`8fdc5f0`）。
+- **本轮交付（2026-10-21，第三十四轮）**：**G3 学习报告 / 家长视图**（`0d5cde4`）。
+  - **先还 A4 欠账——存档层拆分**：新增 `rules/UserStore.gd`（140 行）接管存档 dict ⇄ 运行时字段的
+    全部转换（`blank_user` / `snapshot` / `parse` / `normalize_wrong_modules`），
+    `GameData.gd` 只剩 `_state()` / `_avatar_ids()` 两个薄门面 → **1593 → 1558 行**（红线 1600，余 42）。
+    顺手补**脏档兜底**（字段缺失 / `null` / 类型不对 → 默认值）：原实现遇到显式 `null` 会在
+    `int(null)` 处整段中止（实测存档直接读成空字典）。
+  - **新增时间维度（趋势的前提）**：新存档字段 `activity`，按天一条
+    `{date, answered, correct, stars, clears, reviews}`，**保留 120 天**（更早裁掉，存档不无限膨胀）；
+    埋点 `record_answer`（answered/correct）、`grant_stars`（星级净增）、
+    `record_level_result`（clears）、`_srs_answer`（此前已在复习计划里的题才记 reviews）。
+  - **规则分层（守 A4 红线）**：`rules/ReportRules.gd`（150 行：日历日换算 / 活动日志 / 汇总 /
+    领域级薄弱点 / 家长视图）+ `rules/ReportExport.gd`（54 行：文本周报 / 家长建议 / CSV / JSON），
+    `GameData` 只留**门面**（`report_summary` / `report_weak` / `parent_view` / `parent_advice` /
+    `report_text` / `report_csv` / `report_json`）。日期换算按 **UTC 解释的纯日历日**，
+    不随时区/夏令时漂移。
+  - **界面**：新增 `scenes/LearningReport.tscn` + `scripts/screens/LearningReport.gd`（280 行）——
+    学习概览 → **逐日趋势柱状**（沉默的日子也画出来）→ 薄弱领域 → 可分享的报告文本（复制剪贴板）
+    → 家长视图只读摘要 → 导出（CSV / JSON / 文本，写到 `user://`）；
+    入口：首页顶栏「报告」+ 档案库「学习报告 · 家长视图」卡片；`Scene.SCENE_LABELS` 登记「学习报告」。
+  - **隐私最小化（与 F1 一致）**：家长视图只给**汇总量 + 领域级薄弱点名**，不含题目原文 /
+    关卡名 / 作答内容；报告**默认本地生成、不联网、不上传**；导出内容只有日期与计数。
+  - **测试**：`Tests._test_user_store` / `_test_report_rules` / `_test_report_flow`（+76 断言）+
+    `UiSmoke._test_report_screen`（报告页**真实构建** + 周期切换切到 30 天 + 导出按钮 + 隐私说明，+12）+
+    `smoke_scene` 新增 `LearningReport.tscn`（285 → 286）。
+  - 全量回归绿：`CHECKED 105` / `TESTS 1976`（+76）/ `SMOKE 286` / `UI-SMOKE 405`（+12）/
+    `LabSmoke TMP_OK` / `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new（7 known）` /
+    `KNOWLEDGE hard-gaps=0` / `ASSETS 30.20 banned=0`。
+  - **G3 转 ✅**；⚠️ 残留：「复习完成率」「错题净增」「薄弱领域环比变化」三项**未单列**
+    （复习量按「进入复习计划的题数」计，非到期完成率；薄弱点取的是当前诊断快照，非周期变化量）——
+    要补得给 `srs_plan` 与错题账加「上周期领域分布」快照，属独立一轮。
+  - **下一项建议**：**G2（关卡作者工具链）**——预览器 `LevelPreview.tscn` 与脚手架
+    `tools/scaffold_level.gd` 已落地且入 CI，还差**编辑闭环**（改完即存盘 + 校验）；
+    或 **A10 / A18 / A19**（纯 AI 可自动化）。
+    同时继续按 A4 拆 `StageBase.gd`（1195/1200，余 5 行）与 `TheoremTree.gd`（1541/1550，余 9 行）。
+- **上一轮（第三十三轮）**：**G1 错题间隔重复（SRS 遗忘曲线排程）**（`8fdc5f0`）。
   - **阶梯**：Leitner 5 档 `1/3/7/16/35` 天（`SrsRules.INTERVALS`），`step` 0→4；答对进阶、
     答错回退到 0 并重排 `due_day`；连对 `GRADUATE_OK=4` **毕业**（移出排程，进 `wrong_log` 归档）。
   - **日期用「日序号」不用时间戳**：`GameData.today_day()` 取本地日历日序号（`Time` 零时化后 ÷86400），
@@ -2176,6 +2211,8 @@
 > 前六类是"把已有的东西修好"；这一类是"**让产品更强**"。
 > **G4 / G5 是决策项**（技术或产品上暂不实施），列在这里是为了**不丢想法**，不是待开工的任务。
 > 建议顺序：**G2（作者工具链）→ G1（SRS）→ G3（学习报告）**，G2 先行能显著降低 E 类的补内容成本。
+> **进度**：G1 ✅ / G3 ✅（2026-10-21 第三十三、三十四轮）；**G2 未开工**（作者工具链，
+> 见 §7 G2）；G4 / G5 是决策项，暂不实施。
 
 ### [x] G1 · 错题间隔重复（SRS 遗忘曲线排程）（P1）
 
