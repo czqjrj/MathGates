@@ -7,6 +7,8 @@ var _star_lbl: Label
 var _prog_lbl: Label
 var _prog_line: ProgressLine
 var _daily_btn: Button
+var _review_btn: Button
+var _badges: Dictionary = {}   # 卡片角标标签（按卡片标题索引），供 _refresh_status 动态刷新
 
 func _ready() -> void:
 	theme = UI.make_theme()
@@ -109,6 +111,13 @@ func _build_topbar() -> void:
 		Scene.goto("res://scenes/DailyMissions.tscn")
 	, 14)
 	hb.add_child(_daily_btn)
+	# G1 复习入口：今日有到期的错题时才出现，一键进入复习队列。
+	_review_btn = UI.ghost_button("", func() -> void:
+		Sound.play("select")
+		_on_start_review()
+	, 14)
+	_review_btn.visible = false
+	hb.add_child(_review_btn)
 	hb.add_child(UI.ghost_button("退出登录", func() -> void:
 		GameData.logout()
 		Sound.play("select")
@@ -139,6 +148,14 @@ func _refresh_status() -> void:
 	_star_lbl.text = "★ %d / %d" % [GameData.total_stars(), GameData.total_max_stars()]
 	if _daily_btn != null and is_instance_valid(_daily_btn):
 		_daily_btn.text = _daily_text()
+	if _review_btn != null and is_instance_valid(_review_btn):
+		var due := GameData.srs_due_count()
+		_review_btn.visible = due > 0
+		_review_btn.text = "复习 %d" % due
+	var bl: Variant = _badges.get("错题笔记", null)
+	if bl is Label and is_instance_valid(bl):
+		(bl as Label).text = _wrong_badge()
+		(bl as Label).visible = _wrong_badge() != ""
 	var rp := GameData.rank_progress()
 	if str(rp["next_title"]) == "":
 		_prog_line.set_ratio(1.0)
@@ -211,14 +228,14 @@ func _build_center() -> void:
 	row.add_child(_card("知识体系", "思维导图统整知识，逐点点亮", Color("#a878ff"), "icon_tree", _on_theorem_tree, true))
 	row.add_child(_card("方法推演", "按教材分册，逐章攻克方法与题型", Color("#5b8cff"), "icon_map", _on_adventure, false, true))
 	row.add_child(_card("档案库", "用户档案与学情诊断", Color("#ffa64d"), "icon_book", _on_archive, false, true))
-	row.add_child(_card("错题笔记", "逐题回看错题，一键重练", Color("#4dd6a8"), "icon_train", _on_wrong_notebook, false, true))
+	row.add_child(_card("错题笔记", "逐题回看错题，一键重练", Color("#4dd6a8"), "icon_train", _on_wrong_notebook, false, true, _wrong_badge()))
 	row.add_child(_card("星辉市集", "金币兑换头像与道具", Color("#ffd479"), "icon_star_full", _on_shop, false, true))
 
 	UI.fade_in(vb, 0.42)
 	UI.card_deal_in(row, 0.09, 0.55)
 
 # ---------------------------------------------------------------- 功能卡片
-func _card(title: String, desc: String, color: Color, icon_name: String, on_press: Callable, primary: bool, available: bool = false) -> Control:
+func _card(title: String, desc: String, color: Color, icon_name: String, on_press: Callable, primary: bool, available: bool = false, badge: String = "") -> Control:
 	var holder := Control.new()
 	holder.custom_minimum_size = Vector2(226, 244)
 
@@ -256,6 +273,11 @@ func _card(title: String, desc: String, color: Color, icon_name: String, on_pres
 
 	var t_lbl := UI.make_label(title, 21, UI.COL_TEXT, HORIZONTAL_ALIGNMENT_CENTER)
 	vb.add_child(t_lbl)
+	# 角标（可为空）：始终建标签，便于 _refresh_status 动态刷新；空则不占位。
+	var bl := UI.mono_label(badge, 13, Color("#ffd479"), HORIZONTAL_ALIGNMENT_CENTER)
+	bl.visible = badge != ""
+	vb.add_child(bl)
+	_badges[title] = bl
 	var d_lbl := UI.make_label(desc, 14, UI.COL_TEXT_DIM, HORIZONTAL_ALIGNMENT_CENTER)
 	d_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	vb.add_child(d_lbl)
@@ -305,6 +327,22 @@ func _on_wrong_notebook() -> void:
 	Sound.play("begin")
 	Scene.goto("res://scenes/WrongNotebook.tscn")
 
+## G1：一键开始今日复习——跳到第一个到期错题所在关卡（错题深链定位到题号）。
+func _on_start_review() -> void:
+	for rec in GameData.srs_due_list():
+		var nav := GameData.quest_target(rec)
+		if nav.is_empty():
+			continue
+		GameData.start_level_focus(int(nav["ci"]), int(nav["li"]), int(nav["qi"]))
+		Scene.goto(str(nav["scene"]))
+		return
+	Toast.show_toast("待复习的题目暂时无法进入")
+
 func _on_shop() -> void:
 	Sound.play("begin")
 	Scene.goto("res://scenes/Shop.tscn")
+
+## 错题笔记卡片的角标：今日待复习题数。
+func _wrong_badge() -> String:
+	var n := GameData.srs_due_count()
+	return ("待复习 %d" % n) if n > 0 else ""

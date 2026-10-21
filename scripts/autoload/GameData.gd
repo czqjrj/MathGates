@@ -63,6 +63,9 @@ const DOMAINS := [
 ## 萌宠形态名(下标 = 已解锁部件数)
 const PET_FORMS := ["初芽", "萌芽", "启智", "明理", "通达", "博识", "睿智", "衍数·完形"]
 
+## 错题账结清（答对还清最后一笔错账）时奖励的金币。
+const WRONG_CLEAR_COINS := 5
+
 ## 馆灵记忆碑文：每掌握一个领域，寻回一段失落的档案(与 DOMAINS 的 id 对应)。
 const LORE := [
 	{ "id": "seq",     "title": "碑文·归序", "text": "万物流转皆有其序，离散之间，自见通项。" },
@@ -97,6 +100,7 @@ var avatar: String = "player"
 var total_questions: int = 0            # 累计作答数
 var total_correct: int = 0              # 累计答对数
 var wrong_log: Dictionary = {}          # "level_id#qi" -> {level_id, qi, name, module, count, last_chose, correct}
+var srs_plan: Dictionary = {}           # G1 复习排程 "level_id#qi" -> {level_id, qi, name, module, step, ok_streak, interval_days, due_day, last_wrong_day, first_wrong_at, last_review_at, wrong_count, last_reward_day}
 var level_records: Dictionary = {}      # level_id -> {attempts, best_stars, last_clean, last_total, trap_missed}
 var pet_fed: int = 0                    # 萌宠投喂次数
 var pet_satiety: float = 1.0            # 饱食度 0..1(随时间下降，投喂回满)
@@ -533,6 +537,7 @@ func reset_progress() -> void:
 	total_questions = 0
 	total_correct = 0
 	wrong_log.clear()
+	srs_plan.clear()
 	level_records.clear()
 	medals.clear()
 	pet_fed = 0
@@ -725,6 +730,11 @@ func grant_reward(reward: Dictionary) -> void:
 # ---------------------------------------------------------------- 每日登录
 func _today() -> String:
 	return Time.get_datetime_string_from_system(false, true).substr(0, 10)
+
+## 今日的「日序号」（本地日历日序号）——G1 的 SRS 排程用它做到期日，避免时间戳随时区漂移。
+func today_day() -> int:
+	var d := Time.get_datetime_dict_from_system()
+	return int(Time.get_unix_time_from_datetime_dict({"year": int(d["year"]), "month": int(d["month"]), "day": int(d["day"]), "hour": 0, "minute": 0, "second": 0}) / 86400)
 
 func _yesterday() -> String:
 	return Time.get_datetime_string_from_system(true, true).substr(0, 10)
@@ -990,6 +1000,7 @@ func record_answer(level_id: String, qi: int, qname: String, correct: bool, chos
 	total_questions += 1
 	if correct:
 		total_correct += 1
+		_srs_answer(level_id, qi, qname, module, true)
 		# 答对即偿还该题历史错账：逐次递减，结清时清出并奖励
 		var key := "%s#%d" % [level_id, qi]
 		if wrong_log.has(key):
@@ -997,7 +1008,7 @@ func record_answer(level_id: String, qi: int, qname: String, correct: bool, chos
 			var c := int(w.get("count", 1)) - 1
 			if c <= 0:
 				wrong_log.erase(key)
-				coins += 5
+				coins += WRONG_CLEAR_COINS
 				wrong_cleared.emit(level_id, qi)
 			else:
 				w["count"] = c
@@ -1011,6 +1022,7 @@ func record_answer(level_id: String, qi: int, qname: String, correct: bool, chos
 			"count": int(rec.get("count", 0)) + 1,
 			"last_chose": chose, "correct": ans,
 		}
+		_srs_answer(level_id, qi, qname, module, false)
 	pet_mood = clampf(pet_mood + (0.04 if correct else -0.05), 0.2, 1.0)
 	_eval_mastery()
 	_eval_medals()
@@ -1130,26 +1142,19 @@ func _level_nav(level_id: String) -> Dictionary:
 				}
 	return {}
 
-## 由错题生成复习任务(错得越多越靠前)，最多 limit 条。
+## 由错题生成复习任务(G1：今日到期的排最前，其余按错得多的靠前)，最多 limit 条。
 func pet_quests(limit: int = 3) -> Array:
-	var out: Array = []
-	for rec in wrong_list():
-		if out.size() >= limit:
-			break
-		var lid := str(rec.get("level_id", ""))
-		if _level_nav(lid).is_empty():
-			continue
-		var info := level_info(lid)
-		out.append({
-			"level_id": lid, "qi": int(rec.get("qi", 0)),
-			"name": str(rec.get("name", "")),
-			"module": str(rec.get("module", "")),
-			"count": int(rec.get("count", 0)),
-			"chapter": str(info.get("chapter", "")),
-			"level_name": str(info.get("name", "")),
-			"domain": _domain_of_level(lid),
-		})
-	return out
+	return SrsStore.pet_quests(limit, srs_plan, wrong_log, wrong_list(), _quest_meta, today_day())
+
+## 复习任务的关卡元信息（章节/关卡名/领域/是否可深链）——供 SrsStore 组装任务。
+func _quest_meta(level_id: String) -> Dictionary:
+	var info := level_info(level_id)
+	return {
+		"valid": not _level_nav(level_id).is_empty(),
+		"chapter": str(info.get("chapter", "")),
+		"level_name": str(info.get("name", "")),
+		"domain": _domain_of_level(level_id),
+	}
 
 ## 任务的深链目标：{ci, li, scene, qi}
 func quest_target(q: Dictionary) -> Dictionary:
@@ -1166,36 +1171,41 @@ func has_wrong_entries() -> bool:
 func wrong_count_for(level_id: String, qi: int) -> int:
 	return int((wrong_log.get("%s#%d" % [level_id, qi], {}) as Dictionary).get("count", 0))
 
+# ---------------------------------------------------------------- 错题优先复习(G1 SRS)
+## SRS：把一次作答并入复习排程——答对进阶（阶梯 1→3→7→16→35 天），答错重置到 1 天；
+## 连续答对 SrsRules.GRADUATE_OK 次即「毕业」（移出复习计划）。
+## 奖励：复习答对 +SrsRules.REVIEW_COINS（同一题当日只发一次），毕业 +SrsRules.GRADUATE_COINS。
+func _srs_answer(level_id: String, qi: int, qname: String, module: String, correct: bool) -> void:
+	var r := SrsStore.answer(srs_plan, level_id, qi, qname, module, correct,
+		int(Time.get_unix_time_from_system()), today_day(), _today())
+	var g := int(r["coins"])
+	if g > 0:
+		coins += g
+		coins_earned += g
+
+## 某题的复习计划；没有计划但有错题记录 → 旧档（无时间戳）视为立即到期。
+func srs_plan_for(level_id: String, qi: int) -> Dictionary:
+	return SrsStore.plan_for(srs_plan, wrong_log, level_id, qi)
+
+## 今日待复习清单（SRS 到期 + 今天新错 + 旧档无时间戳者），按到期顺序。
+func srs_due_list() -> Array:
+	return SrsStore.due_list(srs_plan, wrong_log, today_day())
+
+## 今日待复习题数（首页/错题本入口用）。
+func srs_due_count() -> int:
+	return srs_due_list().size()
+
+## 复习排程中某题的状态文案（如「今天到期」「3 天后复习」）；无排程返回 ""。
+func srs_due_text(level_id: String, qi: int) -> String:
+	var p := srs_plan_for(level_id, qi)
+	return "" if p.is_empty() else SrsRules.due_text(p, today_day())
+
 # ---------------------------------------------------------------- 错题优先复习
-## 错题优先：把历史错过的题(错得越多越靠前)重排到关卡最前面，其余保持原序。
+## 复习排程：把**到期**的错题(SRS 排程 / 旧档视为立即到期)重排到关卡最前面，其余保持原序。
 ## 返回 { stages: 重排后的题列表, order: Array[int](显示下标→原始下标), review: bool }。
 ## 注意：order[i] 为该显示位置对应的原始题号，记录作答时须用它作为 qi，才能与错题账本对齐。
 func review_order(level_id: String, stages: Array, focus: int = -1) -> Dictionary:
-	var n := stages.size()
-	var order: Array[int] = []
-	for i in n:
-		order.append(i)
-	var any_wrong := false
-	for i in n:
-		if wrong_count_for(level_id, i) > 0:
-			any_wrong = true
-			break
-	if any_wrong and n >= 2:
-		order.sort_custom(func(a: int, b: int) -> bool:
-			var wa := wrong_count_for(level_id, a)
-			var wb := wrong_count_for(level_id, b)
-			if wa != wb:
-				return wa > wb
-			return a < b)
-	# 错题深链：把指定题号提到最前，实现「去复习第 N 题」
-	var has_focus := focus >= 0 and focus < n
-	if has_focus:
-		order.erase(focus)
-		order.push_front(focus)
-	var re: Array = []
-	for i in order:
-		re.append(stages[i])
-	return { "stages": re, "order": order, "review": any_wrong and n >= 2 }
+	return SrsStore.review_order(level_id, stages, focus, srs_plan, wrong_log, today_day())
 
 # ---------------------------------------------------------------- 学情诊断
 ## 各领域错题统计：{ domain_id: { count, levels: { level_id: count } } }
@@ -1352,7 +1362,7 @@ func avatar_info(id: String) -> Dictionary:
 func _blank_user() -> Dictionary:
 	return {
 		"avatar": "player", "player_exp": 0, "coins": 0, "stars": {},
-		"total_questions": 0, "total_correct": 0, "wrong_log": {}, "level_records": {}, "pet_fed": 0, "regions_seen": 0,
+		"total_questions": 0, "total_correct": 0, "wrong_log": {}, "srs_plan": {}, "level_records": {}, "pet_fed": 0, "regions_seen": 0,
 		"pet_satiety": 1.0, "pet_mood": 0.8, "pet_last_seen": 0,
 		"pet_parts": {}, "pet_stage": 0,
 		"medals": {},
@@ -1372,7 +1382,7 @@ func _snapshot() -> Dictionary:
 	return {
 		"avatar": avatar, "player_exp": player_exp, "coins": coins, "stars": stars,
 		"total_questions": total_questions, "total_correct": total_correct,
-		"wrong_log": wrong_log, "level_records": level_records, "pet_fed": pet_fed, "regions_seen": regions_seen,
+		"wrong_log": wrong_log, "srs_plan": srs_plan, "level_records": level_records, "pet_fed": pet_fed, "regions_seen": regions_seen,
 		"pet_satiety": pet_satiety, "pet_mood": pet_mood, "pet_last_seen": pet_last_seen,
 		"pet_parts": pet_parts, "pet_stage": pet_stage,
 		"medals": medals,
@@ -1432,6 +1442,9 @@ func _apply(d: Dictionary) -> void:
 	var wl = d.get("wrong_log", {})
 	wrong_log = wl if typeof(wl) == TYPE_DICTIONARY else {}
 	_normalize_wrong_modules()
+	var sp = d.get("srs_plan", {})
+	srs_plan = sp if typeof(sp) == TYPE_DICTIONARY else {}
+	_normalize_srs_plan()
 	var lr = d.get("level_records", {})
 	level_records = lr if typeof(lr) == TYPE_DICTIONARY else {}
 	var md = d.get("medals", {})
@@ -1454,6 +1467,10 @@ func _normalize_wrong_modules() -> void:
 		if did != "" and str(rec.get("module", "")) != did:
 			rec["module"] = did
 			wrong_log[key] = rec
+
+## 迁移(G1)：复习排程的字段补全与钳制——旧档缺字段时按「立即到期」处理，天然兼容。
+func _normalize_srs_plan() -> void:
+	srs_plan = SrsStore.normalize(srs_plan)
 
 func list_users() -> Array:
 	var arr: Array = []

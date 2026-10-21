@@ -34,6 +34,9 @@ func _run() -> void:
 	_test_idle_power()
 	_test_wrong_queries()
 	_test_review_order()
+	_test_srs_rules()
+	_test_srs_store()
+	_test_srs_flow()
 	_test_focus()
 	_test_accuracy()
 	_test_economy()
@@ -613,6 +616,230 @@ func _test_review_order() -> void:
 	var rf := GameData.review_order("L", [{}, {}, {}], 2)
 	_eq(str(rf["order"]), str([2, 1, 0]), "review_order focus moves chosen to front")
 	GameData.wrong_log = saved
+
+## G1：SRS 纯规则（构造数据，不依赖存档与系统时间）。
+func _test_srs_rules() -> void:
+	# 间隔阶梯 1/3/7/16/35 天
+	_eq(SrsRules.interval_days(0), 1, "srs: ladder step0 = 1 day")
+	_eq(SrsRules.interval_days(1), 3, "srs: ladder step1 = 3 days")
+	_eq(SrsRules.interval_days(2), 7, "srs: ladder step2 = 7 days")
+	_eq(SrsRules.interval_days(3), 16, "srs: ladder step3 = 16 days")
+	_eq(SrsRules.interval_days(4), 35, "srs: ladder step4 = 35 days")
+	_eq(SrsRules.interval_days(99), 35, "srs: ladder clamps to last")
+	_eq(SrsRules.interval_days(-3), 1, "srs: ladder clamps to first")
+
+	# 新计划：阶梯 0、明天到期
+	var p := SrsRules.new_plan("L", 0, "q", "seq", 1000, 20000)
+	_eq(int(p["step"]), 0, "srs: new plan step 0")
+	_eq(int(p["ok_streak"]), 0, "srs: new plan streak 0")
+	_eq(int(p["interval_days"]), 1, "srs: new plan interval 1")
+	_eq(int(p["due_day"]), 20001, "srs: new plan due tomorrow")
+	_eq(int(p["wrong_count"]), 1, "srs: new plan wrong_count 1")
+
+	# 模拟推进：间隔按 1 → 3 → 7 → 16 → 35 增长
+	var cur: Dictionary = p
+	var seen: Array[int] = [1]
+	for i in 5:
+		cur = SrsRules.advance(cur, true, 20000 + i, 20000 + i)
+		seen.append(int(cur["interval_days"]))
+	_eq(str(seen), str([1, 3, 7, 16, 35, 35]), "srs: ladder grows 1/3/7/16/35")
+	_eq(bool(cur.get("graduated", false)), true, "srs: 4 consecutive corrects graduate")
+
+	# 答错重置：阶梯归零、明天再来、连对清零
+	var bad := SrsRules.advance(cur, false, 30000, 21000)
+	_eq(int(bad["step"]), 0, "srs: wrong resets step")
+	_eq(int(bad["interval_days"]), 1, "srs: wrong resets interval to 1 day")
+	_eq(int(bad["ok_streak"]), 0, "srs: wrong clears streak")
+	_eq(int(bad["due_day"]), 21001, "srs: wrong due tomorrow")
+	_eq(int(bad["wrong_count"]), 2, "srs: wrong grows wrong_count")
+	_eq(bool(bad.get("graduated", false)), false, "srs: wrong never graduates")
+
+	# 到期判定：今天刚错过 → 今天到期（保留即时复练）；答对后按间隔推后
+	_eq(SrsRules.is_due(p, 20000), true, "srs: fresh miss due today")
+	_eq(SrsRules.is_due(p, 20001), true, "srs: still due tomorrow")
+	var ok := SrsRules.advance(p, true, 20000, 20000)
+	_eq(SrsRules.is_due(ok, 20000), false, "srs: not due right after a correct answer")
+	_eq(SrsRules.is_due(ok, 20003), true, "srs: due again after 3 days")
+	_eq(SrsRules.days_left(ok, 20000), 3, "srs: days_left counts the interval")
+	_eq(SrsRules.due_text(ok, 20000), "3 天后复习", "srs: due_text in N days")
+	_eq(SrsRules.due_text(ok, 20003), "今天到期", "srs: due_text today")
+	_eq(SrsRules.due_text(p, 20000), "今天到期", "srs: fresh miss shows due today")
+
+	# 旧档（无 due_day）→ 立即到期
+	var legacy := {"level_id": "L", "qi": 0}
+	_eq(SrsRules.due_day_of(legacy), 0, "srs: legacy due_day 0")
+	_eq(SrsRules.is_due(legacy, 20000), true, "srs: legacy treated as due now")
+
+	# 排序：到期日升序 → 错次多优先 → 题号稳定
+	var a := {"due_day": 100, "wrong_count": 1, "qi": 5}
+	var b := {"due_day": 100, "wrong_count": 3, "qi": 9}
+	var c := {"due_day": 50, "wrong_count": 1, "qi": 1}
+	var d := {"due_day": 200500, "wrong_count": 2, "qi": 2}
+	_eq(SrsRules.plan_less(c, a, 20000), true, "srs: earlier due goes first")
+	_eq(SrsRules.plan_less(b, a, 20000), true, "srs: more wrong goes first on tie")
+	_eq(SrsRules.plan_less(a, b, 20000), false, "srs: fewer wrong goes last")
+	_eq(SrsRules.count_due([a, b, c, d], 20000), 3, "srs: count_due counts due plans")
+
+	# 当日奖励去重
+	_eq(SrsRules.rewarded_today({"last_reward_day": "2026-10-21"}, "2026-10-21"), true, "srs: rewarded today")
+	_eq(SrsRules.rewarded_today({"last_reward_day": "2026-10-21"}, "2026-10-22"), false, "srs: not rewarded tomorrow")
+	_eq(SrsRules.rewarded_today({}, "2026-10-21"), false, "srs: never rewarded")
+
+## G1：SRS 存档层（纯字典操作，不依赖 autoload 与系统时间）。
+func _test_srs_store() -> void:
+	_eq(SrsStore.key("L1", 3), "L1#3", "store: plan key format")
+
+	# 旧档合成：无时间戳 → 立即到期
+	var legacy := SrsStore.legacy_plan({"level_id": "L1", "qi": 3, "name": "q", "module": "seq", "count": 2})
+	_eq(int(legacy["due_day"]), 0, "store: legacy plan due_day 0")
+	_eq(int(legacy["wrong_count"]), 2, "store: legacy plan keeps wrong count")
+	_eq(SrsRules.is_due(legacy, 100), true, "store: legacy plan is due now")
+
+	# plan_for：排程优先 → 旧档兜底 → 空
+	var plans := {"L1#3": {"level_id": "L1", "qi": 3, "due_day": 500, "wrong_count": 1}}
+	var wrong_log := {"L1#3": {"level_id": "L1", "qi": 3, "count": 5}, "L2#0": {"level_id": "L2", "qi": 0, "count": 1}}
+	_eq(int(SrsStore.plan_for(plans, wrong_log, "L1", 3)["due_day"]), 500, "store: plan wins over wrong log")
+	_eq(int(SrsStore.plan_for(plans, wrong_log, "L2", 0)["due_day"]), 0, "store: wrong log falls back to legacy")
+	_eq(SrsStore.plan_for(plans, wrong_log, "L9", 9).is_empty(), true, "store: unknown question has no plan")
+
+	# due_list：只含到期项，旧档无时间戳即到期
+	var dl := SrsStore.due_list(plans, wrong_log, 100)
+	_eq(dl.size(), 1, "store: due list only holds due items")
+	_eq(str(dl[0]["level_id"]), "L2", "store: legacy item is due")
+
+	# answer：答错建计划、答对进阶、同日不重复发奖、连对毕业
+	var p2 := {}
+	var r1 := SrsStore.answer(p2, "L1", 0, "q", "seq", false, 1000, 100, "2026-01-01")
+	_eq(p2.size(), 1, "store: wrong creates a plan")
+	_eq(int(r1["coins"]), 0, "store: wrong pays no bonus")
+	var r2 := SrsStore.answer(p2, "L1", 0, "q", "seq", true, 1000, 100, "2026-01-01")
+	_eq(int(r2["coins"]), SrsRules.REVIEW_COINS, "store: correct review pays a bonus")
+	_eq(int(p2["L1#0"]["interval_days"]), 3, "store: correct advances to 3 days")
+	var r3 := SrsStore.answer(p2, "L1", 0, "q", "seq", true, 1000, 100, "2026-01-01")
+	_eq(int(r3["coins"]), 0, "store: no double bonus on the same day")
+	_eq(int(p2["L1#0"]["interval_days"]), 7, "store: 2nd correct advances to 7 days")
+	SrsStore.answer(p2, "L1", 0, "q", "seq", true, 1000, 101, "2026-01-02")
+	var r4 := SrsStore.answer(p2, "L1", 0, "q", "seq", true, 1000, 102, "2026-01-03")
+	_eq(bool(r4["graduated"]), true, "store: graduation flag raised")
+	_eq(p2.size(), 0, "store: graduation removes the plan")
+	_eq(int(r4["coins"]), SrsRules.GRADUATE_COINS, "store: graduation pays a bonus")
+
+	# answer：从未错过且答对 → 不进计划
+	var p3 := {}
+	SrsStore.answer(p3, "L9", 0, "q", "seq", true, 1000, 100, "2026-01-01")
+	_eq(p3.size(), 0, "store: correct on a clean question creates no plan")
+
+	# normalize：字段补全与钳制、丢弃非法条目
+	var norm := SrsStore.normalize({"L1#0": {"level_id": "L1"}, "bad": 42})
+	_eq(norm.size(), 1, "store: normalize drops non-dictionary entries")
+	var np: Dictionary = norm["L1#0"]
+	_eq(int(np["qi"]), 0, "store: normalize fills qi")
+	_eq(int(np["step"]), 0, "store: normalize clamps step")
+	_eq(int(np["interval_days"]), 1, "store: normalize fills interval")
+	_eq(str(np["last_reward_day"]), "", "store: normalize fills reward day")
+
+	# review_order：到期项前置、深链置顶
+	var p4 := {"L1#2": {"level_id": "L1", "qi": 2, "due_day": 0, "wrong_count": 1}}
+	var ro := SrsStore.review_order("L1", [{}, {}, {}], -1, p4, {}, 100)
+	_eq(str(ro["order"]), str([2, 0, 1]), "store: due item pulled to front")
+	_eq(bool(ro["review"]), true, "store: review flag set")
+	var ro2 := SrsStore.review_order("L1", [{}, {}, {}], 1, p4, {}, 100)
+	_eq(str(ro2["order"]), str([1, 2, 0]), "store: focus jumps to front")
+	var ro3 := SrsStore.review_order("L1", [{}, {}, {}], -1, {}, {}, 100)
+	_eq(bool(ro3["review"]), false, "store: no review flag without wrong entries")
+
+	# pet_quests：到期优先、未到期错题补位
+	var meta := func(_lid: String) -> Dictionary:
+		return {"valid": true, "chapter": "序", "level_name": "L", "domain": {}}
+	var plans5 := {
+		"L1#2": {"level_id": "L1", "qi": 2, "due_day": 100, "wrong_count": 1},
+		"L1#3": {"level_id": "L1", "qi": 3, "due_day": 500, "wrong_count": 9},
+	}
+	var wl5 := {"L1#1": {"level_id": "L1", "qi": 1, "name": "q1", "module": "seq", "count": 2}}
+	var wrongs5 := [{"level_id": "L1", "qi": 3, "name": "q3", "module": "seq", "count": 9}]
+	var quests := SrsStore.pet_quests(5, plans5, wl5, wrongs5, meta, 100)
+	_eq(quests.size(), 3, "store: quests = due items plus filler")
+	_eq(int(quests[0]["qi"]), 1, "store: overdue legacy quest first")
+	_eq(int(quests[1]["qi"]), 2, "store: due plan quest second")
+	_eq(int(quests[2]["qi"]), 3, "store: not-due wrong item last")
+	_eq(str(quests[1]["chapter"]), "序", "store: quest carries chapter meta")
+
+## G1：SRS 门面流程——错→建计划、答对进阶、答错重置、连对毕业、旧档兼容。
+func _test_srs_flow() -> void:
+	var saved_wrong: Dictionary = GameData.wrong_log
+	var saved_plan: Dictionary = GameData.srs_plan
+	var saved_coins := GameData.coins
+	var saved_earned := GameData.coins_earned
+	var saved_q := GameData.total_questions
+	var saved_c := GameData.total_correct
+	var saved_user := GameData.current_user
+	GameData.current_user = ""      # 避免落盘真实存档
+	GameData.wrong_log = {}
+	GameData.srs_plan = {}
+	GameData.coins = 0
+	GameData.coins_earned = 0
+
+	# ① 答错 → 进复习计划（阶梯 0、明天到期），今天仍算到期（即时复练）
+	GameData.record_answer("__srs__", 0, "q0", false, 1, 2, "seq")
+	_eq(GameData.srs_plan.size(), 1, "srs: wrong creates a plan")
+	var p: Dictionary = GameData.srs_plan.get("__srs__#0", {})
+	_eq(int(p.get("step", -1)), 0, "srs: new plan step 0")
+	_eq(int(p.get("interval_days", 0)), 1, "srs: new plan interval 1 day")
+	_eq(int(p.get("wrong_count", 0)), 1, "srs: wrong_count 1")
+	_eq(GameData.srs_due_count(), 1, "srs: fresh mistake is due today")
+	_eq(GameData.srs_due_list().size(), 1, "srs: due list contains it")
+
+	# ② 答对 → 阶梯 +1、间隔 3 天、到期日推后；错账结清 + 复习奖励
+	var today := GameData.today_day()
+	GameData.record_answer("__srs__", 0, "q0", true, -1, -1, "seq")
+	p = GameData.srs_plan.get("__srs__#0", {})
+	_eq(int(p.get("step", -1)), 1, "srs: correct advances step")
+	_eq(int(p.get("interval_days", 0)), 3, "srs: correct -> 3 days")
+	_eq(int(p.get("due_day", 0)), today + 3, "srs: due pushed 3 days")
+	_eq(int(p.get("ok_streak", 0)), 1, "srs: ok_streak 1")
+	_eq(GameData.srs_due_count(), 0, "srs: not due right after a correct answer")
+	_eq(GameData.coins, GameData.WRONG_CLEAR_COINS + SrsRules.REVIEW_COINS, "srs: clear + review bonus paid")
+
+	# ③ 同日再答对 → 阶梯再进（7 天），但当日不重复发奖（防刷）
+	GameData.record_answer("__srs__", 0, "q0", true, -1, -1, "seq")
+	_eq(int(GameData.srs_plan["__srs__#0"].get("interval_days", 0)), 7, "srs: 2nd correct -> 7 days")
+	_eq(GameData.coins, GameData.WRONG_CLEAR_COINS + SrsRules.REVIEW_COINS, "srs: no double bonus same day")
+
+	# ④ 答错 → 重置到 1 天、错次 +1、连对清零
+	GameData.record_answer("__srs__", 0, "q0", false, 1, 2, "seq")
+	p = GameData.srs_plan.get("__srs__#0", {})
+	_eq(int(p.get("step", -1)), 0, "srs: wrong resets step")
+	_eq(int(p.get("interval_days", 0)), 1, "srs: wrong resets interval")
+	_eq(int(p.get("wrong_count", 0)), 2, "srs: wrong grows wrong_count")
+	_eq(int(p.get("ok_streak", 0)), 0, "srs: wrong clears streak")
+	_eq(GameData.srs_due_count(), 1, "srs: wrong again is due today")
+
+	# ⑤ 连续答对 4 次 → 毕业（移出复习计划）
+	var c_before := GameData.coins
+	GameData.record_answer("__srs__", 0, "q0", true, -1, -1, "seq")
+	GameData.record_answer("__srs__", 0, "q0", true, -1, -1, "seq")
+	GameData.record_answer("__srs__", 0, "q0", true, -1, -1, "seq")
+	_eq(int(GameData.srs_plan["__srs__#0"].get("ok_streak", 0)), 3, "srs: streak 3 before graduation")
+	GameData.record_answer("__srs__", 0, "q0", true, -1, -1, "seq")
+	_eq(GameData.srs_plan.size(), 0, "srs: graduated removes the plan")
+	_eq(GameData.coins - c_before, GameData.WRONG_CLEAR_COINS + SrsRules.GRADUATE_COINS, "srs: graduation pays clear + graduate bonus")
+	_eq(GameData.srs_due_count(), 0, "srs: graduated leaves nothing due")
+
+	# ⑥ 旧档兼容：只有错题记录、没有复习计划 → 视为立即到期
+	GameData.wrong_log = {"__legacy__#0": {"level_id": "__legacy__", "qi": 0, "name": "q", "module": "seq", "count": 2}}
+	GameData.srs_plan = {}
+	_eq(GameData.srs_due_count(), 1, "srs: legacy wrong entry is due now")
+	var ro := GameData.review_order("__legacy__", [{}, {}, {}])
+	_eq(str(ro["order"]), str([0, 1, 2]), "srs: legacy wrong entry pulled to front")
+	_eq(bool(ro["review"]), true, "srs: review flag on for legacy wrong entry")
+
+	GameData.wrong_log = saved_wrong
+	GameData.srs_plan = saved_plan
+	GameData.coins = saved_coins
+	GameData.coins_earned = saved_earned
+	GameData.total_questions = saved_q
+	GameData.total_correct = saved_c
+	GameData.current_user = saved_user
 
 func _test_focus() -> void:
 	var saved: Dictionary = GameData.wrong_log

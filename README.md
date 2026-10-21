@@ -64,8 +64,8 @@ build/           导出产物(APK,git 忽略)
 
 | 文件 | 上限 | 现状(2026-10-21) |
 |---|---|---|
-| `scripts/rules/*.gd`(每文件) | 200 | 最大 PlayerRules 194 |
-| `scripts/autoload/GameData.gd` | 1600 | 1575 |
+| `scripts/rules/*.gd`(每文件) | 200 | 最大 PlayerRules 195 |
+| `scripts/autoload/GameData.gd` | 1600 | 1593 |
 | `scripts/modules/line/TheoremTree.gd` | 1550 | 1541 |
 | `scripts/screens/StageBase.gd` | 1200 | 1195 |
 
@@ -161,6 +161,37 @@ build/           导出产物(APK,git 忽略)
 `lab3d` 静止 251 µs（修复前 ≈70,262 µs）。
 **Android 真机的 FPS / 功耗 / 内存需真机测量**——headless 无 GPU，这里只看 CPU 回归趋势。
 
+## 错题间隔重复（G1）
+
+错题不再「错一次就永远排在前面」，而是按**遗忘曲线**排程：答对一次往后推，答错打回重来。
+
+| 环节 | 规则 |
+|---|---|
+| 间隔阶梯（Leitner 分箱） | 新错 → 明天；每连续答对一次进一档 → **1 / 3 / 7 / 16 / 35 天**（末档夹取） |
+| 答错 | 阶梯归零、错次 +1、明天再来；**今天刚错的题今天仍算到期**（保留「错题优先」的即时复练） |
+| 毕业 | 连续答对 **4** 次即出计划，不再排程 |
+| 奖励 | 复习答对 **+2 金币**（同一题当日只发一次，防刷）；毕业 **+5 金币** |
+| 到期日 | 用**日序号**（本地日历日）而非时间戳，避开时区与夏令时漂移 |
+
+**入口**
+
+- 首页顶栏「**复习 N**」——今日有到期错题时才出现，点击直达第一道到期题的关卡与题号；
+- 错题本「**今日待复习**」卡片——按到期顺序列出，一键「开始复习」；概览里有「今日待复习」计数；
+- 每条错题后标注状态（「今天到期」「3 天后复习」「已逾期 2 天」）；
+- 萌宠派单与关卡内复习排序都改成**到期优先**（同到期日按错次多优先）。
+
+**兼容**：`srs_plan` 是**新增**存档字段，与旧 `wrong_log` 并存；旧档只有错题记录、没有排程的，
+一律视为「立即到期」，加载即用，不需要迁移脚本。
+
+代码分层（守 A4 行数红线，纯逻辑进 `rules/`）：
+`scripts/rules/SrsRules.gd`（单条排程怎么算：阶梯 / 到期 / 毕业 / 当日奖励去重）+
+`scripts/rules/SrsStore.gd`（整本排程怎么存怎么查：存档、清单、排序、任务组装）；
+`GameData` 只留门面（`srs_due_list()` / `srs_due_count()` / `srs_due_text()` / `review_order()`）。
+
+覆盖：`Tests._test_srs_rules` + `_test_srs_store` + `_test_srs_flow`（模拟 5 天推进 1/3/7/16/35、
+答错重置、连对毕业、旧档兜底、当日不重复计奖）+ `UiSmoke._test_srs_review_entry`
+（首页「复习 N」按钮与错题本「今日待复习」卡片真实构建）。
+
 ## 自检与 CI
 
 改完**必跑**（顺序任意，全绿才提交）：
@@ -186,7 +217,7 @@ build/           导出产物(APK,git 忽略)
 1. **脚手架**生成骨架（免手抄样板，并自动挂 curriculum + 知识点）：
    ```
    & "<godot4.7.2.exe>" --headless --path . --script res://tools/scaffold_level.gd -- `
-       --file=inequalities_levels --key=ineq_demo --chapter=inequalities --apply
+	   --file=inequalities_levels --key=ineq_demo --chapter=inequalities --apply
    ```
    默认 dry-run 只打印骨架；`--chapter` 会同步追加 `curriculum.json` 该章 levels 与
    `knowledge_map.json` 该章 points（E1 联动，漏挂知识点 CI 会红）。

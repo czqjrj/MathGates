@@ -72,7 +72,7 @@
 | **F5** | 存档版本化与进度迁移（换机即丢） | **P2** | 无导出/导入 |
 | **F6** | 首次引导与机制说明 | **P2** | 无 tutorial |
 | **F7** | 授权与第三方声明缺失（LICENSE / 素材来源 / 教材改编） | **P0** | ✅ LICENSE+第三方声明齐备、排除 GPLv3 字体；残留：标题字体替换/素材签字 |
-| **G1** | 错题间隔重复（SRS 遗忘曲线排程） | **P1** | review_order 无时间维度 |
+| **G1** | 错题间隔重复（SRS 遗忘曲线排程） | **P1** | ✅ 已完成（2026-10-21 第三十三轮）：Leitner 阶梯 1/3/7/16/35 + 日序号到期 + 连对 4 次毕业 + 今日待复习入口（首页「复习 N」/错题本卡片）；旧档无排程视为立即到期 |
 | **G2** | 关卡作者工具链（编辑器 + 实时预览） | **P1** | 🟡 预览器 + 脚手架已落地（`LevelPreview.tscn` + `scaffold_level.gd`，入 CI）；编辑态仅覆盖 q/ask/opts/ans/hint/explain/scene |
 | **G3** | 学习报告 / 家长视图（可导出、含趋势） | **P2** | 无导出、无时间维度 |
 | **G4** | 云同步（**决策项：暂不实施**，需先做隐私评估） | **P2** | 先由 F5 覆盖大部分场景 |
@@ -423,15 +423,19 @@
 - **下次建议顺序**（按性价比）：
   > **2026-10-20 用户决策：暂停题目扩产，先做结构收敛。** B2 下限已全线达成（27/27 章 ≥ 5.0 题/关），
   > B1（21.4% → ≥30%）与 B2「上探 6~7 题/关中段」均为**纯内容批量生产**，可随时回归；当前转向 A/D/F 类结构问题。
-  1. **F4 已完成** → 接下来 **G1 错题间隔重复（SRS）** 或 **G3 学习报告/家长视图**：
-     两者都是纯逻辑与数据展示，可自动化验证、不依赖真机。
-  2. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 需人工决策/下载/目视（AI 无法替代，上架硬门槛）。
-  3. 决策项待拍板：**G4/G5**；**A17 是否真重命名**（低优先）；**A2 迁移到 LabStage**（长期项）。
-  4. 内容项回归：**B1 达标**（21.4% → ≥30%）、**B2 中段**（6~7 题/关）、**B6 理由选项占比**，
+  1. **G1 已完成**（第三十三轮）→ 接下来 **G3 学习报告/家长视图**（纯逻辑与数据展示，可自动化验证、不依赖真机）；
+     若先做内容侧，则 **A13 字体替换 + F7 素材签字 + F2 keystore/真机**（需人工决策/下载/目视）。
+  2. 决策项待拍板：**G4/G5**；**A17 是否真重命名**（低优先）；**A2 迁移到 LabStage**（长期项）。
+  3. 内容项回归：**B1 达标**（21.4% → ≥30%）、**B2 中段**（6~7 题/关）、**B6 理由选项占比**，
      结构收敛后按章继续（新题模板仍须内建 B5 规范）。
-  > A4/A2/A17/D1~D4/F3/F4 已于第二十二~三十二轮全部收口；`check_all`（行数 + 裸时长）、
+  > A4/A2/A17/D1~D4/F3/F4/G1 已于第二十二~三十三轮全部收口；`check_all`（行数 + 裸时长）、
   > `check_questions` 映射自检、`_test_anim_player` / `_test_plane_motion` / `_test_demo_controls` /
-  > `_test_keyboard_nav` / `_test_idle_power` 让结构、动效、输入与耗电不回退。
+  > `_test_keyboard_nav` / `_test_idle_power` / `_test_srs_rules` / `_test_srs_store` / `_test_srs_flow`
+  > 让结构、动效、输入、耗电与复习排程不回退。
+  > ⚠️ `GameData.gd` 已到 **1593/1600** 行——下一个动它的条目**先拆存档层**（见 §7 G1 的 A4 遗留注）。
+- **第三十三轮（2026-10-21）**：**G1 错题间隔重复（SRS）收官**——`rules/SrsRules.gd` + `rules/SrsStore.gd`
+  两层纯规则 + `GameData` 门面 + 首页/错题本「今日待复习」入口；九件套全绿
+  （`CHECKED 101` / `TESTS 1900` / `SMOKE 285` / `UI-SMOKE 393` / `TMP_OK` / `7474` / `0 new` / `hard-gaps=0` / `banned=0`）。
 - **收工前必做**：跑全量校验（`check_all` / `Tests` / `smoke_scene` / `UiSmoke` / `LabSmoke` /
   `check_questions` / `check_knowledge` / `check_assets` / `LevelPreview --smoke`），并同步 §9.2 基线数字。
 
@@ -2149,7 +2153,7 @@
 > **G4 / G5 是决策项**（技术或产品上暂不实施），列在这里是为了**不丢想法**，不是待开工的任务。
 > 建议顺序：**G2（作者工具链）→ G1（SRS）→ G3（学习报告）**，G2 先行能显著降低 E 类的补内容成本。
 
-### [ ] G1 · 错题间隔重复（SRS 遗忘曲线排程）（P1）
+### [x] G1 · 错题间隔重复（SRS 遗忘曲线排程）（P1）
 
 **现状（证据）**
 - `GameData.review_order()`（`GameData.gd:1319`）目前只做两件事：
@@ -2178,6 +2182,40 @@
 - 今日待复习数量可显示并可一键进入；
 - 旧存档可加载（无时间戳者视为立即到期）；
 - `Tests.gd` 新增：模拟 5 天推进，验证间隔按 1/3/7/16 增长、答错重置。
+
+**实施记录（2026-10-21 第三十三轮）**
+- **数据分层**：`srs_plan`（新存档字段）与 `wrong_log`（旧错题账，语义不动）**并存**，
+  旧档缺排程者由 `SrsStore.legacy_plan()` 合成 `due_day = 0` 的「立即到期」计划 → **零迁移、天然兼容**。
+  存档字段：`step / ok_streak / interval_days / due_day / last_wrong_day / first_wrong_at /
+  last_review_at / wrong_count / last_reward_day`。
+- **规则层（守 A4 红线，纯逻辑进 `rules/`）**：
+  - `scripts/rules/SrsRules.gd`（113 行）——单条排程怎么算：阶梯 `INTERVALS = [1,3,7,16,35]`、
+    `advance()`（答对进阶 / 答错重置 / 连对 `GRADUATE_OK=4` 毕业）、`eff_due_day()`（今天刚错过 → 今天到期，
+    保留即时复练）、`is_due()` / `plan_less()`（到期日 → 错次 → 题号三级排序）、`rewarded_today()`（当日去重）。
+  - `scripts/rules/SrsStore.gd`（177 行）——整本排程怎么存怎么查：`answer()`（推进 + 奖励 + 毕业）、
+    `due_list()` / `plan_for()` / `normalize()`（存档迁移与钳制）、`review_order()`（到期前置 + 深链置顶）、
+    `pet_quests()`（到期优先 + 未到期错题补位）。
+  - `GameData` 只留**门面**（`srs_due_list()` / `srs_due_count()` / `srs_due_text()` / `srs_plan_for()` /
+    `review_order()` / `pet_quests()`），行为零变更。
+- **到期日用「日序号」而非时间戳**：`GameData.today_day()` 取本地日历日序号（`Time` 零时化后 ÷86400），
+  避开时区与夏令时漂移；奖励去重另用日期串 `last_reward_day`。
+- **奖励**：复习答对 `+2`（同题当日只发一次，防刷）、毕业 `+5`；旧「答对还清错账」的 `+5` 提为常量
+  `GameData.WRONG_CLEAR_COINS`（语义不变）。
+- **入口**：首页顶栏「复习 N」（今日无到期则隐藏）+ 错题笔记卡片角标「待复习 N」（动态刷新）；
+  错题本新增「今日待复习」卡片（按到期顺序 + 一键「开始复习」深链到题号）+ 概览「今日待复习」计数 +
+  每条错题标注「今天到期 / N 天后复习 / 已逾期 N 天」。
+- **排序联动**：关卡内复习排序（`review_order`）与萌宠派单（`pet_quests`）均改为**到期优先**。
+- **验收覆盖**：`Tests._test_srs_rules`（阶梯 / 5 天推进 / 答错重置 / 到期判定 / 排序 / 当日去重）、
+  `Tests._test_srs_store`（存档层：建计划 / 推进 / 毕业 / 迁移钳制 / 排序 / 任务组装）、
+  `Tests._test_srs_flow`（门面全流程 + 旧档兜底 + 每日不重复计奖）、
+  `UiSmoke._test_srs_review_entry`（首页按钮与错题本卡片**真实构建** 8 断言）。
+- **回归基线**：`CHECKED 101 scripts, 0 failures` / `TESTS: 1900 passed, 0 failed` /
+  `SMOKE: 285 ok, 0 fail` / `UI-SMOKE: 393 ok, 0 fail` / `LabSmoke TMP_OK` /
+  `LEVEL-PREVIEW-SMOKE: 7474 ok, 0 fail` / `QUESTION-CHECK 0 new（7 known）` /
+  `KNOWLEDGE hard-gaps=0` / `ASSETS 30.15 MB（3122 files）banned=0`。
+- ⚠️ **A4 遗留**：`GameData.gd` 已到 **1593/1600** 行（距红线仅 7 行）。下一个动 `GameData` 的条目
+  **必须先拆存档层**（`_blank_user` / `_snapshot` / `_apply` / `_normalize_*` ≈ 80 行 → `scripts/rules/UserStore.gd`），
+  否则立刻超限。
 
 ---
 
@@ -2357,23 +2395,23 @@
 | `--headless --path . --script res://tools/check_knowledge.gd`（**新增，见 E1**） | `KNOWLEDGE: <c> chapters / <p> points / <l> levels mapped / hard-gaps=<n> (baseline <b>)`（不得出现 `KNOWLEDGE-FAIL`） |
 | `--headless --path . res://tools/LevelPreview.tscn -- --smoke`（**新增，见 G2**） | `LEVEL-PREVIEW-SMOKE: <N> ok, 0 fail`（作者工具链：数据定位回归 + 编辑往返 + 舞台抽样） |
 
-> 引擎：Godot 4.7.2（本机 `D:\Godot_v4.7.2-stable_win64.exe\Godot_v4.7.2-stable_win64_console.exe`，
-> 有 console 变体可直连控制台取输出；若换机只有无 console 的 GUI exe，需
-> `Start-Process -Wait -RedirectStandardOutput/Error` 重定向（GUI 子系统进程直连控制台会丢输出）。
+> 引擎：Godot 4.7.2（本机 `D:\Program Files\Godot_v4.7.2-stable_win64.exe`——注意它是**可执行文件**
+> 而不是目录；且只有 GUI 子系统版本，**没有** console 变体），
+> 直连控制台取输出会丢，须用 `Start-Process -Wait -RedirectStandardOutput/Error` 重定向。
 > 换机后的工具链安装与已知坑见 `docs/环境配置.md`。
 >
-> **换机首次打开**：必须先让 Godot 生成全局类缓存，否则 `class_name`（如 `BossHud`）会连锁报
+> **换机首次打开**：必须先让 Godot 生成全局类缓存，否则 `class_name`（如 `BossHud`、`SrsStore`）会连锁报
 > `Parse Error: Could not find type "BossHud"`。用编辑器打开一次，或跑
-> `& "<godot472.exe>" --headless --editor --path . --quit`。
+> `& "<godot472.exe>" --headless --path . --import`（新增 `class_name` 文件后同样要跑一次）。
 
-**当前回归基线**（改完请对照，数字只能升不能降；2026-10-21 F3 静止降耗后）：
-`CHECKED 99 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 1804 passed, 0 failed` / `SMOKE: 285 ok, 0 fail` /
-`UI-SMOKE: 385 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
+**当前回归基线**（改完请对照，数字只能升不能降；2026-10-21 G1 错题间隔重复后）：
+`CHECKED 101 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 1900 passed, 0 failed` / `SMOKE: 285 ok, 0 fail` /
+`UI-SMOKE: 393 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
 `LEVEL-PREVIEW-SMOKE: 7474 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
 `QUESTION-CHECK: 26 files / 269 levels / 1057 questions / 0 new / 7 known / 3 warnings`
 （A5 校验器，存量问题见下方基线；看板另有「干扰项黑名单命中 0 处」见 B5、「anim 演示覆盖 **13/26 文件**」见 D2）/
 `PERF idle 171 / lab_plane 259 / lab3d 251`（µs，headless CPU 处理耗时，见 `tools/perf_probe.tscn`）/
-`ASSETS: 30.11 MB over 3116 files … banned=0, oversize=0`（A13 护栏）/
+`ASSETS: 30.15 MB over 3122 files … banned=0, oversize=0`（A13 护栏）/
 `KNOWLEDGE: 27 chapters / 275 points / 275 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `LATEX-PROBE: conic C4 68 / C5 76 / C6 68 段 / 0 失败`（E2 收官）、
 `vector_physics 26 段 / 0 失败`、`prob_simulate 14 段 / 0 失败`（E3 收官；**探针需按组分进程**，

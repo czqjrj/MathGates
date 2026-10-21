@@ -60,6 +60,7 @@ func _ready() -> void:
 		await _test_legacy(scene_path, _pick(scene_path, 1))
 
 	await _test_keyboard_stage()
+	await _test_srs_review_entry()
 
 	print("UI-SMOKE: %d ok, %d fail" % [_pass, _fail])
 	GameData.logout()
@@ -263,7 +264,70 @@ func _test_legacy(scene_path: String, picks: Array) -> void:
 		st.queue_free()
 		await get_tree().process_frame
 
+# ---------------------------------------------------------------- G1 复习入口
+
+## G1：错题间隔重复的 UI 入口——首页顶栏「复习 N」按钮 + 错题本「今日待复习」卡片。
+func _test_srs_review_entry() -> void:
+	var lid := ""
+	for ci in GameData.chapters.size():
+		var levels: Array = GameData.chapters[ci].get("levels", [])
+		for li in levels.size():
+			if str(levels[li].get("scene", "")) != "":
+				lid = str(levels[li].get("id", ""))
+				break
+		if lid != "":
+			break
+	if lid == "":
+		_ok(false, "srs ui: 找不到可用的真实关卡")
+		return
+	var qi := 0
+	GameData.record_answer(lid, qi, "uismoke 题", false, 1, 2, "seq")
+	_ok(GameData.srs_due_count() >= 1, "srs ui: 新错题今日到期")
+
+	# 首页：顶栏出现「复习 N」，错题笔记卡片带角标
+	var hub = load("res://scenes/MainHub.tscn").instantiate()
+	add_child(hub)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var rb = hub.get("_review_btn")
+	_ok(rb != null, "srs ui: 首页有复习按钮")
+	if rb != null:
+		_ok(rb.visible, "srs ui: 复习按钮可见")
+		_eq(rb.text, "复习 %d" % GameData.srs_due_count(), "srs ui: 复习按钮显示待复习数")
+	var badge = hub.get("_badges")
+	_ok(badge is Dictionary and (badge as Dictionary).has("错题笔记"), "srs ui: 错题笔记卡片有角标位")
+	if badge is Dictionary:
+		var bl: Variant = (badge as Dictionary)["错题笔记"]
+		_ok(bl is Label and (bl as Label).visible, "srs ui: 角标可见")
+		_ok(bl is Label and (bl as Label).text.find("待复习") >= 0, "srs ui: 角标显示待复习数")
+	hub.queue_free()
+	await get_tree().process_frame
+
+	# 错题本：出现「今日待复习」卡片与「开始复习」按钮
+	var nb = load("res://scenes/WrongNotebook.tscn").instantiate()
+	add_child(nb)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var found := false
+	for n in _walk(nb):
+		if n is Button and (n as Button).text.find("开始复习") >= 0:
+			found = true
+	_ok(found, "srs ui: 错题本有「开始复习」按钮")
+	nb.queue_free()
+	await get_tree().process_frame
+
+	# 清理：抹掉本用例造出来的错题与排程
+	GameData.wrong_log.erase("%s#%d" % [lid, qi])
+	GameData.srs_plan.erase("%s#%d" % [lid, qi])
+
 # ---------------------------------------------------------------- 工具
+
+## 递归收集子节点。
+func _walk(n: Node) -> Array:
+	var out: Array = [n]
+	for c in n.get_children():
+		out.append_array(_walk(c))
+	return out
 
 func _is_perm(order: Array) -> bool:
 	var n := order.size()

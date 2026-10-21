@@ -13,12 +13,18 @@ func _ready() -> void:
 	GameData.progress_changed.connect(_build_body)
 
 func _pet_comment() -> String:
+	var due := GameData.srs_due_list()
+	if not due.is_empty():
+		var top: Dictionary = due[0]
+		var info := GameData.level_info(str(top["level_id"]))
+		return "今天有 %d 道题该复习啦，先从「%s · %s」第 %d 题开始～" % [
+			due.size(), str(info.get("chapter", "")), str(info.get("name", "")), int(top["qi"]) + 1]
 	var wl := GameData.wrong_list()
 	if wl.is_empty():
 		return "错题本空空的，太厉害了！"
-	var top: Dictionary = wl[0]
-	var info := GameData.level_info(str(top["level_id"]))
-	return "错得最多的是「%s · %s」第 %d 题，重练一遍吧～" % [str(info.get("chapter", "")), str(info.get("name", "")), int(top["qi"]) + 1]
+	var top2: Dictionary = wl[0]
+	var info2 := GameData.level_info(str(top2["level_id"]))
+	return "错得最多的是「%s · %s」第 %d 题，重练一遍吧～" % [str(info2.get("chapter", "")), str(info2.get("name", "")), int(top2["qi"]) + 1]
 
 # ---------------------------------------------------------------- 顶栏
 func _build_topbar() -> void:
@@ -50,6 +56,10 @@ func _build_body() -> void:
 	center.add_child(vb)
 
 	vb.add_child(_overview_card())
+
+	var due := GameData.srs_due_list()
+	if not due.is_empty():
+		vb.add_child(_due_card(due))
 
 	if mods.size() > 1:
 		vb.add_child(_filter_row(mods))
@@ -92,7 +102,52 @@ func _overview_card() -> Control:
 	stats.add_child(UI.stat_box("累计错次", "%d" % total))
 	stats.add_child(UI.stat_box("涉及关卡", "%d" % levels.size()))
 	stats.add_child(UI.stat_box("涉及领域", "%d" % _modules_present().size()))
+	stats.add_child(UI.stat_box("今日待复习", "%d" % GameData.srs_due_count()))
 	return card
+
+## 今日待复习（G1 SRS 排程）：按到期顺序列出，一键进入复习。
+func _due_card(due: Array) -> Control:
+	var card := UI.card(false, UI.COL_ACCENT, Color(1, 1, 1, 0.06), Color(1, 1, 1, 0.13), 12, 16)
+	card.custom_minimum_size = Vector2(UiConst.CARD_W, 0)
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 8)
+	card.add_child(box)
+
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 10)
+	box.add_child(head)
+	head.add_child(UI.make_label("今日待复习", 18, UI.COL_TEXT))
+	var sp := Control.new()
+	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(sp)
+	head.add_child(UI.mono_label("%d 题 · 按遗忘曲线到期" % due.size(), 13, Color("#ffd479")))
+	var nav0 := GameData.quest_target(due[0])
+	if not nav0.is_empty():
+		head.add_child(UI.ghost_button("开始复习", func() -> void: _goto_review(nav0), 13))
+
+	for rec in due:
+		box.add_child(_due_line(rec))
+	return card
+
+func _due_line(rec: Dictionary) -> Control:
+	var hb := HBoxContainer.new()
+	hb.add_theme_constant_override("separation", 8)
+	hb.add_child(UI.mono_label("第 %d 题" % (int(rec.get("qi", 0)) + 1), 14, Color("#fb7185")))
+	hb.add_child(UI.make_label(str(rec.get("name", "")), 15, UI.COL_TEXT))
+	var sp := Control.new()
+	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hb.add_child(sp)
+	hb.add_child(UI.mono_label(SrsRules.due_text(rec, GameData.today_day()), 13, Color("#4dd6a8")))
+	var nav := GameData.quest_target(rec)
+	if not nav.is_empty():
+		hb.add_child(UI.ghost_button("去复习", func() -> void: _goto_review(nav), 13))
+	return hb
+
+## 进入复习：定位到具体关卡的题号（错题深链）。
+func _goto_review(nav: Dictionary) -> void:
+	GameData.start_level_focus(int(nav["ci"]), int(nav["li"]), int(nav["qi"]))
+	Sound.play("select")
+	Scene.goto(str(nav["scene"]))
 
 func _filter_row(mods: Array) -> Control:
 	var card := UI.card(false, UI.COL_ACCENT, Color(1, 1, 1, 0.05), Color(1, 1, 1, 0.12), 12, 12)
@@ -175,6 +230,9 @@ func _wrong_line(rec: Dictionary) -> Control:
 	hb.add_child(sp)
 	hb.add_child(UI.mono_label("上次 %s / 正确 %s" % [UI.letter(int(rec.get("last_chose", -1))), UI.letter(int(rec.get("correct", -1)))], 13, UI.COL_TEXT_DIM))
 	hb.add_child(UI.mono_label("错 %d 次" % int(rec["count"]), 13, Color("#ffd479")))
+	var due_txt := GameData.srs_due_text(str(rec["level_id"]), int(rec["qi"]))
+	if due_txt != "":
+		hb.add_child(UI.mono_label(due_txt, 13, Color("#4dd6a8")))
 	var nav := GameData.quest_target({ "level_id": str(rec["level_id"]), "qi": int(rec.get("qi", 0)) })
 	if not nav.is_empty():
 		hb.add_child(UI.ghost_button("去复习", func() -> void:
