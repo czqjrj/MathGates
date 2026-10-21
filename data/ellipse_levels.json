@@ -18,6 +18,7 @@
           "sliders": [ { "name": "t", "min": 0, "max": 360, "value": 60, "step": 5, "label": "P 的位置角 t(°)" } ],
           "ellipses": [ { "a": 5, "b": 4, "axis": "x", "color": "#ff7ea8" } ],
           "foci": [ { "c": 3, "axis": "x", "color": "#fb7185" } ],
+          "links": [ { "a": [0, 0], "b": ["5*cos(t)", "4*sin(t)"], "color": "#c084fc", "label": "|OP|" } ],
           "points": [ { "p": ["5*cos(t)", "4*sin(t)"], "label": "P", "color": "#ffd479" } ],
           "segments": [
             { "p1": ["5*cos(t)", "4*sin(t)"], "p2": [-3, 0], "color": "#5ee6ff" },

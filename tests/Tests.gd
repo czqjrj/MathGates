@@ -314,6 +314,9 @@ func _test_plane_motion() -> void:
 		"sliders": slider,
 		"circles": [ { "c": [0, 0], "r": "r" } ],
 		"points": [ { "p": ["r", 0] } ],
+		"readouts": [ { "label": "r", "expr": "r" } ],
+		"links": [ { "a": [0, 0], "b": ["r", 0], "label": "r" } ],
+		"pulses": [ { "p": ["r", 0], "label": "切点" } ],
 	})
 	plane.begin_sliders(slider)
 	_eq(plane._num("r", 0.0), 1.0, "初始显示值 = 滑块值（无残余缓动）")
@@ -324,16 +327,58 @@ func _test_plane_motion() -> void:
 	_ok(mid > 1.0 and mid < 3.0, "中间态存在（%.3f 落在 1 与 3 之间）" % mid)
 	_ok(plane._ghost_a > 0.0, "残影已激活（记录变化起点）")
 	_ok(plane._trail.size() > 0, "轨迹已记录（%d 帧）" % plane._trail.size())
-	for _i in 40:
-		plane._process(0.04)
+	# D3 delta_highlight：用旧参数算同一表达式，应确实得到不同的值
+	var prev: float = plane._num_with(plane._ghost_disp, "r", 0.0)
+	_ok(absf(prev - mid) > 1e-4, "delta_highlight 能算出「变了多少」（%.3f → %.3f）" % [prev, mid])
+	# D3 pulse_at：停稳后触发一次
+	var ticks := 0
+	while not plane._settled and ticks < 300:
+		plane._process(0.02)
+		ticks += 1
+	_ok(plane._settled, "补间最终收敛（%d 帧）" % ticks)
+	_ok(plane._pulse_t > 0.0, "停稳后触发 pulse（标记特殊点）")
+	for _i in 60:
+		plane._process(0.02)
 	_ok(absf(plane._num("r", 0.0) - 3.0) < 1e-3, "补间最终精确到位 r=3")
 	_ok(plane._ghost_a <= 0.0, "残影会自动淡出")
 	_ok(plane._trail.is_empty(), "轨迹会自动消失")
+	_ok(plane._pulse_t <= 0.0, "脉冲会自动结束")
 	# 无滑块场景不应残留任何过程状态
 	plane.set_scene({ "range": 6 })
 	_ok(plane._disp.is_empty() and plane._trail.is_empty() and plane._ghost_a <= 0.0,
 		"换场景会清空补间/残影/轨迹状态")
 	plane.queue_free()
+
+	# D3 数据完整性：links 的 a/b、pulses 的 p 都必须是二元数组（写错就静默画不出）
+	var dir := DirAccess.open("res://data")
+	var n_links := 0
+	var n_pulses := 0
+	for f in dir.get_files():
+		if not f.ends_with("_levels.json"):
+			continue
+		var data = JSON.parse_string(FileAccess.get_file_as_string("res://data/" + f))
+		if typeof(data) != TYPE_DICTIONARY:
+			continue
+		for key in (data as Dictionary).keys():
+			var grp: Variant = data[key]
+			if typeof(grp) != TYPE_DICTIONARY:
+				continue
+			for lv in (grp as Dictionary).get("levels", []):
+				if typeof(lv) != TYPE_DICTIONARY:
+					continue
+				var sc: Variant = lv.get("scene", {})
+				if typeof(sc) != TYPE_DICTIONARY:
+					continue
+				for l in (sc as Dictionary).get("links", []):
+					n_links += 1
+					_ok(l is Dictionary and (l as Dictionary).get("a") is Array and (l as Dictionary)["a"].size() == 2
+						and (l as Dictionary).get("b") is Array and (l as Dictionary)["b"].size() == 2,
+						"%s links 端点必须是二元数组" % f)
+				for p in (sc as Dictionary).get("pulses", []):
+					n_pulses += 1
+					_ok(p is Dictionary and (p as Dictionary).get("p") is Array and (p as Dictionary)["p"].size() == 2,
+						"%s pulses 坐标必须是二元数组" % f)
+	_ok(n_links >= 1 and n_pulses >= 2, "至少各有一处 link/pulse 试点（links=%d, pulses=%d）" % [n_links, n_pulses])
 
 func _test_wrong_queries() -> void:
 	var saved: Dictionary = GameData.wrong_log

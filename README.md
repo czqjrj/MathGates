@@ -72,6 +72,33 @@ build/           导出产物(APK,git 忽略)
 超限的处理:**先拆纯规则**(可单测逻辑进 rules/,门面转发留原处),而不是改上限;
 确需上调上限时须在 `TODO.md` 记录理由。
 
+### 动效清单：装饰动效 vs 表意动效（D1~D4）
+
+动效分两类，**语义不同、开关也不同**：
+
+| 类别 | 归属 | 作用 | 可关闭 |
+|---|---|---|---|
+| **装饰动效** | `scripts/ui/Vfx.gd`（9 原语：`burst`/`star_burst`/`celebrate`/`ring`/`float_text`/`screen_flash`/`wobble`/`shake`/`coin_fly`）+ `Confetti`/`ComboBar`/`BossHud`/`ProgressLine`/`MedalBadge`/`BrandMark` | 强化「对/错」的情绪反馈 | ✅ `UI.animations` |
+| **表意动效** | `scripts/modules/lab/LabPlane.gd`（2D）+ `scripts/modules/lab3d/Lab3DView.gd`（3D） | 表达**数学关系**：参数怎么改、图形哪里变 | ❌ 不跟随装饰开关（关掉会丢信息） |
+
+**表意动效原语（2D，均由 `scene` 数据驱动或自动生效）**
+
+| 原语 | 触发 | 数据键 / 实现 | 表达什么 |
+|---|---|---|---|
+| `tween` | 滑块值变化 | `_disp` + `TWEEN_TAU=0.13s` 指数缓动 | 「量在连续变化」而不是两张静态图 |
+| `ghost` | 一次变化开始 | 自动（`_ghost_disp`，0.55→0 淡出） | 「从哪里来」——旧状态浅色轮廓 |
+| `trace` | 变化过程中 | 自动（动点屏幕坐标 ≤14 帧，1.6/s 淡出） | 「走过的路」——动点轨迹 |
+| `delta_highlight` | 变化过程中 | 自动（对 `readouts` 用旧参数重算比对） | 「哪一项变了、往哪边变」（高亮条 + ▲/▼） |
+| `pulse_at` | 停稳后一次 | `"pulses": [{ "p": [x,y], "label": "切点" }]` | 「临界/特殊点在这里」（切线点、最低点…） |
+| `link_line` | 常驻 | `"links": [{ "a": [x1,y1], "b": [x2,y2], "label": "|OP|" }]` | 两个几何量的联动（流动虚线） |
+
+**演示播放（`anim`）**：`scene.anim` 为步骤数组，`Lab3DView.play_anim` 支持
+`view`/`rotate`/`vars`/`reveal`/`highlight`/`pulse`；`LabPlane.play_anim` 支持 `vars`/`reveal`
+（`view`/`rotate`/`pulse`/`highlight` 在 2D 无对应语义，安全忽略）。覆盖率见 `check_questions` 看板。
+
+> 边界：**直接拖拽不补间**。分段函数分界线（`begin_break`）与拖点（`begin_drag`）必须跟手，
+> 已清空 `_disp`；补间只用于「间接调参」（滑块）。
+
 ## 自检与 CI
 
 改完**必跑**（顺序任意，全绿才提交）：

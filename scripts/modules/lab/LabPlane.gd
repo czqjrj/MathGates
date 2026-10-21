@@ -68,9 +68,12 @@ var _ghost_a := 0.0
 var _ghost_mode := false
 var _trail: Array = []             # [{pts: PackedVector2Array, a: float}]
 var _settled := true
+var _was_moving := false
+var _pulse_t := 0.0                # 停稳后脉冲一次（标记临界/特殊点）
 const TWEEN_TAU := 0.13            # 时间常数：约 0.13s 走完 63%，0.4s 内基本到位
 const GHOST_FADE := 1.1
 const TRAIL_MAX := 14
+const PULSE_FADE := 1.2
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -113,7 +116,13 @@ func _tick_tween(delta: float) -> void:
 	else:
 		for s in _sliders:
 			_disp[str(s["name"])] = float(s["value"])
+	if _was_moving and not moving:
+		# 刚停稳：让特殊点脉冲一次（D3 pulse_at）
+		_pulse_t = 1.0 if not _as_array(_scene.get("pulses", [])).is_empty() else 0.0
+	_was_moving = moving
 	_settled = not moving
+	if _pulse_t > 0.0:
+		_pulse_t = maxf(0.0, _pulse_t - delta * PULSE_FADE)
 	if _ghost_a > 0.0:
 		_ghost_a = maxf(0.0, _ghost_a - delta * GHOST_FADE)
 	for i in range(_trail.size()):
@@ -152,6 +161,56 @@ func _draw_trail() -> void:
 			continue
 		for sp in (t["pts"] as PackedVector2Array):
 			draw_circle(sp, 2.6, Color(0.36, 0.9, 1.0, 0.5 * a))
+
+## D3 link_line：两组几何量之间的联动虚线（可带动画流动的虚线）。
+func _draw_links() -> void:
+	for l in _as_array(_scene.get("links", [])):
+		if not (l is Dictionary):
+			continue
+		var d: Dictionary = l
+		var a := _to_screen(_vec(d.get("a", [0, 0])))
+		var b := _to_screen(_vec(d.get("b", [1, 1])))
+		var col := _c(d.get("color"), Color(0.55, 0.78, 1.0))
+		if bool(d.get("dash", true)):
+			_draw_dashed(a, b, col, 1.6, 7.0, 5.5)
+		else:
+			draw_line(a, b, col, 1.6)
+		draw_circle(a, 2.6, col)
+		draw_circle(b, 2.6, col)
+		if d.has("label"):
+			_draw_label((a + b) * 0.5 + Vector2(5.0, -7.0), str(d["label"]), col, 13)
+
+## 虚线：相位随 _t 前移，表示「这两个量在联动」而不是一条静态辅助线。
+func _draw_dashed(a: Vector2, b: Vector2, col: Color, w: float, dash: float, gap: float) -> void:
+	var total := a.distance_to(b)
+	if total < 1.0:
+		return
+	var dir := (b - a) / total
+	var off := fmod(_t * 16.0, dash + gap)
+	var s := -off
+	while s < total:
+		var e := minf(s + dash, total)
+		if e > 0.0:
+			draw_line(a + dir * maxf(s, 0.0), a + dir * e, col, w)
+		s += dash + gap
+
+## D3 pulse_at：停稳后在特殊点（极值/切点/交点）脉冲一次。
+func _draw_pulses() -> void:
+	if _pulse_t <= 0.0:
+		return
+	for p in _as_array(_scene.get("pulses", [])):
+		if not (p is Dictionary):
+			continue
+		var d: Dictionary = p
+		var c := _to_screen(_vec(d.get("p", [0, 0])))
+		var col := _c(d.get("color"), COL_SUCCESS)
+		var r0 := float(d.get("r", 10.0))
+		var k := 1.0 - _pulse_t
+		draw_arc(c, r0 * (1.0 + 1.9 * k), 0.0, TAU, 32,
+			Color(col.r, col.g, col.b, 0.6 * _pulse_t), 2.0)
+		draw_circle(c, r0 * 0.34, Color(col.r, col.g, col.b, 0.85 * _pulse_t))
+		if d.has("label"):
+			_draw_label(c + Vector2(11.0, -11.0), str(d["label"]), col, 13)
 
 # ---------------------------------------------------------------- 演示播放
 func has_anim() -> bool:
@@ -669,7 +728,9 @@ func _draw() -> void:
 	_draw_grid()
 	_draw_ghost()
 	_draw_scene()
+	_draw_links()
 	_draw_trail()
+	_draw_pulses()
 	_draw_readouts()
 	if not _scene.is_empty() and _scene.has("unit_circle"):
 		_draw_unit_circle()
@@ -924,6 +985,14 @@ func _draw_foci_def(def: Dictionary, rev: float) -> void:
 			_draw_label(sp + Vector2(10.0, -10.0), names[k], Color(col, (rev - 0.5) / 0.5), 15)
 
 # ---- 实时读数：场景 readouts = [{label, expr, color?}]，expr 可用滑块名与函数
+## D3 delta_highlight：在「另一套参数」下求同一个表达式（用于和当前值比差）。
+func _num_with(disp: Dictionary, expr: Variant, dflt: float) -> float:
+	var keep := _disp
+	_disp = disp.duplicate()
+	var v := _num(expr, dflt)
+	_disp = keep
+	return v
+
 func _draw_readouts() -> void:
 	var list := _as_array(_scene.get("readouts", []))
 	if list.is_empty():
@@ -934,9 +1003,30 @@ func _draw_readouts() -> void:
 			continue
 		var d: Dictionary = rd
 		var col := _c(d.get("color"), COL_GOLD)
-		var txt := "%s = %s" % [str(d.get("label", "值")), _fmt(_num(d.get("expr", 0.0), 0.0))]
-		_draw_label(Vector2(12.0, y + 16.0), txt, col, 15)
+		var expr: Variant = d.get("expr", 0.0)
+		var cur := _num(expr, 0.0)
+		var txt := "%s = %s" % [str(d.get("label", "值")), _fmt(cur)]
+		var x0 := 12.0
+		# 变化过程中：标出「这一项变了、往哪边变」（表意动效）
+		if _ghost_a > 0.02 and not _ghost_disp.is_empty():
+			var prev := _num_with(_ghost_disp, expr, cur)
+			var dv := cur - prev
+			if absf(dv) > 0.0005 * maxf(1.0, absf(prev)):
+				var up := dv > 0.0
+				var hc := Color(0.42, 0.9, 1.0, 0.95) if up else Color(1.0, 0.55, 0.65, 0.95)
+				draw_rect(Rect2(7.0, y + 2.0, 3.0, 19.0), hc)
+				var cy := y + 12.0
+				var tri: PackedVector2Array
+				if up:
+					tri = PackedVector2Array([Vector2(17.0, cy - 4.5), Vector2(13.0, cy + 3.0), Vector2(21.0, cy + 3.0)])
+				else:
+					tri = PackedVector2Array([Vector2(17.0, cy + 4.5), Vector2(13.0, cy - 3.0), Vector2(21.0, cy - 3.0)])
+				draw_colored_polygon(tri, hc)
+				col = hc
+				x0 = 26.0
+		_draw_label(Vector2(x0, y + 16.0), txt, col, 15)
 		y += 27.0
+
 
 func _resolve_line(def: Dictionary) -> Array:
 	if def.has("k"):

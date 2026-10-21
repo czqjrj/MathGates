@@ -58,7 +58,7 @@
 | **B13** | 朗读/无障碍路径不完整且双路径不一致 | **P1** | 🟡 第一步完成（2026-10-21 `94b3acb`：双路径统一走 SpeechRules 转换器，盲点命令 5→0，口播看板进 check_questions）；余人工抽检听感 |
 | **D1** | 2D 探究器无过渡动画（拖动=瞬时跳变） | **P1** | ✅ 已完成（2026-10-21）：`LabPlane` 加补间（τ=0.13s）+ 起点残影 + 动点轨迹三层；直接拖拽（分界线/拖点）保持跟手；`Tests._test_plane_motion` 证明中间态存在 |
 | **D2** | 演示动画只覆盖 1/26 个关卡文件 | **P1** | ✅ 已完成（2026-10-21）：3D 补 `space_levels` 19 轮；`LabPlane` 新增 2D 播放器 + `LabStage` 演示按钮；2D 补 11 文件 → **13/26**；顺带修收尾帧跳帧 bug、加 `_test_anim_player` 防线 |
-| **D3** | 动效全在"结果反馈"，缺"理解型动效" | **P1** | 强化情绪而非数学因果 |
+| **D3** | 动效全在"结果反馈"，缺"理解型动效" | **P1** | ✅ 已完成（2026-10-21）：`delta_highlight`（读数差量 + ▲/▼）/ `trace`（轨迹）/ `pulse_at`（`pulses`）/ `link_line`（`links` 流动虚线）；椭圆・函数与分段・导数三章试点；README 登记「装饰 vs 表意」语义 |
 | **D4** | 动效令牌缺失 + 演示不可控 + 无障碍粒度不足 | **P2** | 44 处裸时长、无法重播 |
 | **E1** | 知识点覆盖矩阵 + 校验器（内容补全的前置） | **P0** | ✅ 已完成（`data/knowledge_map.json` + `check_knowledge` → `docs/知识点覆盖矩阵.md`；硬缺口基线随 E2 收敛，现 2 条） |
 | **E2** | 补齐薄弱章节题量（8 章 ≤4 关，最少仅 6 题） | **P0** | ✅ 已完成（2026-10-19）：27 章全部 ≥6 关（知识章 9 章 + 方法章 `function_methods`、`conic` 各补齐到 6 关）；薄弱章节 **11 → 0** |
@@ -1484,32 +1484,40 @@
 
 ---
 
-### [ ] D3 · 动效全在「结果反馈」，缺「理解型动效」（P1）
+### [x] D3 · 动效全在「结果反馈」，缺「理解型动效」（P1）
 
 **现状（证据）**
-- `scripts/ui/Vfx.gd`（376 行，9 个原语）里，**8 个是答题结果的情绪反馈**：
-  `burst`(答对爆发) / `star_burst`(庆祝) / `celebrate` / `ring` / `float_text`(飘字) /
-  `screen_flash`(闪光) / `wobble`(答错摇头) / `shake`(抖动) / `coin_fly`(金币飞行)；
-  唯一非反馈的是工具函数 `center_of()`。
-- 其余动效同理：`Confetti`(彩带)、`ComboBar`(连击条填充)、`BossHud`(血条)、
-  `ProgressLine`(进度补间)、`MedalBadge`、`BrandMark` —— 全是**元游戏/情绪**层。
-- **没有任何一类动效用于表达数学关系**：没有"系数变了 → 图像哪里变了"的联动，
-  没有参数的连续轨迹，没有临界点出现的脉冲标记，没有几何量之间的联动连线。
+- `scripts/ui/Vfx.gd`（376 行，9 个原语）里，**8 个是答题结果的情绪反馈**；
+  其余 `Confetti`/`ComboBar`/`BossHud`/`ProgressLine`/`MedalBadge`/`BrandMark` 同属元游戏/情绪层。
+- **没有任何一类动效用于表达数学关系**（无差量、无轨迹、无临界点标记、无联动连线）。
 
-**后果**：动效只强化「对/错的情绪」，不强化「数学因果的理解」。
-而学习产品里最值得用动效的地方恰恰是后者——这也是 D1/D2 想补的东西的**统一抽象**。
-
-**做法**
-- 在 `Vfx` 之外新增一组**理解型原语**，并在真实关卡试点：
-  1. `delta_highlight` —— 拖动时高亮"变了的量"（直接消费 86 处 `readouts`）；
-  2. `trace` —— 参数连续变化时留下轨迹（2D 曲线 + 3D `vars` 动画都适用）；
-  3. `pulse_at` —— 临界/特殊点（极值、交点、切点、零点）出现时脉冲标记；
-  4. `link_line` —— 两组几何量之间画联动虚线（如焦点↔长轴端点、圆心↔切点）。
-- 明确区分「装饰动效」与「表意动效」（后者关不掉，见 D4）。
+**落地（2026-10-21，第二十九轮）**
+- **四个表意原语全部实现**（都在 `LabPlane`，随 D1 的补间层工作）：
+  1. `delta_highlight`（自动）：变化期间用**旧参数重算同一个 `readouts` 表达式**并比对，
+     变了就画高亮条 + ▲/▼ 方向三角（三角用 `draw_colored_polygon` 画，不依赖字体字形）。
+     直接消费 86 处 `readouts`，无需改数据。
+  2. `trace`（自动）：D1 的动点轨迹（≤14 帧，1.6/s 淡出）。
+  3. `pulse_at`：数据键 `"pulses": [{ "p": [x,y], "label": "切点" }]`，**停稳后**脉冲一次
+     （扩散圆环 + 实心点 + 标签），1.2/s 淡出。
+  4. `link_line`：数据键 `"links": [{ "a": …, "b": …, "label": "|OP|" }]`，
+     画**相位流动的虚线**（`fmod(_t*16, dash+gap)`）+ 端点小圆 + 标签。
+- **真实章节试点（3 章 ≥ 验收要求 2 章）**：
+  - 椭圆 1-1：`link_line` 画 \|OP\|（对照「到两焦点距离之和恒定」——到中心距离却在变，纠正常见误解）；
+  - 函数与分段 3-1：`pulse_at` 标最低点 `(0,b)`（随 b 平移）；
+  - 导数 2-1：`pulse_at` 标切点 `(1,1)`（直线调参到位后提示"就是这里相切"）。
+- **语义分层已落文档**：`README.md` 新增「动效清单：装饰动效 vs 表意动效」小节，
+  列全 9 个 `Vfx` 原语 + 6 个表意原语，并明确**表意动效不跟随 `UI.animations` 开关**（为 D4 的开关拆分定调）。
+- **顺手修一处上游乱码**：`_draw_readouts` 的默认标签原为 mojibake `"ֵ"`，改为 `"值"`。
+- **测试**：`_test_plane_motion` 扩到 16 断言（新增 delta 差值可算、停稳触发 pulse、pulse 自动结束、
+  全库 `links`/`pulses` 端点必须是二元数组、试点数量下限）。
+- **全量回归绿**：`CHECKED 97` / `TESTS 1760`（+8）/ `SMOKE 285` / `UI-SMOKE 383` /
+  `LabSmoke TMP_OK` / `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new` /
+  `KNOWLEDGE hard-gaps=0` / `ASSETS 30.08 banned=0`。
 
 **验收**
-- 至少 2 个章节用上理解型动效，且抽查学生能"看懂因果"；
-- `Vfx`/新原语清单与用途登记进 `README.md` 或设计文档。
+- ✅ 3 个章节用上理解型动效（椭圆 / 函数与分段 / 导数），且 `delta_highlight` 与 `trace` 为全局自动；
+- ✅ 原语清单与用途登记进 `README.md`（含「装饰 vs 表意」开关语义）；
+- 🟡 「抽查学生能看懂因果」属人工教学验证，需真人试看后回填结论。
 
 ---
 
@@ -2267,13 +2275,13 @@
 > `Parse Error: Could not find type "BossHud"`。用编辑器打开一次，或跑
 > `& "<godot472.exe>" --headless --editor --path . --quit`。
 
-**当前回归基线**（改完请对照，数字只能升不能降；2026-10-21 D1/D2 动效补齐后）：
-`CHECKED 97 scripts, 0 failures` / `TESTS: 1752 passed, 0 failed` / `SMOKE: 285 ok, 0 fail` /
+**当前回归基线**（改完请对照，数字只能升不能降；2026-10-21 D1~D3 动效补齐后）：
+`CHECKED 97 scripts, 0 failures` / `TESTS: 1760 passed, 0 failed` / `SMOKE: 285 ok, 0 fail` /
 `UI-SMOKE: 383 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
 `LEVEL-PREVIEW-SMOKE: 7474 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
 `QUESTION-CHECK: 26 files / 269 levels / 1057 questions / 0 new / 7 known / 3 warnings`
 （A5 校验器，存量问题见下方基线；看板另有「干扰项黑名单命中 0 处」见 B5、「anim 演示覆盖 **13/26 文件**」见 D2）/
-`ASSETS: 30.07 MB over 3113 files … banned=0, oversize=0`（A13 护栏）/
+`ASSETS: 30.08 MB over 3113 files … banned=0, oversize=0`（A13 护栏）/
 `KNOWLEDGE: 27 chapters / 275 points / 275 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `LATEX-PROBE: conic C4 68 / C5 76 / C6 68 段 / 0 失败`（E2 收官）、
 `vector_physics 26 段 / 0 失败`、`prob_simulate 14 段 / 0 失败`（E3 收官；**探针需按组分进程**，
@@ -2310,7 +2318,9 @@
   `space_levels.json` 19 轮 3D，另有 11 个 2D 章节各 1 轮）；
   3D 播放器 `Lab3DView.play_anim` 支持 7 种步骤，2D 播放器 `LabPlane.play_anim` 支持 `vars` / `reveal`；
   **2D 过程表达（D1）**：参数补间 τ=0.13s + 起点残影（1.1/s 淡出）+ 动点轨迹（≤14 帧，1.6/s 淡出），
-  直接拖拽（分界线/拖点）不补间；两个播放器的「收尾帧跳帧」bug 已修；`tween_property` 裸时长 **44 处**。见 D3/D4。
+  直接拖拽（分界线/拖点）不补间；**表意原语（D3）**：`delta_highlight`（读数差量 + ▲/▼，全局自动）、
+  `pulse_at`（数据键 `pulses`，停稳后脉冲）、`link_line`（数据键 `links`，相位流动虚线）；
+  椭圆/函数与分段/导数三章已试点；两个播放器的「收尾帧跳帧」bug 已修；`tween_property` 裸时长 **44 处**。见 D4。
 - 经济（C1/C2 已修复）：`grant_stars` 经验仅随星级提升发放；`settle_level` 首达全额、重复通关 ×0.3 且每日最多 3 次；
   同一关当日第 3 次尝试起星级上限降为 2（`Tests._test_anti_farm` 覆盖）。
 
