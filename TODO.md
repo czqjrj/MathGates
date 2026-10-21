@@ -133,12 +133,28 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`1bd050c`（`feat(F4)` 桌面端键盘操作：`KeyNav` autoload + 18 断言）；前一提交链：
-  `05f8073`（docs 第三十轮）→ `aca0897`（D4 动效令牌/控制/减弱档）→ `199bdce`（docs）→
-  `439d685`（D3 表意动效）→ `926c3e1`（docs）→ `0711bbf`（D1 过程表达）→ `32953ed`（docs）→
-  `110b0a3`（D2 演示 13/26）→ `415f4ce`（docs）→ `94b3acb`（B13 第一步）→…，
+- **最后提交**：`b6e98d9`（`feat(F3)` 静止降耗 + `perf_probe` 基线）；前一提交链：
+  `eb56513`（docs 第三十一轮）→ `1bd050c`（F4 键盘）→ `05f8073`（docs）→
+  `aca0897`（D4 动效令牌/控制）→ `199bdce`（docs）→ `439d685`（D3 表意动效）→…，
   已 push（`main` 与 `origin/main` 同步）。
-- **本轮交付（2026-10-21，第三十一轮）**：**F4 桌面端键盘操作**。
+- **本轮交付（2026-10-21，第三十二轮）**：**F3 性能与静止降耗**（`b6e98d9`）。
+  - **3D**：空闲 8s 停自转、相机稳且空闲 10s → `SubViewport.UPDATE_DISABLED`（保留末帧）；
+    停帧后 `_process` early-return；`_wake()` 在拖动/键盘/演示/换场景时立即恢复；
+    前后台（PAUSED/FOCUS_OUT）停帧、恢复时重启。
+  - **2D（额外发现）**：`LabPlane._process` 原本**无条件 `queue_redraw()`**——静止也在重绘。
+    改为按需：入场显现/演示/补间/残影/轨迹/脉冲/流动虚线/拖拽才重画；新增 `redraw_count` 供断言。
+  - **TechBg**：动效关闭或后台时 `set_process(false)`（不再每帧空转判断），由设置变化/恢复通知拉起。
+  - **基线工具**：`tools/perf_probe.tscn`（headless 可跑）输出 `PERF <case> proc_avg_us …`；
+    3D 预热 1700 帧确保已停帧。
+  - **实测**：`lab_plane` 静止 **73,430 → 259 µs/帧**；`lab3d` 静止 **70,262 → 251 µs/帧**；
+    `idle` 基线 171 µs（headless CPU 处理耗时）。
+  - **测试**：`Tests._test_idle_power`（10 断言：自转 8s 停、10s 停渲染、唤醒、后台停/前台恢复、
+    TechBg 停/启、2D 静止 20 帧不重绘且变化时恢复）。
+  - 全量回归绿：`CHECKED 99` / `TESTS 1804`（+10）/ `SMOKE 285` / `UI-SMOKE 385` /
+    `LabSmoke TMP_OK` / `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new` /
+    `KNOWLEDGE hard-gaps=0` / `ASSETS 30.11 banned=0`。
+  - **F3 转 ✅**；Android 真机 FPS/功耗/内存仍需真机（headless 无 GPU），已在条目标 🟡。
+- **上一轮（第三十一轮）**：**F4 桌面端键盘操作**（`1bd050c`）。
   - 新增 `scripts/autoload/KeyNav.gd` 并注册 autoload：只处理 `_unhandled_key_input`，
     输入框与按钮默认激活不受影响；核心逻辑为 `static func handle(stage, keycode)`，测试可直接驱动。
   - **鸭子类型**取 `_opt_btns/_next/_hint/_kb_confirm/_view3d` → **`StageBase` 零改动**
@@ -407,16 +423,15 @@
 - **下次建议顺序**（按性价比）：
   > **2026-10-20 用户决策：暂停题目扩产，先做结构收敛。** B2 下限已全线达成（27/27 章 ≥ 5.0 题/关），
   > B1（21.4% → ≥30%）与 B2「上探 6~7 题/关中段」均为**纯内容批量生产**，可随时回归；当前转向 A/D/F 类结构问题。
-  1. **F3 性能与耗电**（3D 每帧渲染、背景常驻重绘；静止时无信息增量）——
-     F4 已收官，这是桌面/移动端剩下的体验结构问题；可用「静止降帧」做增量修复。
-  2. **G1 错题间隔重复（SRS）** / **G3 学习报告与家长视图** —— 纯逻辑与数据展示，可自动化验证。
-  3. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 需人工决策/下载/目视（AI 无法替代，上架硬门槛）。
-  4. 决策项待拍板：**G4/G5**；**A17 是否真重命名**（低优先）；**A2 迁移到 LabStage**（长期项）。
-  5. 内容项回归：**B1 达标**（21.4% → ≥30%）、**B2 中段**（6~7 题/关）、**B6 理由选项占比**，
+  1. **F4 已完成** → 接下来 **G1 错题间隔重复（SRS）** 或 **G3 学习报告/家长视图**：
+     两者都是纯逻辑与数据展示，可自动化验证、不依赖真机。
+  2. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 需人工决策/下载/目视（AI 无法替代，上架硬门槛）。
+  3. 决策项待拍板：**G4/G5**；**A17 是否真重命名**（低优先）；**A2 迁移到 LabStage**（长期项）。
+  4. 内容项回归：**B1 达标**（21.4% → ≥30%）、**B2 中段**（6~7 题/关）、**B6 理由选项占比**，
      结构收敛后按章继续（新题模板仍须内建 B5 规范）。
-  > A4/A2/A17/D1~D4/F4 已于第二十二~三十一轮全部收口；`check_all`（行数 + 裸时长）、
+  > A4/A2/A17/D1~D4/F3/F4 已于第二十二~三十二轮全部收口；`check_all`（行数 + 裸时长）、
   > `check_questions` 映射自检、`_test_anim_player` / `_test_plane_motion` / `_test_demo_controls` /
-  > `_test_keyboard_nav` 让结构、动效与输入不回退。
+  > `_test_keyboard_nav` / `_test_idle_power` 让结构、动效、输入与耗电不回退。
 - **收工前必做**：跑全量校验（`check_all` / `Tests` / `smoke_scene` / `UiSmoke` / `LabSmoke` /
   `check_questions` / `check_knowledge` / `check_assets` / `LevelPreview --smoke`），并同步 §9.2 基线数字。
 
