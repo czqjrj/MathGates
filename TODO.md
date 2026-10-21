@@ -133,7 +133,11 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`TODO_HASH`（`feat(F4)` 桌面端键盘操作）；稍后回填。
+- **最后提交**：`1bd050c`（`feat(F4)` 桌面端键盘操作：`KeyNav` autoload + 18 断言）；前一提交链：
+  `05f8073`（docs 第三十轮）→ `aca0897`（D4 动效令牌/控制/减弱档）→ `199bdce`（docs）→
+  `439d685`（D3 表意动效）→ `926c3e1`（docs）→ `0711bbf`（D1 过程表达）→ `32953ed`（docs）→
+  `110b0a3`（D2 演示 13/26）→ `415f4ce`（docs）→ `94b3acb`（B13 第一步）→…，
+  已 push（`main` 与 `origin/main` 同步）。
 - **本轮交付（2026-10-21，第三十一轮）**：**F4 桌面端键盘操作**。
   - 新增 `scripts/autoload/KeyNav.gd` 并注册 autoload：只处理 `_unhandled_key_input`，
     输入框与按钮默认激活不受影响；核心逻辑为 `static func handle(stage, keycode)`，测试可直接驱动。
