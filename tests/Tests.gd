@@ -678,6 +678,32 @@ func _test_stage_rules() -> void:
 	_ok(StageRules.num_ok(-2.0, -2.03, 0.05), "num 负数容差")
 	_ok(not StageRules.num_ok(2.0, -2.0, 0.05), "num 正负号不同")
 
+	# —— 填空解析 StageRules.parse_math / norm_math ——
+	_ok(is_equal_approx(float(StageRules.parse_math("3.5")), 3.5), "parse 整数小数")
+	_ok(is_equal_approx(float(StageRules.parse_math("1/2")), 0.5), "parse 分数")
+	_ok(is_equal_approx(float(StageRules.parse_math("1/3")), 1.0 / 3.0), "parse 1/3")
+	_ok(is_equal_approx(float(StageRules.parse_math("2²")), 4.0), "parse 上标平方")
+	_ok(is_equal_approx(float(StageRules.parse_math("2³")), 8.0), "parse 上标立方")
+	_ok(is_equal_approx(float(StageRules.parse_math("2^3")), 8.0), "parse 幂 pow 化")
+	_ok(is_equal_approx(float(StageRules.parse_math("2×3")), 6.0), "parse 乘号 ×")
+	_ok(is_equal_approx(float(StageRules.parse_math("6÷3")), 2.0), "parse 除号 ÷")
+	_ok(is_equal_approx(float(StageRules.parse_math("−5")), -5.0), "parse 减号 −")
+	_ok(is_equal_approx(float(StageRules.parse_math("(1+2)×3")), 9.0), "parse 括号乘法")
+	_ok(is_equal_approx(float(StageRules.parse_math("√9")), 3.0), "parse √数字")
+	_ok(is_equal_approx(float(StageRules.parse_math("√(9)")), 3.0), "parse √括号")
+	_ok(is_equal_approx(float(StageRules.parse_math("π")), 3.141592653589793), "parse π 常数")
+	_ok(StageRules.parse_math("") == null, "parse 空串 null")
+	_ok(StageRules.parse_math("   ") == null, "parse 全空白 null")
+	_ok(StageRules.parse_math("abc") == null, "parse 非法表达式 null")
+	_ok(StageRules.parse_math("(1+2") == null, "parse 括号不配 null")
+	_ok(is_equal_approx(float(StageRules.parse_math("5+3")), 8.0), "parse 整数相加")
+	_ok(is_equal_approx(float(StageRules.parse_math("3.5+1")), 4.5), "parse 小数不被 float 化破坏")
+	_ok(is_equal_approx(float(StageRules.parse_math("1/2/3")), 1.0 / 6.0), "parse 连续除法左结合")
+	_eq(StageRules.norm_math("2 × 3"), "2*3", "norm 去空格换乘号")
+	_eq(StageRules.norm_math("10 − 3"), "10-3", "norm 统一减号")
+	_eq(StageRules.norm_math("2²"), "pow(2,2)", "norm 上标转 pow")
+	_eq(StageRules.norm_math("2π"), "23.141592653589793", "norm π 展开(已知怪癖:数字前不插 *)")
+
 ## A4 第六刀：知识树布局纯规则 TreeRules(关卡分组/Catmull-Rom 平滑)。全部构造数据单测。
 func _test_tree_rules() -> void:
 	# —— 分组："N-M" 编号 + 单元标题 + Boss 殿后 ——

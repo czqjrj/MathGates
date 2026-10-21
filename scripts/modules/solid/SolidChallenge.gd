@@ -493,55 +493,15 @@ func _submit_input() -> void:
 	if _solved or _done or _input_edit == null or _stages.is_empty():
 		return
 	var s: Dictionary = _stages[_idx]
-	var val = _parse_math(_input_edit.text.strip_edges())
+	var val = StageRules.parse_math(_input_edit.text.strip_edges())
 	if val == null:
 		_wrong("没看懂这个式子，试试输入数值或 sqrt(2)。")
 		return
 	var tol := float(s.get("tol", 0.05))
-	if absf(float(val) - float(s.get("ans", 0.0))) <= tol:
+	if StageRules.num_ok(float(val), float(s.get("ans", 0.0)), tol):
 		_level_ok()
 	else:
 		_wrong("还差一点，再算算？")
-
-func _parse_math(text: String) -> Variant:
-	var s := _norm_math(text)
-	if s == "":
-		return null
-	if s.is_valid_float():
-		return s.to_float()
-	if s.is_valid_int():
-		return float(s.to_int())
-	var e := Expression.new()
-	if e.parse(s) != OK:
-		return null
-	var v: Variant = e.execute()
-	if e.has_execute_failed():
-		return null
-	if v != null and (v is float or v is int):
-		return float(v)
-	return null
-
-## 把常见数学写法(√、²、×、÷、π、隐式乘法)转成表达式可解析的形式。
-func _norm_math(text: String) -> String:
-	var s := text.strip_edges()
-	s = s.replace(" ", "").replace("　", "")
-	s = s.replace("×", "*").replace("·", "*").replace("÷", "/")
-	s = s.replace("−", "-").replace("–", "-").replace("—", "-")
-	s = s.replace("π", "3.141592653589793")
-	s = s.replace("²", "^2").replace("³", "^3").replace("¹", "^1").replace("⁰", "^0")
-	var re := RegEx.new()
-	re.compile("([0-9]+(?:\\.[0-9]+)?)\\^([0-9]+)")
-	s = re.sub(s, "pow($1,$2)", true)
-	re.compile("√\\s*\\(([^()]*)\\)")
-	s = re.sub(s, "sqrt($1)", true)
-	re.compile("√\\s*([0-9]+(?:\\.[0-9]+)?)")
-	s = re.sub(s, "sqrt($1)", true)
-	s = s.replace("√", "sqrt")
-	re.compile("([0-9])\\s*([a-zA-Z(])")
-	s = re.sub(s, "$1*$2", true)
-	re.compile("\\)\\s*([0-9a-zA-Z(])")
-	s = re.sub(s, ")*$1", true)
-	return s
 
 func _level_ok() -> void:
 	if _solved:

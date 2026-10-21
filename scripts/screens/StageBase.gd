@@ -304,7 +304,7 @@ func _build_choices(s: Dictionary) -> void:
 
 # ---------------------------------------------------------------- 数值/公式填空(B1)
 ## 题面 "type":"input"：学生输入数值/公式，与 "ans"(数值) 比较；"tol" 为容差(默认 0.05)。
-## 常见写法(√、²、³、π、×、÷、隐式乘法)由 _parse_math 归一化为表达式求值。
+## 常见写法(√、²、³、π、×、÷、隐式乘法)由 StageRules.parse_math 归一化为表达式求值。
 func _build_input(s: Dictionary) -> void:
 	var col := VBoxContainer.new()
 	col.add_theme_constant_override("separation", 8)
@@ -360,7 +360,7 @@ func _submit_input() -> void:
 		return
 	_last_picked = -1
 	var s := _current()
-	var val = _parse_math(_input_edit.text.strip_edges())
+	var val = StageRules.parse_math(_input_edit.text.strip_edges())
 	if val == null:
 		_wrong("没看懂这个式子，试试输入数值或 sqrt(2)。")
 		return
@@ -369,46 +369,6 @@ func _submit_input() -> void:
 		_level_ok()
 	else:
 		_wrong(str(s.get("wrong", "还差一点，再算算？")))
-
-## 把常见数学写法(√、²、³、×、÷、π、隐式乘法)转成表达式可解析的形式。
-func _norm_math(text: String) -> String:
-	var s := text.strip_edges()
-	s = s.replace(" ", "").replace("　", "")
-	s = s.replace("×", "*").replace("·", "*").replace("÷", "/")
-	s = s.replace("−", "-").replace("–", "-").replace("—", "-")
-	s = s.replace("π", "3.141592653589793")
-	s = s.replace("²", "^2").replace("³", "^3").replace("¹", "^1").replace("⁰", "^0")
-	var re := RegEx.new()
-	re.compile("([0-9]+(?:\\.[0-9]+)?)\\^([0-9]+)")
-	s = re.sub(s, "pow($1,$2)", true)
-	re.compile("√\\s*\\(([^()]*)\\)")
-	s = re.sub(s, "sqrt($1)", true)
-	re.compile("√\\s*([0-9]+(?:\\.[0-9]+)?)")
-	s = re.sub(s, "sqrt($1)", true)
-	s = s.replace("√", "sqrt")
-	re.compile("([0-9])\\s*([a-zA-Z(])")
-	s = re.sub(s, "$1*$2", true)
-	re.compile("\\)\\s*([0-9a-zA-Z(])")
-	s = re.sub(s, ")*$1", true)
-	return s
-
-func _parse_math(text: String) -> Variant:
-	var s := _norm_math(text)
-	if s == "":
-		return null
-	if s.is_valid_float():
-		return s.to_float()
-	if s.is_valid_int():
-		return float(s.to_int())
-	var e := Expression.new()
-	if e.parse(s) != OK:
-		return null
-	var v: Variant = e.execute()
-	if e.has_execute_failed():
-		return null
-	if v != null and (v is float or v is int):
-		return float(v)
-	return null
 
 ## 选项乱序：默认打乱，防止学生记住答案位置；题面写 "shuffle": false 或 "fixed": true
 ## 可关闭，含「以上都对」等顺序相关选项时也自动关闭。返回 [显示位置 -> 原始下标]。

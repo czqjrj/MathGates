@@ -120,6 +120,53 @@ static func multi_ok(picked_orig: Array, ans: Array) -> bool:
 static func num_ok(val: float, ans: float, tol: float) -> bool:
 	return absf(val - ans) <= tol
 
+# ---------------------------------------------------------------- 填空解析
+## 把常见数学写法(√、²、³、×、÷、π、隐式乘法)转成表达式可解析的形式(纯)。
+static func norm_math(text: String) -> String:
+	var s := text.strip_edges()
+	s = s.replace(" ", "").replace("　", "")
+	s = s.replace("×", "*").replace("·", "*").replace("÷", "/")
+	s = s.replace("−", "-").replace("–", "-").replace("—", "-")
+	s = s.replace("π", "3.141592653589793")
+	s = s.replace("²", "^2").replace("³", "^3").replace("¹", "^1").replace("⁰", "^0")
+	var re := RegEx.new()
+	re.compile("([0-9]+(?:\\.[0-9]+)?)\\^([0-9]+)")
+	s = re.sub(s, "pow($1,$2)", true)
+	re.compile("√\\s*\\(([^()]*)\\)")
+	s = re.sub(s, "sqrt($1)", true)
+	re.compile("√\\s*([0-9]+(?:\\.[0-9]+)?)")
+	s = re.sub(s, "sqrt($1)", true)
+	s = s.replace("√", "sqrt")
+	re.compile("([0-9])\\s*([a-zA-Z(])")
+	s = re.sub(s, "$1*$2", true)
+	re.compile("\\)\\s*([0-9a-zA-Z(])")
+	s = re.sub(s, ")*$1", true)
+	return s
+
+## 填空解析(纯)：归一化后求值；空串/语法错/非数值返回 null。
+static func parse_math(text: String) -> Variant:
+	var s := norm_math(text)
+	if s == "":
+		return null
+	if s.is_valid_float():
+		return s.to_float()
+	if s.is_valid_int():
+		return float(s.to_int())
+	# 整数字面量统一转 float：否则 Expression 里 1/2 走整数除法得 0，分数填空被误判错。
+	# 前后视避开小数("3.5" 的 3/5)与已展开常数，其余位置(含连续除法)安全。
+	var lit := RegEx.new()
+	lit.compile("(?<![0-9.])([0-9]+)(?![0-9.])")
+	s = lit.sub(s, "$1.0", true)
+	var e := Expression.new()
+	if e.parse(s) != OK:
+		return null
+	var v: Variant = e.execute()
+	if e.has_execute_failed():
+		return null
+	if v != null and (v is float or v is int):
+		return float(v)
+	return null
+
 # ---------------------------------------------------------------- 评级
 ## 结算评级(纯)：S = 3 星 + 全程零失误 + 不踩陷阱；3 星 A；2 星 B；其余 C。
 static func grade(stars: int, clean: int, total: int, trap_missed: bool) -> String:
