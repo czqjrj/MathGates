@@ -35,6 +35,7 @@ func _run() -> void:
 	_test_daily()
 	_test_textbook()
 	_test_player_rules()
+	_test_economy_rules()
 	_test_adventure()
 	_test_inline_math()
 	print("TESTS: %d passed, %d failed" % [_pass, _fail])
@@ -432,6 +433,68 @@ func _test_player_rules() -> void:
 	_eq(PlayerRules.repeat_grant(100, 3), 0, "repeat_grant 当日封顶=0")
 	_eq(PlayerRules.repeat_grant(0, 0), 0, "repeat_grant 基数 0")
 	_eq(PlayerRules.repeat_grant(-10, 0), 0, "repeat_grant 负基数守卫")
+
+## A4 第二刀：经济结算纯规则 EconomyRules(星级经验/登录/结算判定/消费/任务进度)。
+## 全部构造数据单测；GameData 门面行为由既有 _test_economy/_test_anti_farm/_test_daily 回归保护。
+func _test_economy_rules() -> void:
+	# —— 星级 → 经验(C1：只按新增星计发) ——
+	_eq(EconomyRules.exp_for_star_gain(0, 3), 30, "exp 0->3 = 30")
+	_eq(EconomyRules.exp_for_star_gain(2, 3), 10, "exp 2->3 = 10")
+	_eq(EconomyRules.exp_for_star_gain(3, 3), 0, "exp 重复通关 = 0")
+	_eq(EconomyRules.exp_for_star_gain(3, 1), 0, "exp 星级不回退不倒扣")
+
+	# —— 每日登录：连击推进 ——
+	_eq(EconomyRules.next_login_streak(5, "2026-10-20", "2026-10-20"), 6, "streak 昨天签到 -> +1")
+	_eq(EconomyRules.next_login_streak(5, "2026-10-18", "2026-10-20"), 1, "streak 断签 -> 1")
+	_eq(EconomyRules.next_login_streak(0, "", "2026-10-20"), 1, "streak 首次 -> 1")
+
+	# —— 每日登录：奖励数值(基数 50/20，每日 +20%) ——
+	var rw: Dictionary = EconomyRules.login_reward(1)
+	_eq(rw["coins"], 50, "login 第1天金币 50")
+	_eq(rw["exp"], 20, "login 第1天经验 20")
+	rw = EconomyRules.login_reward(2)
+	_eq(rw["coins"], 60, "login 第2天金币 60")
+	_eq(rw["exp"], 24, "login 第2天经验 24")
+	rw = EconomyRules.login_reward(6)
+	_eq(rw["coins"], 100, "login 第6天金币 100")
+	_eq(rw["exp"], 40, "login 第6天经验 40")
+
+	# —— 关卡结算判定(C1/C2) ——
+	var res: Dictionary = EconomyRules.settle_grant(100, 3, 0, "2026-10-21", "2026-10-19", 2)
+	_eq(res["granted"], 100, "settle 首达全额")
+	_ok(bool(res["full"]), "settle 首达 full=true")
+	_eq(res["paid_date"], "2026-10-19", "settle 首达 paid_date 不动")
+	_eq(res["paid_today"], 2, "settle 首达 paid_today 不动")
+	res = EconomyRules.settle_grant(100, 2, 3, "2026-10-21", "2026-10-21", 0)
+	_eq(res["granted"], 30, "settle 重复第1次 30")
+	_eq(res["paid_today"], 1, "settle 重复计数 +1")
+	res = EconomyRules.settle_grant(100, 2, 3, "2026-10-21", "2026-10-21", PlayerRules.REPEAT_PAID_PER_DAY)
+	_eq(res["granted"], 0, "settle 当日封顶 0")
+	_eq(res["paid_today"], PlayerRules.REPEAT_PAID_PER_DAY, "settle 封顶不再计数")
+	res = EconomyRules.settle_grant(100, 2, 3, "2026-10-21", "2026-10-20", 3)
+	_eq(res["granted"], 30, "settle 跨天重置后再发 30")
+	_eq(res["paid_date"], "2026-10-21", "settle 跨天 paid_date 更新")
+	_eq(res["paid_today"], 1, "settle 跨天计数从 1")
+	res = EconomyRules.settle_grant(0, 3, 0, "2026-10-21", "", 0)
+	_eq(res["granted"], 0, "settle 基数 0")
+	res = EconomyRules.settle_grant(-10, 3, 0, "2026-10-21", "", 0)
+	_eq(res["granted"], 0, "settle 负基数守卫")
+
+	# —— 消费判定 ——
+	_ok(EconomyRules.can_spend(100, 50), "can_spend 余额足")
+	_ok(not EconomyRules.can_spend(100, 150), "can_spend 余额不足")
+	_ok(EconomyRules.can_spend(50, 50), "can_spend 正好等于余额")
+	_ok(EconomyRules.can_spend(0, 0), "can_spend 0 费用")
+	_ok(EconomyRules.can_spend(0, -5), "can_spend 负费用恒 true")
+	_ok(not EconomyRules.can_spend(0, 1), "can_spend 0 余额支付")
+
+	# —— 每日任务进度 ——
+	_eq(EconomyRules.mission_progress("streak", 20, 7, 0, 999), 7, "mission streak 取峰值")
+	_eq(EconomyRules.mission_progress("streak", 20, 25, 0, 999), 20, "mission streak 封顶 goal")
+	_eq(EconomyRules.mission_progress("answers", 10, 0, 100, 105), 5, "mission 当日增量")
+	_eq(EconomyRules.mission_progress("answers", 10, 0, 100, 100), 0, "mission 无增量 0")
+	_eq(EconomyRules.mission_progress("answers", 10, 0, 105, 100), 0, "mission 指标回退守卫 0")
+	_eq(EconomyRules.mission_progress("answers", 10, 0, 100, 130), 10, "mission 超额封顶 goal")
 
 ## C1/C2：重复通关不再无限刷经验/金币；当日重试降级星级上限。
 func _test_anti_farm() -> void:

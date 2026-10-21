@@ -25,14 +25,13 @@ func _ready() -> void:
 func _maybe_daily() -> void:
 	if not GameData.daily_available():
 		return
-	var next_streak := (GameData.login_streak + 1) if GameData.last_login_date == GameData._yesterday() else 1
-	var mult := 1.0 + 0.2 * float(next_streak - 1)
-	var coins := int(50.0 * mult)
-	var ex := int(20.0 * mult)
+	# 连击推进与奖励数值取自 EconomyRules（与 GameData.claim_daily 同一来源，不再本地复算）。
+	var next_streak := EconomyRules.next_login_streak(GameData.login_streak, GameData.last_login_date, GameData._yesterday())
+	var rw := EconomyRules.login_reward(next_streak)
 	await get_tree().process_frame
 	if not is_inside_tree():
 		return
-	UI.confirm(self, "每日登录奖励", "连续登录第 %d 天\n金币 +%d   ·   经验 +%d" % [next_streak, coins, ex], func() -> void:
+	UI.confirm(self, "每日登录奖励", "连续登录第 %d 天\n金币 +%d   ·   经验 +%d" % [next_streak, int(rw["coins"]), int(rw["exp"])], func() -> void:
 		var r := GameData.claim_daily()
 		if bool(r.get("ok", false)):
 			Sound.play("unlock")

@@ -594,9 +594,8 @@ func grant_stars(level_id: String, n: int) -> void:
 	var prev := int(stars.get(level_id, 0))
 	var best := maxi(prev, n)
 	stars[level_id] = best
-	# C1：经验只在星级提升时发放——重复通关不再无限刷经验。
-	if best > prev:
-		player_exp += 10 * (best - prev)
+	# C1：经验只在星级提升时发放——重复通关不再无限刷经验（公式在 EconomyRules）。
+	player_exp += EconomyRules.exp_for_star_gain(prev, best)
 	_eval_mastery()
 	_eval_medals()
 	_save()
@@ -645,10 +644,10 @@ func add_coins(n: int) -> void:
 
 ## 消费金币：余额不足返回 false(不扣除)
 func spend_coins(n: int) -> bool:
+	if not EconomyRules.can_spend(coins, n):
+		return false
 	if n <= 0:
 		return true
-	if coins < n:
-		return false
 	coins -= n
 	_eval_medals()
 	_save()
@@ -687,20 +686,16 @@ func settle_level(level_id: String, level_stars: int, clean: int, total: int, tr
 		add_coins(g0)
 		return { "granted": g0, "full": true }
 	var prev_best := int(level_records.get(level_id, {}).get("best_stars", 0))
-	var full := level_stars > prev_best
 	grant_stars(level_id, level_stars)
-	var granted := 0
-	if full:
-		granted = maxi(0, base_reward)
-	else:
-		var r: Dictionary = level_records.get(level_id, {})
-		var today := _today()
-		if str(r.get("paid_date", "")) != today:
-			r["paid_date"] = today
-			r["paid_today"] = 0
-		granted = PlayerRules.repeat_grant(base_reward, int(r.get("paid_today", 0)))
-		if granted > 0:
-			r["paid_today"] = int(r.get("paid_today", 0)) + 1
+	# 纯判定收口在 EconomyRules.settle_grant（首达全额/重复折扣/跨天重置）。
+	var r: Dictionary = level_records.get(level_id, {})
+	var res := EconomyRules.settle_grant(base_reward, level_stars, prev_best,
+		_today(), str(r.get("paid_date", "")), int(r.get("paid_today", 0)))
+	var full := bool(res["full"])
+	var granted := int(res["granted"])
+	if not full:
+		r["paid_date"] = res["paid_date"]
+		r["paid_today"] = res["paid_today"]
 		level_records[level_id] = r
 	if granted > 0:
 		coins += granted
@@ -818,19 +813,14 @@ func daily_available() -> bool:
 func claim_daily() -> Dictionary:
 	if not daily_available():
 		return { "ok": false }
-	if last_login_date == _yesterday():
-		login_streak += 1
-	else:
-		login_streak = 1
+	login_streak = EconomyRules.next_login_streak(login_streak, last_login_date, _yesterday())
 	last_login_date = _today()
-	var mult := 1.0 + 0.2 * float(login_streak - 1)
-	var reward := int(50.0 * mult)
-	var ex := int(20.0 * mult)
-	add_coins(reward)
-	add_exp(ex)
+	var rw := EconomyRules.login_reward(login_streak)
+	add_coins(int(rw["coins"]))
+	add_exp(int(rw["exp"]))
 	_save()
 	progress_changed.emit()
-	return { "ok": true, "streak": login_streak, "coins": reward, "exp": ex, "is_first": login_streak == 1 }
+	return { "ok": true, "streak": login_streak, "coins": int(rw["coins"]), "exp": int(rw["exp"]), "is_first": login_streak == 1 }
 
 # ---------------------------------------------------------------- 每日任务
 func _daily_metrics() -> Dictionary:
@@ -861,13 +851,12 @@ func note_streak(s: int) -> void:
 
 func daily_mission_progress(mm: Dictionary) -> int:
 	_reset_daily_if_needed()
-	var goal := int(mm["goal"])
-	if str(mm["metric"]) == "streak":
-		return mini(daily_peak_streak, goal)
 	var metric := str(mm["metric"])
-	var base := int(daily_base.get(metric, 0))
-	var cur := int(_daily_metrics().get(metric, 0))
-	return clampi(cur - base, 0, goal)
+	var goal := int(mm["goal"])
+	if metric == "streak":
+		return EconomyRules.mission_progress(metric, goal, daily_peak_streak, 0, 0)
+	return EconomyRules.mission_progress(metric, goal, 0,
+		int(daily_base.get(metric, 0)), int(_daily_metrics().get(metric, 0)))
 
 ## 今日任务列表：{id,name,desc,cur,goal,done,claimed,coins,exp}
 func daily_missions() -> Array:
