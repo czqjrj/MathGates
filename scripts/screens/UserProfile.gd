@@ -197,7 +197,7 @@ func _domain_row(d: Dictionary) -> Control:
 	var tag := "已解锁"
 	if not unlocked:
 		tag = "%d%%" % int(round(m * 100.0))
-	elif m < GameData.MASTERY_STALE:
+	elif m < MasteryRules.MASTERY_STALE:
 		tag = "已解锁 · 生疏"
 	head.add_child(UI.mono_label(tag, 13, col if unlocked else UI.COL_TEXT_DIM))
 	var bar := ProgressLine.new()

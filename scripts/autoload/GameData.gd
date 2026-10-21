@@ -60,10 +60,6 @@ const DOMAINS := [
 			"statistics", "random_var", "corr_data"] },
 ]
 
-## 领域掌握度达标即解锁对应萌宠部件(只增不减)
-const MASTERY_UNLOCK := 0.5
-## 已解锁领域掌握度低于此值视为「生疏」(仅影响萌宠表现，不回收形态)
-const MASTERY_STALE := 0.35
 ## 萌宠形态名(下标 = 已解锁部件数)
 const PET_FORMS := ["初芽", "萌芽", "启智", "明理", "通达", "博识", "睿智", "衍数·完形"]
 
@@ -906,40 +902,26 @@ func claim_daily_mission(id: String) -> bool:
 
 func add_pet_fed() -> void:
 	pet_fed += 1
-	pet_satiety = 1.0
-	pet_mood = minf(1.0, pet_mood + 0.12)
+	pet_satiety = PetRules.FEED_SATIETY
+	pet_mood = PetRules.feed_mood(pet_mood)
 	pet_last_seen = int(Time.get_unix_time_from_system())
 	_eval_medals()
 	_save()
 
-# ---------------------------------------------------------------- 萌宠养成
-const PET_DECAY_PER_DAY := 0.32   # 每天饱食度自然下降
-const PET_MOOD_BASE := 0.55       # 心情自然回落基准
+# ---------------------------------------------------------------- 萌宠养成（门面；公式在 PetRules）
 
 ## 好感度等级：由投喂次数决定(0 初识 / 1 熟悉 / 2 黏人)
 func pet_affection_tier() -> int:
-	if pet_fed >= 8:
-		return 2
-	if pet_fed >= 3:
-		return 1
-	return 0
+	return PetRules.affection_tier(pet_fed)
 
 func pet_hungry() -> bool:
-	return pet_satiety < 0.35
+	return PetRules.is_hungry(pet_satiety)
 
 func pet_mood_label() -> String:
-	if pet_mood >= 0.75:
-		return "开心"
-	if pet_mood >= 0.45:
-		return "一般"
-	return "低落"
+	return PetRules.mood_label(pet_mood)
 
 func pet_satiety_label() -> String:
-	if pet_satiety >= 0.7:
-		return "吃饱"
-	if pet_satiety >= 0.4:
-		return "半饱"
-	return "好饿"
+	return PetRules.satiety_label(pet_satiety)
 
 ## 跨会话衰减：按距上次互动的天数降低饱食度、使心情回落；记录离开天数供问候
 func pet_decay() -> void:
@@ -949,9 +931,9 @@ func pet_decay() -> void:
 		pet_away_days = 0.0
 		return
 	pet_away_days = float(now - pet_last_seen) / 86400.0
-	if pet_away_days > 0.0:
-		pet_satiety = clampf(pet_satiety - PET_DECAY_PER_DAY * pet_away_days, 0.15, 1.0)
-		pet_mood = clampf(lerpf(pet_mood, PET_MOOD_BASE, clampf(pet_away_days, 0.0, 1.0)), 0.2, 1.0)
+	var d := PetRules.decay(pet_satiety, pet_mood, pet_away_days)
+	pet_satiety = float(d["satiety"])
+	pet_mood = float(d["mood"])
 	pet_last_seen = now
 
 ## 互动打点：刷新"最近互动"时间(缩短下次的离开天数)
@@ -1009,7 +991,7 @@ func pet_stale_domains() -> Array:
 	var arr: Array = []
 	for d in DOMAINS:
 		var id := str(d["id"])
-		if pet_parts.has(id) and domain_mastery(id) < MASTERY_STALE:
+		if pet_parts.has(id) and domain_mastery(id) < MasteryRules.MASTERY_STALE:
 			arr.append(d)
 	return arr
 
@@ -1019,20 +1001,15 @@ func _recompute_mastery() -> void:
 	for k in wrong_log.keys():
 		var w: Dictionary = wrong_log[k]
 		var lid := str(w.get("level_id", ""))
-		wsum[lid] = float(wsum.get(lid, 0.0)) + minf(0.5, float(int(w.get("count", 0))) * 0.1)
+		wsum[lid] = float(wsum.get(lid, 0.0)) + MasteryRules.mistake_weight(int(w.get("count", 0)))
 	_level_mastery.clear()
 	for ch in chapters:
 		for lv in ch.get("levels", []):
 			var id := str(lv["id"])
-			var st := float(int(stars.get(id, 0))) / 3.0
-			var m := 0.0
-			if st > 0.0:
-				var rec: Dictionary = level_records.get(id, {})
-				var clean := 0.0
-				if not rec.is_empty():
-					clean = float(int(rec.get("last_clean", 0))) / float(maxi(1, int(rec.get("last_total", 0))))
-				m = clampf(st * 0.65 + clean * 0.25 - minf(float(wsum.get(id, 0.0)), 0.4), 0.0, 1.0)
-			_level_mastery[id] = m
+			var rec: Dictionary = level_records.get(id, {})
+			_level_mastery[id] = MasteryRules.level_mastery(int(stars.get(id, 0)),
+				int(rec.get("last_clean", 0)), int(rec.get("last_total", 0)),
+				float(wsum.get(id, 0.0)))
 	_domain_mastery.clear()
 	for d in DOMAINS:
 		var sum := 0.0
@@ -1043,7 +1020,7 @@ func _recompute_mastery() -> void:
 			for lv in ch.get("levels", []):
 				sum += level_mastery(str(lv["id"]))
 				cnt += 1
-		_domain_mastery[str(d["id"])] = (sum / float(cnt)) if cnt > 0 else 0.0
+		_domain_mastery[str(d["id"])] = MasteryRules.domain_mean(sum, cnt)
 
 ## 结算掌握度：重算缓存并解锁新达标的萌宠部件。notify=false 用于登录回填(静默)。
 func _eval_mastery(notify: bool = true) -> void:
@@ -1053,7 +1030,7 @@ func _eval_mastery(notify: bool = true) -> void:
 		var id := str(d["id"])
 		if pet_parts.has(id):
 			continue
-		if domain_mastery(id) >= MASTERY_UNLOCK:
+		if domain_mastery(id) >= MasteryRules.MASTERY_UNLOCK:
 			pet_parts[id] = Time.get_datetime_string_from_system(false, true)
 			newly.append(d)
 	pet_stage = pet_parts.size()

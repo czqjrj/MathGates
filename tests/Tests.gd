@@ -36,6 +36,8 @@ func _run() -> void:
 	_test_textbook()
 	_test_player_rules()
 	_test_economy_rules()
+	_test_pet_rules()
+	_test_mastery_rules()
 	_test_adventure()
 	_test_inline_math()
 	print("TESTS: %d passed, %d failed" % [_pass, _fail])
@@ -495,6 +497,76 @@ func _test_economy_rules() -> void:
 	_eq(EconomyRules.mission_progress("answers", 10, 0, 100, 100), 0, "mission 无增量 0")
 	_eq(EconomyRules.mission_progress("answers", 10, 0, 105, 100), 0, "mission 指标回退守卫 0")
 	_eq(EconomyRules.mission_progress("answers", 10, 0, 100, 130), 10, "mission 超额封顶 goal")
+
+## A4 第三刀：萌宠养成纯规则 PetRules(好感分层/饥饿/标签/跨会话衰减/投喂)。全部构造数据单测。
+func _test_pet_rules() -> void:
+	# —— 好感度分层(投喂次数 3/8 分界) ——
+	_eq(PetRules.affection_tier(0), 0, "tier 0 次 = 初识")
+	_eq(PetRules.affection_tier(2), 0, "tier 2 次 = 初识")
+	_eq(PetRules.affection_tier(3), 1, "tier 3 次 = 熟悉")
+	_eq(PetRules.affection_tier(7), 1, "tier 7 次 = 熟悉")
+	_eq(PetRules.affection_tier(8), 2, "tier 8 次 = 黏人")
+	_eq(PetRules.affection_tier(99), 2, "tier 99 次 = 黏人")
+
+	# —— 饥饿判定(0.35 边界) ——
+	_ok(PetRules.is_hungry(0.34), "hungry 0.34")
+	_ok(not PetRules.is_hungry(0.35), "hungry 0.35 边界不算饿")
+	_ok(not PetRules.is_hungry(0.9), "hungry 0.9")
+
+	# —— 状态标签 ——
+	_eq(PetRules.mood_label(0.75), "开心", "mood 0.75 开心")
+	_eq(PetRules.mood_label(0.5), "一般", "mood 0.5 一般")
+	_eq(PetRules.mood_label(0.44), "低落", "mood 0.44 低落")
+	_eq(PetRules.satiety_label(0.7), "吃饱", "satiety 0.7 吃饱")
+	_eq(PetRules.satiety_label(0.5), "半饱", "satiety 0.5 半饱")
+	_eq(PetRules.satiety_label(0.39), "好饿", "satiety 0.39 好饿")
+
+	# —— 跨会话衰减 ——
+	var d: Dictionary = PetRules.decay(1.0, 0.8, 0.0)
+	_ok(is_equal_approx(float(d["satiety"]), 1.0) and is_equal_approx(float(d["mood"]), 0.8),
+		"decay 0 天原样返回")
+	d = PetRules.decay(1.0, 0.8, 1.0)
+	_ok(is_equal_approx(float(d["satiety"]), 0.68), "decay 1 天饱食 1.0->0.68")
+	_ok(is_equal_approx(float(d["mood"]), 0.55), "decay 1 天心情回到基准 0.55")
+	d = PetRules.decay(1.0, 0.9, 0.5)
+	_ok(is_equal_approx(float(d["mood"]), 0.725), "decay 半天心情 lerp -> 0.725")
+	d = PetRules.decay(0.2, 0.9, 30.0)
+	_ok(is_equal_approx(float(d["satiety"]), 0.15), "decay 30 天饱食地板 0.15")
+	_ok(is_equal_approx(float(d["mood"]), 0.55), "decay 30 天心情=基准")
+	d = PetRules.decay(1.0, 0.1, 0.01)
+	_ok(is_equal_approx(float(d["mood"]), 0.2), "decay 心情地板 0.2")
+	d = PetRules.decay(1.0, 0.3, 1.0)
+	_ok(is_equal_approx(float(d["mood"]), 0.55), "心情低于基准时向基准回升")
+
+	# —— 投喂心情 ——
+	_ok(is_equal_approx(PetRules.feed_mood(0.5), 0.62), "feed 心情 +0.12")
+	_ok(is_equal_approx(PetRules.feed_mood(0.9), 1.0), "feed 心情封顶 1.0")
+
+## A4 第三刀：领域掌握度纯公式 MasteryRules(错题权重/单关掌握度/领域均值/阈值)。
+func _test_mastery_rules() -> void:
+	# —— 错题权重(0.1/次，封顶 0.5) ——
+	_ok(is_equal_approx(MasteryRules.mistake_weight(0), 0.0), "mistake 0 次 = 0")
+	_ok(is_equal_approx(MasteryRules.mistake_weight(3), 0.3), "mistake 3 次 = 0.3")
+	_ok(is_equal_approx(MasteryRules.mistake_weight(5), 0.5), "mistake 5 次 = 0.5 封顶")
+	_ok(is_equal_approx(MasteryRules.mistake_weight(9), 0.5), "mistake 9 次仍 0.5")
+
+	# —— 单关掌握度(0.65 星级 + 0.25 清关 - 惩罚) ——
+	_ok(is_equal_approx(MasteryRules.level_mastery(0, 3, 3, 0.0), 0.0), "mastery 未通关恒 0")
+	_ok(is_equal_approx(MasteryRules.level_mastery(3, 3, 3, 0.0), 0.9), "mastery 满表现 0.9")
+	var expect := 0.65 / 3.0 + 0.25 * 2.0 / 3.0 - 0.3
+	_ok(absf(MasteryRules.level_mastery(1, 2, 3, 0.3) - expect) < 0.0001, "mastery 1星 对2/3 错0.3 加权")
+	_ok(is_equal_approx(MasteryRules.level_mastery(3, 3, 3, 1.0), 0.5), "mastery 错题惩罚封顶 0.4")
+	_ok(is_equal_approx(MasteryRules.level_mastery(3, 0, 3, 0.4), 0.25), "mastery 全错清关 0.25")
+	_ok(is_equal_approx(MasteryRules.level_mastery(3, 0, 0, 0.0), 0.65), "mastery 无记录除零守卫")
+	_ok(is_equal_approx(MasteryRules.level_mastery(1, 0, 0, 5.0), 0.0), "mastery 惩罚过深 clamp 下界 0")
+
+	# —— 领域均值 ——
+	_ok(is_equal_approx(MasteryRules.domain_mean(2.0, 4), 0.5), "domain_mean 2/4 = 0.5")
+	_ok(is_equal_approx(MasteryRules.domain_mean(0.0, 0), 0.0), "domain_mean 空 = 0 不除零")
+
+	# —— 达标/生疏阈值(萌宠部件解锁与生疏判定的单一来源) ——
+	_ok(is_equal_approx(MasteryRules.MASTERY_UNLOCK, 0.5), "解锁阈值 0.5")
+	_ok(is_equal_approx(MasteryRules.MASTERY_STALE, 0.35), "生疏阈值 0.35")
 
 ## C1/C2：重复通关不再无限刷经验/金币；当日重试降级星级上限。
 func _test_anti_farm() -> void:
