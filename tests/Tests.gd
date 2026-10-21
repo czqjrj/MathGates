@@ -37,6 +37,9 @@ func _run() -> void:
 	_test_srs_rules()
 	_test_srs_store()
 	_test_srs_flow()
+	_test_user_store()
+	_test_report_rules()
+	_test_report_flow()
 	_test_focus()
 	_test_accuracy()
 	_test_economy()
@@ -837,6 +840,187 @@ func _test_srs_flow() -> void:
 	GameData.srs_plan = saved_plan
 	GameData.coins = saved_coins
 	GameData.coins_earned = saved_earned
+	GameData.total_questions = saved_q
+	GameData.total_correct = saved_c
+	GameData.current_user = saved_user
+
+## A4：存档层拆分（rules/UserStore.gd）——空白档、快照、载入钳制与错题迁移（纯字典，不碰磁盘）。
+func _test_user_store() -> void:
+	# blank_user：字段齐全，created 由调用方给（本文件不依赖系统时钟）
+	var b := UserStore.blank_user("2026-10-21")
+	_eq(str(b["created"]), "2026-10-21", "store: blank user keeps created")
+	_eq(int(b["coins"]), 0, "store: blank user starts with 0 coins")
+	_eq((b["wrong_log"] as Dictionary).size(), 0, "store: blank user has an empty wrong log")
+	_eq((b["activity"] as Array).size(), 0, "store: blank user has an empty activity log")
+
+	# snapshot：运行时状态 → 存档 dict（last_chapter_id ↔ last_chapter）
+	var st := {
+		"avatar": "boss", "player_exp": 12, "coins": 30, "coins_earned": 40, "stars": {"L1": 2},
+		"total_questions": 9, "total_correct": 7, "wrong_log": {"L1#0": {"count": 1}},
+		"srs_plan": {}, "level_records": {}, "pet_fed": 2, "regions_seen": 1,
+		"pet_satiety": 0.5, "pet_mood": 0.6, "pet_last_seen": 99, "pet_parts": {}, "pet_stage": 0,
+		"medals": {}, "chapter_order": ["c1"], "last_chapter_id": "ch1",
+		"owned_avatars": ["player"], "hint_tokens": 1, "coin_boost": 2, "best_streak": 4,
+		"last_login_date": "2026-10-20", "login_streak": 3, "daily_date": "2026-10-21",
+		"daily_base": {}, "daily_peak_streak": 5, "daily_claimed": {}, "chests_claimed": {},
+		"events_seen": {}, "activity": [{"date": "2026-10-21", "answered": 3}],
+	}
+	var snap := UserStore.snapshot(st, "2026-10-01")
+	_eq(str(snap["last_chapter"]), "ch1", "store: snapshot maps last_chapter_id")
+	_eq(snap.has("last_chapter_id"), false, "store: snapshot drops the runtime-only key")
+	_eq(str(snap["created"]), "2026-10-01", "store: snapshot keeps created")
+	_eq(int(snap["coins"]), 30, "store: snapshot copies coins")
+	_eq((snap["activity"] as Array).size(), 1, "store: snapshot keeps the activity log")
+
+	# parse：缺字段取默认值
+	var base := {"stars": {"L1": 0, "L2": 0}}
+	var ids := ["player", "boss"]
+	var p := UserStore.parse({}, base, ids)
+	_eq(int(p["coins"]), 0, "store: parse defaults coins")
+	_eq(float(p["pet_satiety"]), 1.0, "store: parse defaults satiety")
+	_eq(float(p["pet_mood"]), 0.8, "store: parse defaults mood")
+	_eq((p["owned_avatars"] as Array).size(), 2, "store: a legacy save unlocks every avatar")
+	_eq((p["chapter_order"] as Array).size(), 0, "store: parse defaults the chapter order")
+	_eq((p["activity"] as Array).size(), 0, "store: parse defaults the activity log")
+	_eq((p["stars"] as Dictionary).size(), 2, "store: parse keeps the known star keys")
+
+	# parse：越界值钳制、未知关卡 id 丢弃
+	var p2 := UserStore.parse({"pet_satiety": 9.0, "pet_mood": -3.0, "stars": {"L1": 3, "ZZ": 5}}, base, ids)
+	_eq(float(p2["pet_satiety"]), 1.0, "store: parse clamps satiety")
+	_eq(float(p2["pet_mood"]), 0.2, "store: parse clamps mood")
+	_eq(int(p2["stars"]["L1"]), 3, "store: parse restores a known star")
+	_eq(p2["stars"].has("ZZ"), false, "store: parse drops unknown star ids")
+
+	# parse：默认值依赖别的字段的几项
+	var p3 := UserStore.parse({"coins_earned": 77, "pet_parts": {"seq": 1}}, base, ids)
+	_eq(int(p3["coins_earned"]), 77, "store: parse keeps coins_earned")
+	_eq(int(p3["pet_stage"]), 1, "store: parse defaults pet_stage from pet_parts")
+	var p4 := UserStore.parse({"coins": 50}, base, ids)
+	_eq(int(p4["coins_earned"]), 50, "store: parse falls back coins_earned to coins")
+
+	# 迁移：错题 module 统一为规范领域 id
+	var wl := {"L1#0": {"level_id": "L1", "module": ""}, "bad": 42}
+	var fixed := UserStore.normalize_wrong_modules(wl, func(_id: String) -> String: return "seq")
+	_eq(str(fixed["L1#0"]["module"]), "seq", "store: wrong module migrated to the domain id")
+	_eq(fixed.has("bad"), true, "store: non-dictionary entries survive the migration")
+
+## G3：学习报告规则（rules/ReportRules.gd + rules/ReportExport.gd）——日历日、活动日志、汇总、家长视图与导出。
+func _test_report_rules() -> void:
+	# 日历日换算：纯日历，不涉时区
+	_eq(ReportRules.date_of(ReportRules.index_of("2026-10-21")), "2026-10-21", "report: date round-trips")
+	_eq(ReportRules.index_of("2026-10-22") - ReportRules.index_of("2026-10-21"), 1, "report: consecutive days differ by 1")
+	_eq(ReportRules.index_of("2026-03-01") - ReportRules.index_of("2026-02-28"), 1, "report: leap-year day math")
+	_eq(ReportRules.index_of("2026-12-31") - ReportRules.index_of("2026-01-01"), 364, "report: year span is 365 days")
+	_eq(ReportRules.index_of("bad"), 0, "report: an invalid date maps to 0")
+
+	# 最近 N 天：升序，末位是今天
+	var dates := ReportRules.recent_dates("2026-10-21", 7)
+	_eq(dates.size(), 7, "report: 7 days requested")
+	_eq(str(dates[0]), "2026-10-15", "report: the range starts 6 days ago")
+	_eq(str(dates[6]), "2026-10-21", "report: the range ends today")
+
+	# 活动日志：累加、建日、排序
+	var act: Array = []
+	act = ReportRules.bump(act, "2026-10-21", "answered", 3)
+	_eq(act.size(), 1, "report: the first bump creates a day")
+	_eq(int((act[0] as Dictionary)["answered"]), 3, "report: bump accumulates")
+	act = ReportRules.bump(act, "2026-10-20", "correct", 2)
+	act = ReportRules.bump(act, "2026-10-20", "answered", 2)
+	_eq(act.size(), 2, "report: another day is added")
+	_eq(str((act[0] as Dictionary)["date"]), "2026-10-20", "report: the activity log stays sorted")
+	_eq(int(ReportRules.day_record(act, "2026-10-21")["answered"]), 3, "report: day record found")
+	_eq(ReportRules.day_record(act, "1999-01-01").size(), 0, "report: a missing day returns an empty record")
+
+	# 汇总：只统计窗口内，正确率与活跃天
+	var sum := ReportRules.summarize(act, "2026-10-21", 7)
+	_eq(int(sum["answered"]), 5, "report: summary counts the answers")
+	_eq(int(sum["correct"]), 2, "report: summary counts the correct answers")
+	_eq(int(round(float(sum["accuracy"]) * 100.0)), 40, "report: summary accuracy")
+	_eq(int(sum["active_days"]), 2, "report: summary active days")
+	_eq((sum["daily"] as Array).size(), 7, "report: summary has one row per day")
+	_eq(str((sum["daily"] as Array)[6]["date"]), "2026-10-21", "report: the daily row ends today")
+	var sum30 := ReportRules.summarize(act, "2026-10-21", 30)
+	_eq((sum30["daily"] as Array).size(), 30, "report: the month report has 30 rows")
+	_eq(int(sum30["answered"]), 5, "report: the month report keeps the same answers")
+
+	# 薄弱点：领域级，不带关卡名
+	var weak := ReportRules.weak_points([
+		{"domain": {"id": "seq", "title": "数列·律动"}, "mastery": 0.42, "wrong_count": 5},
+		{"domain": {"id": "conic", "title": "圆锥曲线·曲线"}, "mastery": 0.31, "wrong_count": 3},
+	], 1)
+	_eq(weak.size(), 1, "report: weak points honor the limit")
+	_eq(str(weak[0]["title"]), "数列·律动", "report: weak point title")
+	_eq(int(weak[0]["mastery"]), 42, "report: weak point mastery is a percentage")
+	_eq(weak[0].has("name"), false, "report: a weak point carries no level name")
+
+	# 家长视图：只有汇总量与领域名
+	var pv := ReportRules.parent_view(sum, weak)
+	_eq(int(pv["answered"]), 5, "report: parent view answers")
+	_eq(int(pv["accuracy"]), 40, "report: parent view accuracy")
+	_eq((pv["weak_titles"] as Array).size(), 1, "report: parent view weak titles")
+	_eq(str(pv["note"]).contains("不含题目原文"), true, "report: parent view states the privacy rule")
+	_eq(ReportExport.parent_advice(pv).contains("数列"), true, "report: parent advice names the weak domain")
+	_eq(ReportExport.parent_advice({"answered": 0, "weak_titles": []}), "本期暂无学习记录。", "report: empty parent advice")
+
+	# 导出：文本 / CSV / JSON
+	var txt := ReportExport.report_text(sum, weak)
+	_eq(txt.contains("2026-10-15"), true, "report: the text report carries the range")
+	_eq(txt.contains("正确率"), true, "report: the text report carries the accuracy")
+	_eq(txt.contains("不联网"), true, "report: the text report states it is local")
+	var csv := ReportExport.report_csv(sum)
+	_eq(csv.begins_with("date,answered,correct,stars,clears,reviews"), true, "report: csv header")
+	_eq(csv.strip_edges().split("\n").size(), 8, "report: csv has one row per day")
+	_eq(typeof(JSON.parse_string(ReportExport.report_json(sum))), TYPE_DICTIONARY, "report: json parses back")
+
+## G3：门面流程——作答进活动日志、报告汇总、家长视图不泄露题目、导出可用。
+func _test_report_flow() -> void:
+	var saved_act: Array = GameData.activity
+	var saved_wrong: Dictionary = GameData.wrong_log
+	var saved_plan: Dictionary = GameData.srs_plan
+	var saved_q := GameData.total_questions
+	var saved_c := GameData.total_correct
+	var saved_user := GameData.current_user
+	GameData.current_user = ""      # 避免落盘真实存档
+	GameData.activity = []
+	GameData.wrong_log = {}
+	GameData.srs_plan = {}
+	GameData.total_questions = 0
+	GameData.total_correct = 0
+
+	# ① 答对 + 答错各一次 → 当日 answered=2、correct=1
+	GameData.record_answer("__rep__", 0, "q0", true, -1, -1, "seq")
+	GameData.record_answer("__rep__", 1, "q1", false, 1, 2, "seq")
+	var today_rec := ReportRules.day_record(GameData.activity, GameData._today())
+	_eq(int(today_rec.get("answered", 0)), 2, "report: answers are logged")
+	_eq(int(today_rec.get("correct", 0)), 1, "report: correct answers are logged")
+
+	# ② 汇总门面反映活动
+	var s := GameData.report_summary(7)
+	_eq(int(s["answered"]), 2, "report: the summary sees the answers")
+	_eq(int(round(float(s["accuracy"]) * 100.0)), 50, "report: the summary accuracy")
+	_eq(int(s["active_days"]), 1, "report: the summary active days")
+
+	# ③ 家长视图：不含题目原文、不含题号
+	var pv := GameData.parent_view(7)
+	_eq(int(pv["answered"]), 2, "report: the parent view sees the answers")
+	var pj := JSON.stringify(pv)
+	_eq(pj.contains("__rep__"), false, "report: the parent view leaks no level id")
+	_eq(pj.contains("q0"), false, "report: the parent view leaks no question text")
+
+	# ④ 导出三种格式都可用
+	_eq(GameData.report_csv(7).contains("answered"), true, "report: csv export")
+	_eq(typeof(JSON.parse_string(GameData.report_json(7))), TYPE_DICTIONARY, "report: json export")
+	_eq(GameData.report_text(7).contains("不联网"), true, "report: text export")
+
+	# ⑤ 活动日志能进存档、也能读回来
+	var snap := UserStore.snapshot({"activity": GameData.activity}, "2026-10-21")
+	_eq((snap["activity"] as Array).size(), 1, "report: the activity log enters the save file")
+	var back := UserStore.parse(snap, {"stars": {}}, ["player"])
+	_eq((back["activity"] as Array).size(), 1, "report: the activity log survives the round-trip")
+
+	GameData.activity = saved_act
+	GameData.wrong_log = saved_wrong
+	GameData.srs_plan = saved_plan
 	GameData.total_questions = saved_q
 	GameData.total_correct = saved_c
 	GameData.current_user = saved_user

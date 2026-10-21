@@ -74,7 +74,7 @@
 | **F7** | 授权与第三方声明缺失（LICENSE / 素材来源 / 教材改编） | **P0** | ✅ LICENSE+第三方声明齐备、排除 GPLv3 字体；残留：标题字体替换/素材签字 |
 | **G1** | 错题间隔重复（SRS 遗忘曲线排程） | **P1** | ✅ 已完成（2026-10-21 第三十三轮）：Leitner 阶梯 1/3/7/16/35 + 日序号到期 + 连对 4 次毕业 + 今日待复习入口（首页「复习 N」/错题本卡片）；旧档无排程视为立即到期 |
 | **G2** | 关卡作者工具链（编辑器 + 实时预览） | **P1** | 🟡 预览器 + 脚手架已落地（`LevelPreview.tscn` + `scaffold_level.gd`，入 CI）；编辑态仅覆盖 q/ask/opts/ans/hint/explain/scene |
-| **G3** | 学习报告 / 家长视图（可导出、含趋势） | **P2** | 无导出、无时间维度 |
+| **G3** | 学习报告 / 家长视图（可导出、含趋势） | **P2** | ✅ 已完成（2026-10-21 第三十四轮）：活动日志按天累积（保留 120 天）+ 逐日趋势柱状 + 周报/月报文本 + CSV/JSON 本地导出 + 家长只读摘要（**不含题目原文**，默认不联网）；同轮拆存档层 `rules/UserStore.gd`，GameData 1593 → 1558 行 |
 | **G4** | 云同步（**决策项：暂不实施**，需先做隐私评估） | **P2** | 先由 F5 覆盖大部分场景 |
 | **G5** | 音效与配乐（**决策项：先确认是否刻意不做**） | **P2** | 无 BGM，音效已完整 |
 
@@ -2240,6 +2240,8 @@
 - ⚠️ **A4 遗留**：`GameData.gd` 已到 **1593/1600** 行（距红线仅 7 行）。下一个动 `GameData` 的条目
   **必须先拆存档层**（`_blank_user` / `_snapshot` / `_apply` / `_normalize_*` ≈ 80 行 → `scripts/rules/UserStore.gd`），
   否则立刻超限。
+  - ✅ **已于 2026-10-21 第三十四轮（G3）兑现**：存档层拆到 `scripts/rules/UserStore.gd`，
+    `GameData.gd` 回到 **1558/1600**。
 
 ---
 
@@ -2302,7 +2304,7 @@
 
 ---
 
-### [ ] G3 · 学习报告 / 家长视图（P2）
+### [x] G3 · 学习报告 / 家长视图（P2）
 
 **现状（证据）**
 - `scripts/screens/UserProfile.gd` 已有**不错的统计展示**：
@@ -2328,6 +2330,44 @@
 - 能生成一份可分享的周报（图片或文本），含趋势而非只有快照；
 - 能导出结构化数据（JSON/CSV）用于外部查看；
 - 家长视图不含题目原文，且默认本地生成。
+
+**实施记录（2026-10-21 第三十四轮）**
+- **先还 A4 欠账——存档层拆分**：新增 `scripts/rules/UserStore.gd`（140 行）接管存档 dict ⇄ 运行时字段的
+  **全部转换**（`_blank_user` / `_snapshot` / `_apply` / 错题 `module` 迁移），`GameData.gd` 只剩
+  `_state()` / `_avatar_ids()` 三个薄门面 → **1593 → 1558 行**（红线 1600，余量 42 行）。
+  顺手补了**脏档兜底**：字段缺失 / `null` / 类型不对一律取默认值（`_int_of` / `_float_of` / `_str_of` /
+  `_dict_of`），手改过的存档不该让载入炸掉——实测原实现遇到显式 `null` 会在 `int(null)` 处整段中止。
+- **新增时间维度——活动日志**：新存档字段 `activity`，按天一条
+  `{date, answered, correct, stars, clears, reviews}`，**最多保留 120 天**（更早裁掉，存档不无限膨胀）。
+  埋点：`record_answer()` 记 `answered`/`correct`，`grant_stars()` 记星级**净增**，
+  `record_level_result()` 记 `clears`，`_srs_answer()` 对**此前已在复习计划里**的题记 `reviews`。
+- **规则层（守 A4 红线，纯逻辑进 `rules/`）**：
+  - `scripts/rules/ReportRules.gd`（150 行）——日历日换算（`date_of` / `index_of` / `recent_dates`，
+    按 **UTC 解释的纯日历日**，不随时区/夏令时漂移）、活动日志（`bump` / `day_record`）、
+    汇总（`summarize`：正确率、活跃天、逐日补行）、`weak_points`（**领域级**，不带关卡名）、
+    `parent_view`（家长只读摘要）。
+  - `scripts/rules/ReportExport.gd`（54 行）——文本周报 / 家长建议 / CSV / JSON 序列化。
+  - `GameData` 只留**门面**（`report_summary` / `report_weak` / `parent_view` / `parent_advice` /
+    `report_text` / `report_csv` / `report_json`）。
+- **界面**：新增 `scripts/screens/LearningReport.gd`（280 行）+ `scenes/LearningReport.tscn`，
+  自上而下：学习概览 → **逐日趋势柱状图**（沉默的日子也画出来，空档本身就是信息）→ 薄弱领域 →
+  可分享的报告文本（可复制到剪贴板）→ 家长视图只读摘要 → 导出数据（CSV / JSON / 文本，写到 `user://`）。
+  入口：**首页顶栏「报告」** + 档案库「学习报告 · 家长视图」卡片；`Scene.SCENE_LABELS` 登记「学习报告」。
+- **隐私最小化**：家长视图只给**汇总量 + 领域级薄弱点名**，**不含题目原文 / 关卡名 / 作答内容**；
+  报告默认**本地生成、不联网、不上传**（与 F1 策略一致），导出内容只有日期与计数。
+- **验收覆盖**：`Tests._test_user_store`（存档层：空白档 / 快照 / 载入钳制 / 迁移 / 脏档兜底）、
+  `Tests._test_report_rules`（日历日往返与闰年 / 活动日志累加与排序 / 汇总正确率与活跃天 /
+  家长视图不泄露关卡名 / 三种导出可用）、`Tests._test_report_flow`（门面全流程 + **家长视图不泄露题号与
+  题目原文** + 存档往返）、`UiSmoke._test_report_screen`（报告页**真实构建** + 周期切换切到 30 天 +
+  导出按钮存在 + 隐私说明可见）。
+- **回归基线**：`CHECKED 105 scripts, 0 failures` / `TESTS: 1976 passed, 0 failed`（+76）/
+  `SMOKE: 286 ok, 0 fail` / `UI-SMOKE: 405 ok, 0 fail`（+12）/ `LabSmoke TMP_OK` /
+  `LEVEL-PREVIEW-SMOKE: 7474 ok, 0 fail` / `QUESTION-CHECK 0 new（7 known）` /
+  `KNOWLEDGE hard-gaps=0` / `ASSETS 30.20 MB（3131 files）banned=0`。
+- ⚠️ **残留**：「复习完成率」「错题净增」「薄弱领域变化（环比）」三项**未单列**——
+  当前复习量按「进入复习计划的题数」计，不是「到期且已复习」的完成率；
+  薄弱点取的是**当前诊断**（领域级快照），不是周期内的**变化量**。若要补，需要给
+  `srs_plan` 与错题账补「上周同期的领域分布」快照，属独立一轮。
 
 ---
 
@@ -2428,14 +2468,14 @@
 > `Parse Error: Could not find type "BossHud"`。用编辑器打开一次，或跑
 > `& "<godot472.exe>" --headless --path . --import`（新增 `class_name` 文件后同样要跑一次）。
 
-**当前回归基线**（改完请对照，数字只能升不能降；2026-10-21 G1 错题间隔重复后）：
-`CHECKED 101 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 1900 passed, 0 failed` / `SMOKE: 285 ok, 0 fail` /
-`UI-SMOKE: 393 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
+**当前回归基线**（改完请对照，数字只能升不能降；2026-10-21 G3 学习报告 / 家长视图后）：
+`CHECKED 105 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 1976 passed, 0 failed` / `SMOKE: 286 ok, 0 fail` /
+`UI-SMOKE: 405 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
 `LEVEL-PREVIEW-SMOKE: 7474 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
 `QUESTION-CHECK: 26 files / 269 levels / 1057 questions / 0 new / 7 known / 3 warnings`
 （A5 校验器，存量问题见下方基线；看板另有「干扰项黑名单命中 0 处」见 B5、「anim 演示覆盖 **13/26 文件**」见 D2）/
 `PERF idle 171 / lab_plane 259 / lab3d 251`（µs，headless CPU 处理耗时，见 `tools/perf_probe.tscn`）/
-`ASSETS: 30.15 MB over 3122 files … banned=0, oversize=0`（A13 护栏）/
+`ASSETS: 30.20 MB over 3131 files … banned=0, oversize=0`（A13 护栏）/
 `KNOWLEDGE: 27 chapters / 275 points / 275 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `LATEX-PROBE: conic C4 68 / C5 76 / C6 68 段 / 0 失败`（E2 收官）、
 `vector_physics 26 段 / 0 失败`、`prob_simulate 14 段 / 0 失败`（E3 收官；**探针需按组分进程**，
@@ -2479,6 +2519,14 @@
   「减弱动效」档只关装饰动效，表意动效常开。
 - 经济（C1/C2 已修复）：`grant_stars` 经验仅随星级提升发放；`settle_level` 首达全额、重复通关 ×0.3 且每日最多 3 次；
   同一关当日第 3 次尝试起星级上限降为 2（`Tests._test_anti_farm` 覆盖）。
+- 学习报告（G3 已建立）：新存档字段 `activity`（按天一条
+  `{date, answered, correct, stars, clears, reviews}`，**保留 120 天**）——旧档缺该字段时天然为空，
+  载入即用、无需迁移；报告窗口「本周 7 天 / 本月 30 天」，导出 CSV/JSON **只含日期与计数**，
+  家长视图**只含汇总量与领域级薄弱点名**（无题目原文 / 关卡名）。见 G3。
+- 代码结构红线（A4，2026-10-21 G3 后）：`scripts/rules/*.gd` 每文件 ≤200（当前最大 **PlayerRules 195**，
+  新增 `UserStore 140` / `ReportRules 150` / `ReportExport 54`）、`GameData.gd` ≤1600（当前 **1558**，
+  存档层已拆到 `rules/UserStore.gd`）、`TheoremTree.gd` ≤1550（1541）、`StageBase.gd` ≤1200（1195）。
+  `tools/check_all.gd` 超限即红灯。
 
 ### 9.3 审计数据的复现方法
 

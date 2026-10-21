@@ -61,6 +61,7 @@ func _ready() -> void:
 
 	await _test_keyboard_stage()
 	await _test_srs_review_entry()
+	await _test_report_screen()
 
 	print("UI-SMOKE: %d ok, %d fail" % [_pass, _fail])
 	GameData.logout()
@@ -319,6 +320,52 @@ func _test_srs_review_entry() -> void:
 	# 清理：抹掉本用例造出来的错题与排程
 	GameData.wrong_log.erase("%s#%d" % [lid, qi])
 	GameData.srs_plan.erase("%s#%d" % [lid, qi])
+
+## G3：学习报告页——概览/趋势/家长只读摘要卡、本地导出入口与周期切换。
+func _test_report_screen() -> void:
+	var scr = load("res://scenes/LearningReport.tscn").instantiate()
+	add_child(scr)
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	var labels := ""
+	var btns := []
+	for n in _walk(scr):
+		if n is Label:
+			labels += (n as Label).text + "\n"
+		elif n is Button:
+			btns.append(str((n as Button).text))
+	_ok(labels.find("学习概览") >= 0, "report ui: 有学习概览卡")
+	_ok(labels.find("逐日趋势") >= 0, "report ui: 有逐日趋势卡")
+	_ok(labels.find("薄弱领域") >= 0, "report ui: 有薄弱领域卡")
+	_ok(labels.find("家长视图") >= 0, "report ui: 有家长视图卡")
+	_ok(labels.find("不含题目原文") >= 0, "report ui: 家长视图标注了隐私规则")
+	_ok(labels.find("不联网") >= 0, "report ui: 标注本地生成不联网")
+	var has_csv := false
+	var has_json := false
+	for b in btns:
+		if b.find("导出 CSV") >= 0:
+			has_csv = true
+		if b.find("导出 JSON") >= 0:
+			has_json = true
+	_ok(has_csv, "report ui: 有 CSV 导出按钮")
+	_ok(has_json, "report ui: 有 JSON 导出按钮")
+
+	# 周期切换：切到「本月」后窗口应变 30 天，且按钮显示选中态
+	var wk = scr.get("_wk_btn")
+	var mo = scr.get("_mo_btn")
+	_ok(wk != null and mo != null, "report ui: 顶栏有周期切换按钮")
+	if mo != null:
+		(mo as Button).emit_signal("pressed")
+		await get_tree().process_frame
+		await get_tree().process_frame
+		var s = scr.get("_summary")
+		_ok(s is Dictionary, "report ui: 有报告汇总数据")
+		if s is Dictionary:
+			_eq(int((s as Dictionary).get("days", 0)), 30, "report ui: 切到本月后窗口为 30 天")
+		_ok((mo as Button).text.find("✓") >= 0, "report ui: 本月按钮显示选中态")
+	scr.queue_free()
+	await get_tree().process_frame
 
 # ---------------------------------------------------------------- 工具
 

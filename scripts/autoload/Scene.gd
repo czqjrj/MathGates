@@ -13,6 +13,7 @@ const SCENE_LABELS := {
 	"res://scenes/TheoremTree.tscn": "知识体系",
 	"res://scenes/WrongNotebook.tscn": "错题笔记",
 	"res://scenes/UserProfile.tscn": "档案库",
+	"res://scenes/LearningReport.tscn": "学习报告",
 	"res://scenes/Achievements.tscn": "成就馆",
 	"res://scenes/DailyMissions.tscn": "每日任务",
 	"res://scenes/Shop.tscn": "星辉市集",

@@ -118,6 +118,10 @@ func _build_topbar() -> void:
 	, 14)
 	_review_btn.visible = false
 	hb.add_child(_review_btn)
+	hb.add_child(UI.ghost_button("报告", func() -> void:
+		Sound.play("select")
+		Scene.goto("res://scenes/LearningReport.tscn")
+	, 14))
 	hb.add_child(UI.ghost_button("退出登录", func() -> void:
 		GameData.logout()
 		Sound.play("select")

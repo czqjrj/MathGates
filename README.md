@@ -20,7 +20,8 @@ scripts/         总控与共享逻辑(按职责分目录)
 				   TtsOnline.gd(在线语音)
   save/            SaveIO.gd(存档原子读写:临时文件校验 + 备份 + 替换;GameData 存档 IO 委托于此)
   screens/         BootSplash.gd(品牌启动屏,规避引擎启动屏缩放 bug)、Login.gd、MainHub.gd、
-				   WorldMap.gd、UserProfile.gd、SettingsMenu.gd、ChapterNode.gd、
+				   WorldMap.gd、UserProfile.gd、LearningReport.gd(学习报告/家长视图 G3)、
+				   SettingsMenu.gd、ChapterNode.gd、
 				   StageBase.gd(闯关共享骨架:
 				   HUD/答题面板/选项/结算/上下关导航;由 LabStage、Lab3DStage 继承,
 				   服务于圆/椭圆/向量/直线及各 LAB 章节,以及立体几何/空间向量的 3D 章节)
@@ -35,7 +36,11 @@ scripts/         总控与共享逻辑(按职责分目录)
   rules/           纯规则层(A4 上帝对象拆分的落点:无全局状态、可单测,门面方法留在原文件):
 				   PlayerRules(称号/勋章/防刷)、EconomyRules(经济结算)、PetRules/MasteryRules、
 				   StageRules(结算/答题乱序/填空解析)、TreeRules(知识树分组/解锁)、
-				   CurriculumRules(教材排序/章节合并);单文件 ≤200 行红线
+				   CurriculumRules(教材排序/章节合并)、
+				   SrsRules/SrsStore(G1 错题间隔重复:阶梯/到期/毕业 + 排程存取)、
+				   UserStore(存档层:存档 dict ⇄ 运行时字段转换 + 脏档兜底)、
+				   ReportRules/ReportExport(G3 学习报告:日历日/活动日志/汇总/家长视图 + 文本·CSV·JSON 导出);
+				   单文件 ≤200 行红线
 data/            课程表与题库 JSON(curriculum/questions + 各模块 *_levels.json)
 art/             美术 PNG/WebP + 公式小图 + Android 图标 + 标题字体(art/fonts/,放入行书 ttf 即自动启用)
 audio/           音效 wav
@@ -65,7 +70,7 @@ build/           导出产物(APK,git 忽略)
 | 文件 | 上限 | 现状(2026-10-21) |
 |---|---|---|
 | `scripts/rules/*.gd`(每文件) | 200 | 最大 PlayerRules 195 |
-| `scripts/autoload/GameData.gd` | 1600 | 1593 |
+| `scripts/autoload/GameData.gd` | 1600 | 1558 |
 | `scripts/modules/line/TheoremTree.gd` | 1550 | 1541 |
 | `scripts/screens/StageBase.gd` | 1200 | 1195 |
 
@@ -191,6 +196,35 @@ build/           导出产物(APK,git 忽略)
 覆盖：`Tests._test_srs_rules` + `_test_srs_store` + `_test_srs_flow`（模拟 5 天推进 1/3/7/16/35、
 答错重置、连对毕业、旧档兜底、当日不重复计奖）+ `UiSmoke._test_srs_review_entry`
 （首页「复习 N」按钮与错题本「今日待复习」卡片真实构建）。
+
+## 学习报告 / 家长视图（G3）
+
+学习不再只有「当前状态」一个快照，而是有**时间维度**：每天记一笔活动（作答 / 答对 / 新增星 /
+通关 / 复习），攒成可回看的**逐日趋势**；家长侧只看**汇总量与领域级薄弱点**，看不到题目。
+
+| 环节 | 规则 |
+|---|---|
+| 活动日志 | `activity` 按天一条 `{date, answered, correct, stars, clears, reviews}`，**最多保留 120 天**（更早裁掉，存档不无限膨胀） |
+| 报告周期 | 「本周」= 近 7 天、「本月」= 近 30 天；窗口内逐日补行，**沉默的日子也画出来**（空档本身就是信息） |
+| 薄弱点 | 取自诊断结果的**领域级**掌握度 + 错次；只有领域名，**不带关卡名与题目原文** |
+| 家长视图 | 只读摘要：学习量 / 正确率 / 活跃天数 / 新增星 / 需关注领域 + 一句建议；**默认本地生成、不联网、不上传** |
+| 导出 | 文本周报（可复制到剪贴板）、CSV（逐日明细）、JSON（结构化）——都写到应用私有目录 `user://` |
+
+**入口**：首页顶栏「报告」、档案库「学习报告 · 家长视图」卡片 → `res://scenes/LearningReport.tscn`。
+报告页从上到下：学习概览 → 逐日趋势柱状图 → 薄弱领域 → 可分享的报告文本 → 家长视图 → 导出数据。
+
+代码分层（守 A4 行数红线，纯逻辑进 `rules/`）：
+`scripts/rules/ReportRules.gd`（日历日换算 / 活动日志 / 汇总 / 薄弱点 / 家长视图）+
+`scripts/rules/ReportExport.gd`（文本周报 / 家长建议 / CSV / JSON 序列化）；
+`GameData` 只留门面（`report_summary()` / `report_weak()` / `parent_view()` / `report_text()` / `report_csv()` / `report_json()`）。
+
+同时完成 **A4 遗留：存档层拆分**——`scripts/rules/UserStore.gd` 接管存档 dict ⇄ 运行时字段的
+全部转换（`_blank_user` / `_snapshot` / `_apply` / 错题 module 迁移），`GameData.gd` 从 1593 行降到 1558 行；
+脏档兜底（字段缺失 / null / 类型不对 → 取默认值，不让载入炸掉）。
+
+覆盖：`Tests._test_user_store` + `_test_report_rules` + `_test_report_flow`（日历日往返与闰年、
+活动日志累加与排序、汇总正确率与活跃天、家长视图**不泄露题号与题目原文**、三种导出可用、存档往返）
++ `UiSmoke._test_report_screen`（报告页真实构建、周期切换切到 30 天、导出按钮存在、隐私说明可见）。
 
 ## 自检与 CI
 

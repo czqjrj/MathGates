@@ -16,6 +16,7 @@ func _ready() -> void:
 		"res://scenes/MainHub.tscn",
 		"res://scenes/WorldMap.tscn",
 		"res://scenes/UserProfile.tscn",
+		"res://scenes/LearningReport.tscn",
 		"res://scenes/Login.tscn",
 		"res://scenes/TheoremTree.tscn",
 		"res://scenes/WrongNotebook.tscn",

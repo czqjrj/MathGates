@@ -102,6 +102,7 @@ var total_correct: int = 0              # 累计答对数
 var wrong_log: Dictionary = {}          # "level_id#qi" -> {level_id, qi, name, module, count, last_chose, correct}
 var srs_plan: Dictionary = {}           # G1 复习排程 "level_id#qi" -> {level_id, qi, name, module, step, ok_streak, interval_days, due_day, last_wrong_day, first_wrong_at, last_review_at, wrong_count, last_reward_day}
 var level_records: Dictionary = {}      # level_id -> {attempts, best_stars, last_clean, last_total, trap_missed}
+var activity: Array = []               # G3 活动日志（按天）：[{date, answered, correct, stars, clears, reviews}]
 var pet_fed: int = 0                    # 萌宠投喂次数
 var pet_satiety: float = 1.0            # 饱食度 0..1(随时间下降，投喂回满)
 var pet_mood: float = 0.8               # 心情 0..1(答对/投喂上升，答错/久未互动下降)
@@ -522,12 +523,19 @@ func grant_stars(level_id: String, n: int) -> void:
 	var prev := int(stars.get(level_id, 0))
 	var best := maxi(prev, n)
 	stars[level_id] = best
+	# G3：星级净增计入当日活动日志（学习报告的「新增 ★」）
+	if best > prev:
+		_activity("stars", best - prev)
 	# C1：经验只在星级提升时发放——重复通关不再无限刷经验（公式在 EconomyRules）。
 	player_exp += EconomyRules.exp_for_star_gain(prev, best)
 	_eval_mastery()
 	_eval_medals()
 	_save()
 	progress_changed.emit()
+
+## G3：记一笔当日活动（活动日志只留最近 ReportRules.KEEP_DAYS 天）。
+func _activity(metric: String, delta: int = 1) -> void:
+	activity = ReportRules.bump(activity, _today(), metric, delta)
 
 func reset_progress() -> void:
 	for k in stars.keys():
@@ -998,8 +1006,11 @@ func set_chapter_order(ids: Array) -> void:
 ## 记录一次作答(出错位置与重点的数据来源)
 func record_answer(level_id: String, qi: int, qname: String, correct: bool, chose: int, ans: int, module: String) -> void:
 	total_questions += 1
+	# G3：当日活动日志（学习报告/家长视图的趋势来源）
+	_activity("answered")
 	if correct:
 		total_correct += 1
+		_activity("correct")
 		_srs_answer(level_id, qi, qname, module, true)
 		# 答对即偿还该题历史错账：逐次递减，结清时清出并奖励
 		var key := "%s#%d" % [level_id, qi]
@@ -1044,6 +1055,8 @@ func record_level_result(level_id: String, level_stars: int, clean: int, total: 
 		r["attempts_today"] = 0
 	r["attempts_today"] = int(r.get("attempts_today", 0)) + 1
 	level_records[level_id] = r
+	# G3：通关计入当日活动日志
+	_activity("clears")
 	_eval_mastery()
 	_eval_medals()
 	_save()
@@ -1176,8 +1189,12 @@ func wrong_count_for(level_id: String, qi: int) -> int:
 ## 连续答对 SrsRules.GRADUATE_OK 次即「毕业」（移出复习计划）。
 ## 奖励：复习答对 +SrsRules.REVIEW_COINS（同一题当日只发一次），毕业 +SrsRules.GRADUATE_COINS。
 func _srs_answer(level_id: String, qi: int, qname: String, module: String, correct: bool) -> void:
+	# G3：此前已在复习计划里的题，计入「复习」指标
+	var had_plan := srs_plan.has("%s#%d" % [level_id, qi])
 	var r := SrsStore.answer(srs_plan, level_id, qi, qname, module, correct,
 		int(Time.get_unix_time_from_system()), today_day(), _today())
+	if had_plan:
+		_activity("reviews")
 	var g := int(r["coins"])
 	if g > 0:
 		coins += g
@@ -1359,118 +1376,34 @@ func avatar_info(id: String) -> Dictionary:
 			return a
 	return AVATARS[0]
 
+## 运行时状态打包（字段名见 UserStore.FIELDS，与成员变量同名）
+func _state() -> Dictionary:
+	var st := {}
+	for f in UserStore.FIELDS:
+		st[f] = get(f)
+	return st
+
+## 全部头像 id（旧档缺 owned_avatars 时视为「全解锁」，与旧实现一致）
+func _avatar_ids() -> Array:
+	var ids := []
+	for a in AVATARS:
+		ids.append(str(a["id"]))
+	return ids
+
 func _blank_user() -> Dictionary:
-	return {
-		"avatar": "player", "player_exp": 0, "coins": 0, "stars": {},
-		"total_questions": 0, "total_correct": 0, "wrong_log": {}, "srs_plan": {}, "level_records": {}, "pet_fed": 0, "regions_seen": 0,
-		"pet_satiety": 1.0, "pet_mood": 0.8, "pet_last_seen": 0,
-		"pet_parts": {}, "pet_stage": 0,
-		"medals": {},
-		"chapter_order": [],
-		"last_chapter": "",
-		"coins_earned": 0,
-		"owned_avatars": ["player"],
-		"hint_tokens": 0, "coin_boost": 0,
-		"best_streak": 0, "last_login_date": "", "login_streak": 0,
-		"daily_date": "", "daily_base": {}, "daily_peak_streak": 0, "daily_claimed": {},
-		"chests_claimed": {}, "events_seen": {},
-		"created": Time.get_datetime_string_from_system(false, true),
-	}
+	return UserStore.blank_user(Time.get_datetime_string_from_system(false, true))
 
 ## 把当前运行时的进度打包成存档 dict
 func _snapshot() -> Dictionary:
-	return {
-		"avatar": avatar, "player_exp": player_exp, "coins": coins, "stars": stars,
-		"total_questions": total_questions, "total_correct": total_correct,
-		"wrong_log": wrong_log, "srs_plan": srs_plan, "level_records": level_records, "pet_fed": pet_fed, "regions_seen": regions_seen,
-		"pet_satiety": pet_satiety, "pet_mood": pet_mood, "pet_last_seen": pet_last_seen,
-		"pet_parts": pet_parts, "pet_stage": pet_stage,
-		"medals": medals,
-		"chapter_order": chapter_order,
-		"last_chapter": last_chapter_id,
-		"coins_earned": coins_earned,
-		"owned_avatars": owned_avatars,
-		"hint_tokens": hint_tokens, "coin_boost": coin_boost,
-		"best_streak": best_streak, "last_login_date": last_login_date, "login_streak": login_streak,
-		"daily_date": daily_date, "daily_base": daily_base, "daily_peak_streak": daily_peak_streak, "daily_claimed": daily_claimed,
-		"chests_claimed": chests_claimed, "events_seen": events_seen,
-		"created": users.get(current_user, {}).get("created", Time.get_datetime_string_from_system(false, true)),
-	}
+	return UserStore.snapshot(_state(),
+		str(users.get(current_user, {}).get("created", Time.get_datetime_string_from_system(false, true))))
 
-## 把某个用户的存档载入运行时
+## 把某个用户的存档载入运行时（A4：转换逻辑已下沉到 rules/UserStore.gd）
 func _apply(d: Dictionary) -> void:
-	player_exp = int(d.get("player_exp", 0))
-	coins = int(d.get("coins", 0))
-	avatar = str(d.get("avatar", "player"))
-	total_questions = int(d.get("total_questions", 0))
-	total_correct = int(d.get("total_correct", 0))
-	pet_fed = int(d.get("pet_fed", 0))
-	pet_satiety = clampf(float(d.get("pet_satiety", 1.0)), 0.15, 1.0)
-	pet_mood = clampf(float(d.get("pet_mood", 0.8)), 0.2, 1.0)
-	pet_last_seen = int(d.get("pet_last_seen", 0))
-	var pp = d.get("pet_parts", {})
-	pet_parts = pp if typeof(pp) == TYPE_DICTIONARY else {}
-	pet_stage = int(d.get("pet_stage", pet_parts.size()))
-	regions_seen = int(d.get("regions_seen", 0))
-	coins_earned = int(d.get("coins_earned", int(d.get("coins", 0))))
-	hint_tokens = int(d.get("hint_tokens", 0))
-	coin_boost = int(d.get("coin_boost", 0))
-	best_streak = int(d.get("best_streak", 0))
-	last_login_date = str(d.get("last_login_date", ""))
-	login_streak = int(d.get("login_streak", 0))
-	daily_date = str(d.get("daily_date", ""))
-	daily_peak_streak = int(d.get("daily_peak_streak", 0))
-	var db = d.get("daily_base", {})
-	daily_base = db if typeof(db) == TYPE_DICTIONARY else {}
-	var dc = d.get("daily_claimed", {})
-	daily_claimed = dc if typeof(dc) == TYPE_DICTIONARY else {}
-	var cc = d.get("chests_claimed", {})
-	chests_claimed = cc if typeof(cc) == TYPE_DICTIONARY else {}
-	var es = d.get("events_seen", {})
-	events_seen = es if typeof(es) == TYPE_DICTIONARY else {}
-	var oa = d.get("owned_avatars", null)
-	if typeof(oa) == TYPE_ARRAY:
-		owned_avatars = oa.duplicate()
-	else:
-		# 旧档：默认为已拥有全部头像(不影响既有体验)
-		owned_avatars = []
-		for a in AVATARS:
-			owned_avatars.append(str(a["id"]))
-	var co = d.get("chapter_order", [])
-	chapter_order = co.duplicate() if typeof(co) == TYPE_ARRAY else []
-	last_chapter_id = str(d.get("last_chapter", ""))
-	var wl = d.get("wrong_log", {})
-	wrong_log = wl if typeof(wl) == TYPE_DICTIONARY else {}
-	_normalize_wrong_modules()
-	var sp = d.get("srs_plan", {})
-	srs_plan = sp if typeof(sp) == TYPE_DICTIONARY else {}
-	_normalize_srs_plan()
-	var lr = d.get("level_records", {})
-	level_records = lr if typeof(lr) == TYPE_DICTIONARY else {}
-	var md = d.get("medals", {})
-	medals = md if typeof(md) == TYPE_DICTIONARY else {}
-	for k in stars.keys():
-		stars[k] = 0
-	var sv = d.get("stars", {})
-	if typeof(sv) == TYPE_DICTIONARY:
-		for k in sv.keys():
-			if stars.has(k):
-				stars[k] = int(sv[k])
-
-## 迁移：把历史错题记录的 module 统一为规范领域 id(旧档可能是 ""、"line" 或章节 id)
-func _normalize_wrong_modules() -> void:
-	for key in wrong_log.keys():
-		var rec = wrong_log[key]
-		if typeof(rec) != TYPE_DICTIONARY:
-			continue
-		var did := domain_id_for_level(str(rec.get("level_id", "")))
-		if did != "" and str(rec.get("module", "")) != did:
-			rec["module"] = did
-			wrong_log[key] = rec
-
-## 迁移(G1)：复习排程的字段补全与钳制——旧档缺字段时按「立即到期」处理，天然兼容。
-func _normalize_srs_plan() -> void:
-	srs_plan = SrsStore.normalize(srs_plan)
+	var st := UserStore.parse(d, _state(), _avatar_ids())
+	for k in st.keys():
+		set(k, st[k])
+	wrong_log = UserStore.normalize_wrong_modules(wrong_log, Callable(self, "domain_id_for_level"))
 
 func list_users() -> Array:
 	var arr: Array = []
@@ -1590,3 +1523,35 @@ func _save_soon() -> void:
 func _flush_pending_save() -> void:
 	if _save_pending:
 		_save()
+
+# ---------------------------------------------------------------- 学习报告 / 家长视图(G3)
+## 报告周期（天）：7 = 周报，30 = 月报。
+const REPORT_RANGES := [7, 30]
+
+## 学习报告汇总（纯聚合；规则在 rules/ReportRules.gd）。
+func report_summary(days: int = 7) -> Dictionary:
+	return ReportRules.summarize(activity, _today(), days)
+
+## 报告里的薄弱点（领域级；不含关卡名与题目原文）。
+func report_weak(limit: int = 3) -> Array:
+	return ReportRules.weak_points(diagnose()["weak"], limit)
+
+## 家长视图：只含汇总量与领域薄弱点名——隐私最小化、默认本地生成不联网。
+func parent_view(days: int = 7) -> Dictionary:
+	return ReportRules.parent_view(report_summary(days), report_weak(3))
+
+## 家长视角的建议文案。
+func parent_advice(days: int = 7) -> String:
+	return ReportExport.parent_advice(parent_view(days))
+
+## 可分享的文本周报 / 月报（不含题目原文）。
+func report_text(days: int = 7) -> String:
+	return ReportExport.report_text(report_summary(days), report_weak(3))
+
+## 导出 CSV（逐日明细）。
+func report_csv(days: int = 7) -> String:
+	return ReportExport.report_csv(report_summary(days))
+
+## 导出 JSON（结构化，可外部查看）。
+func report_json(days: int = 7) -> String:
+	return ReportExport.report_json(report_summary(days))

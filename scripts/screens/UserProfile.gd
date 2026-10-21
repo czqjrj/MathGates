@@ -79,6 +79,9 @@ func _build_body() -> void:
 	# ---- 进阶 · 等级与称号 ----
 	vb.add_child(_advance_card())
 
+	# ---- 学习报告 / 家长视图(G3) ----
+	vb.add_child(_report_card())
+
 	# ---- 学情诊断 · 萌宠分析 ----
 	vb.add_child(_diagnosis_card())
 
@@ -96,6 +99,34 @@ func _build_body() -> void:
 
 	vb.add_child(UI.gap(20))
 	UI.stagger_in(vb, 0.035, 0.24, 10)
+
+## 学习报告入口（G3）：周报/月报、逐日趋势、家长只读摘要与本地导出。
+func _report_card() -> Control:
+	var card := UI.card(true, UI.COL_ACCENT, UI.COL_GLASS, Color("#5b8cff", 0.3), 14, 22, Color("#5b8cff", 0.18))
+	card.custom_minimum_size = Vector2(UiConst.CARD_W, 0)
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 10)
+	card.add_child(box)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 14)
+	box.add_child(head)
+	head.add_child(UI.make_label("学习报告 · 家长视图", 20, UI.COL_TEXT))
+	var sp := Control.new()
+	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(sp)
+	head.add_child(UI.ghost_button("打开学习报告", func() -> void:
+		Sound.play("select")
+		Scene.goto("res://scenes/LearningReport.tscn")
+	, 14))
+	var s := GameData.report_summary(7)
+	box.add_child(UI.make_label("本周作答 %d 题 · 正确率 %d%% · 活跃 %d 天 · 新增 ★%d" % [
+		int(s.get("answered", 0)),
+		int(round(float(s.get("accuracy", 0.0)) * 100.0)),
+		int(s.get("active_days", 0)),
+		int(s.get("stars", 0)),
+	], 14, UI.COL_TEXT_DIM))
+	box.add_child(UI.make_label("报告在本地生成、不联网；家长视图只含汇总量，不含题目原文。", 12, UI.COL_TEXT_DIM))
+	return card
 
 ## 进阶卡片：推演等级 + 称号进度(两条进度条)
 func _advance_card() -> Control:
