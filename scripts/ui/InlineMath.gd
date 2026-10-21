@@ -119,22 +119,9 @@ static func inline_formulas(text: String, h: int = 26) -> String:
 	out += text.substr(last)
 	return out
 
-## 去掉 {f:名称} 标记(用于朗读)，替换为可朗读的口播文案(而非笼统的「公式」)。
+## 去掉 {f:名称}/$$LaTeX$$ 与 Unicode 数学符号，替换为可朗读口播文案（统一规则见 SpeechRules）。
 static func strip_formulas(text: String) -> String:
-	text = _dollar_speech(text)
-	if text.find("{f:") < 0:
-		return text
-	if _inline_re == null:
-		_inline_re = RegEx.new()
-		_inline_re.compile("\\{f:([A-Za-z0-9_]+)\\}")
-	var out := ""
-	var last := 0
-	for m in _inline_re.search_all(text):
-		out += text.substr(last, m.get_start() - last)
-		out += _formula_speech(m.get_string(1))
-		last = m.get_end()
-	out += text.substr(last)
-	return out
+	return SpeechRules.strip_formulas(text, FORMULA_SPEECH, FORMULA_LATEX)
 
 ## A10：正文里的 $$LaTeX$$ 直接经 MicroTeX 渲染为内联公式图，无需 FORMULA_LATEX 命名。
 ## 扩展未就绪(如无头 CI / 未打包)时回退为原始 LaTeX 文本(便于排查；正式包内自带扩展)。
@@ -151,19 +138,8 @@ static func _inline_dollar(text: String, h: int) -> String:
 	out += text.substr(last)
 	return out
 
-## $$LaTeX$$ 的口播文案(朗读用)。
-static func _dollar_speech(text: String) -> String:
-	if text.find("$$") < 0:
-		return text
-	_ensure_dollar_re()
-	var out := ""
-	var last := 0
-	for m in _dollar_re.search_all(text):
-		out += text.substr(last, m.get_start() - last)
-		out += _latex_to_speech(m.get_string(1))
-		last = m.get_end()
-	out += text.substr(last)
-	return out
+## 口播转换($$LaTeX$$/{f:名称}/Unicode 数学符号 → 中文)已迁至 SpeechRules(B13):
+## InlineMath.strip_formulas 为薄转发,所有 tts 出口共用同一条转换路径。
 
 static func _ensure_dollar_re() -> void:
 	if _dollar_re == null:
@@ -177,48 +153,6 @@ static func _latex_bbcode(latex: String, h: int) -> String:
 		if bb != "":
 			return bb
 	return latex
-
-## {f:名称} → 口播文案：优先 FORMULA_SPEECH；否则用 FORMULA_LATEX 通用转换；再否则「公式」。
-static func _formula_speech(name: String) -> String:
-	if FORMULA_SPEECH.has(name):
-		return str(FORMULA_SPEECH[name])
-	if FORMULA_LATEX.has(name):
-		return _latex_to_speech(str(FORMULA_LATEX[name]))
-	return "公式"
-
-## 通用 LaTeX → 可朗读中文(覆盖常见命令/幂/根号/分式/绝对值)。
-static func _latex_to_speech(tex: String) -> String:
-	var t := tex
-	var frac := RegEx.new()
-	frac.compile("\\\\frac\\{([^{}]+)\\}\\{([^{}]+)\\}")
-	for _i in 3:
-		t = frac.sub(t, "$2分之$1", true)
-	var sq := RegEx.new()
-	sq.compile("\\\\sqrt\\{([^{}]+)\\}")
-	t = sq.sub(t, "根号$1", true)
-	var pw := RegEx.new()
-	pw.compile("\\^\\{([^{}]+)\\}")
-	t = pw.sub(t, "的$1次方", true)
-	var absre := RegEx.new()
-	absre.compile("\\|([^|]+)\\|")
-	t = absre.sub(t, "$1的绝对值", true)
-	var cmd := {
-		"\\geq": "大于等于", "\\ge": "大于等于", "\\leq": "小于等于", "\\le": "小于等于",
-		"\\neq": "不等于", "\\ne": "不等于", "\\approx": "约等于",
-		"\\to": "到", "\\rightarrow": "到", "\\infty": "无穷",
-		"\\cup": "并", "\\cap": "交", "\\cdot": "点", "\\times": "乘以",
-		"\\div": "除以", "\\pm": "正负", "\\in": "属于", "\\sum": "求和",
-		"\\alpha": "阿尔法", "\\beta": "贝塔", "\\theta": "西塔", "\\pi": "派",
-		"\\Delta": "德尔塔", "\\lambda": "兰姆达",
-		">": "大于", "<": "小于",
-	}
-	for k in cmd:
-		t = t.replace(k, cmd[k])
-	t = t.replace("^2", "的平方").replace("^3", "的立方").replace("^", "的")
-	t = t.replace("=-", "等于负").replace("(-", "负括号").replace("(", "").replace(")", "")
-	t = t.replace("=", "等于").replace("+", "加").replace("-", "减")
-	t = t.replace("{", "").replace("}", "").replace("\\", "")
-	return t
 
 ## {f:名称} 直挂公式的 name→LaTeX 映射（迁移到运行时渲染）。
 ## 缺失的 name 仍回退 art/line/formulas/<name>.png。

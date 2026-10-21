@@ -42,6 +42,7 @@ func _run() -> void:
 	_test_tree_rules()
 	_test_legacy_binding()
 	_test_curriculum_rules()
+	_test_speech_rules()
 	_test_adventure()
 	_test_inline_math()
 	print("TESTS: %d passed, %d failed" % [_pass, _fail])
@@ -897,6 +898,44 @@ func _test_curriculum_rules() -> void:
 	_ok(CurriculumRules.chapter_in_domain("k_circle", d, members), "domain 合并卡按成员归属")
 	_ok(not CurriculumRules.chapter_in_domain("m_vec", d, members), "domain 方法章不归属")
 	_ok(CurriculumRules.chapter_in_domain("k_line", d, {}), "domain 无合并映射按自身")
+
+## B13 第一步：口播转换器 SpeechRules 单测(纯函数)。三条路径共用一个出口:
+## $$LaTeX$$ / {f:名称} / Unicode 数学符号 → 可朗读中文。
+func _test_speech_rules() -> void:
+	# —— 旧转换器行为保持(回归) ——
+	var s1 := SpeechRules.latex_to_speech("\\frac{1}{a}")
+	_ok(s1.find("a分之") >= 0, "speech frac 分母在前 " + s1)
+	_ok(SpeechRules.latex_to_speech("x^{2}").find("平方") >= 0, "speech 上标平方")
+	_ok(SpeechRules.latex_to_speech("\\sqrt{2}").find("根号") >= 0, "speech 根号")
+	_ok(SpeechRules.latex_to_speech("|x|").find("绝对值") >= 0, "speech 绝对值")
+	_ok(SpeechRules.latex_to_speech("a\\le b").find("小于等于") >= 0, "speech \\le")
+	# —— B13 扩展 ——
+	_ok(SpeechRules.latex_to_speech("\\dfrac{a}{b}").find("b分之") >= 0, "speech dfrac")
+	_ok(SpeechRules.latex_to_speech("a_{n}").find("下标") >= 0, "speech 下标带括号")
+	_ok(SpeechRules.latex_to_speech("a_n").find("下标") >= 0, "speech 下标裸写")
+	_eq(SpeechRules.latex_to_speech("\\vec{AB}"), "AB向量", "speech 向量")
+	_eq(SpeechRules.latex_to_speech("\\bar{x}"), "x拔", "speech 均值横线")
+	_eq(SpeechRules.latex_to_speech("\\hat{p}"), "p帽", "speech 估计记号")
+	_eq(SpeechRules.latex_to_speech("\\mathbb{R}"), "实数集", "speech 数集 R")
+	_ok(SpeechRules.latex_to_speech("A\\Rightarrow B").find("推出") >= 0, "speech 右箭头推出")
+	_ok(SpeechRules.latex_to_speech("\\forall x").find("对任意") >= 0, "speech 全称量词")
+	_ok(SpeechRules.latex_to_speech("\\chi^{2}").find("卡方") >= 0, "speech 卡方")
+	_ok(SpeechRules.latex_to_speech("60^{\\circ}").find("60度") >= 0, "speech 角度不在幂替换前被吃")
+	_ok(SpeechRules.latex_to_speech("\\triangle ABC").find("三角形") >= 0, "speech 三角形")
+	_eq(SpeechRules.latex_to_speech("\\overline{z}"), "z的共轭", "speech 共轭")
+	_ok(SpeechRules.latex_to_speech("\\varnothing").find("空集") >= 0, "speech 空集")
+	# —— Unicode 正文符号 ——
+	_eq(SpeechRules.unicode_speech("x²≤3"), "x的平方小于等于3", "speech unicode²≤")
+	_eq(SpeechRules.unicode_speech("aₙ的极限"), "a下标n的极限", "speech unicode 下标")
+	_eq(SpeechRules.unicode_speech("A∪B∩C"), "A并B交C", "speech unicode 并交")
+	# —— 统一入口(注入映射) ——
+	var out := SpeechRules.strip_formulas("当 $$x>0$$ 时, {f:zzz} 与 x²", { "foo": "甲" }, { "bar": "b^2" })
+	_ok(out.find("大于") >= 0, "speech strip $$ 内大于")
+	_ok(out.find("公式") >= 0, "speech strip 未知命名回退公式")
+	_ok(out.find("平方") >= 0, "speech strip 正文 unicode")
+	# —— 盲点命令统计 ——
+	_eq(SpeechRules.unmapped_commands("\\foo \\bar \\foo").size(), 1, "speech 盲点去重")
+	_eq(SpeechRules.unmapped_commands("\\frac{x}{y}").size(), 0, "speech 已知命令非盲点")
 
 ## C1/C2：重复通关不再无限刷经验/金币；当日重试降级星级上限。
 func _test_anti_farm() -> void:

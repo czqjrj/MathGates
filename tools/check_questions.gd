@@ -18,7 +18,7 @@ extends SceneTree
 ##   A12 跨文件重名关卡数据
 ##   A17 命名/映射自检（章节 lab → 数据文件存在性 / 孤儿数据文件 / 单复数近名文件对）
 ##   B7  图片选项计数（看板）      B9  轮次标签编号错位（清单）
-##   B13 speak 口播字段计数（看板） D2  anim 演示覆盖率（看板）
+##   B13 口播覆盖率/盲点命令（看板） D2  anim 演示覆盖率（看板）
 
 const DATA_DIR := "res://data"
 const BASELINE_PATH := "res://tools/check_questions_baseline.txt"
@@ -50,7 +50,6 @@ var _ans_hist := {}
 var _img_opt_count := 0
 var _img_opt_questions := 0
 var _anim_files := {}
-var _speak_count := 0
 var _num_mismatch := 0
 var _num_mismatch_files := {}
 var _dup_stem := 0
@@ -58,6 +57,12 @@ var _bad_distractor := 0
 var _key_owner := {}
 var _inline_missing := {}
 var _inline_checked := 0
+## B13 口播看板：公式段总数 / 含公式字段数 / 盲点命令计数。
+var _n_speech_seg := 0
+var _n_speech_field := 0
+var _speech_blind := {}
+var _re_dollar_b: RegEx = null
+var _re_named_b: RegEx = null
 ## A17：近名文件对（单复数）看板信息，如 "conic/conics(均在用)"。
 var _naming_pairs: Array[String] = []
 ## A10：剥离正文里的 $$LaTeX$$ 片段（已由运行时渲染，不再走 inline_math.json 覆盖检查）。
@@ -175,8 +180,6 @@ func _check_stage(path: String, key: String, group_no: int, idx: int, s: Variant
 		_check_inline(path, key, where + ".ask", str(st.get("ask", "")))
 		_check_label(path, key, group_no, where, st)
 		_check_anim(path, st)
-		if st.has("speak"):
-			_speak_count += 1
 		return
 	if typeof(opts) != TYPE_ARRAY:
 		_add(path, key, "%s opts 不是数组" % where)
@@ -251,8 +254,6 @@ func _check_stage(path: String, key: String, group_no: int, idx: int, s: Variant
 	_check_inline(path, key, where + ".tip", str(st.get("tip", "")))
 	_check_label(path, key, group_no, where, st)
 	_check_anim(path, st)
-	if st.has("speak"):
-		_speak_count += 1
 
 ## B9：轮次标签编号必须等于该关卡在本文件中的序号（如第 3 关的轮次应形如 "3-x"）。
 func _check_label(path: String, key: String, group_no: int, where: String, st: Dictionary) -> void:
@@ -381,6 +382,7 @@ func _scan_dir_refs(d: DirAccess, base: String, re: RegEx, referenced: Dictionar
 func _check_inline(path: String, key: String, field: String, t: String) -> void:
 	if t.strip_edges() == "":
 		return
+	_speech_scan(t)   # B13:在 $$ 段被剥掉前统计口播覆盖
 	if _dollar != null and t.find("$$") >= 0:
 		t = _dollar.sub(t, " ", true)
 	_inline_checked += 1
@@ -389,6 +391,30 @@ func _check_inline(path: String, key: String, field: String, t: String) -> void:
 		_inline_piece(path, key, field, t.substr(last, m.get_start() - last))
 		last = m.get_end()
 	_inline_piece(path, key, field, t.substr(last))
+
+## B13：口播覆盖统计——每个文本字段扫 $$LaTeX$$ 段与 {f:} 标记,记录段数与
+## 「盲点」(SpeechRules 不认识的 LaTeX 命令 / 未定义的命名公式)。
+func _speech_scan(t: String) -> void:
+	if _re_dollar_b == null:
+		_re_dollar_b = RegEx.new()
+		_re_dollar_b.compile("\\$\\$([^$]+)\\$\\$")
+	if _re_named_b == null:
+		_re_named_b = RegEx.new()
+		_re_named_b.compile("\\{f:([A-Za-z0-9_]+)\\}")
+	var segs := 0
+	var dollars := _re_dollar_b.search_all(t)
+	var named := _re_named_b.search_all(t)
+	segs += dollars.size() + named.size()
+	for m in dollars:
+		for c in SpeechRules.unmapped_commands(m.get_string(1)):
+			_speech_blind[c] = int(_speech_blind.get(c, 0)) + 1
+	for m in named:
+		var nm := m.get_string(1)
+		if not InlineMath.FORMULA_SPEECH.has(nm) and not InlineMath.FORMULA_LATEX.has(nm):
+			_speech_blind["{f:" + nm + "}"] = int(_speech_blind.get("{f:" + nm + "}", 0)) + 1
+	if segs > 0:
+		_n_speech_field += 1
+	_n_speech_seg += segs
 
 func _inline_piece(path: String, key: String, field: String, gap: String) -> void:
 	if gap.strip_edges() == "":
@@ -587,11 +613,17 @@ func _report() -> void:
 		% [ans0, (100.0 * float(ans0) / float(maxi(1, _n_choice))),
 			int(_ans_hist.get(1, 0)), int(_ans_hist.get(2, 0)), int(_ans_hist.get(3, 0))])
 	print("[看板] anim 演示覆盖: %d/%d 文件" % [_anim_files.size(), _n_files])
-	print("[看板] speak 口播字段: %d 处（见 B13）" % _speak_count)
 	print("[看板] 轮次编号错位: %d 处（%d 文件，见 B9）" % [_num_mismatch, _num_mismatch_files.size()])
 	print("[看板] 干扰项黑名单命中: %d 处（B5 目标 0；范畴错误型干扰项须换成错误路径型）" % _bad_distractor)
 	if not _naming_pairs.is_empty():
 		print("[看板] A17 近名文件对: %s（编辑时勿改错）" % "，".join(_naming_pairs))
+	var blind := ""
+	if not _speech_blind.is_empty():
+		var keys := _speech_blind.keys()
+		keys.sort()
+		blind = "；盲点: " + str(keys)
+	print("[看板] B13 口播: 公式段 %d 处（分布 %d 个文本字段）;盲点命令/公式 %d 种%s"
+		% [_n_speech_seg, _n_speech_field, _speech_blind.size(), blind])
 	_chapter_board()
 	if _inline_missing.size() > 0:
 		var tops: Array = _inline_missing.keys()

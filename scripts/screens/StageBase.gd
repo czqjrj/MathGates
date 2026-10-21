@@ -210,7 +210,8 @@ func _set_followup_question(s: Dictionary) -> void:
 		_set_q(ask)
 	else:
 		_q.text = ask
-		_q_speak = ask
+		# 追问轮与普通轮共用同一条口播路径(B13:曾一处 strip、一处不 strip)
+	_q_speak = UI.strip_formulas(ask)
 	UI.tts_say(_q_speak)
 
 # ================================================================ 萌宠
