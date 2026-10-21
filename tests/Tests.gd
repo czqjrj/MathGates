@@ -39,6 +39,7 @@ func _run() -> void:
 	_test_pet_rules()
 	_test_mastery_rules()
 	_test_stage_rules()
+	_test_tree_rules()
 	_test_adventure()
 	_test_inline_math()
 	print("TESTS: %d passed, %d failed" % [_pass, _fail])
@@ -676,6 +677,89 @@ func _test_stage_rules() -> void:
 	_ok(not StageRules.num_ok(1.06, 1.0, 0.05), "num 超出容差")
 	_ok(StageRules.num_ok(-2.0, -2.03, 0.05), "num 负数容差")
 	_ok(not StageRules.num_ok(2.0, -2.0, 0.05), "num 正负号不同")
+
+## A4 第六刀：知识树布局纯规则 TreeRules(关卡分组/Catmull-Rom 平滑)。全部构造数据单测。
+func _test_tree_rules() -> void:
+	# —— 分组："N-M" 编号 + 单元标题 + Boss 殿后 ——
+	var levels: Array = [
+		{ "id": "a", "name": "1-1 集合的含义" },
+		{ "id": "b", "name": "1-2 集合的运算" },
+		{ "id": "c", "name": "2-1 命题" },
+		{ "id": "d", "name": "隐藏Boss · 终局" },
+	]
+	var groups: Array = TreeRules.disasm_groups(levels, ["集合单元", "命题单元"], "集合论")
+	_eq(groups.size(), 3, "tree 3 组(含 Boss)")
+	_eq(groups[0]["title"], "集合单元", "tree 组 0 标题")
+	_eq(groups[0]["items"].size(), 2, "tree 组 0 两关")
+	_eq(groups[0]["items"][0]["code"], "1-1", "tree code 1-1")
+	_eq(groups[0]["items"][1]["code"], "1-2", "tree code 1-2")
+	_eq(groups[1]["items"][0]["code"], "2-1", "tree code 2-1")
+	_ok(bool(groups[2]["boss"]), "tree Boss 组标记")
+	_eq(groups[2]["title"], "隐藏挑战", "tree Boss 标题")
+	_eq(groups[2]["items"][0]["title"], "终局", "tree Boss 名清理")
+
+	# —— 显式 group 字段优先，无编号用顺序号 ——
+	levels = [
+		{ "id": "a", "name": "集合的交并补", "group": "基本概念" },
+		{ "id": "b", "name": "2-1 命题", "group": "基本概念" },
+		{ "id": "c", "name": "3-1 推理", "group": "推理" },
+	]
+	groups = TreeRules.disasm_groups(levels, [], "集合论")
+	_eq(groups.size(), 2, "tree 显式 group 两组")
+	_eq(groups[0]["title"], "基本概念", "tree 显式组名")
+	_eq(groups[0]["items"][0]["code"], "01", "tree 无编号用顺序号")
+	_eq(groups[0]["items"][1]["code"], "2-1", "tree 有编号仍用 N-M")
+	_eq(groups[1]["title"], "推理", "tree 第二显式组名")
+	_eq(groups[1]["items"][0]["code"], "3-1", "tree 有编号仍用 N-M")
+
+	# —— 单组回退模块标题；多组回退「单元 N」——
+	groups = TreeRules.disasm_groups([{ "id": "a", "name": "1-1 甲" }], [], "集合论")
+	_eq(groups.size(), 1, "tree 单组")
+	_eq(groups[0]["title"], "集合论", "tree 单组回退模块名")
+	groups = TreeRules.disasm_groups([
+		{ "id": "a", "name": "1-1 甲" },
+		{ "id": "b", "name": "2-1 乙" },
+	], [], "X")
+	_eq(groups[0]["title"], "单元 1", "tree 多组回退单元 1")
+	_eq(groups[1]["title"], "单元 2", "tree 多组回退单元 2")
+
+	# —— 只有 Boss / 空列表 ——
+	groups = TreeRules.disasm_groups([{ "id": "x", "name": "隐藏Boss · 唯一" }], [], "X")
+	_eq(groups.size(), 1, "tree 只有 Boss 也成组")
+	_ok(bool(groups[0]["boss"]), "tree 只有 Boss 标记")
+	_eq(groups[0]["title"], "隐藏挑战", "tree 只有 Boss 标题")
+	_eq(groups[0]["items"][0]["title"], "唯一", "tree 只有 Boss 名清理")
+	_eq(TreeRules.disasm_groups([], [], "X").size(), 0, "tree 空列表")
+
+	# —— 关卡元数据透传 ——
+	groups = TreeRules.disasm_groups([
+		{ "id": "a", "name": "1-1 集合", "technique": "韦恩图", "optional": true, "after": "lvl_x" },
+	], [], "X")
+	_eq(groups[0]["items"][0]["li"], 0, "tree li 透传")
+	_eq(groups[0]["items"][0]["technique"], "韦恩图", "tree technique 透传")
+	_ok(bool(groups[0]["items"][0]["optional"]), "tree optional 透传")
+	_eq(groups[0]["items"][0]["after"], "lvl_x", "tree after 透传")
+
+	# —— Catmull-Rom 平滑 ——
+	_eq(TreeRules.catmull_rom(PackedVector2Array(), 12).size(), 0, "curve 空输入")
+	_eq(TreeRules.catmull_rom(PackedVector2Array([Vector2(3, 4)]), 12).size(), 1, "curve 单点原样")
+	var c2 := TreeRules.catmull_rom(PackedVector2Array([Vector2(0, 0), Vector2(10, 0)]), 2)
+	_eq(c2.size(), 3, "curve 两点 2 段/段 → 3 点")
+	_ok(c2[0].is_equal_approx(Vector2(0, 0)), "curve 起点保留")
+	_ok(c2[1].is_equal_approx(Vector2(5, 0)), "curve 中点 5")
+	_ok(c2[2].is_equal_approx(Vector2(10, 0)), "curve 终点保留")
+	var c3 := TreeRules.catmull_rom(PackedVector2Array([Vector2(0, 0), Vector2(10, 0), Vector2(20, 0)]), 4)
+	_eq(c3.size(), 9, "curve 三点 4 段/段 → 9 点")
+	_ok(c3[0].is_equal_approx(Vector2(0, 0)) and c3[8].is_equal_approx(Vector2(20, 0)), "curve 三端点保留")
+	var flat := true
+	for p in c3:
+		if absf(p.y) > 0.0001:
+			flat = false
+	_ok(flat, "curve 共线点保持直线")
+	var c4 := TreeRules.catmull_rom(PackedVector2Array([Vector2(0, 0), Vector2(10, 0), Vector2(20, 0)]), 1)
+	_eq(c4.size(), 3, "curve per_seg=1 点数=输入")
+	_ok(c4[0].is_equal_approx(Vector2(0, 0)) and c4[1].is_equal_approx(Vector2(10, 0)) and c4[2].is_equal_approx(Vector2(20, 0)),
+		"curve per_seg=1 恒等")
 
 ## C1/C2：重复通关不再无限刷经验/金币；当日重试降级星级上限。
 func _test_anti_farm() -> void:

@@ -1048,7 +1048,8 @@ func _build_map(recenter_map: bool) -> void:
 	if _chapter_index < 0:
 		return
 	_levels = GameData.chapters[_chapter_index]["levels"]
-	_groups = _disasm_groups()
+	var gnames: Array = GROUP_TITLES.get(str(_mods[_module_idx]["id"]), [])
+	_groups = TreeRules.disasm_groups(_levels, gnames, str(_mods[_module_idx]["title"]))
 
 	# 支线节点(optional)从主路径抽离，单独排一行并用连线挂回主节点。
 	var main_groups: Array = []
@@ -1121,7 +1122,7 @@ func _build_map(recenter_map: bool) -> void:
 			})
 
 	if main_centers.size() >= 2:
-		var smooth := _catmull_rom(main_centers, 12)
+		var smooth := TreeRules.catmull_rom(main_centers, 12)
 		_path_pts = smooth
 		_add_path(smooth, 18.0, Color(0, 0, 0, 0.42))
 		_add_path(smooth, 7.0, Color(_mod_col, 0.16))
@@ -1262,33 +1263,6 @@ func _add_path(points: PackedVector2Array, width: float, color: Color) -> void:
 	line.antialiased = true
 	_content.add_child(line)
 
-func _catmull_rom(pts: PackedVector2Array, per_seg: int) -> PackedVector2Array:
-	if pts.size() < 2:
-		return pts
-	var ext := PackedVector2Array()
-	ext.append(pts[0])
-	ext.append_array(pts)
-	ext.append(pts[pts.size() - 1])
-	var out := PackedVector2Array()
-	for i in range(1, ext.size() - 2):
-		var p0 := ext[i - 1]
-		var p1 := ext[i]
-		var p2 := ext[i + 1]
-		var p3 := ext[i + 2]
-		for s in range(per_seg):
-			var t := float(s) / float(per_seg)
-			var t2 := t * t
-			var t3 := t2 * t
-			var p := 0.5 * (
-				(2.0 * p1)
-				+ (-p0 + p2) * t
-				+ (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * t2
-				+ (-p0 + 3.0 * p1 - 3.0 * p2 + p3) * t3
-			)
-			out.append(p)
-	out.append(pts[pts.size() - 1])
-	return out
-
 func _recenter() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -1296,79 +1270,6 @@ func _recenter() -> void:
 		return
 	_scroll.scroll_horizontal = 0
 	_scroll.scroll_vertical = 0
-
-func _disasm_groups() -> Array:
-	var explicit := false
-	for lv in _levels:
-		if str((lv as Dictionary).get("group", "")) != "":
-			explicit = true
-			break
-	var gmap: Dictionary = {}
-	var order: Array = []
-	var gtitle: Dictionary = {}
-	for li in _levels.size():
-		var lv: Dictionary = _levels[li]
-		var nm := str(lv.get("name", ""))
-		var is_boss := nm.contains("Boss") or nm.contains("隐藏")
-		var key := ""
-		var code := ""
-		if is_boss:
-			key = "b"
-			code = "BOSS"
-		else:
-			# 关卡名形如 "1-2 平行判定" 时用 "1-2" 作节点编号并按单元分组;
-			# 否则(如"集合的交并补")用顺序号,避免整段标题塞进节点圆环。
-			var parts := nm.split(" ", false)
-			var first := parts[0] if parts.size() > 0 else ""
-			var np := first.split("-", false)
-			var has_num := np.size() == 2 and np[0].is_valid_int() and np[1].is_valid_int()
-			if has_num:
-				code = first
-			else:
-				code = "%02d" % (li + 1)
-			# 合并章节各关卡自带 group(原章节标题) → 按该字段分单元；
-			# 普通章节沿用 "N-M" 的 N 分组。
-			var grp := str(lv.get("group", ""))
-			if explicit and grp != "":
-				key = "g:" + grp
-				gtitle[key] = grp
-			else:
-				key = "n:" + (str(int(np[0]) - 1) if has_num else "0")
-		if not gmap.has(key):
-			gmap[key] = { "items": [] }
-			if not is_boss:
-				order.append(key)
-		var item_title := str(nm)
-		if is_boss:
-			item_title = nm.replace("隐藏Boss · ", "").strip_edges()
-		gmap[key]["items"].append({
-			"li": li, "code": code,
-			"title": item_title,
-			"technique": str(lv.get("technique", "")),
-			"optional": bool(lv.get("optional", false)),
-			"after": str(lv.get("after", "")),
-		})
-	# 隐藏挑战(Boss)始终排在所有单元之后
-	if gmap.has("b"):
-		order.append("b")
-
-	var group_names: Array = GROUP_TITLES.get(str(_mods[_module_idx]["id"]), [])
-	var out: Array = []
-	for key in order:
-		var boss: bool = key == "b"
-		var title := "隐藏挑战"
-		if not boss and gtitle.has(key):
-			title = str(gtitle[key])
-		elif not boss:
-			var gidx := int(str(key).substr(2))
-			if gidx < group_names.size():
-				title = str(group_names[gidx])
-			elif order.size() == 1:
-				title = str(_mods[_module_idx]["title"])
-			else:
-				title = "单元 %d" % (gidx + 1)
-		out.append({ "title": title, "boss": boss, "items": gmap[key]["items"] })
-	return out
 
 # ---------------------------------------------------------------- 解锁与面板
 ## 当前单元(章节)的累计星数，用于 Boss 门 / 宝箱门槛。
