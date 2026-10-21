@@ -133,8 +133,22 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`09540b4`（`feat(A4)` 第三刀：PetRules + MasteryRules 双切）；本条 §0.3 更新随后以 `docs(TODO)` 提交并 push。
-- **本轮交付（2026-10-21，第十六轮）**：**A4 第三刀——萌宠养成 PetRules + 领域掌握度 MasteryRules 双切**（`09540b4`）。
+- **最后提交**：`b17edfc`（`feat(A4)` 第四刀：StageBase 结算纯规则 `StageRules`）；本条 §0.3 更新随后以 `docs(TODO)` 提交并 push。
+- **本轮交付（2026-10-21，第十七轮）**：**A4 第四刀——StageBase 结算纯规则 StageRules**（`b17edfc`）。
+  - **新增** `scripts/rules/StageRules.gd`（72 行）：星级判定 `judge_stars`（正确率 0.8/0.6 分界 →
+    陷阱扣 1 → 超时降 1 保底 1 星 → 守关失败归 0 → 当日重试上限，返回 `time_capped`/`star_capped`）；
+    奖励合成 `compose_reward`（基础 30 + 零失误×15 + 星级×20 + 满星 60 + 无陷阱 30 + 连击×3 +
+    首通 → 极速 40 → 连击倍率 → 金币翻倍，返回 `speed_bonus`/`combo_bonus`）；评级 `grade`（S/A/B/C）；
+    Boss 首通 `boss_first_clear` 与极速奖励 `speed_bonus_ok` 判定。
+  - **StageBase.gd 1291 → 1257 行**：`_finish` 的星级/超时/重试标记与奖励/极速/连击加成全部改走
+    `StageRules`（`combo_mult` 仍取 `ComboBar.multiplier`），`_grade` 门面委托；HUD/存档/结算面板
+    文案与动画不动，行为零变化（SMOKE/UI-SMOKE 覆盖关卡结算流程）。
+  - **新测试**：`_test_stage_rules()` 约 41 条构造断言——星级各降级路径/保底/限时边界、奖励
+    219→311→622 链式合成、首通 365、评级、首通/极速判定。
+  - 全量回归绿：`CHECKED **94**`（0 failures）/ `TESTS **1419**`（+41）/ `SMOKE 285` / `UI-SMOKE 367` /
+    `LabSmoke TMP_OK` / `LEVEL-PREVIEW-SMOKE 7474` / `QUESTION-CHECK 1057 题 0 new` /
+    `KNOWLEDGE 275 点 hard-gaps=0` / `ASSETS 30.02（3107 files，banned=0）`。
+- **第十六轮（2026-10-21，上一轮）**：**A4 第三刀——萌宠养成 PetRules + 掌握度 MasteryRules 双切**（`09540b4`）。
   - **新增** `scripts/rules/PetRules.gd`（49 行）：好感分层（投喂 3/8 次）、饥饿判定（0.35）、状态标签、
     跨会话衰减 `decay`（饱食 −0.32/天地板 0.15、心情向 0.55 回落/地板 0.2、离线天数 lerp 封顶 1 天）、
     投喂效果（饱食置满、心情 +0.12 封顶）。
@@ -211,10 +225,9 @@
 - **下次建议顺序**（按性价比）：
   > **2026-10-20 用户决策：暂停题目扩产，先做结构收敛。** B2 下限已全线达成（27/27 章 ≥ 5.0 题/关），
   > B1（21.4% → ≥30%）与 B2「上探 6~7 题/关中段」均为**纯内容批量生产**，可随时回归；当前转向 A/D/F 类结构问题。
-  1. **A4 继续第四刀** —— 三刀已落：`PlayerRules.gd` + `EconomyRules.gd` + `PetRules.gd`/`MasteryRules.gd`
-     （第三刀 `09540b4`，GameData 1670→1647，规则层合计 315 行），全量九件套绿。
-     **GameData 纯公式已基本切完**（剩余多为存档 IO/课程表/多用户/错题本状态逻辑）；
-     下一刀候选转大节点脚本：`StageBase`（1291 行）节奏层/结算 reward 合成、`TheoremTree`（1655 行）
+  1. **A4 继续第五刀** —— 四刀已落：`PlayerRules`/`EconomyRules`/`PetRules`+`MasteryRules`/`StageRules`
+     （第四刀 `b17edfc`，StageBase 1291→1257，规则层五文件合计 387 行），全量九件套绿。
+     **StageBase 结算段已收口**；下一刀候选：`StageBase` 答题/选项乱序层、`TheoremTree`（1655 行）
      ——同样**先补测试再搬**。
   2. **A2 遗留模块定策略（前提已变）** —— `SolidChallenge.tscn` 仍被 6 关引用、`ConicStage.tscn` 被 3 关引用，
      **不能删**。二选一：迁到 `LabStage`（与 229 关统一）或明确「收编为正式场景」并补测试；
@@ -335,11 +348,15 @@
   + 萌宠 + 每日任务 + 经济 + 地图宝箱/事件 + 错题本 + 多用户，全在一个 autoload 类里。
 - `scripts/modules/line/TheoremTree.gd` **1655 行**（旧记 1496）：同一脚本同时充当 `WorldMap.tscn`（`kind="method"`）
   与 `TheoremTree.tscn`（`kind="knowledge"`）；引用面仅 **4 处**，拆分风险低。
-- `scripts/screens/StageBase.gd` **1291 行**（旧记 1092）：HUD + 答题 + 选项乱序 + BOSS 层 + 节奏/计时 + 结算 + 导航；
+- `scripts/screens/StageBase.gd` **1257 行**（旧记 1092；A4 第四刀切出结算规则 `StageRules` 后 −34）：
+  HUD + 答题 + 选项乱序 + BOSS 层 + 节奏/计时 + 结算 + 导航；
   被 **12 处**引用，是关卡基类，改动面最大。
-- 三文件合计 **4593 行**（2026-10-21 三刀后实测 1647+1655+1291；第一刀前 4725）。规则层四文件合计 315 行。
+- 三文件合计 **4559 行**（2026-10-21 四刀后实测 1647+1655+1257；第一刀前 4725）。规则层五文件合计 387 行。
 
 **进度**
+- 2026-10-21 第十七轮 · **第四刀（`b17edfc`）**：结算纯规则 `scripts/rules/StageRules.gd` 切出
+  （星级判定/奖励合成/评级/首通/极速判定），StageBase 1291→1257；`_test_stage_rules` 约 41 断言，
+  HUD/存档/面板零改动（TESTS 1419 / CHECKED 94）。
 - 2026-10-21 第十六轮 · **第三刀（`09540b4`）**：萌宠养成 `scripts/rules/PetRules.gd` + 领域掌握度
   `scripts/rules/MasteryRules.gd` 双切（好感/饥饿/标签/衰减/投喂 + 单关掌握度/错题权重/领域均值/阈值），
   `MASTERY_*` 阈值迁出 GameData；`_test_pet_rules`/`_test_mastery_rules` 约 40 断言，
