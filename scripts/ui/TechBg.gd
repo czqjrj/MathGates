@@ -216,6 +216,21 @@ func _ready() -> void:
 		_figs.append(g)
 
 	set_process(true)
+	# F3：动效开关变化 → 真正停/启 `_process`（而不是每帧空转判断）
+	if Settings != null:
+		Settings.changed.connect(_on_settings_changed)
+
+func _on_settings_changed() -> void:
+	set_process(UI.fx_on())
+	if UI.fx_on():
+		_static = false
+
+func _notification(what: int) -> void:
+	match what:
+		NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_APPLICATION_FOCUS_OUT:
+			set_process(false)
+		NOTIFICATION_APPLICATION_RESUMED, NOTIFICATION_APPLICATION_FOCUS_IN:
+			set_process(UI.fx_on())
 
 func _process(delta: float) -> void:
 	if not UI.fx_on():
@@ -226,6 +241,8 @@ func _process(delta: float) -> void:
 			_shade_mat.set_shader_parameter("time", 0.0)
 		if _fx != null:
 			_fx.queue_redraw()
+		# 停下整个处理循环：静止背景不该每帧空转（F3）
+		set_process(false)
 		return
 	_static = false
 	_t += delta

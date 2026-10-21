@@ -140,6 +140,27 @@ build/           导出产物(APK,git 忽略)
 冒烟覆盖：`Tests._test_keyboard_nav`（18 断言，含 test double 与真实 `Lab3DView`）+
 `UiSmoke._test_keyboard_stage`（真实 `LabStage` 上数字键走同一回调）。
 
+## 性能与静止降耗（F3）
+
+静止时**不该有每帧开销**：
+
+| 模块 | 策略 |
+|---|---|
+| `Lab3DView` | 空闲 8s 停自转；相机稳定且空闲 10s → `SubViewport.UPDATE_DISABLED`（保留最后一帧纹理）；停帧后 `_process` early-return；任何交互/动画 `_wake()` 立即恢复 |
+| `LabPlane` | 只在「入场显现 / 演示 / 补间 / 残影 / 轨迹 / 脉冲 / 流动虚线 / 拖拽」时 `queue_redraw()`；静止不重绘（`redraw_count` 可断言） |
+| `TechBg` | 动效关闭或后台时 `set_process(false)`（不是每帧空转判断），由 `Settings.changed` / 恢复通知拉起 |
+| 前后台 | `NOTIFICATION_APPLICATION_PAUSED/FOCUS_OUT` → 停帧；`RESUMED/FOCUS_IN` → 恢复 |
+
+**基线探针**（headless 可跑，输出 `PERF <case> proc_avg_us …`）：
+
+```
+& "<godot4.7.2.exe>" --headless --path . res://tools/perf_probe.tscn
+```
+
+2026-10-21 实测（headless，CPU 处理耗时）：`idle` 171 µs；`lab_plane` 静止 259 µs（修复前 ≈73,430 µs）；
+`lab3d` 静止 251 µs（修复前 ≈70,262 µs）。
+**Android 真机的 FPS / 功耗 / 内存需真机测量**——headless 无 GPU，这里只看 CPU 回归趋势。
+
 ## 自检与 CI
 
 改完**必跑**（顺序任意，全绿才提交）：

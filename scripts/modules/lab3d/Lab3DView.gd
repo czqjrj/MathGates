@@ -55,6 +55,14 @@ var _idle := 0.0
 var auto_rotate := true
 var _auto_pause := 0.0
 
+## F3：静止降耗。空闲超过阈值后先停自转，再停 SubViewport 渲染；
+## 任何交互/动画都会 `_wake()` 立即恢复。`UPDATE_DISABLED` 会保留最后一帧纹理，画面不变。
+const IDLE_ROTATE_STOP := 8.0
+const IDLE_RENDER_STOP := 10.0
+var _idle_t := 0.0
+var _idle_stopped := false
+var _paused := false
+
 var _reveal := 0.0
 var _reveal_target := 1.0
 var _reveal_speed := 1.5
@@ -137,6 +145,7 @@ func _on_resized() -> void:
 # ================================================================ 场景/变量
 
 func set_scene(s: Dictionary, v: Dictionary = {}) -> void:
+	_wake()
 	scene = s if s != null else {}
 	vars = (v if v != null else {}).duplicate()
 	_reveal = 0.0
@@ -148,13 +157,16 @@ func set_scene(s: Dictionary, v: Dictionary = {}) -> void:
 	_update_camera(1000.0)
 
 func rebuild() -> void:
+	_wake()
 	_builder.build(scene, vars)
 
 func set_var(name: String, value: float) -> void:
+	_wake()
 	vars[name] = value
 	rebuild()
 
 func set_vars(v: Dictionary) -> void:
+	_wake()
 	vars = v.duplicate()
 	rebuild()
 
@@ -187,6 +199,7 @@ func _auto_dist() -> float:
 	return clampf(r / tan(deg_to_rad(15.0)), 5.0, 90.0)
 
 func reset_view(animated := true) -> void:
+	_wake()
 	_apply_default_view()
 	_idle = 0.0
 	_auto_pause = 0.0
@@ -194,6 +207,7 @@ func reset_view(animated := true) -> void:
 		_update_camera(1000.0)
 
 func preset_view(name: String, animated := true) -> void:
+	_wake()
 	var t := target_goal
 	match name:
 		"front":
@@ -222,6 +236,11 @@ func _mv(v: Vector3) -> Vector3:
 # ================================================================ 帧循环
 
 func _process(delta: float) -> void:
+	if _paused:
+		return
+	# F3：已静止停帧后不再做任何每帧计算（_wake() 会解除）
+	if _idle_stopped:
+		return
 	_t += delta
 	if _sky_mat != null:
 		_sky_mat.set_shader_parameter("time", _t)
@@ -231,13 +250,52 @@ func _process(delta: float) -> void:
 	if absf(_reveal - _reveal_target) < 0.002:
 		_reveal = _reveal_target
 	_builder.set_reveal(_reveal)
-	# 空闲自动缓转
-	if auto_rotate and not dragging and not _anim_playing:
+	# 空闲自动缓转（F3：空闲够久就停转，静止时不再有信息增量）
+	if auto_rotate and not dragging and not _anim_playing and _idle_t < IDLE_ROTATE_STOP:
 		if _auto_pause > 0.0:
 			_auto_pause -= delta
 		else:
 			yaw_goal += delta * 0.22
 	_update_camera(delta)
+	_tick_idle(delta)
+
+## F3：累计空闲并在「相机已稳」时关掉 3D 渲染；交互会立即唤醒。
+func _tick_idle(delta: float) -> void:
+	var busy := dragging or _anim_playing or _auto_pause > 0.0
+	if busy:
+		_idle_t = 0.0
+	else:
+		_idle_t += delta
+	if _idle_t < IDLE_RENDER_STOP or not _camera_settled():
+		return
+	if not _idle_stopped:
+		_idle_stopped = true
+		_sv.render_target_update_mode = SubViewport.UPDATE_DISABLED
+
+func _camera_settled() -> bool:
+	return absf(yaw - yaw_goal) < 0.002 and absf(pitch - pitch_goal) < 0.002 \
+		and absf(dist - dist_goal) < 0.01 and target.distance_to(target_goal) < 0.001 \
+		and absf(_reveal - _reveal_target) < 0.002
+
+## 唤醒：重置空闲计时并恢复渲染（任何输入/动画/换场景都应调用）。
+func _wake() -> void:
+	_idle_t = 0.0
+	if _idle_stopped:
+		_idle_stopped = false
+		_sv.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+
+func _notification(what: int) -> void:
+	match what:
+		NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_APPLICATION_FOCUS_OUT:
+			_paused = true
+			if _sv != null:
+				_sv.render_target_update_mode = SubViewport.UPDATE_DISABLED
+		NOTIFICATION_APPLICATION_RESUMED, NOTIFICATION_APPLICATION_FOCUS_IN:
+			_paused = false
+			if _sv != null:
+				_sv.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+			_idle_t = 0.0
+			_idle_stopped = false
 
 func _update_camera(delta: float) -> void:
 	var a := 1.0 - exp(-6.0 * delta)
@@ -259,6 +317,7 @@ func _update_camera(delta: float) -> void:
 ##         {a:"vars", to:{a:2}, dur, hold}, {a:"rotate", turns, dur, hold},
 ##         {a:"highlight", ids}, {a:"reveal", dur}]
 func play_anim(steps: Array) -> void:
+	_wake()
 	if steps.is_empty():
 		return
 	_anim = steps.duplicate(true)
@@ -281,6 +340,7 @@ func toggle_anim_pause() -> void:
 		_anim_paused = not _anim_paused
 
 func restart_anim() -> void:
+	_wake()
 	if _anim.is_empty():
 		return
 	_anim_i = 0
@@ -291,6 +351,7 @@ func restart_anim() -> void:
 
 ## 单步：暂停状态下推进一小段（约 0.12s），便于「错过关键帧」时逐步看。
 func step_anim(step_dt: float = 0.12) -> void:
+	_wake()
 	if _anim.is_empty():
 		return
 	if not _anim_playing:
@@ -307,6 +368,7 @@ func is_anim_playing() -> bool:
 ## F4：W/A/S/D 键盘调视角（dx = 左右，dy = 上下，取值 -1/0/1）。
 ## 与鼠标拖动共用 yaw_goal/pitch_goal，因此缓动、自动缓转的行为完全一致。
 func key_pan(dx: float, dy: float) -> void:
+	_wake()
 	if dx == 0.0 and dy == 0.0:
 		return
 	yaw_goal += dx * 0.14
@@ -381,6 +443,7 @@ func _anim_apply(step: Dictionary, kind: String, k: float) -> void:
 # ================================================================ 输入
 
 func _gui_input(event: InputEvent) -> void:
+	_wake()
 	if event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT:

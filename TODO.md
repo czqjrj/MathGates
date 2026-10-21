@@ -67,7 +67,7 @@
 | **E5** | 与 6 版教材对齐的持续核对流程 | **P1** | 换版本只改排序不改覆盖 |
 | **F1** | 在线 TTS 的合规与稳定性（外发题目文本） | **P0** | ✅ 客户端策略完成（默认关闭+明示同意+隐私政策）；官方 API/商店表单并入 F2 |
 | **F2** | 发布准备（包名/版本/签名/targetSdk） | **P0** | ✅ 包名=cn.edu.mathgates、版本脚本、targetSdk35、签名位就绪；残留 keystore/真机 |
-| **F3** | 性能与耗电（3D 每帧渲染、背景常驻重绘） | **P1** | 静止时无信息增量 |
+| **F3** | 性能与耗电（3D 视口与背景常驻开销） | **P1** | ✅ 已完成（2026-10-21）：3D 空闲 8s 停自转/10s 停渲染、后台停帧；2D 改按需重绘；`perf_probe` 基线（静止 73ms → 0.26ms/帧）；真机功耗仍需实机 |
 | **F4** | 桌面端键盘操作（主流程完全缺失） | **P1** | ✅ 已完成（2026-10-21）：`KeyNav` autoload（数字选项/Enter 三级优先/焦点环/H/WASD 视角）；`StageBase` 零改动；单测 18 条 + 真实 LabStage 冒烟 |
 | **F5** | 存档版本化与进度迁移（换机即丢） | **P2** | 无导出/导入 |
 | **F6** | 首次引导与机制说明 | **P2** | 无 tutorial |
@@ -1951,28 +1951,40 @@
 
 ---
 
-### [ ] F3 · 性能与耗电（3D 视口与背景常驻开销）（P1）
+### [x] F3 · 性能与耗电（3D 视口与背景常驻开销）（P1）
 
 **现状（证据）**
-- `scripts/modules/lab3d/Lab3DView.gd:76` → `_sv.render_target_update_mode = SubViewport.UPDATE_ALWAYS`：
-  3D 视口**每帧渲染**；且 `auto_rotate := true`（第 55 行）**默认自动旋转**，
-  `_auto_pause` 只在特定操作后暂停 1.5~3s。学生停在 3D 关卡（31 个关卡）时，
-  会持续"渲染 + 旋转"——移动端耗电/发热，且**静止时没有信息增量**。
-- `scripts/ui/TechBg.gd:218` → `set_process(true)`，`_process` 每帧
-  `_fx.queue_redraw()`（粒子/网格全屏重绘），**几乎所有场景常驻**。
-- 对比：`BrandMark` 已经做了正确的示范（`set_process(UI.animations and active)`）。
+- `Lab3DView` 的 SubViewport 是 `UPDATE_ALWAYS`（每帧渲染）+ `auto_rotate := true` 默认自转；
+- `TechBg._process` 每帧全屏重绘，`set_process(true)` 常驻；
+- **额外发现（本轮实测）**：`LabPlane._process` **无条件 `queue_redraw()`**——2D 关卡静止时也在每帧重绘。
 
-**做法**
-- 3D 视口改**按需更新**：`UPDATE_WHEN_VISIBLE` 或脏标记驱动（拖动/动画/自转时才刷新）；
-- 自转加"**空闲 N 秒后停转**"，触摸/拖动立即恢复（已有 `_auto_pause` 可扩展成常驻策略）；
-- `TechBg` 在 `UI.animations == false`、或应用进入后台
-  （`NOTIFICATION_APPLICATION_PAUSED`，`GameData` 已有该通知）时**停帧**；
-- 建立**性能基线**：3D 关卡与首页的帧时间/内存（可复用 `tools/lab3d_render_check.gd` 的采集思路），
-  纳入 A6 的 CI 趋势跟踪。
+**落地（2026-10-21，第三十二轮）**
+- **3D 静止停帧**：新增 `_idle_t` / `_idle_stopped` 与两个阈值
+  `IDLE_ROTATE_STOP=8s`（停自转）、`IDLE_RENDER_STOP=10s`（相机稳且空闲 → `UPDATE_DISABLED`）。
+  `UPDATE_DISABLED` 保留最后一帧纹理，画面不变；任何交互/动画调用 `_wake()` 立即恢复。
+  停帧后 `_process` 直接 early-return，连相机与材质参数都不再算。
+- **前后台**：`_notification` 处理 `APPLICATION_PAUSED/FOCUS_OUT` → 停渲染，
+  `RESUMED/FOCUS_IN` → 恢复。`TechBg` 同样处理，并在动效关闭时 **`set_process(false)`**
+  （不是每帧空转判断），由 `Settings.changed` / 恢复通知重新拉起。
+- **2D 按需重绘**：只有「入场显现（前 2.5s）/ 演示播放 / 补间 / 残影 / 轨迹 / 脉冲 /
+  流动虚线（links）/ 拖拽脉冲」才 `queue_redraw()`；静止时完全不画。
+  新增 `redraw_count` 计数供测试断言。
+- **性能基线工具**：新增 `tools/perf_probe.gd` + `.tscn`（headless 可跑），
+  输出 `PERF <case> proc_avg_us / proc_p95_us / frame_avg_us / mem_kb`。
+  三种场景：`idle` / `lab_plane` / `lab3d`（3D 预热 1700 帧 ≈ 11s，确保已停帧）。
+
+**实测（headless，2026-10-21）**
+
+| 场景 | 修复前 proc_avg | 修复后 proc_avg |
+|---|---|---|
+| `lab_plane`（静止） | ≈ 73,430 µs | **259 µs** |
+| `lab3d`（静止 10s+） | ≈ 70,262 µs | **251 µs** |
+| `idle` 基线 | 171 µs | 171 µs |
 
 **验收**
-- 静止 10s 后 3D 视口不再每帧渲染、自转停止；后台时全场景停帧；
-- 记录 3D 关卡/首页的帧时间与内存基线（Android 真机）。
+- ✅ 静止 10s 后 3D 视口停止渲染、自转停止（`Tests._test_idle_power` 断言 `UPDATE_DISABLED`）；
+- ✅ 后台停帧、回前台恢复（同测试断言）；2D 静止不重绘（`redraw_count` 连续 20 帧不增）；
+- 🟡 **Android 真机**的 FPS / 功耗 / 内存仍需真机测量（headless 无 GPU，只能量 CPU 处理耗时）。
 
 ---
 
@@ -2339,13 +2351,14 @@
 > `Parse Error: Could not find type "BossHud"`。用编辑器打开一次，或跑
 > `& "<godot472.exe>" --headless --editor --path . --quit`。
 
-**当前回归基线**（改完请对照，数字只能升不能降；2026-10-21 F4 键盘操作补齐后）：
-`CHECKED 98 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 1792 passed, 0 failed` / `SMOKE: 285 ok, 0 fail` /
+**当前回归基线**（改完请对照，数字只能升不能降；2026-10-21 F3 静止降耗后）：
+`CHECKED 99 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 1804 passed, 0 failed` / `SMOKE: 285 ok, 0 fail` /
 `UI-SMOKE: 385 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
 `LEVEL-PREVIEW-SMOKE: 7474 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
 `QUESTION-CHECK: 26 files / 269 levels / 1057 questions / 0 new / 7 known / 3 warnings`
 （A5 校验器，存量问题见下方基线；看板另有「干扰项黑名单命中 0 处」见 B5、「anim 演示覆盖 **13/26 文件**」见 D2）/
-`ASSETS: 30.10 MB over 3114 files … banned=0, oversize=0`（A13 护栏）/
+`PERF idle 171 / lab_plane 259 / lab3d 251`（µs，headless CPU 处理耗时，见 `tools/perf_probe.tscn`）/
+`ASSETS: 30.11 MB over 3116 files … banned=0, oversize=0`（A13 护栏）/
 `KNOWLEDGE: 27 chapters / 275 points / 275 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `LATEX-PROBE: conic C4 68 / C5 76 / C6 68 段 / 0 失败`（E2 收官）、
 `vector_physics 26 段 / 0 失败`、`prob_simulate 14 段 / 0 失败`（E3 收官；**探针需按组分进程**，

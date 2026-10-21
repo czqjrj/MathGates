@@ -71,6 +71,8 @@ var _trail: Array = []             # [{pts: PackedVector2Array, a: float}]
 var _settled := true
 var _was_moving := false
 var _pulse_t := 0.0                # 停稳后脉冲一次（标记临界/特殊点）
+## F3：静止时不应重绘。此计数供测试断言（只在真正需要重画时 +1）。
+var redraw_count := 0
 const TWEEN_TAU := 0.13            # 时间常数：约 0.13s 走完 63%，0.4s 内基本到位
 const GHOST_FADE := 1.1
 const TRAIL_MAX := 14
@@ -85,15 +87,26 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_t += delta
 	_anim_t += delta
+	# F3：按需重绘。只有「画面确实在动」时才重画：
+	#   - 入场错峰显现（_anim_t 前 2.5s）
+	#   - 演示播放中 / 参数补间 / 残影 / 轨迹 / 脉冲
+	#   - 流动虚线（links）与拖拽脉冲（它们的动画依赖 _t）
+	# 其余静止状态一律不重绘，避免每帧空转。
+	var redraw := _anim_t < 2.5
+	if not _scene.is_empty() and (_scene.has("links") or mode == "drag" or mode == "break"):
+		redraw = true
 	if _demo_playing and not _demo_paused:
 		_tick_demo(delta)
-	_tick_tween(delta)
-	if mode == "sliders" or not _scene.is_empty():
+		redraw = true
+	if _tick_tween(delta):
+		redraw = true
+	if redraw:
+		redraw_count += 1
 		queue_redraw()
 
 # ---------------------------------------------------------------- 过程表达（D1）
 ## 滑块值 → 显示值 的指数缓动；同时维护残影与轨迹。
-func _tick_tween(delta: float) -> void:
+func _tick_tween(delta: float) -> bool:
 	# 先判断「是否有目标变化」，残影要在缓动之前抓，才能代表变化起点
 	var want := false
 	for s in _sliders:
@@ -130,6 +143,8 @@ func _tick_tween(delta: float) -> void:
 		_trail[i]["a"] = float(_trail[i]["a"]) - delta * 1.6
 	while not _trail.is_empty() and float(_trail[0]["a"]) <= 0.0:
 		_trail.pop_front()
+	# F3：告诉调用方这一帧是否还需要重绘（静止时返回 false → 不空转重绘）
+	return moving or _ghost_a > 0.0 or _pulse_t > 0.0 or not _trail.is_empty()
 
 func _trail_push() -> void:
 	var pts := _as_array(_scene.get("points", []))

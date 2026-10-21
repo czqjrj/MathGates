@@ -31,6 +31,7 @@ func _run() -> void:
 	_test_reduced_motion()
 	_test_demo_controls()
 	_test_keyboard_nav()
+	_test_idle_power()
 	_test_wrong_queries()
 	_test_review_order()
 	_test_focus()
@@ -521,6 +522,67 @@ func _test_keyboard_nav() -> void:
 	view.queue_free()
 	_ok(not KeyNav.handle(null, KEY_1), "空舞台不崩溃")
 	st.queue_free()
+
+## F3：静止降耗 —— 自转会在 8s 停、渲染在 10s 关；交互唤醒；后台停帧。
+func _test_idle_power() -> void:
+	var v = load("res://scripts/modules/lab3d/Lab3DView.gd").new()
+	add_child(v)
+	_ok(v._sv != null, "3D 视口已建立")
+	_ok(v._sv.render_target_update_mode == SubViewport.UPDATE_ALWAYS, "初始按需之外先保持渲染")
+	var yaw0: float = v.yaw_goal
+	for _i in 60:
+		v._process(0.1)
+	_ok(v.yaw_goal > yaw0, "前 6s 仍在自转")
+	for _i in 30:
+		v._process(0.1)
+	var yaw_stop: float = v.yaw_goal
+	for _i in 5:
+		v._process(0.1)
+	_ok(absf(v.yaw_goal - yaw_stop) < 1e-6, "空闲 8s 后自转停止")
+	for _i in 60:
+		v._process(0.1)
+	_ok(v._sv.render_target_update_mode == SubViewport.UPDATE_DISABLED, "静止 10s 后停止 3D 渲染")
+	v._wake()
+	_ok(v._sv.render_target_update_mode == SubViewport.UPDATE_ALWAYS, "交互会唤醒渲染")
+	v._notification(Node.NOTIFICATION_APPLICATION_PAUSED)
+	_ok(v._sv.render_target_update_mode == SubViewport.UPDATE_DISABLED, "切后台停渲染")
+	v._notification(Node.NOTIFICATION_APPLICATION_RESUMED)
+	_ok(v._sv.render_target_update_mode == SubViewport.UPDATE_ALWAYS, "回前台恢复渲染")
+	v.queue_free()
+
+	# 背景层：动效关闭时整条处理循环停掉，而不是每帧空转判断
+	var old_a := UI.animations
+	var old_r := UI.reduced_motion
+	var bg = load("res://scripts/ui/TechBg.gd").new()
+	add_child(bg)
+	UI.animations = false
+	UI.reduced_motion = false
+	bg._process(0.016)
+	_ok(not bg.is_processing(), "关闭动效后背景停止处理（省电）")
+	UI.animations = true
+	bg._on_settings_changed()
+	_ok(bg.is_processing(), "重新开启动效后背景恢复")
+	bg.queue_free()
+	UI.animations = old_a
+	UI.reduced_motion = old_r
+
+	# LabPlane：静止后不应再重绘（连续 20 帧计数不增）
+	var plane = load("res://scripts/modules/lab/LabPlane.gd").new()
+	add_child(plane)
+	var slider := [ { "name": "r", "min": 0.5, "max": 5, "value": 2, "step": 0.5 } ]
+	plane.set_scene({ "range": 6, "sliders": slider, "circles": [ { "c": [0, 0], "r": "r" } ] })
+	plane.begin_sliders(slider)
+	for _i in 40:
+		plane._process(0.1)      # 越过 2.5s 入场显现
+	var c0: int = plane.redraw_count
+	for _i in 20:
+		plane._process(0.1)
+	_eq(plane.redraw_count, c0, "2D 平面静止后不再重绘（省电）")
+	# 拖动时仍会重绘
+	plane._sliders[0]["value"] = 4.0
+	plane._process(0.1)
+	_ok(plane.redraw_count > c0, "参数变化时恢复重绘")
+	plane.queue_free()
 
 func _test_wrong_queries() -> void:
 	var saved: Dictionary = GameData.wrong_log
