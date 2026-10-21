@@ -133,8 +133,20 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`43a11f9`（`feat(A2)` 收编 SolidChallenge/ConicStage 为官方场景）；本条 §0.3 更新随后以 `docs(TODO)` 提交并 push。
-- **本轮交付（2026-10-21，第二十三轮）**：**A2 收编落地**（`43a11f9`）。
+- **最后提交**：`022e038`（`feat(A4)` 第九刀：教材重排/章节合并迁入 `CurriculumRules`）；本条 §0.3 更新随后以 `docs(TODO)` 提交并 push。
+- **本轮交付（2026-10-21，第二十四轮）**：**A4 第九刀——教材重排/章节合并迁入 CurriculumRules**（`022e038`）。
+  - 新建 `scripts/rules/CurriculumRules.gd`（**100 行**，纯静态、教材定义显式传参不读全局）：
+    `apply_order`（方法在前/版本序/未列出补齐/重复列出不重复）、`group_chapters`（同分册+同章号
+    合并为单元卡，返回 chapters+members）、`group_key_of`、`unit_title`、`book_of_chapter`、
+    `chapter_no`、`chapter_in_domain`。
+  - GameData 七个函数改薄转发（1647 → **1575**），TheoremTree 等调用方零改动。
+  - **先测后搬**：Tests 新增 `_test_curriculum_rules` 纯单测（约 24 断言）；既有 996-1044 整材
+    集成测试（6 版本 × 章号/分册/合并数）兜底真实数据。
+  - 全量回归绿：`CHECKED 96`（+1 规则文件）/ `TESTS 1556` / `SMOKE 285` / `UI-SMOKE 369` /
+    `LabSmoke TMP_OK` / `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new` / `KNOWLEDGE hard-gaps=0` /
+    `ASSETS banned=0`。
+  - **A4 累计九刀**：规则层**七文件 696 行**，三文件合计 **4311 行**（第一刀前 4725，−414）。
+- **第二十三轮（2026-10-21）**：**A2 收编落地**（`43a11f9`）。
   - **README**：两场景从「遗留关」改口径为**官方收编场景**；新增**文件名 ↔ 场景/章节对照表**
     （即 A17 第二步的对照表部分），含 `conic/conics`、`vector/vectors`、`solid_basic/solid_methods`
     易混警示与校验器兜底说明。
@@ -292,10 +304,12 @@
 - **下次建议顺序**（按性价比）：
   > **2026-10-20 用户决策：暂停题目扩产，先做结构收敛。** B2 下限已全线达成（27/27 章 ≥ 5.0 题/关），
   > B1（21.4% → ≥30%）与 B2「上探 6~7 题/关中段」均为**纯内容批量生产**，可随时回归；当前转向 A/D/F 类结构问题。
-  1. **A4 第九刀（可选收尾）** —— A2/A17 两项结构债已收口（第二十二/二十三轮）。八刀后规则层六文件
-     **596 行**、三文件合计 **4383 行**（第一刀前 4725）。三大文件余下主要是 UI 面板代码（非纯逻辑）；
-     第九刀先摸底确认是否还有可切片；若摸不动即按 A4 验收**收口**（把单文件行数上限写进 README，
-     四件套全绿、无行为变化）。
+  1. **A4 第十轮按验收收口** —— 九刀已落（第二十四轮 `022e038` 教材重排/章节合并迁入
+     `CurriculumRules`），规则层七文件 **696 行**、三文件合计 **4311 行**（第一刀前 4725，−414）。
+     三大文件余下主要是 UI 面板代码（非纯逻辑），性价比高的切片已切完；下一轮做**收口**：
+     把「单文件行数上限（规则层 ≤200 行；GameData/TheoremTree/StageBase ≤1600/1550/1200）」
+     写进 README「代码结构」，宣告 A4 完成。若还想切，只剩零星小函数（如 StageBase
+     `_next_star_hint` 约 20 行），性价比低、不阻塞收口。
   2. **B13 朗读双路径** / **D2 演示动画覆盖 1/26** / **F3 性能耗电** / **F4 桌面键盘** —— 体验与性能结构问题。
   3. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 需人工决策/下载/目视（AI 无法替代，上架硬门槛）。
   4. 决策项待拍板：**G4/G5**；**A17 是否真重命名**（低优先，两对文件语义不同且均在用，建议保持现状）；
@@ -413,9 +427,9 @@
 ### [ ] A4 · 上帝对象拆分（P2）
 
 **现状（证据）**
-- `scripts/autoload/GameData.gd` **1647 行**（A4 前三刀后；原 1779，称号/勋章/等级/星级统计/防刷公式
+- `scripts/autoload/GameData.gd` **1575 行**（A4 九刀后；原 1779，称号/勋章/等级/星级统计/防刷公式
   已切到 `scripts/rules/PlayerRules.gd`、经济结算到 `EconomyRules.gd`、萌宠养成/掌握度到
-  `PetRules.gd`/`MasteryRules.gd`；旧记 1548）：
+  `PetRules.gd`/`MasteryRules.gd`、教材重排/章节合并到 `CurriculumRules.gd`；旧记 1548）：
   课程表 + 进度 + 存档 IO + 勋章 + 称号 + 领域掌握度
   + 萌宠 + 每日任务 + 经济 + 地图宝箱/事件 + 错题本 + 多用户，全在一个 autoload 类里。
 - `scripts/modules/line/TheoremTree.gd` **1541 行**（旧记 1496；A4 第六/七刀切出 `TreeRules` 后 −114）：
@@ -426,9 +440,13 @@
   被 **12 处**引用，是关卡基类，改动面最大。
 - `scripts/modules/solid/SolidChallenge.gd` **1017 行**（第八刀删重复 `_parse_math`/`_norm_math` 副本后）：
   与 StageBase 独立实现，A2 收编决策相关。
-- 三文件合计 **4383 行**（2026-10-21 八刀后实测 1647+1541+1195；第一刀前 4725）。规则层六文件合计 596 行。
+- 三文件合计 **4311 行**（2026-10-21 九刀后实测 1575+1541+1195；第一刀前 4725）。规则层七文件合计 696 行。
 
 **进度**
+- 2026-10-21 第二十四轮 · **第九刀（`022e038`）**：教材重排/章节合并（`apply_order`/`group_chapters`/
+  `group_key_of`/`unit_title`/`chapter_in_domain`/`book_of_chapter`/`chapter_no`）迁入
+  `CurriculumRules.gd`（新文件 100 行），GameData 七函数改薄转发 1647→1575；`_test_curriculum_rules`
+  纯单测约 24 断言（TESTS 1556 / CHECKED 96）。
 - 2026-10-21 第二十一轮 · **第八刀（`cb6a915`）**：填空解析（`norm_math`/`parse_math`）并入 `StageRules`
   （126→155），StageBase 1235→1195，**SolidChallenge 删重复副本**（约 40 行，容差判定改走
   `StageRules.num_ok`）；顺带 **fix(B1)** 整数字面量转 float，修复 Expression 整数除法把 `1/2` 算成 0
