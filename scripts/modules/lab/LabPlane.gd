@@ -58,6 +58,20 @@ var _demo_t := 0.0
 var _demo_playing := false
 var _demo_from: Dictionary = {}
 
+## D1：拖动的「过程」表达 —— 三层
+##   ① 补间：滑块值变 → _disp 缓动跟随（图形不再瞬时跳变）
+##   ② 残影：一次变化开始时快照旧状态，淡出绘制（看得出「从哪里来」）
+##   ③ 轨迹：变化过程中记录动点位置（看得出「走过的路」）
+var _disp: Dictionary = {}         # name -> 缓动后的显示值
+var _ghost_disp: Dictionary = {}   # 变化起点快照
+var _ghost_a := 0.0
+var _ghost_mode := false
+var _trail: Array = []             # [{pts: PackedVector2Array, a: float}]
+var _settled := true
+const TWEEN_TAU := 0.13            # 时间常数：约 0.13s 走完 63%，0.4s 内基本到位
+const GHOST_FADE := 1.1
+const TRAIL_MAX := 14
+
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	clip_contents = true
@@ -69,8 +83,75 @@ func _process(delta: float) -> void:
 	_anim_t += delta
 	if _demo_playing:
 		_tick_demo(delta)
+	_tick_tween(delta)
 	if mode == "sliders" or not _scene.is_empty():
 		queue_redraw()
+
+# ---------------------------------------------------------------- 过程表达（D1）
+## 滑块值 → 显示值 的指数缓动；同时维护残影与轨迹。
+func _tick_tween(delta: float) -> void:
+	# 先判断「是否有目标变化」，残影要在缓动之前抓，才能代表变化起点
+	var want := false
+	for s in _sliders:
+		var nm0 := str(s["name"])
+		if absf(float(_disp.get(nm0, float(s["value"]))) - float(s["value"])) > 1e-4:
+			want = true
+			break
+	if want and _settled and _ghost_a <= 0.0:
+		_ghost_disp = _disp.duplicate()
+		_ghost_a = 0.55
+	var moving := false
+	for s in _sliders:
+		var nm := str(s["name"])
+		var tgt := float(s["value"])
+		var cur := float(_disp.get(nm, tgt))
+		if absf(cur - tgt) > 1e-4:
+			moving = true
+			_disp[nm] = lerpf(cur, tgt, 1.0 - exp(-delta / TWEEN_TAU))
+	if moving:
+		_trail_push()
+	else:
+		for s in _sliders:
+			_disp[str(s["name"])] = float(s["value"])
+	_settled = not moving
+	if _ghost_a > 0.0:
+		_ghost_a = maxf(0.0, _ghost_a - delta * GHOST_FADE)
+	for i in range(_trail.size()):
+		_trail[i]["a"] = float(_trail[i]["a"]) - delta * 1.6
+	while not _trail.is_empty() and float(_trail[0]["a"]) <= 0.0:
+		_trail.pop_front()
+
+func _trail_push() -> void:
+	var pts := _as_array(_scene.get("points", []))
+	if pts.is_empty():
+		return
+	var arr := PackedVector2Array()
+	for p in pts:
+		if p is Dictionary:
+			arr.append(_to_screen(_vec((p as Dictionary).get("p", [0, 0]))))
+	if arr.is_empty():
+		return
+	_trail.append({"pts": arr, "a": 0.5})
+	if _trail.size() > TRAIL_MAX:
+		_trail.pop_front()
+
+func _draw_ghost() -> void:
+	if _ghost_a <= 0.02 or _ghost_disp.is_empty():
+		return
+	var keep := _disp
+	_disp = _ghost_disp.duplicate()
+	_ghost_mode = true
+	_draw_scene()
+	_ghost_mode = false
+	_disp = keep
+
+func _draw_trail() -> void:
+	for t in _trail:
+		var a := float(t["a"])
+		if a <= 0.0:
+			continue
+		for sp in (t["pts"] as PackedVector2Array):
+			draw_circle(sp, 2.6, Color(0.36, 0.9, 1.0, 0.5 * a))
 
 # ---------------------------------------------------------------- 演示播放
 func has_anim() -> bool:
@@ -152,6 +233,11 @@ func set_scene(s: Dictionary) -> void:
 	_demo_playing = false
 	_demo_i = 0
 	_demo_t = 0.0
+	_disp.clear()
+	_ghost_disp.clear()
+	_ghost_a = 0.0
+	_trail.clear()
+	_settled = true
 	var has_range := _scene.has("x") or _scene.has("y")
 	if _scene.has("x"):
 		var xr: Array = _scene["x"]
@@ -185,10 +271,22 @@ func begin_sliders(list: Array, answers: Dictionary = {}, tol: Dictionary = {}) 
 			"step": float(d.get("step", 0.0)),
 			"label": str(d.get("label", d.get("name", "k"))),
 		})
+	_disp.clear()
+	_ghost_disp.clear()
+	_ghost_a = 0.0
+	_trail.clear()
+	_settled = true
+	for s in _sliders:
+		_disp[str(s["name"])] = float(s["value"])
 	queue_redraw()
 
 func begin_drag(cfg: Dictionary) -> void:
 	mode = "drag"
+	_disp.clear()
+	_ghost_disp.clear()
+	_ghost_a = 0.0
+	_trail.clear()
+	_settled = true
 	var st: Array = cfg.get("start", [0, 0])
 	drag_pos = Vector2(float(st[0]), float(st[1]))
 	var an: Array = cfg.get("answer", [0, 0])
@@ -202,6 +300,12 @@ func begin_drag(cfg: Dictionary) -> void:
 func begin_break(cfg: Dictionary) -> void:
 	_break = cfg
 	mode = "break"
+	# 分界线是「直接拖拽」：必须跟手，不能补间（否则像拖着一根橡皮筋）
+	_disp.clear()
+	_ghost_disp.clear()
+	_ghost_a = 0.0
+	_trail.clear()
+	_settled = true
 	var lo := float(cfg.get("min", domain.x))
 	var hi := float(cfg.get("max", domain.y))
 	var val := clampf(float(cfg.get("value", (lo + hi) * 0.5)), lo, hi)
@@ -397,11 +501,14 @@ func _fmt(v: float) -> String:
 	return "%.2f" % v
 
 func _c(v: Variant, dflt: Color) -> Color:
-	if v == null:
-		return dflt
+	var col := dflt
 	if v is Color:
-		return v
-	return Color(str(v))
+		col = v
+	elif v != null:
+		col = Color(str(v))
+	if _ghost_mode:
+		col.a *= _ghost_a * 0.75
+	return col
 
 func _arr(k: String) -> Array:
 	var v: Variant = _scene.get(k, [])
@@ -542,6 +649,9 @@ func _ex_func(name: String, arg: float) -> float:
 	return 0.0
 
 func _ex_var(name: String) -> float:
+	# D1：优先读「缓动后的显示值」，拖动时图形才是连续变化而不是瞬跳
+	if _disp.has(name):
+		return float(_disp[name])
 	for sl in _sliders:
 		if str(sl["name"]) == name:
 			return float(sl["value"])
@@ -557,7 +667,9 @@ func _fmt_num(v: float) -> String:
 # ---------------------------------------------------------------- 绘制
 func _draw() -> void:
 	_draw_grid()
+	_draw_ghost()
 	_draw_scene()
+	_draw_trail()
 	_draw_readouts()
 	if not _scene.is_empty() and _scene.has("unit_circle"):
 		_draw_unit_circle()
@@ -658,11 +770,15 @@ func _draw_scene() -> void:
 		_draw_arc_def(ar, _rev(i)); i += 1
 	for ra in _as_array(_scene.get("right_angles", [])):
 		_draw_right_angle_def(ra, _rev(i)); i += 1
-	_draw_vectors()
+	if not _ghost_mode:
+		_draw_vectors()
 	_draw_scatter(_rev(i)); i += 1
 	for p in _as_array(_scene.get("points", [])):
-		_draw_point_def(p, _rev(i)); i += 1
-	_draw_label_def(_as_array(_scene.get("labels", [])))
+		if not _ghost_mode:
+			_draw_point_def(p, _rev(i))
+		i += 1
+	if not _ghost_mode:
+		_draw_label_def(_as_array(_scene.get("labels", [])))
 
 func _as_array(v: Variant) -> Array:
 	return v if v is Array else []

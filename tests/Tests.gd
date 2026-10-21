@@ -26,6 +26,7 @@ func _run() -> void:
 	_test_rhythm()
 	_test_lab_plane()
 	_test_anim_player()
+	_test_plane_motion()
 	_test_wrong_queries()
 	_test_review_order()
 	_test_focus()
@@ -300,6 +301,39 @@ func _test_anim_player() -> void:
 							var v := float(to[nm])
 							_ok(v >= lo - 1e-6 and v <= hi + 1e-6, "%s 目标 %s=%s 在 [%s, %s] 内" % [f, str(nm), str(v), str(lo), str(hi)])
 	_ok(checked > 0, "全库至少有一条 vars 演示（实际 %d 条）" % checked)
+
+## D1：拖动的「过程」表达 —— 补间（中间态真的存在）+ 残影 + 轨迹。
+## 无头环境难做像素截图，这里用「显示值严格落在起止之间 / 轨迹帧数 > 0」证明中间态，
+## 与人工目视结合即为验收（截图抓帧见 TODO D1 的说明）。
+func _test_plane_motion() -> void:
+	var plane = load("res://scripts/modules/lab/LabPlane.gd").new()
+	add_child(plane)
+	var slider := [ { "name": "r", "min": 0.5, "max": 5, "value": 1, "step": 0.5 } ]
+	plane.set_scene({
+		"range": 6,
+		"sliders": slider,
+		"circles": [ { "c": [0, 0], "r": "r" } ],
+		"points": [ { "p": ["r", 0] } ],
+	})
+	plane.begin_sliders(slider)
+	_eq(plane._num("r", 0.0), 1.0, "初始显示值 = 滑块值（无残余缓动）")
+	# 模拟一次拖动：滑块目标 1 → 3
+	plane._sliders[0]["value"] = 3.0
+	plane._process(0.04)
+	var mid: float = plane._num("r", 0.0)
+	_ok(mid > 1.0 and mid < 3.0, "中间态存在（%.3f 落在 1 与 3 之间）" % mid)
+	_ok(plane._ghost_a > 0.0, "残影已激活（记录变化起点）")
+	_ok(plane._trail.size() > 0, "轨迹已记录（%d 帧）" % plane._trail.size())
+	for _i in 40:
+		plane._process(0.04)
+	_ok(absf(plane._num("r", 0.0) - 3.0) < 1e-3, "补间最终精确到位 r=3")
+	_ok(plane._ghost_a <= 0.0, "残影会自动淡出")
+	_ok(plane._trail.is_empty(), "轨迹会自动消失")
+	# 无滑块场景不应残留任何过程状态
+	plane.set_scene({ "range": 6 })
+	_ok(plane._disp.is_empty() and plane._trail.is_empty() and plane._ghost_a <= 0.0,
+		"换场景会清空补间/残影/轨迹状态")
+	plane.queue_free()
 
 func _test_wrong_queries() -> void:
 	var saved: Dictionary = GameData.wrong_log

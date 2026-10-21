@@ -160,6 +160,15 @@ func _expect_rounds(st: Node, tag: String) -> void:
 		st._idx = i
 		st._load_q()
 		await get_tree().process_frame
+		# D2/D1：带 anim 的轮次必须显示「▶ 演示」，且能真正启动2D播放器
+		var demo_btn: Variant = st.get("_demo_btn")
+		if demo_btn != null:
+			var sc_round: Variant = s.get("scene", {})
+			var want := s.has("anim") or (sc_round is Dictionary and (sc_round as Dictionary).has("anim"))
+			_eq(demo_btn.visible, want, "%s 轮%d 演示按钮可见性" % [tag, i])
+			if want:
+				st._play_demo()
+				_ok(st._plane.is_demo_playing(), "%s 轮%d 演示已启动" % [tag, i])
 		if st._opt_btns.size() <= 0:
 			continue
 		choice_rounds += 1
