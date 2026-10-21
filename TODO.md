@@ -133,8 +133,11 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`415f4ce`（`docs(TODO)` 第二十六轮续接点——B13 第一步朗读双路径统一）；
-  本轮 D2 交付随后以 `feat(D2)` 提交，再以 `docs(TODO)` 回填。
+- **最后提交**：`110b0a3`（`feat(D2)` 演示动画覆盖 1/26 → 13/26）；前一提交链：
+  `415f4ce`（docs 第二十六轮）→ `94b3acb`（B13 第一步 SpeechRules）→ `fd70b9e`（docs）→
+  `7b4f8be`（A4 收口：行数红线进 check_all）→ `7c595d0`（docs）→ `022e038`（A4 第九刀 CurriculumRules）→
+  `476f8cc`（docs）→ `43a11f9`（A2 收编）→ `69e4918`（docs）→ `463d06e`（A17 映射自检）→
+  `35e388b`（docs）→ `cb6a915`（A4 第八刀填空解析 + 分数 bug）→…，已 push（`main` 与 `origin/main` 同步）。
 - **本轮交付（2026-10-21，第二十七轮）**：**D2 演示动画补齐（1/26 → 13/26）**。
   - **3D**：`space_levels.json` 19 个关卡各补 1 段 `anim`；只用 `vars`/`view`/`rotate`/`reveal`
     （不依赖图元 id，避免发明 id），全部 `vars` 目标经脚本校验「滑块存在 + 不越界」。
