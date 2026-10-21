@@ -32,6 +32,10 @@ scripts/         总控与共享逻辑(按职责分目录)
 				   lab3d/ 为通用三阶段真实网格 3D 闯关(Lab3DStage + Lab3DView + SolidBuilder + NumExpr:
 				   可旋转/缩放 3D 视口 + 参数滑块实时重建 + 生长/演示动画),
 				   承载立体几何初步(solid_basic)与空间向量与立体几何(space)
+  rules/           纯规则层(A4 上帝对象拆分的落点:无全局状态、可单测,门面方法留在原文件):
+				   PlayerRules(称号/勋章/防刷)、EconomyRules(经济结算)、PetRules/MasteryRules、
+				   StageRules(结算/答题乱序/填空解析)、TreeRules(知识树分组/解锁)、
+				   CurriculumRules(教材排序/章节合并);单文件 ≤200 行红线
 data/            课程表与题库 JSON(curriculum/questions + 各模块 *_levels.json)
 art/             美术 PNG/WebP + 公式小图 + Android 图标 + 标题字体(art/fonts/,放入行书 ttf 即自动启用)
 audio/           音效 wav
@@ -52,6 +56,21 @@ tools/           开发/测试脚本:check_all.gd(脚本检查)、check_question
 tests/           回归测试(GameData 纯逻辑)
 build/           导出产物(APK,git 忽略)
 ```
+
+### 代码结构红线(A4 验收)
+
+纯逻辑放 `scripts/rules/`(无全局状态、可单测,门面方法留在原文件);三个历史大文件设行数上限,
+`tools/check_all.gd` **超限即红灯**(CI 挡合并):
+
+| 文件 | 上限 | 现状(2026-10-21) |
+|---|---|---|
+| `scripts/rules/*.gd`(每文件) | 200 | 最大 PlayerRules 194 |
+| `scripts/autoload/GameData.gd` | 1600 | 1575 |
+| `scripts/modules/line/TheoremTree.gd` | 1550 | 1541 |
+| `scripts/screens/StageBase.gd` | 1200 | 1195 |
+
+超限的处理:**先拆纯规则**(可单测逻辑进 rules/,门面转发留原处),而不是改上限;
+确需上调上限时须在 `TODO.md` 记录理由。
 
 ## 自检与 CI
 
