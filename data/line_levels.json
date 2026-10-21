@@ -10,6 +10,10 @@
         "type": "explore",
         "q": "动手实验：拖动滑块改变倾斜角 α，直线如何绕 O 旋转、斜率 k=tanα 怎样变化？",
         "scene": {
+          "anim": [
+            {"a": "vars", "to": {"a": 150}, "dur": 2.4, "hold": 0.6},
+            {"a": "vars", "to": {"a": 45}, "dur": 1.8, "hold": 0.4}
+          ],
           "range": 6,
           "sliders": [
             { "name": "a", "min": 0, "max": 179, "value": 30, "step": 1, "label": "倾斜角 α(°)" }

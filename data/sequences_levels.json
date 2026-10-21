@@ -45,7 +45,7 @@
         "name": "2-1 实验探究 · 公差与通项",
         "type": "explore",
         "q": "拖动滑块改变首项 a₁ 与公差 d，观察散点 aₙ 的排列——若取 a₁=1、d=2，则 a₅ 是多少？",
-        "scene": { "x": [-1, 6], "y": [-3, 18], "sliders": [{ "name": "a1", "min": -3, "max": 5, "value": 1, "step": 1, "label": "首项 a₁" }, { "name": "d", "min": -2, "max": 3, "value": 2, "step": 1, "label": "公差 d" }], "scatter": [["1", "a1"], ["2", "a1+d"], ["3", "a1+2*d"], ["4", "a1+3*d"], ["5", "a1+4*d"]], "scatter_guide": true, "scatter_color": "#FF99C3" },
+        "scene": { "anim": [{"a": "vars", "to": {"d": -1}, "dur": 2.2, "hold": 0.6}, {"a": "vars", "to": {"a1": 4}, "dur": 1.8, "hold": 0.4}], "x": [-1, 6], "y": [-3, 18], "sliders": [{ "name": "a1", "min": -3, "max": 5, "value": 1, "step": 1, "label": "首项 a₁" }, { "name": "d", "min": -2, "max": 3, "value": 2, "step": 1, "label": "公差 d" }], "scatter": [["1", "a1"], ["2", "a1+d"], ["3", "a1+2*d"], ["4", "a1+3*d"], ["5", "a1+4*d"]], "scatter_guide": true, "scatter_color": "#FF99C3" },
         "goal": "让散点连成一条直线：公差 d 就是相邻两点的高度差。",
         "steps": ["拖动 a1：整条线上下平移", "拖动 d：点距变大变小，d<0 时下降", "把 a1、d 调成 1、2，与 aₙ=2n−1 对照"],
         "tip": "等差数列的散点都在一条直线上，d 是相邻两点的高度差。",

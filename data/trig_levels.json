@@ -10,6 +10,10 @@
         "type": "explore",
         "q": "拖动滑块改变角 θ，观察终边绕原点旋转时点 P 的坐标如何变化——点 P 的坐标与角 θ 之间是什么关系？",
         "scene": {
+          "anim": [
+            {"a": "vars", "to": {"theta": 210}, "dur": 2.6, "hold": 0.6},
+            {"a": "vars", "to": {"theta": 330}, "dur": 2.2, "hold": 0.4}
+          ],
           "x": [-1.8, 1.8],
           "y": [-1.4, 1.4],
           "unit_circle": { "angle": "theta", "label": "P", "show_sin": true, "show_cos": true },

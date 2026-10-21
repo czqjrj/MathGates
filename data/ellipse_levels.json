@@ -10,6 +10,10 @@
         "type": "explore",
         "q": "动手实验：F₁(−3,0)、F₂(3,0)，动点 P 在椭圆上(长轴 2a=10)。拖动滑块让 P 绕椭圆一周，读数 |PF₁|+|PF₂| 会随 P 的位置变化吗？",
         "scene": {
+          "anim": [
+            {"a": "vars", "to": {"t": 360}, "dur": 3.2, "hold": 0.6},
+            {"a": "vars", "to": {"t": 60}, "dur": 0.8, "hold": 0.2}
+          ],
           "range": 7,
           "sliders": [ { "name": "t", "min": 0, "max": 360, "value": 60, "step": 5, "label": "P 的位置角 t(°)" } ],
           "ellipses": [ { "a": 5, "b": 4, "axis": "x", "color": "#ff7ea8" } ],

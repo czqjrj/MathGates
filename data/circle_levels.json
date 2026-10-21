@@ -10,6 +10,10 @@
         "type": "explore",
         "q": "动手实验：拖动滑块改变圆心 (a,b) 与半径 r，圆的位置与大小会随之怎样变化？",
         "scene": {
+          "anim": [
+            {"a": "vars", "to": {"r": 1.2}, "dur": 2.0, "hold": 0.5},
+            {"a": "vars", "to": {"a": -1.5}, "dur": 2.0, "hold": 0.5}
+          ],
           "range": 7,
           "sliders": [
             { "name": "a", "min": -3, "max": 3, "value": 2, "step": 1, "label": "圆心横坐标 a" },

@@ -57,7 +57,7 @@
 | **B12** | 提示语泄露答案 | **P2** | 编校质量 |
 | **B13** | 朗读/无障碍路径不完整且双路径不一致 | **P1** | 🟡 第一步完成（2026-10-21 `94b3acb`：双路径统一走 SpeechRules 转换器，盲点命令 5→0，口播看板进 check_questions）；余人工抽检听感 |
 | **D1** | 2D 探究器无过渡动画（拖动=瞬时跳变） | **P1** | 看不见"量在怎么变" |
-| **D2** | 演示动画只覆盖 1/26 个关卡文件 | **P1** | 228 关只有 12 关有 |
+| **D2** | 演示动画只覆盖 1/26 个关卡文件 | **P1** | ✅ 已完成（2026-10-21）：3D 补 `space_levels` 19 轮；`LabPlane` 新增 2D 播放器 + `LabStage` 演示按钮；2D 补 11 文件 → **13/26**；顺带修收尾帧跳帧 bug、加 `_test_anim_player` 防线 |
 | **D3** | 动效全在"结果反馈"，缺"理解型动效" | **P1** | 强化情绪而非数学因果 |
 | **D4** | 动效令牌缺失 + 演示不可控 + 无障碍粒度不足 | **P2** | 44 处裸时长、无法重播 |
 | **E1** | 知识点覆盖矩阵 + 校验器（内容补全的前置） | **P0** | ✅ 已完成（`data/knowledge_map.json` + `check_knowledge` → `docs/知识点覆盖矩阵.md`；硬缺口基线随 E2 收敛，现 2 条） |
@@ -133,8 +133,25 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`94b3acb`（`feat(B13)` 朗读双路径统一——口播转换器 SpeechRules）；本条 §0.3 更新随后以 `docs(TODO)` 提交并 push。
-- **本轮交付（2026-10-21，第二十六轮）**：**B13 第一步——朗读双路径统一**（`94b3acb`）。
+- **最后提交**：`415f4ce`（`docs(TODO)` 第二十六轮续接点——B13 第一步朗读双路径统一）；
+  本轮 D2 交付随后以 `feat(D2)` 提交，再以 `docs(TODO)` 回填。
+- **本轮交付（2026-10-21，第二十七轮）**：**D2 演示动画补齐（1/26 → 13/26）**。
+  - **3D**：`space_levels.json` 19 个关卡各补 1 段 `anim`；只用 `vars`/`view`/`rotate`/`reveal`
+    （不依赖图元 id，避免发明 id），全部 `vars` 目标经脚本校验「滑块存在 + 不越界」。
+  - **2D 播放器（从零）**：`LabPlane` 新增 `play_anim()`/`_tick_demo()`/`_demo_apply()`/`_anim_set_slider()`，
+    支持 `vars`（参数补间，**不吸附 step**）与 `reveal`（复用逐图元显现补间）；
+    `LabStage` 接「▶ 演示」按钮（本轮 scene 带 `anim` 才显示）。
+  - **2D 数据 11 个文件**：直线/圆/椭圆/向量/三角/函数/数列/导数/抛物线/双曲线/数学思想，
+    各挑一条 explore 轮按教学意图设计轨迹（如导数同时改 k、b 落到 (1,1) 切线；椭圆让 P 绕行一周印证距离和为定值）。
+  - **修一处真 bug**：3D 与 2D 播放器都在收尾帧前整帧 `advance`，导致参数停在目标 ~80%
+    （`k` 最高 0.8）。改为「先累加时间 → 到点强制 `k=1.0` → 再推进」，两处同步修正。
+  - **自动化防线**：`Tests._test_anim_player`（播放/自动停止/set_scene 中断 + 全库 `anim` 数据
+    「滑块存在且不越界」校验）。
+  - 全量回归绿：`CHECKED 97` / `TESTS 1744`（+161，含拉取带入的规则层测试）/ `SMOKE 285` /
+    `UI-SMOKE 369` / `LabSmoke TMP_OK` / `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new`
+    （**anim 覆盖 13/26**）/ `KNOWLEDGE hard-gaps=0` / `ASSETS 30.06 banned=0`。
+  - **D2 转 ✅**；余 13 个无滑块 2D 文件（可先用 `reveal`）列为可选扩展。
+- **上一轮（第二十六轮）**：**B13 第一步——朗读双路径统一**（`94b3acb`）。
   - 新建 `scripts/rules/SpeechRules.gd`（**165 行**，规则层第八文件，≤200 红线自动覆盖）：
     `$$LaTeX$$` / `{f:名称}` / Unicode 数学符号 → 中文口播的统一转换器（映射注入，纯函数）；
     `InlineMath.strip_formulas` 薄转发，删三份重复实现。
@@ -325,15 +342,18 @@
 - **下次建议顺序**（按性价比）：
   > **2026-10-20 用户决策：暂停题目扩产，先做结构收敛。** B2 下限已全线达成（27/27 章 ≥ 5.0 题/关），
   > B1（21.4% → ≥30%）与 B2「上探 6~7 题/关中段」均为**纯内容批量生产**，可随时回归；当前转向 A/D/F 类结构问题。
-  1. **D2 演示动画覆盖 1/26** / **F3 性能耗电** / **F4 桌面键盘** —— 体验与性能结构问题
-     （B13 第一步已落：双路径统一+盲点清零+看板；余人工抽检听感）。
-  2. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 需人工决策/下载/目视（AI 无法替代，上架硬门槛）。
-  3. 决策项待拍板：**G4/G5**；**A17 是否真重命名**（低优先，两对文件语义不同且均在用，建议保持现状）；
+  1. **F3 性能耗电** / **F4 桌面键盘** —— 剩余体验与性能结构问题
+     （D2 已收官：3D 全覆盖 + 2D 播放器 + 11 个 2D 章节，覆盖率 13/26；
+     B13 第一步已落：双路径统一 + 盲点清零 + 看板；余人工抽检听感）。
+  2. **D1 2D 探究器过渡动画**（拖动=瞬时跳变）—— 可直接复用 D2 新增的 `_tick_demo` 补间骨架，
+     让滑块拖动也走缓动，属「同一抽象第二次使用」，成本已显著降低。
+  3. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 需人工决策/下载/目视（AI 无法替代，上架硬门槛）。
+  4. 决策项待拍板：**G4/G5**；**A17 是否真重命名**（低优先，两对文件语义不同且均在用，建议保持现状）；
      **A2 迁移到 LabStage**（已列长期项，不阻塞里程碑）。
-  4. 内容项回归：**B1 达标**（21.4% → ≥30%）、**B2 中段**（6~7 题/关）、**B6 理由选项占比**，
+  5. 内容项回归：**B1 达标**（21.4% → ≥30%）、**B2 中段**（6~7 题/关）、**B6 理由选项占比**，
      结构收敛后按章继续（新题模板仍须内建 B5 规范，先过 `check_questions` 黑名单与 `sample_distractors` 抽检）。
-  > A4/A2/A17 结构线已于第二十二~二十五轮全部收口；`check_all` 行数红线与 `check_questions`
-  > 映射自检让结构不回退靠机制兜底。
+  > A4/A2/A17/D2 结构线已于第二十二~二十七轮全部收口；`check_all` 行数红线、`check_questions`
+  > 映射自检与 `_test_anim_player` 让结构与演示数据不回退靠机制兜底。
 - **收工前必做**：跑全量校验（`check_all` / `Tests` / `smoke_scene` / `UiSmoke` / `LabSmoke` /
   `check_questions` / `check_knowledge` / `check_assets` / `LevelPreview --smoke`），并同步 §9.2 基线数字。
 
@@ -1402,24 +1422,36 @@
 
 ---
 
-### [ ] D2 · 演示动画只覆盖 1/26 个关卡文件（P1）
+### [x] D2 · 演示动画只覆盖 1/26 个关卡文件（P1）
 
 **现状（证据，已实测）**
-- 数据层 `anim` 字段**只出现在 `solid_basic_levels.json`（27 处）**，
+- 数据层 `anim` 字段原本**只出现在 `solid_basic_levels.json`（27 处）**，
   其余 **25 个 `*_levels.json` 全为 0** → 228 个关卡里约 **12 关（5%）** 有「▶ 演示」。
-- 能力本身是完整的（`Lab3DView.play_anim` 支持 7 种步骤，实测数据里的用量）：
+- 能力本身是完整的（`Lab3DView.play_anim` 支持 7 种步骤）：
   `highlight` 50 / `view` 38 / `reveal` 25 / `a` 22（按阶段嵌套）/ `vars` 21 / `rotate` 7 / `pulse` 4。
-- 空白区包括：`space_levels.json`（**19 关 3D，与已覆盖的 solid_basic 同构，复用它零成本**）、
-  以及全部 2D 章节（2D 连 `anim` 能力都没有，见 D1）。
 
-**做法**
-- 第一优先：给 `space_levels.json` 补 `anim`（同基类、同 `SolidBuilder`，基本是写数据）；
-- 第二优先：让 `LabStage`/`LabPlane` 支持 `anim`（与 D1 的补间层共用），再逐章补齐；
-- 目标：3D 关卡全覆盖；2D 每个知识点至少 1 个可回放演示。
+**落地（2026-10-21）**
+- **3D 全量补齐**：`space_levels.json` 19 个关卡各补 1 段 `anim`（19 轮），
+  只用不需 id 的步骤 `vars` / `view` / `rotate` / `reveal`，避免发明图元 id；
+  全部 `vars` 目标值经脚本校验「滑块存在 + 不越界」。
+- **2D 播放器从零补齐**：`LabPlane` 新增 `play_anim()` / `_tick_demo()` / `_demo_apply()`，
+  支持 `vars`（滑块补间，参数变→图形联动，**不吸附 step**，避免一跳一跳）与
+  `reveal`（复用既有「逐图元错峰显现」补间重演）；`view`/`rotate`/`pulse`/`highlight`
+  在 2D 无对应语义，安全忽略。`LabStage` 接「▶ 演示」按钮（仅本轮 scene 带 `anim` 时显示）。
+- **2D 数据补 11 个文件**（各挑一条 explore 轮，按教学意图设计参数轨迹）：
+  直线（倾斜角 30→150→45）、圆（半径→圆心）、椭圆（P 绕行一周而 |PF₁|+|PF₂| 不变）、
+  向量（模长→1 落到单位圆）、三角（θ 旋转看对称）、函数（b 平移看值域色带）、
+  数列（公差转负看散点转向）、导数（k、b 同步 → 落到 (1,1) 切线）、
+  抛物线（p 控制开口）、双曲线（a 控制顶点）、数学思想（a 变号→开口翻转、a=0 退化）。
+- **顺带修掉一个真 bug（3D 也中）**：两个播放器的收尾帧被整帧跳过（`k` 最高只到 ~0.8，
+  参数停在目标 80% 处）。改为「先累加时间 + 到点强制 k=1.0」，`Lab3DView._tick_anim`
+  与 `LabPlane._tick_demo` 同步修正。
+- **自动化防线**：`tests/Tests.gd` 新增 `_test_anim_player`（播放/终止/中断断言 +
+  全库 `anim` 数据的 `vars` 目标「滑块存在且不越界」校验）。
 
 **验收**
-- `anim` 覆盖文件数从 **1/26** 提升到 **≥ 13/26**；
-- `check_questions.gd`（A5）输出「anim 覆盖率」看板，可持续跟踪。
+- ✅ `anim` 覆盖文件数 **1/26 → 13/26**；`check_questions.gd` 输出「anim 演示覆盖: 13/26 文件」。
+- 剩余 13 个 2D 文件（多为无滑块的概念章）为**可选扩展**：可先用 `reveal` 挂演示，不阻塞本条。
 
 ---
 
@@ -2206,13 +2238,13 @@
 > `Parse Error: Could not find type "BossHud"`。用编辑器打开一次，或跑
 > `& "<godot472.exe>" --headless --editor --path . --quit`。
 
-**当前回归基线**（改完请对照，数字只能升不能降；2026-10-20 第十三轮 A3+A12 双清后）：
-`CHECKED 89 scripts, 0 failures`（A3 删 `Battle.gd`，90→89）/ `TESTS: 1245 passed, 0 failed` / `SMOKE: 285 ok, 0 fail` /
-`UI-SMOKE: 367 ok, 0 fail`（取样漂移，见下方注；A3 后 legacy 列表移除 Battle）/ `LabSmoke` 末尾 `TMP_OK` /
+**当前回归基线**（改完请对照，数字只能升不能降；2026-10-21 D2 演示动画补齐后）：
+`CHECKED 97 scripts, 0 failures`（拉取 A4 规则层七文件后 90→97）/ `TESTS: 1744 passed, 0 failed` / `SMOKE: 285 ok, 0 fail` /
+`UI-SMOKE: 369 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
 `LEVEL-PREVIEW-SMOKE: 7474 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
 `QUESTION-CHECK: 26 files / 269 levels / 1057 questions / 0 new / 7 known / 3 warnings`
-（A5 校验器，存量问题见下方基线；看板另有「干扰项黑名单命中 0 处」，见 B5）/
-`ASSETS: 29.97 MB over 3097 files … banned=0, oversize=0`（A13 护栏；A12 删 `questions.json` 后 −3 文件）/
+（A5 校验器，存量问题见下方基线；看板另有「干扰项黑名单命中 0 处」见 B5、「anim 演示覆盖 **13/26 文件**」见 D2）/
+`ASSETS: 30.06 MB over 3113 files … banned=0, oversize=0`（A13 护栏）/
 `KNOWLEDGE: 27 chapters / 275 points / 275 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `LATEX-PROBE: conic C4 68 / C5 76 / C6 68 段 / 0 失败`（E2 收官）、
 `vector_physics 26 段 / 0 失败`、`prob_simulate 14 段 / 0 失败`（E3 收官；**探针需按组分进程**，
@@ -2245,9 +2277,11 @@
 - 数据一致性：`curriculum` 关卡 275 / 关卡数据组 269，`lab_ref` 动态映射覆盖其余；
   跨文件重名关卡数据 **0 组**（原 5 组全部来自已删除的 `questions.json` ↔ `set_logic_levels.json`，随 A12 清零）。见 A12。
 - 口播字段 `speak`：**0 处**。见 B13。
-- 动效：`anim` 演示字段只出现在 **1/26** 个关卡文件（`solid_basic_levels.json`，27 处 / 12 关）；
-  `Lab3DView.play_anim` 支持 7 种步骤（`highlight` 50 / `view` 38 / `reveal` 25 / `a` 22 / `vars` 21 / `rotate` 7 / `pulse` 4）；
-  2D 侧无 `anim` 能力、滑块重绘无补间；`tween_property` 裸时长 **44 处**。见 D1~D4。
+- 动效：`anim` 演示覆盖 **13/26** 个关卡文件（D2 已补齐：`solid_basic_levels.json` 27 处、
+  `space_levels.json` 19 轮 3D，另有 11 个 2D 章节各 1 轮）；
+  3D 播放器 `Lab3DView.play_anim` 支持 7 种步骤（`highlight` / `view` / `reveal` / `vars` / `rotate` / `pulse`），
+  2D 播放器 `LabPlane.play_anim` 支持 `vars` / `reveal`（其余步骤安全忽略）；
+  两个播放器的「收尾帧跳帧」bug 已于 2026-10-21 修正；`tween_property` 裸时长 **44 处**。见 D1/D3/D4。
 - 经济（C1/C2 已修复）：`grant_stars` 经验仅随星级提升发放；`settle_level` 首达全额、重复通关 ×0.3 且每日最多 3 次；
   同一关当日第 3 次尝试起星级上限降为 2（`Tests._test_anti_farm` 覆盖）。
 

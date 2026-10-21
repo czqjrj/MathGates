@@ -278,11 +278,13 @@ func _tick_anim(delta: float) -> void:
 	# 起始准备
 	if _anim_t <= 0.0:
 		_anim_prepare(step, kind)
-	var total := dur + hold
-	var k := clampf(_anim_t / dur, 0.0, 1.0)
-	_anim_apply(step, kind, k)
 	_anim_t += delta
-	if _anim_t >= total:
+	var total := dur + hold
+	var done := _anim_t >= total
+	# 收尾帧必须落在目标值上，否则最后一段补间会被整帧跳过（参数停在 ~80% 处）
+	var k := 1.0 if done else clampf(_anim_t / dur, 0.0, 1.0)
+	_anim_apply(step, kind, k)
+	if done:
 		_anim_i += 1
 		_anim_t = 0.0
 

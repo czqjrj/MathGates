@@ -49,6 +49,15 @@ const _BIG := 1e17
 var _t := 0.0
 var _anim_t := 0.0
 
+## 数据驱动演示（D2）：scene.anim 的播放器。
+## 支持 vars（滑块参数补间，图形随参数联动）与 reveal（逐图元重演显现）；
+## view / rotate / pulse / highlight 在 2D 无对应语义，安全忽略。
+var _demo: Array = []
+var _demo_i := 0
+var _demo_t := 0.0
+var _demo_playing := false
+var _demo_from: Dictionary = {}
+
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	clip_contents = true
@@ -58,14 +67,91 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_t += delta
 	_anim_t += delta
+	if _demo_playing:
+		_tick_demo(delta)
 	if mode == "sliders" or not _scene.is_empty():
 		queue_redraw()
+
+# ---------------------------------------------------------------- 演示播放
+func has_anim() -> bool:
+	return _scene.get("anim", []) is Array and not (_scene.get("anim", []) as Array).is_empty()
+
+## 播放 scene.anim 的步骤序列（可重复调用，从头重播）。
+func play_anim(steps: Array) -> void:
+	if steps.is_empty():
+		return
+	_demo = steps.duplicate(true)
+	_demo_i = 0
+	_demo_t = 0.0
+	_demo_playing = true
+
+func is_demo_playing() -> bool:
+	return _demo_playing
+
+func _tick_demo(delta: float) -> void:
+	if _demo_i >= _demo.size():
+		_demo_playing = false
+		return
+	var step: Dictionary = _demo[_demo_i]
+	if not (step is Dictionary):
+		_demo_i += 1
+		return
+	var kind := str(step.get("a", ""))
+	var dur := maxf(float(step.get("dur", 1.2)), 0.05)
+	var hold := maxf(float(step.get("hold", 0.0)), 0.0)
+	if _demo_t <= 0.0:
+		_demo_prepare(step, kind)
+	_demo_t += delta
+	var done := _demo_t >= dur + hold
+	# 收尾帧必须落在目标值上，否则最后一段补间会被整帧跳过（参数停在 ~80% 处）
+	var k := 1.0 if done else clampf(_demo_t / dur, 0.0, 1.0)
+	_demo_apply(step, kind, k)
+	if done:
+		_demo_i += 1
+		_demo_t = 0.0
+
+func _demo_prepare(step: Dictionary, kind: String) -> void:
+	match kind:
+		"vars":
+			_demo_from = {}
+			var to: Dictionary = step.get("to", {})
+			for nm in to.keys():
+				_demo_from[str(nm)] = slider_value(str(nm))
+		"reveal":
+			# 复用既有「逐图元错峰显现」补间：把它拨回 0 即重演一次
+			_anim_t = 0.0
+
+func _demo_apply(step: Dictionary, kind: String, k: float) -> void:
+	match kind:
+		"vars":
+			var to: Dictionary = step.get("to", {})
+			for nm in to.keys():
+				var key := str(nm)
+				var from := float(_demo_from.get(key, 0.0))
+				_anim_set_slider(key, lerpf(from, float(to[nm]), k))
+		_:
+			pass
+
+## 演示专用：夹到滑块区间但不吸附 step（吸附会让补间一跳一跳）。
+func _anim_set_slider(name: String, v: float) -> void:
+	for s in _sliders:
+		if str(s["name"]) != name:
+			continue
+		var nv := clampf(v, float(s["min"]), float(s["max"]))
+		if absf(nv - float(s["value"])) > 0.0005:
+			s["value"] = nv
+			slider_changed.emit(name, nv)
+			queue_redraw()
+		return
 
 # ---------------------------------------------------------------- 配置
 func set_scene(s: Dictionary) -> void:
 	_scene = s if s != null else {}
 	mode = ""
 	_anim_t = 0.0
+	_demo_playing = false
+	_demo_i = 0
+	_demo_t = 0.0
 	var has_range := _scene.has("x") or _scene.has("y")
 	if _scene.has("x"):
 		var xr: Array = _scene["x"]

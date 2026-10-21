@@ -25,6 +25,7 @@ func _run() -> void:
 	_test_boss_data()
 	_test_rhythm()
 	_test_lab_plane()
+	_test_anim_player()
 	_test_wrong_queries()
 	_test_review_order()
 	_test_focus()
@@ -236,6 +237,69 @@ func _test_lab_plane() -> void:
 	plane.begin_sliders([ { "name": "b", "min": 1, "max": 5, "value": 4, "step": 0.25 } ])
 	_ok(absf(plane._num("sqrt(1-b*b/25)", 0.0) - 0.6) < 1e-6, "ecc from b")
 	plane.queue_free()
+
+## D2：2D 演示播放器（scene.anim）真的会带动图形；并校验全库 anim 数据的 vars 目标
+## 都能命中场景已声明的滑块、且取值不越界（防止后续批量补数据时写错名字/范围）。
+func _test_anim_player() -> void:
+	var plane = load("res://scripts/modules/lab/LabPlane.gd").new()
+	add_child(plane)
+	var slider := [ { "name": "r", "min": 0.5, "max": 5, "value": 4, "step": 0.5 } ]
+	plane.set_scene({
+		"range": 6,
+		"sliders": slider,
+		"circles": [ { "c": [0, 0], "r": "r" } ],
+		"anim": [ { "a": "vars", "to": { "r": 1 }, "dur": 1.0, "hold": 0.0 } ],
+	})
+	_ok(plane.has_anim(), "scene.anim 被识别")
+	plane.begin_sliders(slider)
+	plane.play_anim(plane._scene["anim"])
+	_ok(plane.is_demo_playing(), "演示开始播放")
+	for _i in 8:
+		plane._tick_demo(0.2)
+	_ok(absf(plane.slider_value("r") - 1.0) < 0.05, "vars 补间把 r 从 4 带到 1")
+	_ok(not plane.is_demo_playing(), "演示播完自动停止")
+	plane.set_scene({ "range": 6 })
+	_ok(not plane.has_anim(), "无 anim 的场景不显示演示")
+	_ok(not plane.is_demo_playing(), "set_scene 会中断演示")
+	plane.queue_free()
+
+	# ---- 全库数据完整性 ----
+	var dir := DirAccess.open("res://data")
+	var checked := 0
+	for f in dir.get_files():
+		if not f.ends_with("_levels.json"):
+			continue
+		var data = JSON.parse_string(FileAccess.get_file_as_string("res://data/" + f))
+		if typeof(data) != TYPE_DICTIONARY:
+			continue
+		for key in (data as Dictionary).keys():
+			var grp: Variant = data[key]
+			if typeof(grp) != TYPE_DICTIONARY:
+				continue
+			for lv in (grp as Dictionary).get("levels", []):
+				if typeof(lv) != TYPE_DICTIONARY:
+					continue
+				var sc: Variant = lv.get("scene", {})
+				if typeof(sc) != TYPE_DICTIONARY or not (sc as Dictionary).has("anim"):
+					continue
+				var rng := {}
+				for s in (sc as Dictionary).get("sliders", []):
+					rng[str(s.get("name", ""))] = [float(s.get("min", -1e9)), float(s.get("max", 1e9))]
+				var raw_steps: Variant = (sc as Dictionary)["anim"]
+				var steps: Array = raw_steps if raw_steps is Array else [raw_steps]
+				for st in steps:
+					if typeof(st) != TYPE_DICTIONARY or str((st as Dictionary).get("a", "")) != "vars":
+						continue
+					var to: Dictionary = (st as Dictionary).get("to", {})
+					for nm in to.keys():
+						checked += 1
+						_ok(rng.has(str(nm)), "%s anim 使用已声明滑块 %s" % [f, str(nm)])
+						if rng.has(str(nm)):
+							var lo := float(rng[str(nm)][0])
+							var hi := float(rng[str(nm)][1])
+							var v := float(to[nm])
+							_ok(v >= lo - 1e-6 and v <= hi + 1e-6, "%s 目标 %s=%s 在 [%s, %s] 内" % [f, str(nm), str(v), str(lo), str(hi)])
+	_ok(checked > 0, "全库至少有一条 vars 演示（实际 %d 条）" % checked)
 
 func _test_wrong_queries() -> void:
 	var saved: Dictionary = GameData.wrong_log

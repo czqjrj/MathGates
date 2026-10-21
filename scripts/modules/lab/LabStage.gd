@@ -11,6 +11,7 @@ extends StageBase
 var _view: Control
 var _plane: LabPlane
 var _lab := ""
+var _demo_btn: Button
 
 # ---------------------------------------------------------------- 配置钩子
 func _module() -> String: return _lab if _lab != "" else "lab"
@@ -59,6 +60,33 @@ func _build_view() -> void:
 	_plane.slider_changed.connect(func(_n: String, _v: float) -> void: _refresh_live())
 	_plane.point_moved.connect(func(_p: Vector2) -> void: _refresh_live())
 	_view.add_child(_plane)
+	# 右上：演示按钮（仅当本轮 scene 带 anim 时显示，见 D2）
+	_demo_btn = UI.ghost_button("▶ 演示", func() -> void: _play_demo(), 15)
+	_demo_btn.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	_demo_btn.offset_left = -118.0
+	_demo_btn.offset_right = -14.0
+	_demo_btn.offset_top = 8.0
+	_demo_btn.offset_bottom = 42.0
+	_demo_btn.visible = false
+	_view.add_child(_demo_btn)
+
+## 播放本轮 scene.anim；未配置时按钮本身不显示。
+func _play_demo() -> void:
+	var s := _current()
+	var a: Variant = s.get("anim", null)
+	if a == null:
+		a = s.get("scene", {}).get("anim", null)
+	if a is Array and not (a as Array).is_empty():
+		_plane.play_anim(a)
+		_show_feed("演示中……可随时拖动滑块自己再试一次。", UI.COL_ACCENT)
+	elif a is Dictionary:
+		_plane.play_anim([a])
+
+func _has_anim(s: Dictionary) -> bool:
+	if s.has("anim"):
+		return true
+	var sc: Variant = s.get("scene", {})
+	return sc is Dictionary and (sc as Dictionary).has("anim")
 
 func _refresh_live() -> void:
 	if _live == null:
@@ -96,6 +124,8 @@ func _load_q() -> void:
 
 	var sc: Dictionary = s.get("scene", {})
 	_plane.set_scene(sc)
+	if _demo_btn != null:
+		_demo_btn.visible = _has_anim(s)
 	var t := str(s.get("type", "choice"))
 	var has_interactive := sc.has("sliders") or sc.has("drag") or sc.has("break")
 	if t == "explore" and has_interactive:
