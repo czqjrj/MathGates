@@ -121,6 +121,25 @@ build/           导出产物(APK,git 忽略)
 > 边界：**直接拖拽不补间**。分段函数分界线（`begin_break`）与拖点（`begin_drag`）必须跟手，
 > 已清空 `_disp`；补间只用于「间接调参」（滑块）。
 
+## 桌面端键盘操作（F4）
+
+`scripts/autoload/KeyNav.gd`（全局 autoload）只处理**未被 UI 消费**的按键
+（`_unhandled_key_input`），所以输入框打字、按钮聚焦时的 Enter/Space 都不受影响。
+
+| 键 | 行为 |
+|---|---|
+| `1`~`9` | 选中第 n 个选项（与鼠标点击走**同一个** `pressed` 回调） |
+| `Enter` | 实验轮「确认」优先 → 其次「下一关」→ 最后激活当前焦点按钮 |
+| `←/→/↑/↓` | 在「选项 → 下一关 → 提示」之间移动焦点（焦点环由按钮 focus 样式显示） |
+| `H` | 提示 |
+| `W/A/S/D` | 3D 关卡调整视角（`Lab3DView.key_pan`，与鼠标拖动共用 `yaw_goal/pitch_goal`） |
+| `Esc` / `M` | 返回 / 静音（全局既有处理） |
+
+竞技场（`StageBase` 子类）无需改代码即生效：KeyNav 通过 `stage.get("_opt_btns"/"_next"/"_hint"/"_kb_confirm")`
+鸭子类型取控件；实验轮舞台把「确认」按钮挂到 `_kb_confirm` 即可让 Enter 提交。
+冒烟覆盖：`Tests._test_keyboard_nav`（18 断言，含 test double 与真实 `Lab3DView`）+
+`UiSmoke._test_keyboard_stage`（真实 `LabStage` 上数字键走同一回调）。
+
 ## 自检与 CI
 
 改完**必跑**（顺序任意，全绿才提交）：

@@ -23,6 +23,8 @@ var _step_idx := 0
 var _guide_btn: Button
 var _demo_restart_btn: Button
 var _demo_step_btn: Button
+## F4：本轮「确认」按钮，供键盘 Enter 触发。
+var _kb_confirm: Button
 
 # ---------------------------------------------------------------- 配置钩子
 func _module() -> String: return _lab if _lab != "" else "lab3d"
@@ -172,6 +174,7 @@ func _slider_summary() -> String:
 func _load_q() -> void:
 	if _stages.is_empty():
 		return
+	_kb_confirm = null
 	_solved = false
 	_wrongs = 0
 	_hint_used = false
@@ -363,6 +366,7 @@ func _build_explore(s: Dictionary) -> void:
 	b.custom_minimum_size = Vector2(150, 50)
 	b.pressed.connect(_on_confirm)
 	brow.add_child(b)
+	_kb_confirm = b
 	if _has_anim(s):
 		var db := UI.ghost_button("▶ 演示", func() -> void: _play_demo(), 16)
 		db.custom_minimum_size = Vector2(110, 50)
@@ -389,6 +393,7 @@ func _build_interact(s: Dictionary) -> void:
 	b.custom_minimum_size = Vector2(150, 50)
 	b.pressed.connect(_on_confirm)
 	box.add_child(b)
+	_kb_confirm = b
 
 func _on_confirm() -> void:
 	if _solved or _done or _stages.is_empty():

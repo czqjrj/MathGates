@@ -30,6 +30,7 @@ func _run() -> void:
 	_test_motion_tokens()
 	_test_reduced_motion()
 	_test_demo_controls()
+	_test_keyboard_nav()
 	_test_wrong_queries()
 	_test_review_order()
 	_test_focus()
@@ -446,6 +447,80 @@ func _test_demo_controls() -> void:
 	v.restart_anim()
 	_ok(v._anim_t == 0.0 and v._anim_i == 0 and not v.is_anim_paused(), "3D 重播回到起点")
 	v.queue_free()
+
+## F4：键盘导航 —— 数字选项、Enter 提交优先级、焦点环、3D 视角。
+## 用 test double 承载 StageBase 暴露的那几个字段，避免依赖具体关卡内容。
+class FakeStage extends Node:
+	var _opt_btns: Array = []
+	var _next: Button
+	var _hint: Button
+	var _kb_confirm: Button
+	var _view3d: Node
+	var picked := -1
+	var next_hits := 0
+	var hint_hits := 0
+	var confirm_hits := 0
+
+	func _make_option(i: int) -> Button:
+		var b := Button.new()
+		b.text = "opt%d" % i
+		b.pressed.connect(func() -> void: picked = i)
+		add_child(b)
+		return b
+
+func _test_keyboard_nav() -> void:
+	var st := FakeStage.new()
+	add_child(st)
+	for i in 4:
+		st._opt_btns.append(st._make_option(i))
+	st._next = Button.new()
+	st._next.text = "next"
+	st._next.pressed.connect(func() -> void: st.next_hits += 1)
+	st.add_child(st._next)
+	st._hint = Button.new()
+	st._hint.text = "hint"
+	st._hint.pressed.connect(func() -> void: st.hint_hits += 1)
+	st.add_child(st._hint)
+	st._kb_confirm = Button.new()
+	st._kb_confirm.text = "confirm"
+	st._kb_confirm.pressed.connect(func() -> void: st.confirm_hits += 1)
+	st.add_child(st._kb_confirm)
+
+	_ok(KeyNav.handle(st, KEY_3), "数字键被消费")
+	_eq(st.picked, 2, "数字 3 选中第 3 个选项（0 基）")
+	_ok(not KeyNav.handle(st, KEY_9), "越界数字不消费")
+
+	# Enter：确认按钮优先于下一关
+	_ok(KeyNav.handle(st, KEY_ENTER), "Enter 被消费")
+	_eq(st.confirm_hits, 1, "Enter 触发实验轮「确认」")
+	_eq(st.next_hits, 0, "确认存在时不误触下一关")
+	st._kb_confirm.disabled = true
+	_ok(KeyNav.handle(st, KEY_ENTER), "确认禁用后 Enter 仍可用")
+	_eq(st.next_hits, 1, "确认禁用后 Enter 落到下一关")
+
+	_ok(KeyNav.handle(st, KEY_H), "H 被消费")
+	_eq(st.hint_hits, 1, "H 触发提示")
+
+	# 焦点环：首项 → 右移到第二项
+	st._opt_btns[0].grab_focus()
+	_ok(KeyNav.handle(st, KEY_RIGHT), "方向键被消费")
+	var f := st.get_viewport().gui_get_focus_owner()
+	_eq(f, st._opt_btns[1], "→ 焦点移到下一个选项")
+	KeyNav.handle(st, KEY_LEFT)
+	_eq(st.get_viewport().gui_get_focus_owner(), st._opt_btns[0], "← 焦点回到上一个选项")
+
+	# 3D：W/A/S/D 改视角（用真实 Lab3DView）
+	var view = load("res://scripts/modules/lab3d/Lab3DView.gd").new()
+	st._view3d = view
+	var yaw0: float = view.yaw_goal
+	var pitch0: float = view.pitch_goal
+	_ok(KeyNav.handle(st, KEY_D), "3D 下 D 被消费")
+	_ok(view.yaw_goal > yaw0, "D 向右转视角")
+	_ok(KeyNav.handle(st, KEY_W), "3D 下 W 被消费")
+	_ok(view.pitch_goal < pitch0, "W 抬高视角")
+	view.queue_free()
+	_ok(not KeyNav.handle(null, KEY_1), "空舞台不崩溃")
+	st.queue_free()
 
 func _test_wrong_queries() -> void:
 	var saved: Dictionary = GameData.wrong_log

@@ -13,6 +13,8 @@ var _plane: LabPlane
 var _lab := ""
 var _demo_btn: Button
 var _demo_restart_btn: Button
+## F4：本轮「确认」按钮，供键盘 Enter 触发（KeyNav 通过 stage.get("_kb_confirm") 取）。
+var _kb_confirm: Button
 
 # ---------------------------------------------------------------- 配置钩子
 func _module() -> String: return _lab if _lab != "" else "lab"
@@ -127,6 +129,7 @@ func _refresh_live() -> void:
 func _load_q() -> void:
 	if _stages.is_empty():
 		return
+	_kb_confirm = null
 	_solved = false
 	_wrongs = 0
 	_hint_used = false
@@ -214,6 +217,7 @@ func _build_explore(s: Dictionary) -> void:
 	b.custom_minimum_size = Vector2(150, 50)
 	b.pressed.connect(_on_confirm)
 	box.add_child(b)
+	_kb_confirm = b
 
 func _build_interact(s: Dictionary) -> void:
 	var box := VBoxContainer.new()
@@ -231,6 +235,7 @@ func _build_interact(s: Dictionary) -> void:
 	b.custom_minimum_size = Vector2(150, 50)
 	b.pressed.connect(_on_confirm)
 	box.add_child(b)
+	_kb_confirm = b
 
 func _interactive_ok() -> bool:
 	if _plane.mode == "drag":

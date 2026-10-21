@@ -68,7 +68,7 @@
 | **F1** | 在线 TTS 的合规与稳定性（外发题目文本） | **P0** | ✅ 客户端策略完成（默认关闭+明示同意+隐私政策）；官方 API/商店表单并入 F2 |
 | **F2** | 发布准备（包名/版本/签名/targetSdk） | **P0** | ✅ 包名=cn.edu.mathgates、版本脚本、targetSdk35、签名位就绪；残留 keystore/真机 |
 | **F3** | 性能与耗电（3D 每帧渲染、背景常驻重绘） | **P1** | 静止时无信息增量 |
-| **F4** | 桌面端键盘操作（主流程完全缺失） | **P1** | 已发布 Windows 版 |
+| **F4** | 桌面端键盘操作（主流程完全缺失） | **P1** | ✅ 已完成（2026-10-21）：`KeyNav` autoload（数字选项/Enter 三级优先/焦点环/H/WASD 视角）；`StageBase` 零改动；单测 18 条 + 真实 LabStage 冒烟 |
 | **F5** | 存档版本化与进度迁移（换机即丢） | **P2** | 无导出/导入 |
 | **F6** | 首次引导与机制说明 | **P2** | 无 tutorial |
 | **F7** | 授权与第三方声明缺失（LICENSE / 素材来源 / 教材改编） | **P0** | ✅ LICENSE+第三方声明齐备、排除 GPLv3 字体；残留：标题字体替换/素材签字 |
@@ -133,12 +133,21 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`aca0897`（`feat(D4)` 动效令牌 + 静态拦截 + 演示控制 + 减弱动效档）；
-  前一提交链：`199bdce`（docs 第二十九轮）→ `439d685`（D3 表意动效）→ `926c3e1`（docs）→
-  `0711bbf`（D1 过程表达）→ `32953ed`（docs）→ `110b0a3`（D2 演示 13/26）→
-  `415f4ce`（docs）→ `94b3acb`（B13 第一步）→ `7b4f8be`（A4 收口）→…，
-  已 push（`main` 与 `origin/main` 同步）。
-- **本轮交付（2026-10-21，第三十轮）**：**D4 动效令牌与控制语义**（`aca0897`）——**D 类收官**。
+- **最后提交**：`TODO_HASH`（`feat(F4)` 桌面端键盘操作）；稍后回填。
+- **本轮交付（2026-10-21，第三十一轮）**：**F4 桌面端键盘操作**。
+  - 新增 `scripts/autoload/KeyNav.gd` 并注册 autoload：只处理 `_unhandled_key_input`，
+    输入框与按钮默认激活不受影响；核心逻辑为 `static func handle(stage, keycode)`，测试可直接驱动。
+  - **鸭子类型**取 `_opt_btns/_next/_hint/_kb_confirm/_view3d` → **`StageBase` 零改动**
+    （1195/1200 红线不动，无需上调上限）。
+  - 键位：`1..9` 选项（同一 `pressed` 回调）、`Enter` 三级优先（确认 → 下一关 → 焦点按钮）、
+    `←/→/↑/↓` 焦点环、`H` 提示、`W/A/S/D` 3D 视角、`Esc`/`M` 沿用全局。
+  - `Lab3DView.key_pan()` 与鼠标拖动共用 `yaw_goal/pitch_goal`（pitch 夹 ±1.35）。
+  - 舞台接线各 2 行：`LabStage`/`Lab3DStage` 把「确认」按钮挂到 `_kb_confirm`，`_load_q` 置空。
+  - 测试：`Tests._test_keyboard_nav`（18 断言）+ `UiSmoke._test_keyboard_stage`（真实 LabStage 断言）。
+  - 全量回归绿：`CHECKED 98` / `TESTS 1792` / `SMOKE 285` / `UI-SMOKE 385` / `LabSmoke TMP_OK` /
+    `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new` / `KNOWLEDGE hard-gaps=0` / `ASSETS 30.10 banned=0`。
+  - **F4 转 ✅**；焦点顺序是否符合直觉建议 Windows 版上手过一遍（已标 🟡）。
+- **上一轮（第三十轮）**：**D4 动效令牌与控制语义**（`aca0897`）——D 类收官。
   - **令牌**：`UI.DUR_TINY/FAST/NORMAL/SLOW/XSLOW/LONG/SCENE/AMBIENT`（0.08→1.7）、
     `EASE_STD/EMPHASIS/SOFT` 与 `UI.ease(tw)`；语义上「时长只有一个来源」。
   - **收敛 47 处**（14 文件）：脚本化只改 `tween_property` 的第 4 实参与 `_scale_to` 的第 3 实参，
@@ -394,16 +403,16 @@
 - **下次建议顺序**（按性价比）：
   > **2026-10-20 用户决策：暂停题目扩产，先做结构收敛。** B2 下限已全线达成（27/27 章 ≥ 5.0 题/关），
   > B1（21.4% → ≥30%）与 B2「上探 6~7 题/关中段」均为**纯内容批量生产**，可随时回归；当前转向 A/D/F 类结构问题。
-  1. **F3 性能耗电** / **F4 桌面键盘** —— D 类已收官，剩下的是这两项体验/性能结构问题
-     （B13 第一步已落：双路径统一 + 盲点清零 + 看板；余人工抽检听感）。
-  2. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 需人工决策/下载/目视（AI 无法替代，上架硬门槛）。
-  3. 决策项待拍板：**G4/G5**；**A17 是否真重命名**（低优先，两对文件语义不同且均在用，建议保持现状）；
-     **A2 迁移到 LabStage**（已列长期项，不阻塞里程碑）。
-  4. 内容项回归：**B1 达标**（21.4% → ≥30%）、**B2 中段**（6~7 题/关）、**B6 理由选项占比**，
-     结构收敛后按章继续（新题模板仍须内建 B5 规范，先过 `check_questions` 黑名单与 `sample_distractors` 抽检）。
-  > A4/A2/A17/D1/D2/D3/D4 结构线与动效线已于第二十二~三十轮全部收口；
-  > `check_all`（行数红线 + 裸时长）、`check_questions` 映射自检、
-  > `_test_anim_player` / `_test_plane_motion` / `_test_demo_controls` 让结构与动效不回退。
+  1. **F3 性能与耗电**（3D 每帧渲染、背景常驻重绘；静止时无信息增量）——
+     F4 已收官，这是桌面/移动端剩下的体验结构问题；可用「静止降帧」做增量修复。
+  2. **G1 错题间隔重复（SRS）** / **G3 学习报告与家长视图** —— 纯逻辑与数据展示，可自动化验证。
+  3. **A13 字体替换 + F7 素材签字 + F2 keystore/真机** —— 需人工决策/下载/目视（AI 无法替代，上架硬门槛）。
+  4. 决策项待拍板：**G4/G5**；**A17 是否真重命名**（低优先）；**A2 迁移到 LabStage**（长期项）。
+  5. 内容项回归：**B1 达标**（21.4% → ≥30%）、**B2 中段**（6~7 题/关）、**B6 理由选项占比**，
+     结构收敛后按章继续（新题模板仍须内建 B5 规范）。
+  > A4/A2/A17/D1~D4/F4 已于第二十二~三十一轮全部收口；`check_all`（行数 + 裸时长）、
+  > `check_questions` 映射自检、`_test_anim_player` / `_test_plane_motion` / `_test_demo_controls` /
+  > `_test_keyboard_nav` 让结构、动效与输入不回退。
 - **收工前必做**：跑全量校验（`check_all` / `Tests` / `smoke_scene` / `UiSmoke` / `LabSmoke` /
   `check_questions` / `check_knowledge` / `check_assets` / `LevelPreview --smoke`），并同步 §9.2 基线数字。
 
@@ -1963,28 +1972,39 @@
 
 ---
 
-### [ ] F4 · 桌面端键盘操作（P1）
+### [x] F4 · 桌面端键盘操作（P1）
 
 **现状（证据）**
-- 项目**发布 Windows 桌面版**（`export_presets.cfg` 有 3 个 Windows 预设），
-  但主流程**完全没有键盘支持**：`StageBase` / `LabStage` / `Lab3DStage` / `TheoremTree` /
-  `MainHub` 里搜不到任何 `InputEventKey` / `KEY_*` 处理。
-- 反差很明显：**遗留的圆锥曲线场景反而有**
-  （`scripts/modules/conic/scenes/C1.gd:99` 起完整支持 `KEY_1`~`KEY_6`、
-  `KEY_UP/DOWN/LEFT/RIGHT`、`KEY_SPACE`、`KEY_D`、`KEY_ESCAPE`；`C2.gd`/`C3.gd` 同）。
-- 全局仅两处键盘：`Sound.gd:101`（`M` 静音）、`Scene.gd:125`（`ui_cancel` = Esc 返回）。
-- 后果：桌面用户答选择题必须**逐个鼠标点击**，不能按 1/2/3/4 选项、不能 Enter 提交/下一题、
-  不能用方向键在选项间移动——对已发布的桌面版是明显体验缺口（也影响键盘无障碍）。
+- 项目发布 Windows 桌面版，但主流程**完全没有键盘支持**：`StageBase` / `LabStage` / `Lab3DStage` /
+  `TheoremTree` / `MainHub` 里搜不到任何 `InputEventKey` / `KEY_*` 处理。
+- 全局仅两处键盘：`Sound.gd`（`M` 静音）、`Scene.gd`（`ui_cancel` = Esc 返回）。
+- 后果：桌面用户答选择题必须逐个鼠标点击，不能按数字选项、不能 Enter 提交/下一题。
 
-**做法**
-- 在 `StageBase` 统一注入键盘层（各 Stage 子类自动获得）：
-  `1..4`（或 `A..D`）选项、`Enter` 提交/下一题、`←/→` 或 `↑/↓` 移动焦点、`H` 提示、`M` 静音（已有）、`Esc` 返回（已有）；
-- 3D 关卡补 `W/A/S/D` 或方向键控制视角（`Lab3DView` 已支持拖动，补键盘映射即可）；
-- 焦点可见（当前选中项高亮），避免"键盘能用但不知道选到哪"。
+**落地（2026-10-21，第三十一轮）**
+- **新增 `scripts/autoload/KeyNav.gd`（163 行，autoload）**：只处理 `_unhandled_key_input`，
+  因此**输入框打字与按钮默认激活都不受影响**；核心逻辑做成 `static func handle(stage, keycode) -> bool`，
+  便于无头测试直接驱动，不必伪造 `InputEvent`。
+- **鸭子类型取控件**：`stage.get("_opt_btns")` / `_next` / `_hint` / `_kb_confirm`，`_view3d`，
+  所以 **`StageBase` 一行没改**（1195/1200 行红线不动，无需上调上限），全部子类自动获得。
+- **键位**：`1..9` 选项（走与鼠标同一个 `pressed` 信号）、`Enter`（确认 → 下一关 → 焦点按钮三级优先）、
+  `←/→/↑/↓` 焦点环、`H` 提示、`W/A/S/D` 3D 视角、`Esc`/`M` 沿用全局。
+- **焦点可见**：选项按钮与 `UI.ghost_button`/`primary_button` 早已有 `focus` StyleBox，
+  KeyNav 只负责 `grab_focus()`——键盘能看见选到哪。
+- **3D 视角**：`Lab3DView.key_pan(dx, dy)` 改 `yaw_goal/pitch_goal`（pitch 夹到 ±1.35），
+  与鼠标拖动共用同一状态，缓动与自动缓转行为一致。
+- **舞台接线（各 2 行）**：`LabStage` / `Lab3DStage` 把实验轮的「确认」按钮挂到 `_kb_confirm`，
+  并在 `_load_q` 置空避免悬空引用。
+- **测试**：`Tests._test_keyboard_nav`（18 断言：数字选择与越界、Enter 三级优先、H、
+  焦点前后移动、W/D 改视角、空舞台不崩）+ `UiSmoke._test_keyboard_stage`
+  （真实 `LabStage` 上数字键确实走 `_on_choice`，`_last_picked == 0`）。
+- **全量回归绿**：`CHECKED 98`（+1 新脚本）/ `TESTS 1792`（+18）/ `SMOKE 285` /
+  `UI-SMOKE 385`（+2）/ `LabSmoke TMP_OK` / `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new` /
+  `KNOWLEDGE hard-gaps=0` / `ASSETS 30.10 banned=0`。
 
 **验收**
-- 桌面版可用纯键盘完成：进入关卡 → 答题 → 提交 → 结算 → 下一关；
-- 焦点状态可见；与鼠标操作行为一致。
+- ✅ 纯键盘可完成：数字选答 → Enter 提交/下一关 → 结算（焦点环可见）；
+- ✅ 键盘与鼠标走同一条回调（`_on_choice`），行为一致（UiSmoke 真实舞台断言）；
+- 🟡 全流程手感（焦点顺序是否符合直觉）建议在 Windows 版上手过一遍。
 
 ---
 
@@ -2315,13 +2335,13 @@
 > `Parse Error: Could not find type "BossHud"`。用编辑器打开一次，或跑
 > `& "<godot472.exe>" --headless --editor --path . --quit`。
 
-**当前回归基线**（改完请对照，数字只能升不能降；2026-10-21 D1~D4 动效收官后）：
-`CHECKED 97 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 1774 passed, 0 failed` / `SMOKE: 285 ok, 0 fail` /
-`UI-SMOKE: 383 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
+**当前回归基线**（改完请对照，数字只能升不能降；2026-10-21 F4 键盘操作补齐后）：
+`CHECKED 98 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 1792 passed, 0 failed` / `SMOKE: 285 ok, 0 fail` /
+`UI-SMOKE: 385 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
 `LEVEL-PREVIEW-SMOKE: 7474 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
 `QUESTION-CHECK: 26 files / 269 levels / 1057 questions / 0 new / 7 known / 3 warnings`
 （A5 校验器，存量问题见下方基线；看板另有「干扰项黑名单命中 0 处」见 B5、「anim 演示覆盖 **13/26 文件**」见 D2）/
-`ASSETS: 30.09 MB over 3113 files … banned=0, oversize=0`（A13 护栏）/
+`ASSETS: 30.10 MB over 3114 files … banned=0, oversize=0`（A13 护栏）/
 `KNOWLEDGE: 27 chapters / 275 points / 275 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `LATEX-PROBE: conic C4 68 / C5 76 / C6 68 段 / 0 失败`（E2 收官）、
 `vector_physics 26 段 / 0 失败`、`prob_simulate 14 段 / 0 失败`（E3 收官；**探针需按组分进程**，

@@ -36,6 +36,7 @@ Toast="*res://scripts/autoload/Toast.gd"
 Sound="*res://scripts/autoload/Sound.gd"
 Scene="*res://scripts/autoload/Scene.gd"
 Settings="*res://scripts/autoload/Settings.gd"
+KeyNav="*res://scripts/autoload/KeyNav.gd"
 
 [display]
 

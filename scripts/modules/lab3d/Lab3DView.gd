@@ -304,6 +304,15 @@ func is_anim_paused() -> bool:
 func is_anim_playing() -> bool:
 	return _anim_playing
 
+## F4：W/A/S/D 键盘调视角（dx = 左右，dy = 上下，取值 -1/0/1）。
+## 与鼠标拖动共用 yaw_goal/pitch_goal，因此缓动、自动缓转的行为完全一致。
+func key_pan(dx: float, dy: float) -> void:
+	if dx == 0.0 and dy == 0.0:
+		return
+	yaw_goal += dx * 0.14
+	pitch_goal = clampf(pitch_goal + dy * 0.10, -1.35, 1.35)
+	_auto_pause = 2.5
+
 func _tick_anim(delta: float) -> void:
 	if _anim_i >= _anim.size():
 		_anim_playing = false

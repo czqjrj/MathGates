@@ -59,6 +59,8 @@ func _ready() -> void:
 	for scene_path in ["res://scenes/ConicStage.tscn", "res://scenes/SolidChallenge.tscn"]:
 		await _test_legacy(scene_path, _pick(scene_path, 1))
 
+	await _test_keyboard_stage()
+
 	print("UI-SMOKE: %d ok, %d fail" % [_pass, _fail])
 	GameData.logout()
 	GameData.delete_user("uismoke")
@@ -114,6 +116,34 @@ func _test_font_scale() -> void:
 	UI.S = saved
 
 # ---------------------------------------------------------------- StageBase 家族
+
+## F4：真实 LabStage 上的键盘选择必须走与鼠标同一条回调（_on_choice）。
+func _test_keyboard_stage() -> void:
+	var picks := _pick("res://scenes/LabStage.tscn", 1)
+	if picks.is_empty():
+		_ok(false, "keyboard: 缺少 LabStage 样本")
+		return
+	if not GameData.start_level(picks[0][0], picks[0][1]):
+		_ok(false, "keyboard: start_level 失败")
+		return
+	var st = load("res://scenes/LabStage.tscn").instantiate()
+	add_child(st)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var done := false
+	for i in st._stages.size():
+		st._idx = i
+		st._load_q()
+		await get_tree().process_frame
+		if st._opt_btns.size() >= 2 and not st._solved:
+			_ok(KeyNav.handle(st, KEY_1), "真实 LabStage：数字键被消费")
+			_eq(st._last_picked, 0, "真实 LabStage：键盘选中走同一回调")
+			done = true
+			break
+	if not done:
+		_ok(false, "keyboard: 未找到可键盘作答的轮次")
+	st.queue_free()
+	await get_tree().process_frame
 
 func _test_stagebase(scene_path: String, picks: Array) -> void:
 	if picks.is_empty():
