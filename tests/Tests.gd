@@ -761,6 +761,32 @@ func _test_tree_rules() -> void:
 	_ok(c4[0].is_equal_approx(Vector2(0, 0)) and c4[1].is_equal_approx(Vector2(10, 0)) and c4[2].is_equal_approx(Vector2(20, 0)),
 		"curve per_seg=1 恒等")
 
+	# —— 解锁判定 level_unlocked / region_stars / level_li_by_id ——
+	var ulv: Array = [
+		{ "id": "l1", "name": "1-1 甲" },
+		{ "id": "l2", "name": "1-2 乙" },
+		{ "id": "l3", "name": "隐藏Boss · 丙", "gate": { "need_stars": 3 } },
+	]
+	_ok(TreeRules.level_unlocked(0, ulv, {}, false), "unlock 首关恒开")
+	_ok(TreeRules.level_unlocked(0, ulv, {}, true), "unlock 首关自由模式")
+	_ok(not TreeRules.level_unlocked(1, ulv, {}, false), "unlock 次关需上一关星")
+	_ok(TreeRules.level_unlocked(1, ulv, { "l1": 1 }, false), "unlock 上一关 1 星解锁")
+	_ok(not TreeRules.level_unlocked(3, ulv, {}, false), "unlock 越界关卡锁定")
+	_ok(TreeRules.level_unlocked(1, ulv, { "l2": 2 }, false), "unlock 已通关可重玩")
+	_ok(not TreeRules.level_unlocked(2, ulv, { "l1": 1, "l2": 1 }, false), "unlock Boss 门星数不足")
+	_ok(TreeRules.level_unlocked(2, ulv, { "l1": 1, "l2": 2 }, false), "unlock Boss 门星数达标")
+	_ok(TreeRules.level_unlocked(2, ulv, { "l3": 1 }, false), "unlock Boss 门已通关可重玩")
+	_eq(TreeRules.region_stars(ulv, { "l1": 2, "l3": 1 }), 3, "unlock 区域星数累计")
+	_eq(TreeRules.region_stars(ulv, {}), 0, "unlock 区域星数空")
+	_eq(TreeRules.level_li_by_id(ulv, "l3"), 2, "unlock 按 id 查索引")
+	_eq(TreeRules.level_li_by_id(ulv, "nope"), -1, "unlock 按 id 查不到 -1")
+	ulv = [
+		{ "id": "l1", "name": "1-1 甲" },
+		{ "id": "l2", "name": "1-2 乙", "gate": { "need_stars": 0 } },
+	]
+	_ok(not TreeRules.level_unlocked(1, ulv, {}, false), "unlock gate=0 回退上一关")
+	_ok(TreeRules.level_unlocked(1, ulv, { "l1": 1 }, false), "unlock gate=0 上一关星解锁")
+
 ## C1/C2：重复通关不再无限刷经验/金币；当日重试降级星级上限。
 func _test_anti_farm() -> void:
 	var saved_user := GameData.current_user

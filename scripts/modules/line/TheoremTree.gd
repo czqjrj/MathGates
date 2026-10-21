@@ -1274,35 +1274,13 @@ func _recenter() -> void:
 # ---------------------------------------------------------------- 解锁与面板
 ## 当前单元(章节)的累计星数，用于 Boss 门 / 宝箱门槛。
 func _region_stars() -> int:
-	var ids: Array = []
-	for lv in _levels:
-		ids.append(str((lv as Dictionary).get("id", "")))
-	return GameData.stars_of(ids)
+	return TreeRules.region_stars(_levels, GameData.stars)
 
 func _level_li_by_id(level_id: String) -> int:
-	for i in _levels.size():
-		if str((_levels[i] as Dictionary).get("id", "")) == level_id:
-			return i
-	return -1
+	return TreeRules.level_li_by_id(_levels, level_id)
 
 func _level_unlocked(li: int) -> bool:
-	if GameData.free_roam:
-		return true
-	if li <= 0:
-		return true
-	if li >= _levels.size():
-		return false
-	var lv: Dictionary = _levels[li]
-	# 已通关的关卡始终可重玩(避免新增门槛后把已通关节点锁回去)。
-	if int(GameData.stars.get(str(lv.get("id", "")), 0)) >= 1:
-		return true
-	# Boss 门：配置 gate 时以「本单元累计星数」为唯一解锁条件。
-	var gate: Variant = lv.get("gate")
-	if gate is Dictionary and int(gate.get("need_stars", 0)) > 0:
-		return _region_stars() >= int(gate["need_stars"])
-	if li - 1 >= _levels.size():
-		return false
-	return int(GameData.stars.get(_levels[li - 1]["id"], 0)) >= 1
+	return TreeRules.level_unlocked(li, _levels, GameData.stars, GameData.free_roam)
 
 func _on_node_selected(li: int) -> void:
 	var lv: Dictionary = _levels[li]
