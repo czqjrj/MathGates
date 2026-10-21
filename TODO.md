@@ -133,8 +133,19 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`56f1e23`（`feat(A4)` 第六刀：TheoremTree 布局纯规则 `TreeRules`）；本条 §0.3 更新随后以 `docs(TODO)` 提交并 push。
-- **本轮交付（2026-10-21，第十九轮）**：**A4 第六刀——TheoremTree 布局纯规则 TreeRules**（`56f1e23`）。
+- **最后提交**：`8092fa4`（`feat(A4)` 第七刀：TheoremTree 解锁判定并入 `TreeRules`）；本条 §0.3 更新随后以 `docs(TODO)` 提交并 push。
+- **本轮交付（2026-10-21，第二十轮）**：**A4 第七刀——TheoremTree 解锁判定并入 TreeRules**（`8092fa4`）。
+  - **TreeRules.gd 97 → 126 行**：新增 `region_stars`（本单元累计星数，等价原 `GameData.stars_of` 求和）、
+    `level_li_by_id`（按 id 查索引，找不到 -1）、`level_unlocked`（自由模式/首关恒开；已通关可重玩；
+    Boss 门 `gate.need_stars>0` 以本单元累计星数为唯一条件；否则要求上一关 ≥1 星）。
+  - **TheoremTree.gd 1563 → 1541 行**：`_region_stars`/`_level_li_by_id`/`_level_unlocked` 改为薄委托，
+    8 处调用面不动，行为零变化。注意 `GameData.is_level_unlocked` 是跨章节判定（含章节解锁），语义不同**不合并**。
+  - **测试**：`_test_tree_rules` 扩充约 15 条（首关/自由模式/越界/已通关重玩/Boss 门不足与达标/
+    `gate=0` 回退上一关/区域星数/按 id 查索引）。
+  - 全量回归绿：`CHECKED **95**` / `TESTS **1496**`（+15）/ `SMOKE 285` / `UI-SMOKE 367` /
+    `LabSmoke TMP_OK` / `LEVEL-PREVIEW-SMOKE 7474` / `QUESTION-CHECK 1057 题 0 new` /
+    `KNOWLEDGE 275 点 hard-gaps=0` / `ASSETS 30.03（3109 files，banned=0）`。
+- **第十九轮（2026-10-21）**：**A4 第六刀——TheoremTree 布局纯规则 TreeRules**（`56f1e23`）。
   - **新增** `scripts/rules/TreeRules.gd`（97 行）：`disasm_groups`（显式 `group` 优先 / "N-M" 按 N 分单元 /
     无编号用顺序号 "01" / Boss 殿后 / 组名回退 `group_names`→模块名→「单元 N」，元数据
     li/code/title/technique/optional/after 透传）+ `catmull_rom`（路径平滑，首尾保留、每段 per_seg 采样）。
@@ -249,10 +260,11 @@
 - **下次建议顺序**（按性价比）：
   > **2026-10-20 用户决策：暂停题目扩产，先做结构收敛。** B2 下限已全线达成（27/27 章 ≥ 5.0 题/关），
   > B1（21.4% → ≥30%）与 B2「上探 6~7 题/关中段」均为**纯内容批量生产**，可随时回归；当前转向 A/D/F 类结构问题。
-  1. **A4 继续第七刀** —— 六刀已落：`PlayerRules`/`EconomyRules`/`PetRules`+`MasteryRules`/`StageRules`/`TreeRules`
-     （第六刀 `56f1e23`，TheoremTree 1655→1563，规则层六文件合计 524 行），全量九件套绿。
-     下一刀候选：`TheoremTree` 解锁/面板判定（`_level_unlocked`）、`StageBase` 填空解析
-     （`_norm_math`/`_parse_math`）——同样**先补测试再搬**。
+  1. **A4 继续第八刀** —— 七刀已落：`PlayerRules`/`EconomyRules`/`PetRules`+`MasteryRules`/`StageRules`/
+     `TreeRules`（第六刀 `56f1e23` 布局 + 第七刀 `8092fa4` 解锁判定，TheoremTree 1655→1541，
+     规则层六文件合计 553 行），全量九件套绿。
+     下一刀候选：`StageBase` 填空解析（`_norm_math`/`_parse_math`，纯文本规范化 + Expression 解析）——
+     同样**先补测试再搬**。TheoremTree 余下主要是 `_open_panel` 面板 UI（非纯逻辑），可暂缓。
   2. **A2 遗留模块定策略（前提已变）** —— `SolidChallenge.tscn` 仍被 6 关引用、`ConicStage.tscn` 被 3 关引用，
      **不能删**。二选一：迁到 `LabStage`（与 229 关统一）或明确「收编为正式场景」并补测试；
      建议先做后者（低成本），把迁移列入长期项。
@@ -370,15 +382,18 @@
   `PetRules.gd`/`MasteryRules.gd`；旧记 1548）：
   课程表 + 进度 + 存档 IO + 勋章 + 称号 + 领域掌握度
   + 萌宠 + 每日任务 + 经济 + 地图宝箱/事件 + 错题本 + 多用户，全在一个 autoload 类里。
-- `scripts/modules/line/TheoremTree.gd` **1563 行**（旧记 1496；A4 第六刀切出布局规则 `TreeRules` 后 −92）：
+- `scripts/modules/line/TheoremTree.gd` **1541 行**（旧记 1496；A4 第六/七刀切出 `TreeRules` 后 −114）：
   同一脚本同时充当 `WorldMap.tscn`（`kind="method"`）与 `TheoremTree.tscn`（`kind="knowledge"`）；
-  引用面仅 **4 处**，拆分风险低。
+  余下主要是 `_open_panel` 面板 UI（非纯逻辑）。
 - `scripts/screens/StageBase.gd` **1235 行**（旧记 1092；A4 第四/五刀切出结算与答题规则后 −56）：
   HUD + 答题 + 选项乱序 + BOSS 层 + 节奏/计时 + 结算 + 导航；
   被 **12 处**引用，是关卡基类，改动面最大。
-- 三文件合计 **4445 行**（2026-10-21 六刀后实测 1647+1563+1235；第一刀前 4725）。规则层六文件合计 524 行。
+- 三文件合计 **4423 行**（2026-10-21 七刀后实测 1647+1541+1235；第一刀前 4725）。规则层六文件合计 553 行。
 
 **进度**
+- 2026-10-21 第二十轮 · **第七刀（`8092fa4`）**：TheoremTree 解锁判定（`region_stars`/`level_li_by_id`/
+  `level_unlocked`）并入 `TreeRules`（97→126），TheoremTree 1563→1541；`_test_tree_rules` 扩充约 15 断言
+  （TESTS 1496 / CHECKED 95）。跨章节判定 `GameData.is_level_unlocked` 语义不同，不合并。
 - 2026-10-21 第十九轮 · **第六刀（`56f1e23`）**：知识树布局纯规则 `scripts/rules/TreeRules.gd` 切出
   （关卡分组/组名回退/Catmull-Rom 平滑），TheoremTree 1655→1563；`_test_tree_rules` 约 39 断言
   （TESTS 1481 / CHECKED 95）。
