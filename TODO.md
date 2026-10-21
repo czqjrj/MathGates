@@ -59,7 +59,7 @@
 | **D1** | 2D 探究器无过渡动画（拖动=瞬时跳变） | **P1** | ✅ 已完成（2026-10-21）：`LabPlane` 加补间（τ=0.13s）+ 起点残影 + 动点轨迹三层；直接拖拽（分界线/拖点）保持跟手；`Tests._test_plane_motion` 证明中间态存在 |
 | **D2** | 演示动画只覆盖 1/26 个关卡文件 | **P1** | ✅ 已完成（2026-10-21）：3D 补 `space_levels` 19 轮；`LabPlane` 新增 2D 播放器 + `LabStage` 演示按钮；2D 补 11 文件 → **13/26**；顺带修收尾帧跳帧 bug、加 `_test_anim_player` 防线 |
 | **D3** | 动效全在"结果反馈"，缺"理解型动效" | **P1** | ✅ 已完成（2026-10-21）：`delta_highlight`（读数差量 + ▲/▼）/ `trace`（轨迹）/ `pulse_at`（`pulses`）/ `link_line`（`links` 流动虚线）；椭圆・函数与分段・导数三章试点；README 登记「装饰 vs 表意」语义 |
-| **D4** | 动效令牌缺失 + 演示不可控 + 无障碍粒度不足 | **P2** | 44 处裸时长、无法重播 |
+| **D4** | 动效令牌缺失 + 演示不可控 + 无障碍粒度不足 | **P2** | ✅ 已完成（2026-10-21）：`UI.DUR_*` 8 令牌收敛 47 处、裸时长 0（`check_all` 拦截+反向验证）；2D/3D 演示可暂停/重播/单步；新增「减弱动效」档，表意动效不受开关影响 |
 | **E1** | 知识点覆盖矩阵 + 校验器（内容补全的前置） | **P0** | ✅ 已完成（`data/knowledge_map.json` + `check_knowledge` → `docs/知识点覆盖矩阵.md`；硬缺口基线随 E2 收敛，现 2 条） |
 | **E2** | 补齐薄弱章节题量（8 章 ≤4 关，最少仅 6 题） | **P0** | ✅ 已完成（2026-10-19）：27 章全部 ≥6 关（知识章 9 章 + 方法章 `function_methods`、`conic` 各补齐到 6 关）；薄弱章节 **11 → 0** |
 | **E3** | 补全 15 个整块缺失的教材必学知识点 | **P1** | ✅ 已完成（13 条落成关卡，#1/#11 用户判定教材已删跳过；末两条 `vector_physics`/`prob_simulate` 2026-10-20 收官） |
@@ -1536,31 +1536,41 @@
 
 ---
 
-### [ ] D4 · 动效令牌缺失 + 演示不可控 + 无障碍粒度不足（P2）
+### [x] D4 · 动效令牌缺失 + 演示不可控 + 无障碍粒度不足（P2）
 
 **现状（证据）**
-- **无动效设计令牌**：44 处 `tween_property(...)` **直接写裸时长**
-  （`0.07 / 0.08 / 0.14 / 0.16 / 0.18 / 0.25 / 0.28 / 0.4 / 1.7 …`），缓动写法散落
-  （`TRANS_CUBIC+EASE_OUT` 6 处、`TRANS_BACK` 4 处…，另有自写 `ease_pop/smooth_k`）。
-  `scripts/ui/UI.gd` 已是设计系统（着色 token/字号 `fs()`/按钮/卡片），但**没有动效章节**。
-  → 观感不统一，改一次要翻十几处；A11 的 UI 回归也缺可断言的动效基准。
-- **演示不可控**：`Lab3DView.play_anim()` 只能整体播一次（`_anim_playing`），
-  `_tick_anim` 越界后把 `_auto_pause` 置 1.5 恢复自动旋转 —— 用户**无法暂停 / 重播 / 逐步看**，
-  错过关键一帧只能切轮次重进。
-- **无障碍粒度不足**：全项目 40+ 处检查 `UI.animations`（单一总开关，对应设置里「界面动效」）。
-  关闭后**连"变化提示"一起关**；也没有"减少位移/闪烁"（前庭敏感用户）这一档。
-  当前尚可（动效都是装饰性的），但一旦做了 D1/D3 的**表意动效**，单一开关就会出问题。
+- **无动效设计令牌**：44 处 `tween_property(...)` **直接写裸时长**；缓动写法散落。
+  `scripts/ui/UI.gd` 已是设计系统，但**没有动效章节**。
+- **演示不可控**：`Lab3DView.play_anim()` 只能整体播一次，用户**无法暂停 / 重播 / 逐步看**。
+- **无障碍粒度不足**：全项目 20+ 处检查 `UI.animations`（单一总开关），关闭后**连表意动效一起关**。
 
-**做法**
-- 在 `UI.gd` 增补动效令牌：`DUR_FAST / DUR_NORMAL / DUR_SLOW`、`EASE_STD / EASE_EMPHASIS`，
-  把 44 处裸时长逐步收敛（新代码禁止裸时长，由 A5/A11 静态检查兜底）；
-- `play_anim` 增补 `pause() / resume() / restart() / step()`，HUD 给「▶ / ⏸ / ↻」控件；
-- 开关语义拆两层：`animations`（装饰，可关）与 `essential_anim`（表意，始终开）；
-  或提供「减弱动效」档（保留淡入淡出，去掉位移/闪烁/旋转）。
+**落地（2026-10-21，第三十轮）**
+- **令牌（`UI.gd`）**：`DUR_TINY 0.08 / FAST 0.14 / NORMAL 0.22 / SLOW 0.30 / XSLOW 0.45 /
+  LONG 0.70 / SCENE 0.85 / AMBIENT 1.7`；缓动 `EASE_STD_* / EASE_EMPHASIS_* / EASE_SOFT_*`
+  与链式助手 `UI.ease(tw)`；**语义上「时长只有一个来源」**。
+- **收敛**：脚本化替换 **47 处**（14 个文件，含 `_scale_to` 的 3 处与 `MainHub` 的 1.7s 环境律动）。
+- **静态防线**：`check_all.gd` 新增 `_check_bare_durations()`——按**括号深度扫描**取
+  `tween_property` 第 4 个实参 / `_scale_to` 第 3 个实参，裸数字即 `BARE-DURATION` 红灯。
+  **反向验证**：把 Toast 的 `UI.DUR_FAST` 改回 `0.14` → `BARE-DURATION 1` / `1 failures`；恢复 → 0。
+- **演示可暂停/重播/单步**：`Lab3DView` 与 `LabPlane` 均补
+  `pause_anim / resume_anim / toggle_anim_pause / restart_anim / step_anim(dt) / is_anim_paused`；
+  `_process` 在暂停时不再推进时间轴。
+  3D 工具条新增「⏸ 暂停 / ↻ 重播 / ⏭ 单步」（按钮文案随状态切换 ▶/⏸/继续），
+  2D 右上角新增「↻」并让主按钮变「暂停/继续」。
+- **开关拆两层**：`UI.fx_on() = animations and not reduced_motion` 统一判定**装饰**动效；
+  新增设置项**「减弱动效」**（`Settings.reduced_motion`，默认关，写入 `user://` 配置）；
+  **表意动效（补间/差量/轨迹/脉冲）不读这两个开关**——减弱档下数学信息不丢。
+- **测试**：`_test_motion_tokens`（8 个令牌单调递增 + `UI.ease` 链式）、
+  `_test_reduced_motion`（两档开关语义 + 减弱档下补间仍生效）、
+  `_test_demo_controls`（2D/3D 的暂停、单步、重播各 7 断言）。
+- **全量回归绿**：`CHECKED 97`（含新静态检查）/ `TESTS 1774`（+14）/ `SMOKE 285` /
+  `UI-SMOKE 383` / `LabSmoke TMP_OK` / `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new` /
+  `KNOWLEDGE hard-gaps=0` / `ASSETS 30.09 banned=0`。
 
 **验收**
-- `UI.DUR_*` 成为唯一时长来源，全仓裸时长归零（或仅剩白名单）；
-- 3D 演示可暂停/重播；「减弱动效」档下关键信息不丢失（用 A11 回归验证）。
+- ✅ `UI.DUR_*` 成为唯一时长来源，全仓裸时长 **0**（`check_all` 持续拦截，已反向验证）；
+- ✅ 3D/2D 演示可暂停、重播、单步；
+- ✅ 「减弱动效」档下关键信息不丢失（`_test_reduced_motion` 断言补间仍生效）。
 
 ---
 
@@ -2290,13 +2300,13 @@
 > `Parse Error: Could not find type "BossHud"`。用编辑器打开一次，或跑
 > `& "<godot472.exe>" --headless --editor --path . --quit`。
 
-**当前回归基线**（改完请对照，数字只能升不能降；2026-10-21 D1~D3 动效补齐后）：
-`CHECKED 97 scripts, 0 failures` / `TESTS: 1760 passed, 0 failed` / `SMOKE: 285 ok, 0 fail` /
+**当前回归基线**（改完请对照，数字只能升不能降；2026-10-21 D1~D4 动效收官后）：
+`CHECKED 97 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 1774 passed, 0 failed` / `SMOKE: 285 ok, 0 fail` /
 `UI-SMOKE: 383 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
 `LEVEL-PREVIEW-SMOKE: 7474 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
 `QUESTION-CHECK: 26 files / 269 levels / 1057 questions / 0 new / 7 known / 3 warnings`
 （A5 校验器，存量问题见下方基线；看板另有「干扰项黑名单命中 0 处」见 B5、「anim 演示覆盖 **13/26 文件**」见 D2）/
-`ASSETS: 30.08 MB over 3113 files … banned=0, oversize=0`（A13 护栏）/
+`ASSETS: 30.09 MB over 3113 files … banned=0, oversize=0`（A13 护栏）/
 `KNOWLEDGE: 27 chapters / 275 points / 275 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `LATEX-PROBE: conic C4 68 / C5 76 / C6 68 段 / 0 失败`（E2 收官）、
 `vector_physics 26 段 / 0 失败`、`prob_simulate 14 段 / 0 失败`（E3 收官；**探针需按组分进程**，
@@ -2335,7 +2345,9 @@
   **2D 过程表达（D1）**：参数补间 τ=0.13s + 起点残影（1.1/s 淡出）+ 动点轨迹（≤14 帧，1.6/s 淡出），
   直接拖拽（分界线/拖点）不补间；**表意原语（D3）**：`delta_highlight`（读数差量 + ▲/▼，全局自动）、
   `pulse_at`（数据键 `pulses`，停稳后脉冲）、`link_line`（数据键 `links`，相位流动虚线）；
-  椭圆/函数与分段/导数三章已试点；两个播放器的「收尾帧跳帧」bug 已修；`tween_property` 裸时长 **44 处**。见 D4。
+  椭圆/函数与分段/导数三章已试点。**令牌（D4）**：`UI.DUR_*` 8 档为唯一时长来源，
+  裸时长 **0**（`check_all` 括号深度扫描拦截）；2D/3D 演示支持暂停/重播/单步；
+  「减弱动效」档只关装饰动效，表意动效常开。
 - 经济（C1/C2 已修复）：`grant_stars` 经验仅随星级提升发放；`settle_level` 首达全额、重复通关 ×0.3 且每日最多 3 次；
   同一关当日第 3 次尝试起星级上限降为 2（`Tests._test_anti_farm` 覆盖）。
 

@@ -16,7 +16,7 @@ func _ready() -> void:
 
 func set_ratio(r: float, animate: bool = true) -> void:
 	var target := clampf(r, 0.0, 1.0)
-	if animate and UI.animations and is_inside_tree():
+	if animate and UI.fx_on() and is_inside_tree():
 		if has_meta("_pl_tw"):
 			var old: Variant = get_meta("_pl_tw")
 			if old is Tween and (old as Tween).is_valid():

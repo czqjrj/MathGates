@@ -31,8 +31,8 @@ func _back_scene() -> String: return BACK_SCENE
 
 func _level_ok_fx() -> void:
 	var tw := create_tween()
-	tw.tween_property(_panel, "modulate", Color(1.15, 1.15, 1.1), 0.08)
-	tw.tween_property(_panel, "modulate", Color.WHITE, 0.25)
+	tw.tween_property(_panel, "modulate", Color(1.15, 1.15, 1.1), UI.DUR_TINY)
+	tw.tween_property(_panel, "modulate", Color.WHITE, UI.DUR_NORMAL)
 
 # ---------------------------------------------------------------- 数据 / 视图
 func _load() -> void:
@@ -110,8 +110,8 @@ func _load_q() -> void:
 	_ans.modulate.a = 0.0
 	_q.modulate.a = 0.0
 	var tw := create_tween().set_parallel(true)
-	tw.tween_property(_ans, "modulate:a", 1.0, 0.28)
-	tw.tween_property(_q, "modulate:a", 1.0, 0.22)
+	tw.tween_property(_ans, "modulate:a", 1.0, UI.DUR_SLOW)
+	tw.tween_property(_q, "modulate:a", 1.0, UI.DUR_NORMAL)
 	_update_hud()
 
 # ---------------------------------------------------------------- 交互区(explore / interact)

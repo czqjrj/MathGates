@@ -42,7 +42,7 @@ func _ready() -> void:
 	set_process(true)
 
 func _process(delta: float) -> void:
-	if UI.animations:
+	if UI.fx_on():
 		_t += delta
 		if _pop > 0.0:
 			_pop = maxf(_pop - delta, 0.0)
@@ -89,7 +89,7 @@ func _draw() -> void:
 		base = Color("#4a4f63")
 
 	# 呼吸辉光（未解锁同样保留微弱呼吸，肉眼几乎无感）
-	if UI.animations:
+	if UI.fx_on():
 		var hp := 0.5 + 0.5 * sin(_t * 1.3 + chapter_index * 1.7)
 		draw_circle(c, 62.0 + hp * 9.0, Color(acc.r, acc.g, acc.b, 0.07 + 0.045 * hp))
 
@@ -124,7 +124,7 @@ func _draw() -> void:
 		draw_line(c + d * 61.0, c + d * (61.0 + ln), tick_col, 1.2, true)
 
 	# 解锁后环绕旋转外弧
-	if unlocked and UI.animations:
+	if unlocked and UI.fx_on():
 		var ra := _t * 0.5
 		draw_arc(c, 70.0, ra, ra + PI * 0.45, 48, Color(acc, 0.5), 2.0, true)
 		draw_arc(c, 70.0, ra + PI, ra + PI * 1.45, 48, Color(acc, 0.5), 2.0, true)

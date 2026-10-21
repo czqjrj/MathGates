@@ -62,11 +62,11 @@ func _ready() -> void:
 
 	mark.pivot_offset = mark.custom_minimum_size * 0.5
 	mark.scale = Vector2(0.4, 0.4)
-	create_tween().tween_property(mark, "scale", Vector2.ONE, 0.85) \
+	create_tween().tween_property(mark, "scale", Vector2.ONE, UI.DUR_SCENE) \
 		.set_delay(0.05).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 	title.scale = Vector2(0.7, 0.7)
-	create_tween().tween_property(title, "scale", Vector2.ONE, 0.9) \
+	create_tween().tween_property(title, "scale", Vector2.ONE, UI.DUR_SCENE) \
 		.set_delay(0.15).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 
 func _process(delta: float) -> void:

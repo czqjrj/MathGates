@@ -41,11 +41,11 @@ func set_streak(n: int) -> void:
 	streak = n
 	visible = n >= 2
 	queue_redraw()
-	if visible and UI.animations:
+	if visible and UI.fx_on():
 		pivot_offset = size * 0.5
 		scale = Vector2(1.18, 1.18)
 		var tw := create_tween()
-		tw.tween_property(self, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(self, "scale", Vector2.ONE, UI.DUR_NORMAL).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 func _draw() -> void:
 	if size.x <= 4.0 or size.y <= 4.0:

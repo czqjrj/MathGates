@@ -64,6 +64,7 @@ var _anim: Array = []
 var _anim_i := 0
 var _anim_t := 0.0
 var _anim_playing := false
+var _anim_paused := false
 var _anim_vars_from: Dictionary = {}
 var _anim_rot_from := 0.0
 
@@ -224,7 +225,7 @@ func _process(delta: float) -> void:
 	_t += delta
 	if _sky_mat != null:
 		_sky_mat.set_shader_parameter("time", _t)
-	if _anim_playing:
+	if _anim_playing and not _anim_paused:
 		_tick_anim(delta)
 	_reveal = lerpf(_reveal, _reveal_target, 1.0 - exp(-3.0 * delta))
 	if absf(_reveal - _reveal_target) < 0.002:
@@ -264,7 +265,44 @@ func play_anim(steps: Array) -> void:
 	_anim_i = 0
 	_anim_t = 0.0
 	_anim_playing = true
+	_anim_paused = false
 	_auto_pause = 999.0
+
+# ---- 演示控制（D4）：暂停 / 继续 / 重播 / 单步 ----
+func pause_anim() -> void:
+	if _anim_playing:
+		_anim_paused = true
+
+func resume_anim() -> void:
+	_anim_paused = false
+
+func toggle_anim_pause() -> void:
+	if _anim_playing:
+		_anim_paused = not _anim_paused
+
+func restart_anim() -> void:
+	if _anim.is_empty():
+		return
+	_anim_i = 0
+	_anim_t = 0.0
+	_anim_playing = true
+	_anim_paused = false
+	_auto_pause = 999.0
+
+## 单步：暂停状态下推进一小段（约 0.12s），便于「错过关键帧」时逐步看。
+func step_anim(step_dt: float = 0.12) -> void:
+	if _anim.is_empty():
+		return
+	if not _anim_playing:
+		restart_anim()
+	_anim_paused = true
+	_tick_anim(step_dt)
+
+func is_anim_paused() -> bool:
+	return _anim_paused
+
+func is_anim_playing() -> bool:
+	return _anim_playing
 
 func _tick_anim(delta: float) -> void:
 	if _anim_i >= _anim.size():

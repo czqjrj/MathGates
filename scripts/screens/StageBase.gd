@@ -146,7 +146,7 @@ func _q_index() -> int:
 
 ## 关卡界面入场：题干面板从右侧滑入 + 底部操作条上浮回弹(下一步/提示/问萌宠)。
 func _enter_fx() -> void:
-	if not UI.animations or not is_instance_valid(_panel):
+	if not UI.fx_on() or not is_instance_valid(_panel):
 		return
 	await get_tree().process_frame
 	if not is_instance_valid(_panel):
@@ -873,8 +873,8 @@ func _finish() -> void:
 		var delay := 0.35 + i * 0.2
 		var tw := create_tween()
 		tw.tween_interval(delay)
-		tw.tween_property(tex_r, "scale", Vector2.ONE, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		tw.parallel().tween_property(tex_r, "modulate:a", 1.0, 0.25)
+		tw.tween_property(tex_r, "scale", Vector2.ONE, UI.DUR_XSLOW).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.parallel().tween_property(tex_r, "modulate:a", 1.0, UI.DUR_NORMAL)
 		if filled:
 			get_tree().create_timer(delay).timeout.connect(func() -> void: Sound.play("star"))
 	_v_coins.text = "金币  +0"
@@ -918,11 +918,11 @@ func _show_feed(msg: String, col: Color) -> void:
 
 ## 反馈行出现时轻微提亮闪烁，提示刚才的判定进来了。
 func _pop_feed() -> void:
-	if not UI.animations or not is_instance_valid(_feed):
+	if not UI.fx_on() or not is_instance_valid(_feed):
 		return
 	_feed.modulate.a = 0.35
 	var tw := _feed.create_tween().set_parallel(true)
-	tw.tween_property(_feed, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tw.tween_property(_feed, "modulate:a", 1.0, UI.DUR_SLOW).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
 ## 清空反馈区(供子类 _load_q 使用)。
 func _feed_clear() -> void:
@@ -939,7 +939,7 @@ func _update_hud() -> void:
 		_coins.text = "◆ %d" % GameData.coins
 	var total := maxi(1, _stages.size())
 	var tw := create_tween()
-	tw.tween_property(_top_fill, "anchor_right", float(_idx) / float(total), 0.4).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tw.tween_property(_top_fill, "anchor_right", float(_idx) / float(total), UI.DUR_XSLOW).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
 # ---------------------------------------------------------------- UI
 func _build_ui() -> void:

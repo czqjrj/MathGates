@@ -29,9 +29,9 @@ func show_toast(text: String) -> void:
 
 	pc.modulate.a = 0.0
 	var tw := create_tween()
-	tw.tween_property(pc, "modulate:a", 1.0, 0.12)
+	tw.tween_property(pc, "modulate:a", 1.0, UI.DUR_FAST)
 	tw.tween_interval(1.1)
-	tw.tween_property(pc, "modulate:a", 0.0, 0.4)
+	tw.tween_property(pc, "modulate:a", 0.0, UI.DUR_XSLOW)
 	tw.tween_callback(func():
 		_active -= 1
 		pc.queue_free()

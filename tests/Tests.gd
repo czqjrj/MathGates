@@ -27,6 +27,9 @@ func _run() -> void:
 	_test_lab_plane()
 	_test_anim_player()
 	_test_plane_motion()
+	_test_motion_tokens()
+	_test_reduced_motion()
+	_test_demo_controls()
 	_test_wrong_queries()
 	_test_review_order()
 	_test_focus()
@@ -379,6 +382,70 @@ func _test_plane_motion() -> void:
 					_ok(p is Dictionary and (p as Dictionary).get("p") is Array and (p as Dictionary)["p"].size() == 2,
 						"%s pulses 坐标必须是二元数组" % f)
 	_ok(n_links >= 1 and n_pulses >= 2, "至少各有一处 link/pulse 试点（links=%d, pulses=%d）" % [n_links, n_pulses])
+
+## D4：动效令牌 + 减弱动效语义 + 演示控制。
+func _test_motion_tokens() -> void:
+	_ok(UI.DUR_TINY < UI.DUR_FAST and UI.DUR_FAST < UI.DUR_NORMAL
+		and UI.DUR_NORMAL < UI.DUR_SLOW and UI.DUR_SLOW < UI.DUR_XSLOW
+		and UI.DUR_XSLOW < UI.DUR_LONG and UI.DUR_LONG < UI.DUR_SCENE
+		and UI.DUR_SCENE < UI.DUR_AMBIENT, "时长令牌单调递增")
+	var tw := create_tween()
+	_ok(UI.ease(tw) == tw, "UI.ease 返回同一 Tween 以支持链式调用")
+	tw.kill()
+
+func _test_reduced_motion() -> void:
+	var old_a := UI.animations
+	var old_r := UI.reduced_motion
+	UI.animations = true
+	UI.reduced_motion = false
+	_ok(UI.fx_on(), "默认播放装饰动效")
+	UI.reduced_motion = true
+	_ok(not UI.fx_on(), "减弱动效档关闭装饰动效")
+	UI.animations = false
+	_ok(not UI.fx_on(), "装饰总开关关闭时也停止")
+	# 表意动效不受影响：数学补间照常
+	var plane = load("res://scripts/modules/lab/LabPlane.gd").new()
+	add_child(plane)
+	var slider := [ { "name": "r", "min": 0.5, "max": 5, "value": 1, "step": 0.5 } ]
+	plane.set_scene({ "range": 6, "sliders": slider, "circles": [ { "c": [0, 0], "r": "r" } ] })
+	plane.begin_sliders(slider)
+	plane._sliders[0]["value"] = 3.0
+	plane._process(0.04)
+	var mid: float = plane._num("r", 0.0)
+	_ok(mid > 1.0 and mid < 3.0, "减弱动效下数学补间仍然生效（表意动效常开）")
+	plane.queue_free()
+	UI.animations = old_a
+	UI.reduced_motion = old_r
+
+func _test_demo_controls() -> void:
+	# 2D
+	var plane = load("res://scripts/modules/lab/LabPlane.gd").new()
+	add_child(plane)
+	var slider := [ { "name": "r", "min": 0.5, "max": 5, "value": 1, "step": 0.5 } ]
+	plane.set_scene({ "range": 6, "sliders": slider, "circles": [ { "c": [0, 0], "r": "r" } ] })
+	plane.begin_sliders(slider)
+	plane.play_anim([ { "a": "vars", "to": { "r": 4 }, "dur": 0.5, "hold": 0.0 } ])
+	_ok(plane.is_demo_playing(), "2D 演示开始")
+	plane.pause_demo()
+	_ok(plane.is_demo_paused(), "2D 演示可暂停")
+	var before: float = plane.slider_value("r")
+	plane.step_demo(0.2)
+	_ok(absf(plane.slider_value("r") - before) > 1e-4, "2D 单步会推进参数")
+	plane.restart_demo()
+	_ok(not plane.is_demo_paused() and plane.is_demo_playing(), "2D 重播解除暂停并重新播放")
+	plane.queue_free()
+	# 3D（用 reveal 步骤，避免依赖 3D 构建器）
+	var v = load("res://scripts/modules/lab3d/Lab3DView.gd").new()
+	v.play_anim([ { "a": "reveal", "dur": 1.0, "hold": 0.0 } ])
+	_ok(v.is_anim_playing(), "3D 演示开始")
+	v.pause_anim()
+	_ok(v.is_anim_paused(), "3D 演示可暂停")
+	var t0: float = v._anim_t
+	v.step_anim(0.2)
+	_ok(v._anim_t > t0, "3D 单步推进时间轴")
+	v.restart_anim()
+	_ok(v._anim_t == 0.0 and v._anim_i == 0 and not v.is_anim_paused(), "3D 重播回到起点")
+	v.queue_free()
 
 func _test_wrong_queries() -> void:
 	var saved: Dictionary = GameData.wrong_log

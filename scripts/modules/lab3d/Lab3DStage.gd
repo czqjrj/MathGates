@@ -21,6 +21,8 @@ var _answers: Dictionary = {}
 var _tol: Dictionary = {}
 var _step_idx := 0
 var _guide_btn: Button
+var _demo_restart_btn: Button
+var _demo_step_btn: Button
 
 # ---------------------------------------------------------------- 配置钩子
 func _module() -> String: return _lab if _lab != "" else "lab3d"
@@ -34,8 +36,8 @@ func _bottom_half_width() -> int: return 330
 
 func _level_ok_fx() -> void:
 	var tw := create_tween()
-	tw.tween_property(_panel, "modulate", Color(1.15, 1.15, 1.1), 0.08)
-	tw.tween_property(_panel, "modulate", Color.WHITE, 0.25)
+	tw.tween_property(_panel, "modulate", Color(1.15, 1.15, 1.1), UI.DUR_TINY)
+	tw.tween_property(_panel, "modulate", Color.WHITE, UI.DUR_NORMAL)
 
 func _load() -> void:
 	var lv: Dictionary = GameData.current_level
@@ -84,7 +86,7 @@ func _build_view() -> void:
 	# 右上：视角工具条
 	_toolbar = HBoxContainer.new()
 	_toolbar.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	_toolbar.offset_left = -430.0
+	_toolbar.offset_left = -640.0
 	_toolbar.offset_right = -12.0
 	_toolbar.offset_top = 10.0
 	_toolbar.offset_bottom = 48.0
@@ -101,8 +103,18 @@ func _build_view() -> void:
 		if _view3d.auto_rotate:
 			_view3d._auto_pause = 0.0
 	))
-	_guide_btn = _tool_button("▶ 演示", func() -> void: _play_demo())
+	_guide_btn = _tool_button("▶ 演示", func() -> void: _toggle_demo())
 	_toolbar.add_child(_guide_btn)
+	_demo_restart_btn = _tool_button("↻ 重播", func() -> void:
+		_view3d.restart_anim()
+		_guide_btn.text = "⏸ 暂停"
+	)
+	_toolbar.add_child(_demo_restart_btn)
+	_demo_step_btn = _tool_button("⏭ 单步", func() -> void:
+		_view3d.step_anim()
+		_guide_btn.text = "⏸ 暂停"
+	)
+	_toolbar.add_child(_demo_step_btn)
 
 	# 左下：滑块面板
 	_slider_box = VBoxContainer.new()
@@ -206,7 +218,14 @@ func _load_q() -> void:
 	_tol = s.get("tol", sc.get("tol", {}))
 
 	_view3d.set_scene(sc, _vars)
-	_guide_btn.visible = s.has("anim") or sc.has("anim")
+	var has_anim := s.has("anim") or sc.has("anim")
+	_guide_btn.visible = has_anim
+	if _demo_restart_btn != null:
+		_demo_restart_btn.visible = has_anim
+	if _demo_step_btn != null:
+		_demo_step_btn.visible = has_anim
+	if _guide_btn != null:
+		_guide_btn.text = "▶ 演示"
 	if bool(s.get("autoplay", sc.get("autoplay", false))):
 		_play_demo()
 
@@ -231,8 +250,8 @@ func _load_q() -> void:
 	_ans.modulate.a = 0.0
 	_q.modulate.a = 0.0
 	var tw := create_tween().set_parallel(true)
-	tw.tween_property(_ans, "modulate:a", 1.0, 0.28)
-	tw.tween_property(_q, "modulate:a", 1.0, 0.22)
+	tw.tween_property(_ans, "modulate:a", 1.0, UI.DUR_SLOW)
+	tw.tween_property(_q, "modulate:a", 1.0, UI.DUR_NORMAL)
 	_update_hud()
 
 func _clear_sliders() -> void:
@@ -281,9 +300,23 @@ func _play_demo() -> void:
 		a = s.get("scene", {}).get("anim", null)
 	if a is Array and not (a as Array).is_empty():
 		_view3d.play_anim(a)
-		_show_feed("演示中……可继续拖动旋转观察。", UI.COL_ACCENT)
+		if _guide_btn != null:
+			_guide_btn.text = "⏸ 暂停"
+		_show_feed("演示中……可暂停/单步/重播，也可拖动旋转自己看。", UI.COL_ACCENT)
 	elif a is Dictionary:
 		_view3d.play_anim([a])
+		if _guide_btn != null:
+			_guide_btn.text = "⏸ 暂停"
+
+## 演示按钮（D4）：未播放→开始；播放中→暂停/继续。
+func _toggle_demo() -> void:
+	if not _view3d.is_anim_playing():
+		_play_demo()
+		return
+	_view3d.toggle_anim_pause()
+	if _guide_btn != null:
+		_guide_btn.text = "▶ 继续" if _view3d.is_anim_paused() else "⏸ 暂停"
+
 
 func _interactive_ok() -> bool:
 	return _sliders_correct()

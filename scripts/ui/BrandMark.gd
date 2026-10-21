@@ -13,7 +13,7 @@ func _ready() -> void:
 	if custom_minimum_size == Vector2.ZERO:
 		custom_minimum_size = Vector2(150, 150)
 	resized.connect(queue_redraw)
-	set_process(UI.animations and active)
+	set_process(UI.fx_on() and active)
 
 func _process(delta: float) -> void:
 	_t += delta
@@ -21,7 +21,7 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	var t := _t
-	if not (UI.animations and active):
+	if not (UI.fx_on() and active):
 		t = 0.0
 	var c := size * 0.5
 	var R := minf(size.x, size.y) * 0.5 - 3.0
@@ -90,7 +90,7 @@ class Underline extends Control:
 		if custom_minimum_size == Vector2.ZERO:
 			custom_minimum_size = Vector2(132, 3)
 		resized.connect(queue_redraw)
-		set_process(UI.animations)
+		set_process(UI.fx_on())
 
 	func _process(delta: float) -> void:
 		_t += delta
@@ -102,7 +102,7 @@ class Underline extends Control:
 		var mid := h * 0.5
 		draw_rect(Rect2(0.0, mid - h * 0.5, w, h), Color(accent, 0.28), true)
 		draw_rect(Rect2(0.0, mid - 0.5, w, 1.0), Color(accent, 0.9), true)
-		if not UI.animations:
+		if not UI.fx_on():
 			return
 		# 扫光：明亮段往复移动
 		var p := fposmod(_t * 0.4, 1.0)

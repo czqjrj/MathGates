@@ -12,7 +12,7 @@ func _ready() -> void:
 	if custom_minimum_size == Vector2.ZERO:
 		custom_minimum_size = Vector2(64, 64)
 	resized.connect(queue_redraw)
-	if unlocked and UI.animations:
+	if unlocked and UI.fx_on():
 		_pop()
 
 ## 解锁徽章弹入(等一帧布局完成后再取 size 作轴心)
@@ -22,7 +22,7 @@ func _pop() -> void:
 		return
 	pivot_offset = size * 0.5
 	scale = Vector2(0.5, 0.5)
-	create_tween().tween_property(self, "scale", Vector2.ONE, 0.5) \
+	create_tween().tween_property(self, "scale", Vector2.ONE, UI.DUR_XSLOW) \
 		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 func _hex(c: Vector2, r: float, rot: float = 0.0) -> PackedVector2Array:

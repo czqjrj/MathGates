@@ -17,6 +17,7 @@ const DEFAULTS := {
 	"show_pet": true,
 	"fullscreen": false,
 	"animations": true,
+	"reduced_motion": false,
 	"voice": false,
 	"voice_rate": 1.0,
 	"voice_id": "",
@@ -33,6 +34,7 @@ var sfx_volume: float = 1.0
 var show_pet: bool = true
 var fullscreen: bool = false
 var animations: bool = true
+var reduced_motion: bool = false
 var voice: bool = false
 var voice_rate: float = 1.0
 var voice_id: String = ""
@@ -63,6 +65,7 @@ func load_settings() -> void:
 	show_pet = bool(data.get("show_pet", DEFAULTS["show_pet"]))
 	fullscreen = bool(data.get("fullscreen", DEFAULTS["fullscreen"]))
 	animations = bool(data.get("animations", DEFAULTS["animations"]))
+	reduced_motion = bool(data.get("reduced_motion", DEFAULTS["reduced_motion"]))
 	voice = bool(data.get("voice", DEFAULTS["voice"]))
 	voice_rate = clampf(float(data.get("voice_rate", DEFAULTS["voice_rate"])), 0.5, 1.8)
 	voice_id = str(data.get("voice_id", DEFAULTS["voice_id"]))
@@ -86,6 +89,7 @@ func save() -> void:
 func apply(notify: bool = true) -> void:
 	UI.S = font_scale
 	UI.animations = animations
+	UI.reduced_motion = reduced_motion
 	if Sound != null:
 		Sound.volume_scale = sfx_volume
 	UI.tts_configure(voice, voice_rate, 1.0, voice_id, tts_engine, tts_provider)
@@ -130,6 +134,14 @@ func set_fullscreen(v: bool) -> void:
 func set_animations(v: bool) -> void:
 	animations = v
 	UI.animations = animations
+	save()
+	changed.emit()
+
+## 「减弱动效」（D4）：只减弱**装饰**动效（位移/缩放/闪烁），
+## **表意动效**（补间、差量、轨迹、脉冲）不受影响，关掉会丢数学信息。
+func set_reduced_motion(v: bool) -> void:
+	reduced_motion = v
+	UI.reduced_motion = reduced_motion
 	save()
 	changed.emit()
 

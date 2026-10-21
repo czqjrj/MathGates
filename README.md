@@ -96,6 +96,28 @@ build/           导出产物(APK,git 忽略)
 `view`/`rotate`/`vars`/`reveal`/`highlight`/`pulse`；`LabPlane.play_anim` 支持 `vars`/`reveal`
 （`view`/`rotate`/`pulse`/`highlight` 在 2D 无对应语义，安全忽略）。覆盖率见 `check_questions` 看板。
 
+**演示控制（D4）**：两个播放器都有 `pause/resume/toggle_pause/restart/step`；
+3D 工具条提供「▶ 演示 / ⏸ 暂停 / ↻ 重播 / ⏭ 单步」，2D 右上角提供「▶ 演示（可暂停）/ ↻」。
+
+**动效令牌（D4）**：时长**唯一来源**是 `UI.DUR_*`，新代码禁止裸写秒数——
+`tools/check_all.gd` 用括号深度扫描取「顶层第 4 个实参」，裸数字即 `BARE-DURATION` 红灯（已做反向验证）。
+缓动统一走 `UI.ease(tw)` / `UI.EASE_*`。
+
+| 令牌 | 秒 | 用途 |
+|---|---|---|
+| `DUR_TINY` | 0.08 | 即时反馈（按压、闪一下） |
+| `DUR_FAST` | 0.14 | 小元素进出 |
+| `DUR_NORMAL` | 0.22 | 常规过渡 |
+| `DUR_SLOW` | 0.30 | 面板、大块内容 |
+| `DUR_XSLOW` | 0.45 | 强调 |
+| `DUR_LONG` | 0.70 | 长过渡（Boss 退场） |
+| `DUR_SCENE` | 0.85 | 启动/场景级 |
+| `DUR_AMBIENT` | 1.7 | 环境律动（标题呼吸） |
+
+**开关语义（D4）**：`UI.animations`（装饰总开关）与 `UI.reduced_motion`（减弱动效档，设置里可开）
+都只影响**装饰**动效（`UI.fx_on()`）；**表意动效不读这两个开关**——
+减小动效不会关掉「参数怎么变、图形哪里变」的信息。
+
 > 边界：**直接拖拽不补间**。分段函数分界线（`begin_break`）与拖点（`begin_drag`）必须跟手，
 > 已清空 `_disp`；补间只用于「间接调参」（滑块）。
 

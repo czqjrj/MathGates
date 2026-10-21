@@ -56,6 +56,7 @@ var _demo: Array = []
 var _demo_i := 0
 var _demo_t := 0.0
 var _demo_playing := false
+var _demo_paused := false
 var _demo_from: Dictionary = {}
 
 ## D1：拖动的「过程」表达 —— 三层
@@ -84,7 +85,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_t += delta
 	_anim_t += delta
-	if _demo_playing:
+	if _demo_playing and not _demo_paused:
 		_tick_demo(delta)
 	_tick_tween(delta)
 	if mode == "sliders" or not _scene.is_empty():
@@ -224,9 +225,41 @@ func play_anim(steps: Array) -> void:
 	_demo_i = 0
 	_demo_t = 0.0
 	_demo_playing = true
+	_demo_paused = false
 
 func is_demo_playing() -> bool:
 	return _demo_playing
+
+# ---- 演示控制（D4）：暂停 / 继续 / 重播 / 单步 ----
+func pause_demo() -> void:
+	if _demo_playing:
+		_demo_paused = true
+
+func resume_demo() -> void:
+	_demo_paused = false
+
+func toggle_demo_pause() -> void:
+	if _demo_playing:
+		_demo_paused = not _demo_paused
+
+func restart_demo() -> void:
+	if _demo.is_empty():
+		return
+	_demo_i = 0
+	_demo_t = 0.0
+	_demo_playing = true
+	_demo_paused = false
+
+func step_demo(step_dt: float = 0.12) -> void:
+	if _demo.is_empty():
+		return
+	if not _demo_playing:
+		restart_demo()
+	_demo_paused = true
+	_tick_demo(step_dt)
+
+func is_demo_paused() -> bool:
+	return _demo_paused
 
 func _tick_demo(delta: float) -> void:
 	if _demo_i >= _demo.size():

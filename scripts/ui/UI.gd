@@ -27,6 +27,38 @@ const CHOICE_FORMULA_SCALE := 0.42
 static var S := 1.4
 ## 界面动效开关，由 Settings 注入；UI 不直接依赖 Settings，避免与自动加载形成循环引用。
 static var animations := true
+## 「减弱动效」档（前庭敏感用户）：关掉位移/缩放/闪烁等**装饰**动效，保留淡入淡出；
+## **表意动效**（LabPlane/Lab3DView 的补间、差量、轨迹、脉冲）不受这两个开关影响（见 D3/D4）。
+static var reduced_motion := false
+
+# ---------------------------------------------------------------- 动效令牌（D4）
+## 时长唯一来源：新代码禁止裸写秒数，`tools/check_all.gd` 会静态拦截。
+const DUR_TINY := 0.08      # 即时反馈：按压、闪一下
+const DUR_FAST := 0.14      # 小元素进场/退出
+const DUR_NORMAL := 0.22    # 常规过渡
+const DUR_SLOW := 0.30      # 面板、大块内容
+const DUR_XSLOW := 0.45     # 强调
+const DUR_LONG := 0.70      # 长过渡（Boss 退场等）
+const DUR_SCENE := 0.85     # 启动/场景级
+const DUR_AMBIENT := 1.7    # 环境律动（标题呼吸）
+
+## 缓动唯一来源。
+const EASE_STD_T := Tween.TRANS_CUBIC
+const EASE_STD_E := Tween.EASE_OUT
+const EASE_EMPHASIS_T := Tween.TRANS_BACK
+const EASE_EMPHASIS_E := Tween.EASE_OUT
+const EASE_SOFT_T := Tween.TRANS_SINE
+const EASE_SOFT_E := Tween.EASE_IN_OUT
+
+## 装饰动效是否该播放（总开关 且 非减弱档）。
+static func fx_on() -> bool:
+	return animations and not reduced_motion
+
+## 按令牌给补间设置缓动。
+static func ease(tw: Tween, trans: int = EASE_STD_T, mode: int = EASE_STD_E) -> Tween:
+	tw.set_trans(trans)
+	tw.set_ease(mode)
+	return tw
 
 ## 当前弹出的确认框根节点(供返回键优先关闭)。null 表示没有弹窗。
 static var _active_confirm: Control = null
@@ -344,25 +376,25 @@ static func _scale_to(b: Control, s: float, dur: float, trans: int, ease_type: i
 	tw.tween_property(b, "scale", Vector2(s, s), dur).set_trans(trans).set_ease(ease_type)
 
 static func press_fx(b: Button, amount: float = 0.95) -> void:
-	if not animations:
+	if not fx_on():
 		return
-	b.button_down.connect(func() -> void: _scale_to(b, amount, 0.07, Tween.TRANS_QUAD, Tween.EASE_OUT))
-	b.button_up.connect(func() -> void: _scale_to(b, 1.0, 0.16, Tween.TRANS_BACK, Tween.EASE_OUT))
-	b.mouse_exited.connect(func() -> void: _scale_to(b, 1.0, 0.16, Tween.TRANS_BACK, Tween.EASE_OUT))
+	b.button_down.connect(func() -> void: _scale_to(b, amount, UI.DUR_TINY, Tween.TRANS_QUAD, Tween.EASE_OUT))
+	b.button_up.connect(func() -> void: _scale_to(b, 1.0, UI.DUR_FAST, Tween.TRANS_BACK, Tween.EASE_OUT))
+	b.mouse_exited.connect(func() -> void: _scale_to(b, 1.0, UI.DUR_FAST, Tween.TRANS_BACK, Tween.EASE_OUT))
 
 ## 悬停抬升：src 收到悬停时放大 target(卡片的覆盖热区按钮作为 src)
 static func hover_scale(target: Control, src: Control, up: float = 1.03) -> void:
-	if not animations:
+	if not fx_on():
 		return
-	src.mouse_entered.connect(func() -> void: _scale_to(target, up, 0.14, Tween.TRANS_QUAD, Tween.EASE_OUT))
-	src.mouse_exited.connect(func() -> void: _scale_to(target, 1.0, 0.18, Tween.TRANS_QUAD, Tween.EASE_OUT))
+	src.mouse_entered.connect(func() -> void: _scale_to(target, up, UI.DUR_FAST, Tween.TRANS_QUAD, Tween.EASE_OUT))
+	src.mouse_exited.connect(func() -> void: _scale_to(target, 1.0, UI.DUR_NORMAL, Tween.TRANS_QUAD, Tween.EASE_OUT))
 
 ## 按压下沉：src 按下时轻微缩小 target
 static func press_scale(target: Control, src: Control, amount: float = 0.985) -> void:
-	if not animations:
+	if not fx_on():
 		return
-	src.button_down.connect(func() -> void: _scale_to(target, amount, 0.07, Tween.TRANS_QUAD, Tween.EASE_OUT))
-	src.button_up.connect(func() -> void: _scale_to(target, 1.0, 0.16, Tween.TRANS_BACK, Tween.EASE_OUT))
+	src.button_down.connect(func() -> void: _scale_to(target, amount, UI.DUR_TINY, Tween.TRANS_QUAD, Tween.EASE_OUT))
+	src.button_up.connect(func() -> void: _scale_to(target, 1.0, UI.DUR_FAST, Tween.TRANS_BACK, Tween.EASE_OUT))
 
 ## 容器子项依次淡入(cap 限制参与动画的最大序号，避免超长列表拖沓)
 static func stagger_in(container: Node, step: float = 0.05, dur: float = 0.28, cap: int = 12) -> void:
@@ -375,7 +407,7 @@ static func stagger_in(container: Node, step: float = 0.05, dur: float = 0.28, c
 		var ctl := c as Control
 		if ctl.is_queued_for_deletion():
 			continue
-		if not animations:
+		if not fx_on():
 			ctl.modulate.a = 1.0
 			continue
 		ctl.modulate.a = 0.0
@@ -395,7 +427,7 @@ static func card_stagger_in(container: Node, step: float = 0.08, dur: float = 0.
 		var ctl := c as Control
 		if ctl.is_queued_for_deletion():
 			continue
-		if not animations:
+		if not fx_on():
 			ctl.modulate.a = 1.0
 			ctl.scale = Vector2.ONE
 			continue
@@ -420,7 +452,7 @@ static func card_deal_in(container: Control, step: float = 0.085, dur: float = 0
 			cards.append(c)
 	if cards.is_empty():
 		return
-	if not animations:
+	if not fx_on():
 		for c in cards:
 			c.modulate.a = 1.0
 			c.scale = Vector2.ONE
@@ -468,15 +500,15 @@ static func _rotate_to(c: Control, r: float, dur: float) -> void:
 ## Godot 不一定补发 mouse_exited，卡片会卡在放大态（表现为“大小不一致”）。
 ## 对尺寸敏感、必须等大的卡片请传 lift=1.0（仅倾斜）。
 static func card_tilt(target: Control, src: Control, max_deg: float = 6.0, lift: float = 1.035) -> void:
-	if not animations:
+	if not fx_on():
 		return
 	var do_lift := not is_equal_approx(lift, 1.0)
 	if do_lift:
 		src.mouse_entered.connect(func() -> void:
-			_scale_to(target, lift, 0.16, Tween.TRANS_QUAD, Tween.EASE_OUT))
+			_scale_to(target, lift, UI.DUR_FAST, Tween.TRANS_QUAD, Tween.EASE_OUT))
 	src.mouse_exited.connect(func() -> void:
 		if do_lift:
-			_scale_to(target, 1.0, 0.22, Tween.TRANS_BACK, Tween.EASE_OUT)
+			_scale_to(target, 1.0, UI.DUR_NORMAL, Tween.TRANS_BACK, Tween.EASE_OUT)
 		_rotate_to(target, 0.0, 0.22))
 	src.gui_input.connect(func(e: InputEvent) -> void:
 		if not (e is InputEventMouseMotion):
@@ -494,7 +526,7 @@ static func card_tilt(target: Control, src: Control, max_deg: float = 6.0, lift:
 static func fade_in(c: Control, dur: float = 0.4) -> void:
 	if c == null or not is_instance_valid(c):
 		return
-	if not animations:
+	if not fx_on():
 		c.modulate.a = 1.0
 		return
 	c.modulate.a = 0.0
@@ -760,7 +792,7 @@ static func _sb_grabber(a: float, w: float) -> StyleBoxFlat:
 
 ## 弹层入场：淡入 + 轻微回弹缩放(需在布局完成后调用)
 static func popup_in(c: Control, dur: float = 0.2) -> void:
-	if not animations:
+	if not fx_on():
 		c.modulate.a = 1.0
 		c.scale = Vector2.ONE
 		return

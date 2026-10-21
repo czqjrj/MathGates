@@ -188,9 +188,9 @@ static func spawn(parent: Node, greet: String = "") -> Pet:
 	layer.add_child(pet)
 	# 出场弹入
 	pet.pivot_offset = pet.size * 0.5
-	if UI.animations:
+	if UI.fx_on():
 		pet.scale = Vector2(0.25, 0.25)
-		pet.create_tween().tween_property(pet, "scale", Vector2.ONE, 0.5) \
+		pet.create_tween().tween_property(pet, "scale", Vector2.ONE, UI.DUR_XSLOW) \
 			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	if not Settings.show_pet:
 		pet.visible = false

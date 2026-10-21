@@ -218,7 +218,7 @@ func _ready() -> void:
 	set_process(true)
 
 func _process(delta: float) -> void:
-	if not UI.animations:
+	if not UI.fx_on():
 		if _static:
 			return
 		_static = true

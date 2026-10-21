@@ -118,7 +118,7 @@ class MapNode extends Control:
 		return 0.0
 
 	func _process(delta: float) -> void:
-		if not UI.animations:
+		if not UI.fx_on():
 			return
 		_t += delta
 		queue_redraw()
@@ -315,7 +315,7 @@ class BookTab extends Control:
 		set_process(true)
 
 	func _process(delta: float) -> void:
-		if not UI.animations:
+		if not UI.fx_on():
 			return
 		_t += delta
 		if active:
@@ -323,11 +323,11 @@ class BookTab extends Control:
 
 	func _lift(on: bool) -> void:
 		var target := Vector2(1.035, 1.035) if on else Vector2.ONE
-		if not UI.animations:
+		if not UI.fx_on():
 			scale = target
 			return
 		pivot_offset = size * 0.5
-		create_tween().tween_property(self, "scale", target, 0.13).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		create_tween().tween_property(self, "scale", target, UI.DUR_FAST).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 	func _gui_input(e: InputEvent) -> void:
 		if e is InputEventMouseButton:
@@ -412,7 +412,7 @@ class TabCard extends Control:
 			_drag_begun = false
 
 	func _process(delta: float) -> void:
-		if not UI.animations:
+		if not UI.fx_on():
 			return
 		_t += delta
 		if active:
@@ -420,12 +420,12 @@ class TabCard extends Control:
 
 	func _lift(on: bool) -> void:
 		var target := Vector2(1.045, 1.045) if on else Vector2.ONE
-		if not UI.animations:
+		if not UI.fx_on():
 			scale = target
 			return
 		pivot_offset = size * 0.5
 		var tw := create_tween()
-		tw.tween_property(self, "scale", target, 0.14).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		tw.tween_property(self, "scale", target, UI.DUR_FAST).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 	func _gui_input(e: InputEvent) -> void:
 		if e is InputEventMouseButton:
@@ -608,7 +608,7 @@ class HudLine extends Control:
 		set_process(true)
 
 	func _process(delta: float) -> void:
-		if not UI.animations:
+		if not UI.fx_on():
 			return
 		_t += delta
 		queue_redraw()
@@ -667,7 +667,7 @@ func _on_progress() -> void:
 	_build_map(false)
 
 func _process(delta: float) -> void:
-	if not UI.animations:
+	if not UI.fx_on():
 		return
 	if _path_pts.size() < 2 or _pulse == null or not is_instance_valid(_pulse):
 		return
@@ -998,7 +998,7 @@ func _reorder_cards(from_mi: int, to_mi: int) -> void:
 
 ## 卡片入场动画：轻微缩放 + 淡入，依次错峰
 func _tab_entrance() -> void:
-	if not UI.animations:
+	if not UI.fx_on():
 		return
 	var i := 0
 	for c in _tabs.get_children():
@@ -1010,8 +1010,8 @@ func _tab_entrance() -> void:
 		ctl.pivot_offset = ctl.custom_minimum_size * 0.5
 		var d := 0.03 * float(mini(i, 12))
 		var tw := ctl.create_tween().set_parallel(true)
-		tw.tween_property(ctl, "modulate:a", 1.0, 0.24).set_delay(d)
-		tw.tween_property(ctl, "scale", Vector2.ONE, 0.34).set_delay(d).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(ctl, "modulate:a", 1.0, UI.DUR_NORMAL).set_delay(d)
+		tw.tween_property(ctl, "scale", Vector2.ONE, UI.DUR_SLOW).set_delay(d).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		i += 1
 
 func _refresh_star() -> void:
@@ -1158,7 +1158,7 @@ func _build_map(recenter_map: bool) -> void:
 		var n0 := _add_level_node(c0, it0, int(it0["li"]), bool(info["boss"]), float(info["title_w"]))
 		_note_unlock(n0, recenter_map)
 
-	if UI.animations and recenter_map:
+	if UI.fx_on() and recenter_map:
 		_stagger_entrance(_content)
 
 	_refresh_star()
@@ -1228,7 +1228,7 @@ func _note_unlock(n: MapNode, recenter: bool) -> void:
 		_unlocked_seen[id] = true
 		return
 	_unlocked_seen[id] = true
-	if UI.animations:
+	if UI.fx_on():
 		Vfx.star_burst(self, n.get_global_rect().get_center(), 16, 0.9)
 
 ## 知识点节点/单元标题逐个浮现（先轻微缩小淡入，再弹回原位）。
@@ -1248,8 +1248,8 @@ func _stagger_entrance(container: Control) -> void:
 		ctl.scale = Vector2(0.35, 0.35)
 		var delay := 0.05 * float(i)
 		var tw := ctl.create_tween().set_parallel(true)
-		tw.tween_property(ctl, "modulate:a", 1.0, 0.28).set_delay(delay).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		tw.tween_property(ctl, "scale", Vector2.ONE, 0.4).set_delay(delay).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(ctl, "modulate:a", 1.0, UI.DUR_SLOW).set_delay(delay).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		tw.tween_property(ctl, "scale", Vector2.ONE, UI.DUR_XSLOW).set_delay(delay).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		i += 1
 
 func _add_path(points: PackedVector2Array, width: float, color: Color) -> void:

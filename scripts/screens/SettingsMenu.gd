@@ -63,6 +63,7 @@ func _build_body() -> void:
 	vb.add_child(_toggle_row("萌宠助手", "主界面右下角的互动小助手", Settings.show_pet, Settings.set_show_pet))
 	vb.add_child(_toggle_row("全屏显示", "以全屏方式运行(移动端忽略此项)", Settings.fullscreen, Settings.set_fullscreen))
 	vb.add_child(_toggle_row("界面动效", "卡片入场、按钮回弹等过渡动画", Settings.animations, Settings.set_animations))
+	vb.add_child(_toggle_row("减弱动效", "只保留淡入淡出；数学演示的补间/轨迹/脉冲不受影响", Settings.reduced_motion, Settings.set_reduced_motion))
 	vb.add_child(_toggle_row("关卡计时", "带时限的关卡显示计时、给出极速奖励与超时降星；关闭则一律不计时", Settings.challenge_timer, Settings.set_challenge_timer))
 	vb.add_child(_divider())
 	vb.add_child(_toggle_row("编辑模式（全解锁）", "无需通关也可选择任意关卡（测试/编辑用）", Settings.editor_mode, Settings.set_editor_mode))

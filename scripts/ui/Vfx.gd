@@ -7,14 +7,14 @@ extends RefCounted
 ##   Vfx.float_text(_ui, pos, "连击 x3", Color("#ffd479"))
 ##   Vfx.celebrate(_ui, pos, UI.COL_ACCENT)
 ##
-## 所有特效均受「界面动效」开关(UI.animations)控制：关闭时静默不生成，调用可安全忽略返回值。
+## 所有特效均受「界面动效」开关(UI.fx_on())控制：关闭时静默不生成，调用可安全忽略返回值。
 ## 坐标为父控件本地坐标；父铺满全屏时即屏幕坐标，控件屏幕中心用 center_of() 取。
 
 const STAR_COLS := [Color("#5ee6ff"), Color("#ffd479"), Color("#34d399"), Color("#a878ff"), Color("#fb7185")]
 
 # ---------------------------------------------------------------- 工具
 static func enabled() -> bool:
-	return UI.animations
+	return UI.fx_on()
 
 ## 某控件中心的屏幕坐标(供特效定位)。控件无效时返回调用方给定的兜底值。
 static func center_of(ctl: Control, fallback: Vector2 = Vector2.ZERO) -> Vector2:

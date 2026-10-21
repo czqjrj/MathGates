@@ -322,8 +322,8 @@ func _finish() -> void:
 		var delay := 0.35 + i * 0.2
 		var tw := create_tween()
 		tw.tween_interval(delay)
-		tw.tween_property(tex_r, "scale", Vector2.ONE, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		tw.parallel().tween_property(tex_r, "modulate:a", 1.0, 0.25)
+		tw.tween_property(tex_r, "scale", Vector2.ONE, UI.DUR_XSLOW).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.parallel().tween_property(tex_r, "modulate:a", 1.0, UI.DUR_NORMAL)
 		if filled:
 			get_tree().create_timer(delay).timeout.connect(func() -> void: Sound.play("star"))
 	_v_score.text = _v_score_lbl
@@ -359,7 +359,7 @@ func _update_hud() -> void:
 		_coins.text = "◆ %d" % GameData.coins
 	var total := maxi(1, _stages.size())
 	var tw := create_tween()
-	tw.tween_property(_top_fill, "anchor_right", float(_idx) / float(total), 0.4).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tw.tween_property(_top_fill, "anchor_right", float(_idx) / float(total), UI.DUR_XSLOW).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
 # ---------------------------------------------------------------- UI
 func _build_ui() -> void:

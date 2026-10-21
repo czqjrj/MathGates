@@ -12,6 +12,7 @@ var _view: Control
 var _plane: LabPlane
 var _lab := ""
 var _demo_btn: Button
+var _demo_restart_btn: Button
 
 # ---------------------------------------------------------------- 配置钩子
 func _module() -> String: return _lab if _lab != "" else "lab"
@@ -25,8 +26,8 @@ func _bottom_half_width() -> int: return 330
 
 func _level_ok_fx() -> void:
 	var tw := create_tween()
-	tw.tween_property(_panel, "modulate", Color(1.15, 1.15, 1.1), 0.08)
-	tw.tween_property(_panel, "modulate", Color.WHITE, 0.25)
+	tw.tween_property(_panel, "modulate", Color(1.15, 1.15, 1.1), UI.DUR_TINY)
+	tw.tween_property(_panel, "modulate", Color.WHITE, UI.DUR_NORMAL)
 
 func _load() -> void:
 	var lv: Dictionary = GameData.current_level
@@ -61,7 +62,7 @@ func _build_view() -> void:
 	_plane.point_moved.connect(func(_p: Vector2) -> void: _refresh_live())
 	_view.add_child(_plane)
 	# 右上：演示按钮（仅当本轮 scene 带 anim 时显示，见 D2）
-	_demo_btn = UI.ghost_button("▶ 演示", func() -> void: _play_demo(), 15)
+	_demo_btn = UI.ghost_button("▶ 演示", func() -> void: _toggle_demo(), 15)
 	_demo_btn.set_anchors_preset(Control.PRESET_TOP_RIGHT)
 	_demo_btn.offset_left = -118.0
 	_demo_btn.offset_right = -14.0
@@ -69,6 +70,28 @@ func _build_view() -> void:
 	_demo_btn.offset_bottom = 42.0
 	_demo_btn.visible = false
 	_view.add_child(_demo_btn)
+	# 重播（D4）：2D 演示可反复看
+	_demo_restart_btn = UI.ghost_button("↻", _restart_demo, 15)
+	_demo_restart_btn.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	_demo_restart_btn.offset_left = -152.0
+	_demo_restart_btn.offset_right = -122.0
+	_demo_restart_btn.offset_top = 8.0
+	_demo_restart_btn.offset_bottom = 42.0
+	_demo_restart_btn.visible = false
+	_view.add_child(_demo_restart_btn)
+
+## 演示按钮（D4）：未播放→开始；播放中→暂停/继续。
+func _toggle_demo() -> void:
+	if not _plane.is_demo_playing():
+		_play_demo()
+		return
+	_plane.toggle_demo_pause()
+	_demo_btn.text = "▶ 继续" if _plane.is_demo_paused() else "⏸ 暂停"
+
+func _restart_demo() -> void:
+	_plane.restart_demo()
+	if _demo_btn != null:
+		_demo_btn.text = "⏸ 暂停"
 
 ## 播放本轮 scene.anim；未配置时按钮本身不显示。
 func _play_demo() -> void:
@@ -78,9 +101,11 @@ func _play_demo() -> void:
 		a = s.get("scene", {}).get("anim", null)
 	if a is Array and not (a as Array).is_empty():
 		_plane.play_anim(a)
-		_show_feed("演示中……可随时拖动滑块自己再试一次。", UI.COL_ACCENT)
+		_demo_btn.text = "⏸ 暂停"
+		_show_feed("演示中……可暂停/重播，也可自己拖滑块再试一次。", UI.COL_ACCENT)
 	elif a is Dictionary:
 		_plane.play_anim([a])
+		_demo_btn.text = "⏸ 暂停"
 
 func _has_anim(s: Dictionary) -> bool:
 	if s.has("anim"):
@@ -126,6 +151,9 @@ func _load_q() -> void:
 	_plane.set_scene(sc)
 	if _demo_btn != null:
 		_demo_btn.visible = _has_anim(s)
+		_demo_btn.text = "▶ 演示"
+	if _demo_restart_btn != null:
+		_demo_restart_btn.visible = _has_anim(s)
 	var t := str(s.get("type", "choice"))
 	var has_interactive := sc.has("sliders") or sc.has("drag") or sc.has("break")
 	if t == "explore" and has_interactive:
@@ -144,8 +172,8 @@ func _load_q() -> void:
 	_ans.modulate.a = 0.0
 	_q.modulate.a = 0.0
 	var tw := create_tween().set_parallel(true)
-	tw.tween_property(_ans, "modulate:a", 1.0, 0.28)
-	tw.tween_property(_q, "modulate:a", 1.0, 0.22)
+	tw.tween_property(_ans, "modulate:a", 1.0, UI.DUR_SLOW)
+	tw.tween_property(_q, "modulate:a", 1.0, UI.DUR_NORMAL)
 	_update_hud()
 
 func _begin_interactive(s: Dictionary) -> void:

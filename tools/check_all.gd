@@ -26,8 +26,76 @@ func _initialize() -> void:
 			fails += _check_limit(f, RULES_LIMIT)
 	for path in BIG_LIMITS:
 		fails += _check_limit(str(path), int(BIG_LIMITS[path]))
+	# —— D4 动效令牌：禁止裸写时长 ——
+	fails += _check_bare_durations()
 	print("CHECKED %d scripts, %d failures" % [files.size(), fails])
 	quit()
+
+## D4：`tween_property(...)` 的第 4 个参数与 `_scale_to(...)` 的第 3 个参数
+## 必须是 `UI.DUR_*` 令牌（或变量），裸写秒数即红灯。
+## 用括号深度扫描取「顶层第 N 个实参」，避免被 `Color(0.5, …)` 这类嵌套调用误伤。
+const DURATION_CALLS := {
+	"tween_property(": 3,   # 0-based 第 4 个实参
+	"_scale_to(": 2,        # 0-based 第 3 个实参
+}
+
+func _check_bare_durations() -> int:
+	var bad := 0
+	for path in ["res://scripts"]:
+		var files: Array[String] = []
+		_collect(path, files)
+		for f in files:
+			var lines := FileAccess.get_file_as_string(f).split("\n")
+			for i in lines.size():
+				for call in DURATION_CALLS:
+					var argi := int(DURATION_CALLS[call])
+					var args := _args_at(lines[i], call)
+					if args.size() <= argi:
+						continue
+					var a := args[argi].strip_edges()
+					if a.is_empty():
+						continue
+					var c := a[0]
+					if c == "0" or (c >= "1" and c <= "9"):
+						print("BARE-DURATION: %s:%d %s → 用 UI.DUR_* 令牌" % [f, i + 1, a])
+						bad += 1
+	return bad
+
+## 取某行内指定调用的顶层实参（简单括号/引号扫描，够用且不误伤嵌套）。
+func _args_at(line: String, call: String) -> Array[String]:
+	var out: Array[String] = []
+	var start := line.find(call)
+	if start < 0:
+		return out
+	var i := start + call.length()
+	var depth := 1
+	var quote := ""
+	var cur := ""
+	while i < line.length():
+		var ch := line[i]
+		if quote != "":
+			cur += ch
+			if ch == quote:
+				quote = ""
+		elif ch == "\"" or ch == "'":
+			quote = ch
+			cur += ch
+		elif ch == "(":
+			depth += 1
+			cur += ch
+		elif ch == ")":
+			depth -= 1
+			if depth == 0:
+				out.append(cur)
+				return out
+			cur += ch
+		elif ch == "," and depth == 1:
+			out.append(cur)
+			cur = ""
+		else:
+			cur += ch
+		i += 1
+	return out
 
 ## 超限记一条失败并打印现状;文件缺失(-1)不算失败(可能尚未创建)。
 func _check_limit(path: String, limit: int) -> int:

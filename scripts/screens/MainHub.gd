@@ -179,12 +179,12 @@ func _build_center() -> void:
 	vb.add_child(line)
 
 	# 标题呼吸(纯气氛动效，可在设置中关闭)
-	if UI.animations:
+	if UI.fx_on():
 		title.pivot_offset = title.size * 0.5
 		title.resized.connect(func() -> void: title.pivot_offset = title.size * 0.5)
 		var btw := title.create_tween().set_loops()
-		btw.tween_property(title, "scale", Vector2(1.035, 1.035), 1.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-		btw.tween_property(title, "scale", Vector2.ONE, 1.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		btw.tween_property(title, "scale", Vector2(1.035, 1.035), UI.DUR_AMBIENT).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		btw.tween_property(title, "scale", Vector2.ONE, UI.DUR_AMBIENT).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 	vb.add_child(UI.make_label("解析失序的公理 · 推演世界的唯一解", 17, UI.COL_TEXT_DIM, HORIZONTAL_ALIGNMENT_CENTER))
 

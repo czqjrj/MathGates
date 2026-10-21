@@ -281,11 +281,11 @@ func boss_defeated() -> void:
 	if _bav != null and is_instance_valid(_bav):
 		var tw := create_tween()
 		tw.set_parallel(true)
-		tw.tween_property(_bav, "modulate:a", 0.0, 0.7).set_trans(Tween.TRANS_SINE)
-		tw.tween_property(_bav, "scale", Vector2(1.4, 1.4), 0.7).set_trans(Tween.TRANS_BACK)
+		tw.tween_property(_bav, "modulate:a", 0.0, UI.DUR_LONG).set_trans(Tween.TRANS_SINE)
+		tw.tween_property(_bav, "scale", Vector2(1.4, 1.4), UI.DUR_LONG).set_trans(Tween.TRANS_BACK)
 
 ## 推演者倒下：推演者头像变暗。
 func player_down() -> void:
 	if _pav != null and is_instance_valid(_pav):
 		var tw := create_tween()
-		tw.tween_property(_pav, "modulate", Color(0.5, 0.5, 0.5, 0.5), 0.5)
+		tw.tween_property(_pav, "modulate", Color(0.5, 0.5, 0.5, 0.5), UI.DUR_XSLOW)
