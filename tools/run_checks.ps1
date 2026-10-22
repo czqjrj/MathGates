@@ -20,7 +20,18 @@ param(
 )
 
 $ErrorActionPreference = "Continue"
+
+# 仓库根：优先用脚本所在目录的上一级；若不是 Godot 工程（比如把脚本单独拷出去跑），
+# 退回当前工作目录。两者都不是工程时**直接报错退出**——否则 Godot 会被指向一个
+# 空目录、静默挂在项目选择界面上，看起来就是"命令卡死"。
 $repo = Split-Path -Parent $PSScriptRoot
+if (-not (Test-Path (Join-Path $repo "project.godot"))) { $repo = (Get-Location).Path }
+if (-not (Test-Path (Join-Path $repo "project.godot"))) {
+    Write-Host "当前目录不是 Godot 工程（没有 project.godot）：$repo" -ForegroundColor Red
+    Write-Host "请在仓库根目录运行，或用 -File <仓库>\tools\run_checks.ps1 指定脚本位置。" -ForegroundColor DarkGray
+    exit 2
+}
+
 $logDir = Join-Path $env:TEMP "mg_checks"
 if (Test-Path $logDir) { Remove-Item $logDir -Recurse -Force -ErrorAction SilentlyContinue }
 New-Item -ItemType Directory -Path $logDir -Force | Out-Null
