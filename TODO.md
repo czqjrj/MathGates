@@ -133,12 +133,34 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`aad3f41`（feat B1 方言修正第一刀，本轮）→ 上一提交链：
-  `caf5901`（docs 第四十轮）→ `0a0a0c5`（feat B1 方言闸门）→ `cac8e04`（docs 记录 B1 脚手架）→
-  `ed965a2`（feat B1 脚手架）→ `233ab6b`（docs 第三十九轮）→
-  `a83d4d4`（feat F6）→ `08c6d66`（docs 第三十八轮）→ `ceae1ac`（feat F5）→ …，
+- **最后提交**：`0e742e4`（chore 换机交接基建，本轮）→ 上一提交链：
+  `7f8aaa5`（docs 第四十一轮）→ `aad3f41`（feat B1 方言修正）→ `caf5901`（docs 第四十轮）→
+  `0a0a0c5`（feat B1 方言闸门）→ `ed965a2`（feat B1 脚手架）→ …，
   已 push（`main` 与 `origin/main` 同步）。
-- **本轮交付（2026-10-22，第四十一轮）**：**B1 参数母版方言修正第一刀（155 → 96）**（feat `aad3f41`）。
+- **本轮交付（2026-10-22，第四十二轮）**：**换机交接基建**（`0e742e4`，不是功能轮，为「换台机器继续干」服务）。
+  - **新增 `tools/run_checks.ps1`**：一条命令跑完全部 11 项。自动找 Godot 4.7.2
+    （`-Godot` 参数 → `$env:GODOT472` → 常见安装路径 → PATH），自动先 `--import`
+    并校验 `.godot/global_script_class_cache.cfg` 是否生成，逐项打印**期望行命中值 + 耗时**，
+    失败只回显末尾 15 行并把日志路径给你；全绿 `exit 0`、任一项失败 `exit 1`。
+    本机实测 **11/11 通过、约 150 秒**（最慢是 SMOKE 62s / UI-SMOKE 27s）。
+    `-Fast` 跳过 UI-SMOKE / LEVEL-PREVIEW；`-SkipImport` 跳过预导入。
+  - **`docs/环境配置.md` 大修**：新增「§0 换机接手：先做这三步」；§10 回归命令从
+    **过期的 `<godot441.exe>` 改成 `<godot472.exe>`**（4.4.1 只用于编扩展，跑回归一律 4.7.2），
+    并把 11 项基线表列全；§12 TL;DR 加进「先跑 run_checks」；§11 补本轮踩到的 7 个坑。
+  - **§11 新增的坑**（都是这轮真踩过的）：
+    ① `--script` 探针不调 `quit()` 会挂住主循环（表现为"命令卡死"）；
+    ② Godot 的 `SCRIPT ERROR` 走 stderr，被 PowerShell 当 terminating error 插进管道 → 必须落盘再读；
+    ③ 控制台按 GBK 解码 UTF-8 输出 → 中文全乱，断言行是纯 ASCII 才没被坑；
+    ④ **`.ps1` 必须 UTF-8 带 BOM**，否则 PS 5.1 按 GBK 读，中文注释把引号解析读崩
+       （本轮 `run_checks.ps1` 第一版就是这么报的一堆"意外的标记 `}`"）；
+    ⑤ 新增 `.gd` 的 `.uid` 要跟 `--import` 一起提交；
+    ⑥ `third_party/godot-cpp/test/project/*.gd` 的 Parse Error 是历史噪音；
+    ⑦ 跑完检查要还原 `docs/知识点覆盖矩阵.md` 与 `project.godot` 的换行符假改动。
+  - **顺手纠错**：TODO 里两处引用的 `build/run_checks.ps1` **从来不存在**，且 `build/` 不入库
+    ——已改为 `tools/run_checks.ps1`。
+  - 另注：`docs/环境配置.md` §0 明确写了「只改 GDScript/内容的话，MSYS2 / NDK / godot-cpp
+    一整套**可以完全不装**」——11 项检查全是 headless，`InlineMath` 自动走 PNG 回退（CI 也如此）。
+- **上一轮（2026-10-22，第四十一轮）**：**B1 参数母版方言修正第一刀（155 → 96）**（feat `aad3f41`）。
   - **只做「不需要拍板」的三类**，新增 `tools/fix_param_master_dialect.py`
     （`--dry-run` / `--apply` / `--no-t2s`；**行级定点替换、不重序列化 JSON**，
     因为这批文件 CRLF/LF 混用，整体 `json.dumps` 会造出几百行无关 diff）。
@@ -289,7 +311,7 @@
     `MainHub._build_center()` 内容不健康时挂横幅。详情只写本地剪贴板（同 F1 隐私）。
   - **发版闸门**：`tools/check_content_health.gd`（深度：`ResourceLoader.exists` 场景、
     引用定位到组键、孤儿组提示）→ `.github/workflows/check.yml` 新增一步
-    （`CONTENT-HEALTH-FAIL` 即红灯）+ `build/run_checks.ps1` 增 `content` 一档。
+    （`CONTENT-HEALTH-FAIL` 即红灯）+ `tools/run_checks.ps1` 已含该档（11 项之一）。
     本仓库没有自动导出步骤，CI 即「导出前那一次调用」。
   - **顺带修真 bug**：体检首次运行即报 `E_DUP_ID solid_angle` ——`solid` 章「线面角 · 二面角」
     与 `solid_basic` 章「11-1 空间角（几何法）」**共用同一个关卡 id**；星标按 id 存 →
@@ -1257,7 +1279,7 @@
   `MainHub._build_center()` 在内容不健康时加横幅。
 - **发版闸门**：`tools/check_content_health.gd`（深度：场景文件 `ResourceLoader.exists`、
   引用能否定位到数据文件组键、孤儿组提示）→ 接进 `.github/workflows/check.yml`
-  （`CONTENT-HEALTH-FAIL` 即红灯）与 `build/run_checks.ps1`。CI 即「导出流程前的那一次调用」
+  （`CONTENT-HEALTH-FAIL` 即红灯）与 `tools/run_checks.ps1`（11 项之一）。CI 即「导出流程前的那一次调用」
   （本仓库没有导出步骤，发版走本地 `bump_version` + Godot 导出；CI 是唯一的自动闸门）。
 - **验收实测**：把 `data/curriculum.json` 写成非法 JSON →
   `content_ok=false`、`chapters=0`、问题 `E_LOAD/课程表格式损坏`；还原文件后 `reload_content()` → `true`、23 章。
@@ -2828,6 +2850,15 @@
 
 ### 9.1 改完必跑（四件套 + 新增）
 
+**一条命令跑完全部 11 项**（自动找引擎、自动 `--import`、失败给日志路径、全绿退出码 0）：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1        # 约 150 秒
+powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI-SMOKE / LEVEL-PREVIEW
+```
+
+换机、或 `git pull` 拉到含新脚本的提交后，**先跑它**——不先 `--import` 直接跑单项会满屏 Parse Error。
+
 | 命令 | 期望 |
 |---|---|
 | `--headless --path . --script res://tools/check_all.gd` | `CHECKED <N> scripts, 0 failures`（仅 `third_party/` 历史 Parse Error） |
@@ -2859,7 +2890,7 @@
 `QUESTION-CHECK: 26 files / 269 levels / 1057 questions / 0 new / 7 known / 3 warnings`
 （A5 校验器，存量问题见下方基线；看板另有「干扰项黑名单命中 0 处」见 B5、「anim 演示覆盖 **13/26 文件**」见 D2）/
 `PERF idle 171 / lab_plane 259 / lab3d 251`（µs，headless CPU 处理耗时，见 `tools/perf_probe.tscn`）/
-`ASSETS: ≈30.53 MB over 3155 files … banned=0, oversize=0`（A13 护栏；末位随测试产物/内容批次微漂移，
+`ASSETS: ≈30.55 MB over 3156 files … banned=0, oversize=0`（A13 护栏；末位随测试产物/内容批次微漂移，
 看 `banned` / `oversize` 即可）/
 `KNOWLEDGE: 27 chapters / 275 points / 275 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `CONTENT-HEALTH: 27 chapters / 275 levels / 0 problems (orphans=0)`（A18 内容体检，见下方注）/
