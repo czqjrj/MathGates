@@ -96,6 +96,14 @@ jobs:
           grep -Eq "CONTENT-HEALTH: [0-9]+ chapters / [0-9]+ levels / 0 problems" out.log
           ! grep -Eq "CONTENT-HEALTH-FAIL" out.log
 
+      - name: check_param_masters（B1 参数母版 → 引擎方言闸门）
+        run: |
+          set -euo pipefail
+          ./godot --headless --path . --script res://tools/check_param_masters.gd 2>&1 | tee out.log
+          grep -Eq "PARAM-CHECK: [0-9]+ files" out.log
+          grep -Eq "[0-9]+ new / [0-9]+ known" out.log
+          ! grep -Eq "PARAM-CHECK-FAIL" out.log
+
       - name: LevelPreview 自检（作者工具链，G2）
         run: |
           set -euo pipefail

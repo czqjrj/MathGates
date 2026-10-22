@@ -327,6 +327,7 @@ build/           导出产物(APK,git 忽略)
 & "<godot4.7.2.exe>" --headless --path . res://tests/LabSmoke.tscn
 & "<godot4.7.2.exe>" --headless --path . --script res://tools/check_questions.gd
 & "<godot4.7.2.exe>" --headless --path . --script res://tools/check_content_health.gd
+& "<godot4.7.2.exe>" --headless --path . --script res://tools/check_param_masters.gd
 ```
 
 - `check_questions.gd`：有**新增**内容问题即退出码 1；存量问题记在
@@ -335,8 +336,16 @@ build/           导出产物(APK,git 忽略)
 - `check_content_health.gd`：内容数据完整性闸门，输出
   `CONTENT-HEALTH: N chapters / N levels / 0 problems`；有问题是 `CONTENT-HEALTH-FAIL` + 非零退出。
   改 `curriculum.json` / `*_levels.json` 后**必跑**（改坏了的引用与重复 id 靠它兜）。
+- `check_param_masters.gd`：**B1 参数母版脚手架 → 引擎方言**闸门，输出
+  `PARAM-CHECK: N files / N levels / N scenes / 0 new / N known / N warnings`。
+  这批 `data/param_master*.json` / `data/*_param_auto.json` **不以 `_levels.json` 结尾**，
+  上面两个闸门的扫描口径都不覆盖它们——字段写成引擎不认识的样子时**不会有任何红灯**，
+  接进关卡才是静默坏给学生看（视野中断 / 曲线全画成正弦波 / 读数恒为 0 / 门控永远不过）。
+  存量 155 条记在 `tools/param_master_baseline.txt`，**改一条删一行**；删干净才谈接入。
+  白名单（曲线类型 / 表达式函数）由 `_self_check()` 回读 `LabPlane` 源码核对，防口径漂移。
 - 以上检查已接入 CI（`.github/workflows/check.yml`，push/PR 自动跑）：五件套 + UiSmoke + check_assets +
-  check_questions + check_knowledge + check_content_health + LevelPreview 自检（`-- --smoke`）+ scaffold dry-run。
+  check_questions + check_knowledge + check_content_health + check_param_masters +
+  LevelPreview 自检（`-- --smoke`）+ scaffold dry-run。
 
 ## 关卡作者工具链（G2）
 

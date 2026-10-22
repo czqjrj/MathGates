@@ -1,0 +1,157 @@
+# B1 参数母版脚手架 → 引擎方言兼容基线（TODO B1）：每行一条已知问题签名，修完请删行。
+# 生成：godot --headless --path . --script res://tools/check_param_masters.gd -- --write-baseline
+function_lab_levels_param.json|param_master#1|E_CURVE_FN|fn="cubic" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+function_lab_levels_param.json|param_master#1|E_RANGE_ARRAY|scene.range 是数组 [-3.0, 5.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+function_lab_levels_param.json|param_master#1|E_READOUT_FUNC|expr="calc_max(f,a,b)" 用了函数 calc_max()，引擎只有 ["sqrt", "abs", "sin", "cos", "tan"]
+function_lab_levels_param.json|param_master#1|E_READOUT_FUNC|expr="calc_min(f,a,b)" 用了函数 calc_min()，引擎只有 ["sqrt", "abs", "sin", "cos", "tan"]
+function_lab_levels_param.json|param_master#1|E_READOUT_FUNC|expr="count_roots(a,b)" 用了函数 count_roots()，引擎只有 ["sqrt", "abs", "sin", "cos", "tan"]
+function_lab_levels_param.json|param_master#2|E_CURVE_FN|fn="cubic_simple" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+function_lab_levels_param.json|param_master#2|E_RANGE_ARRAY|scene.range 是数组 [-3.0, 3.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+function_lab_param_master.json|param_master#1|E_CURVE_FN|fn="cubic_factorized" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+function_lab_param_master.json|param_master#1|E_RANGE_ARRAY|scene.range 是数组 [-1.0, 3.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+function_lab_param_master.json|param_master#1|E_READOUT_CMP|expr="abs(a-1)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+function_lab_param_master.json|param_master#1|E_READOUT_CMP|expr="abs(b-2)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+function_lab_param_master.json|param_master#2|E_CURVE_FN|fn="cubic_simple" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+function_lab_param_master.json|param_master#2|E_CURVE_FN|fn="deriv" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+function_lab_param_master.json|param_master#2|E_RANGE_ARRAY|scene.range 是数组 [-2.0, 2.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+function_lab_param_master.json|param_master#2|E_READOUT_CMP|expr="k>=0" 含比较运算 → 解析器回退兜底值，读数恒为 0
+function_lab_param_master.json|param_master#3|E_CURVE_FN|fn="quadratic" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+function_lab_param_master.json|param_master#3|E_RANGE_ARRAY|scene.range 是数组 [-1.0, 5.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+function_lab_param_master.json|param_master#3|E_READOUT_CMP|expr="abs(a/2-2)<0.2" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#10|E_CURVE_FN|fn="line" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_all.json|param_master_all#10|E_RANGE_ARRAY|scene.range 是数组 [-3.0, 5.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_all.json|param_master_all#10|E_READOUT_CMP|expr="abs(k-2)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#10|E_READOUT_FUNC|expr="atan(k)*180/pi" 用了函数 atan()，引擎只有 ["sqrt", "abs", "sin", "cos", "tan"]
+param_master_all.json|param_master_all#11|E_CURVE_FN|fn="circle_current" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_all.json|param_master_all#11|E_CURVE_FN|fn="circle_target" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_all.json|param_master_all#11|E_RANGE_ARRAY|scene.range 是数组 [-2.0, 6.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_all.json|param_master_all#11|E_READOUT_CMP|expr="abs(r-3)<0.2" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#12|E_CURVE_FN|fn="ellipse_e" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_all.json|param_master_all#12|E_RANGE_ARRAY|scene.range 是数组 [-4.0, 4.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_all.json|param_master_all#12|E_READOUT_CMP|expr="abs(e-0.6)<0.05" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#13|E_RANGE_ARRAY|scene.range 是数组 [1.0, 10.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_all.json|param_master_all#13|E_READOUT_CMP|expr="abs(1+4*d-9)<0.1" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#14|E_RANGE_ARRAY|scene.range 是数组 [1.0, 6.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_all.json|param_master_all#14|E_READOUT_CMP|expr="abs(2*pow(q,3)-16)<0.1" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#14|E_READOUT_FUNC|expr="2*pow(q,3)" 用了函数 pow()，引擎只有 ["sqrt", "abs", "sin", "cos", "tan"]
+param_master_all.json|param_master_all#14|E_READOUT_FUNC|expr="abs(2*pow(q,3)-16)<0.1" 用了函数 pow()，引擎只有 ["sqrt", "abs", "sin", "cos", "tan"]
+param_master_all.json|param_master_all#15|E_RANGE_ARRAY|scene.range 是数组 [1.0, 10.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_all.json|param_master_all#15|E_READOUT_CMP|expr="abs(1+4*d-9)<0.1" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#16|E_RANGE_ARRAY|scene.range 是数组 [1.0, 6.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_all.json|param_master_all#16|E_READOUT_CMP|expr="abs(2*pow(q,3)-16)<0.1" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#16|E_READOUT_FUNC|expr="2*pow(q,3)" 用了函数 pow()，引擎只有 ["sqrt", "abs", "sin", "cos", "tan"]
+param_master_all.json|param_master_all#16|E_READOUT_FUNC|expr="abs(2*pow(q,3)-16)<0.1" 用了函数 pow()，引擎只有 ["sqrt", "abs", "sin", "cos", "tan"]
+param_master_all.json|param_master_all#17|E_RANGE_ARRAY|scene.range 是数组 [0.0, 10.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_all.json|param_master_all#17|E_READOUT_CMP|expr="abs(10*p-6)<0.1" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#18|E_RANGE_ARRAY|scene.range 是数组 [0.0, 10.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_all.json|param_master_all#18|E_READOUT_CMP|expr="abs(10*p-6)<0.1" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#1|E_CURVE_FN|fn="cubic_factorized" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_all.json|param_master_all#1|E_RANGE_ARRAY|scene.range 是数组 [-1.0, 3.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_all.json|param_master_all#1|E_READOUT_CMP|expr="abs(a-1)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#1|E_READOUT_CMP|expr="abs(b-2)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#2|E_CURVE_FN|fn="cubic_simple" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_all.json|param_master_all#2|E_CURVE_FN|fn="deriv" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_all.json|param_master_all#2|E_RANGE_ARRAY|scene.range 是数组 [-2.0, 2.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_all.json|param_master_all#2|E_READOUT_CMP|expr="k>=0" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#3|E_CURVE_FN|fn="cubic_factorized" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_all.json|param_master_all#3|E_RANGE_ARRAY|scene.range 是数组 [-1.0, 4.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_all.json|param_master_all#3|E_READOUT_CMP|expr="abs(a-2)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#3|E_READOUT_CMP|expr="abs(b-3)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#4|E_CURVE_FN|fn="cubic_simple" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_all.json|param_master_all#4|E_CURVE_FN|fn="deriv" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_all.json|param_master_all#4|E_RANGE_ARRAY|scene.range 是数组 [-2.0, 2.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_all.json|param_master_all#4|E_READOUT_CMP|expr="k>=0" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#5|E_CURVE_FN|fn="cubic_factorized" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_all.json|param_master_all#5|E_RANGE_ARRAY|scene.range 是数组 [-1.0, 3.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_all.json|param_master_all#5|E_READOUT_CMP|expr="abs(a--1)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#5|E_READOUT_CMP|expr="abs(b-2)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#6|E_CURVE_FN|fn="cubic_simple" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_all.json|param_master_all#6|E_CURVE_FN|fn="deriv" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_all.json|param_master_all#6|E_RANGE_ARRAY|scene.range 是数组 [-2.0, 2.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_all.json|param_master_all#6|E_READOUT_CMP|expr="k>=0" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#7|E_CURVE_FN|fn="line" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_all.json|param_master_all#7|E_RANGE_ARRAY|scene.range 是数组 [-3.0, 5.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_all.json|param_master_all#7|E_READOUT_CMP|expr="abs(k-2)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#7|E_READOUT_FUNC|expr="atan(k)*180/pi" 用了函数 atan()，引擎只有 ["sqrt", "abs", "sin", "cos", "tan"]
+param_master_all.json|param_master_all#8|E_CURVE_FN|fn="circle_current" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_all.json|param_master_all#8|E_CURVE_FN|fn="circle_target" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_all.json|param_master_all#8|E_RANGE_ARRAY|scene.range 是数组 [-2.0, 6.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_all.json|param_master_all#8|E_READOUT_CMP|expr="abs(r-3)<0.2" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_all.json|param_master_all#9|E_CURVE_FN|fn="ellipse_e" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_all.json|param_master_all#9|E_RANGE_ARRAY|scene.range 是数组 [-4.0, 4.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_all.json|param_master_all#9|E_READOUT_CMP|expr="abs(e-0.6)<0.05" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_demos.json|param_master_demos#1|E_CURVE_FN|fn="cubic_factorized" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_demos.json|param_master_demos#1|E_RANGE_ARRAY|scene.range 是数组 [-1.0, 3.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_demos.json|param_master_demos#1|E_READOUT_CMP|expr="abs(a-1)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_demos.json|param_master_demos#1|E_READOUT_CMP|expr="abs(b-2)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_demos.json|param_master_demos#2|E_CURVE_FN|fn="cubic_simple" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_demos.json|param_master_demos#2|E_CURVE_FN|fn="deriv" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_demos.json|param_master_demos#2|E_RANGE_ARRAY|scene.range 是数组 [-2.0, 2.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_demos.json|param_master_demos#2|E_READOUT_CMP|expr="k>=0" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_demos.json|param_master_demos#3|E_CURVE_FN|fn="cubic_factorized" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_demos.json|param_master_demos#3|E_RANGE_ARRAY|scene.range 是数组 [-1.0, 4.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_demos.json|param_master_demos#3|E_READOUT_CMP|expr="abs(a-2)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_demos.json|param_master_demos#3|E_READOUT_CMP|expr="abs(b-3)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_function.json|param_master_function#1|E_CURVE_FN|fn="cubic_factorized" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_function.json|param_master_function#1|E_RANGE_ARRAY|scene.range 是数组 [-1.0, 3.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_function.json|param_master_function#1|E_READOUT_CMP|expr="abs(a-1)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_function.json|param_master_function#1|E_READOUT_CMP|expr="abs(b-2)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_function.json|param_master_function#2|E_CURVE_FN|fn="cubic_simple" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_function.json|param_master_function#2|E_CURVE_FN|fn="deriv" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_function.json|param_master_function#2|E_RANGE_ARRAY|scene.range 是数组 [-2.0, 2.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_function.json|param_master_function#2|E_READOUT_CMP|expr="k>=0" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_function.json|param_master_function#3|E_CURVE_FN|fn="cubic_factorized" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_function.json|param_master_function#3|E_RANGE_ARRAY|scene.range 是数组 [-1.0, 4.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_function.json|param_master_function#3|E_READOUT_CMP|expr="abs(a-2)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_function.json|param_master_function#3|E_READOUT_CMP|expr="abs(b-3)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_function.json|param_master_function#4|E_CURVE_FN|fn="cubic_simple" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_function.json|param_master_function#4|E_CURVE_FN|fn="deriv" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_function.json|param_master_function#4|E_RANGE_ARRAY|scene.range 是数组 [-2.0, 2.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_function.json|param_master_function#4|E_READOUT_CMP|expr="k>=0" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_function.json|param_master_function#5|E_CURVE_FN|fn="cubic_factorized" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_function.json|param_master_function#5|E_RANGE_ARRAY|scene.range 是数组 [-1.0, 3.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_function.json|param_master_function#5|E_READOUT_CMP|expr="abs(a--1)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_function.json|param_master_function#5|E_READOUT_CMP|expr="abs(b-2)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_function.json|param_master_function#6|E_CURVE_FN|fn="cubic_simple" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_function.json|param_master_function#6|E_CURVE_FN|fn="deriv" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_function.json|param_master_function#6|E_RANGE_ARRAY|scene.range 是数组 [-2.0, 2.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_function.json|param_master_function#6|E_READOUT_CMP|expr="k>=0" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_geometry.json|param_master_geometry#1|E_CURVE_FN|fn="line" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_geometry.json|param_master_geometry#1|E_RANGE_ARRAY|scene.range 是数组 [-3.0, 5.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_geometry.json|param_master_geometry#1|E_READOUT_CMP|expr="abs(k-2)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_geometry.json|param_master_geometry#1|E_READOUT_FUNC|expr="atan(k)*180/pi" 用了函数 atan()，引擎只有 ["sqrt", "abs", "sin", "cos", "tan"]
+param_master_geometry.json|param_master_geometry#2|E_CURVE_FN|fn="circle_current" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_geometry.json|param_master_geometry#2|E_CURVE_FN|fn="circle_target" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_geometry.json|param_master_geometry#2|E_RANGE_ARRAY|scene.range 是数组 [-2.0, 6.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_geometry.json|param_master_geometry#2|E_READOUT_CMP|expr="abs(r-3)<0.2" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_geometry.json|param_master_geometry#3|E_CURVE_FN|fn="ellipse_e" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_geometry.json|param_master_geometry#3|E_RANGE_ARRAY|scene.range 是数组 [-4.0, 4.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_geometry.json|param_master_geometry#3|E_READOUT_CMP|expr="abs(e-0.6)<0.05" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_geometry.json|param_master_geometry#4|E_CURVE_FN|fn="line" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_geometry.json|param_master_geometry#4|E_RANGE_ARRAY|scene.range 是数组 [-3.0, 5.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_geometry.json|param_master_geometry#4|E_READOUT_CMP|expr="abs(k-2)<0.15" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_geometry.json|param_master_geometry#4|E_READOUT_FUNC|expr="atan(k)*180/pi" 用了函数 atan()，引擎只有 ["sqrt", "abs", "sin", "cos", "tan"]
+param_master_geometry.json|param_master_geometry#5|E_CURVE_FN|fn="circle_current" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_geometry.json|param_master_geometry#5|E_CURVE_FN|fn="circle_target" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_geometry.json|param_master_geometry#5|E_RANGE_ARRAY|scene.range 是数组 [-2.0, 6.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_geometry.json|param_master_geometry#5|E_READOUT_CMP|expr="abs(r-3)<0.2" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_geometry.json|param_master_geometry#6|E_CURVE_FN|fn="ellipse_e" 引擎不认识 → _f_y() 落回默认分支画成正弦波
+param_master_geometry.json|param_master_geometry#6|E_RANGE_ARRAY|scene.range 是数组 [-4.0, 4.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_geometry.json|param_master_geometry#6|E_READOUT_CMP|expr="abs(e-0.6)<0.05" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_probability.json|param_master_probability#1|E_RANGE_ARRAY|scene.range 是数组 [0.0, 10.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_probability.json|param_master_probability#1|E_READOUT_CMP|expr="abs(10*p-6)<0.1" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_probability.json|param_master_probability#2|E_RANGE_ARRAY|scene.range 是数组 [0.0, 10.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_probability.json|param_master_probability#2|E_READOUT_CMP|expr="abs(10*p-6)<0.1" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_sequence.json|param_master_sequence#1|E_RANGE_ARRAY|scene.range 是数组 [1.0, 10.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_sequence.json|param_master_sequence#1|E_READOUT_CMP|expr="abs(1+4*d-9)<0.1" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_sequence.json|param_master_sequence#2|E_RANGE_ARRAY|scene.range 是数组 [1.0, 6.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_sequence.json|param_master_sequence#2|E_READOUT_CMP|expr="abs(2*pow(q,3)-16)<0.1" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_sequence.json|param_master_sequence#2|E_READOUT_FUNC|expr="2*pow(q,3)" 用了函数 pow()，引擎只有 ["sqrt", "abs", "sin", "cos", "tan"]
+param_master_sequence.json|param_master_sequence#2|E_READOUT_FUNC|expr="abs(2*pow(q,3)-16)<0.1" 用了函数 pow()，引擎只有 ["sqrt", "abs", "sin", "cos", "tan"]
+param_master_sequence.json|param_master_sequence#3|E_RANGE_ARRAY|scene.range 是数组 [1.0, 10.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_sequence.json|param_master_sequence#3|E_READOUT_CMP|expr="abs(1+4*d-9)<0.1" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_sequence.json|param_master_sequence#4|E_RANGE_ARRAY|scene.range 是数组 [1.0, 6.0] → float(Array) 运行时报错，须改写为 x/y 或标量 range
+param_master_sequence.json|param_master_sequence#4|E_READOUT_CMP|expr="abs(2*pow(q,3)-16)<0.1" 含比较运算 → 解析器回退兜底值，读数恒为 0
+param_master_sequence.json|param_master_sequence#4|E_READOUT_FUNC|expr="2*pow(q,3)" 用了函数 pow()，引擎只有 ["sqrt", "abs", "sin", "cos", "tan"]
+param_master_sequence.json|param_master_sequence#4|E_READOUT_FUNC|expr="abs(2*pow(q,3)-16)<0.1" 用了函数 pow()，引擎只有 ["sqrt", "abs", "sin", "cos", "tan"]
+solid_basic_param_auto.json|param_auto_solid_kinds#1|E_RANGE_MISSING|scene 无 x/y/range，视野用引擎默认值
