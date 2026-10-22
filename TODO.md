@@ -29,7 +29,7 @@
 | **C1** | 重复通关无限刷经验/金币 | **P0** | ✅ 已完成（经验仅星升；重复奖励×0.3/日封顶） |
 | **C2** | 星级只升不降 + 免费重试 + 四选一 → 进度可刷 | **P0** | ✅ 已完成（当日第 3 次起星级上限 2） |
 | **A5** | 关卡 JSON 校验器（schema + 编校） | **P0** | ✅ 已完成（`check_questions.gd` + 基线） |
-| **A10** | 公式来源单一化：新数据直接写 LaTeX | **P1** | 🟡 已支持 `$$…$$` 直写 LaTeX（`InlineMath` + 校验器已适配）；旧 `{f:}` 兼容，待存量迁移 |
+| **A10** | 公式来源单一化：新数据直接写 LaTeX | **P1** | ✅ 已完成（2026-10-22 第三十七轮 `4277788`：存量 `{f:}` 全量迁移到 `$$LaTeX$$`，`FORMULA_LATEX`/`FORMULA_SPEECH` 命名表清空 + 8 个孤儿 PNG 出库；新增自检「引用未声明 `{f:}` → 报错、孤儿命名 → 看板」） |
 | **A2** | 遗留模块（`SolidChallenge` / `ConicStage`+C1~C3）定策略 | **P1** | ✅ 已完成（2026-10-21 第二十三轮 `43a11f9` **收编路线**：README 标官方场景 + 文件名↔章节对照表 + `_test_legacy_binding` 13 断言 + UiSmoke 数据载入断言 + 文件头状态标注；迁移到 LabStage 列为长期项） |
 | **A3** | `Battle.gd` 死代码处理 | **P1** | ✅ 已完成（2026-10-20 与 A12 合并清理：删除 `Battle.gd` 688 行 + `Battle.tscn`；缺 scene 兜底改为报错/跳回主界面） |
 | **A6** | CI（headless 四件套自动化） | **P1** | ✅ 已完成（`.github/workflows/check.yml`） |
@@ -133,11 +133,25 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`3bd4f59`（`feat(A19)` 切用户会话态复位）；前一提交链：
-  `f466402`（docs 第三十五轮）→ `12df3c2`（feat A18）→ `6abe822`（docs ASSETS 口径）→
-  `3029ee8`（docs 第三十四轮）→ `0d5cde4`（feat G3）→ `8fdc5f0`（feat G1）→…，
-  已 push（`main` 与 `origin/main` 同步）。
-- **本轮交付（2026-10-22，第三十六轮）**：**A19 切用户会话态复位**（`3bd4f59`）。
+- **最后提交**：`4277788`（`feat(A10)` 公式来源单一化收官——存量 `{f:}` 迁移 + 命名表清空）；
+  前一提交链：`7febeb7`（docs 第三十六轮）→ `3bd4f59`（feat A19）→ `f466402`（docs 第三十五轮）→
+  `12df3c2`（feat A18）→ …，已 push（`main` 与 `origin/main` 同步）。
+- **本轮交付（2026-10-22，第三十七轮）**：**A10 公式来源单一化收官**（`4277788`）。
+  - **存量迁移**：`function_lab_levels.json` 最后 18 处 `{f:名称}` → `$$LaTeX$$`；全库 `data/*.json`
+    现在 **0 处 `{f:}`**。
+  - **命名表清空**：`FORMULA_LATEX`/`FORMULA_SPEECH` 25 条映射全为孤儿（无任何引用），删除；
+    连带 8 个孤儿 `l6_*.png`（+`.import`）出库。
+  - **新增自检** `check_questions._check_named_formulas()`：数据引用未声明的 `{f:}` ⇒ **报错**；
+    已声明但无人引用 ⇒ 看板（迁移后 0）。
+  - 测试：`_test_inline_math` 改断言「命名表为空」+ `{f:}` 不崩；`_test_speech_rules` 增 3 断言
+    覆盖可注入的 `formula_speech`。
+  - 十项全绿：`CHECKED 108` / `TESTS 2012`（+4）/ `SMOKE 286` / `UI-SMOKE 416` / `LabSmoke TMP_OK` /
+    `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new（7 known）` / `KNOWLEDGE hard-gaps=0` /
+    `CONTENT-HEALTH 0 problems` / `ASSETS 30.23 MB（3121 files，banned=0）`。
+  - **A10 转 ✅**；README「公式写法(A10)」更新为「存量迁移已完成」。
+  - **下一项建议**：**F5 存档版本化与导出/导入**（纯逻辑可自动化）；或回到内容侧
+    **B1/B2/B6**（结构线已基本清空）；或人工三件套 **A13/F7/F2**。
+- **上一轮（第三十六轮）**：**A19 切用户会话态复位**（`3bd4f59`）。
   - 新增 `GameData._reset_session()`：集中重置不存档的会话态
     （`pet_greeted_session` / `pet_away_days` / `review_focus` / `_save_pending`），
     在 `login` / `logout` / `create_user` / `delete_user` 之后调用。
@@ -148,13 +162,8 @@
     单测含反向断言守住。
   - **约定落地**：`GameData` 顶部新增「会话态登记」注释块，不存档变量行尾标 `·登记`，
     要求新增此类变量必须同步登记进 `_reset_session()`（靠机制兜，不靠记性）。
-  - 测试：`Tests._test_session_reset`（8 断言：A→B 切换 / `login` 切换 / `logout` / 反向不破坏导航）。
-  - 十项全绿：`CHECKED 108` / `TESTS 2008`（+8）/ `SMOKE 286` / `UI-SMOKE 416` /
-    `LabSmoke TMP_OK` / `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new（7 known）` /
-    `KNOWLEDGE hard-gaps=0` / `CONTENT-HEALTH 27 chapters / 0 problems` / `ASSETS 30.28 banned=0`。
-  - **A19 转 ✅**；`GameData.gd` 1558 → **1570/1600**（余 30，仍守 A4 红线）。
-  - **下一项建议**：**A10 存量迁移**（剩余 `{f:}` 全在 `function_lab_levels.json`，脚本化可做）；
-    或 **F5 存档版本化与导出/导入**；或回到内容侧 **B1/B2/B6**（结构线已基本清空）。
+  - 测试：`Tests._test_session_reset`（8 断言）；十项全绿（`CHECKED 108` / `TESTS 2008` / …）；
+    `GameData.gd` 1558 → **1570/1600**（余 30，仍守 A4 红线）。
 - **上一轮（第三十五轮）**：**A18 内容数据体检 / 用户可见兜底**（`12df3c2`）。
   - **体检规则**：`rules/ContentHealth.gd`（122 行，纯规则：不读文件、不碰 autoload，
     入参 = 章节数组 + 已知场景集合 + 内容组键表）。七种问题码
@@ -537,8 +546,8 @@
 - **下次建议顺序**（按性价比）：
   > **2026-10-20 用户决策：暂停题目扩产，先做结构收敛。** B2 下限已全线达成（27/27 章 ≥ 5.0 题/关），
   > B1（21.4% → ≥30%）与 B2「上探 6~7 题/关中段」均为**纯内容批量生产**，可随时回归；当前转向 A/D/F 类结构问题。
-  1. **G1/G3/A18/A19 已完成**（第三十三/三十四/三十五/三十六轮）→ 接下来优先 **A10 存量迁移**
-     （剩余 `{f:}` 全在 `function_lab_levels.json`，可脚本化）；若先做内容侧，则
+  1. **G1/G3/A18/A19/A10 已完成**（第三十三/三十四/三十五/三十六/三十七轮）→ 结构线基本清空，
+     接下来优先 **F5 存档版本化与进度迁移**（纯逻辑、可自动化）；若先做内容侧，则
      **A13 字体替换 + F7 素材签字 + F2 keystore/真机**（需人工决策/下载/目视）。
   2. 决策项待拍板：**G4/G5**；**A17 是否真重命名**（低优先）；**A2 迁移到 LabStage**（长期项）。
   3. 内容项回归：**B1 达标**（21.4% → ≥30%）、**B2 中段**（6~7 题/关）、**B6 理由选项占比**，
@@ -824,7 +833,26 @@
 
 ---
 
-### [ ] A10 · 公式来源单一化（P1）
+### [x] A10 · 公式来源单一化（P1）✅ 已完成（2026-10-22 第三十七轮 `4277788`）
+
+**完成记录（2026-10-22 第三十七轮，`4277788`）**
+- **存量迁移**：`data/function_lab_levels.json` 最后 **18 处 `{f:名称}`** 全量转为 `$$LaTeX$$`
+  （对照 `InlineMath.FORMULA_LATEX` 逐条映射，JSON 合法性与全库扫描双验证）——
+  全库 `data/*.json` 现在 **0 处 `{f:}`**。
+- **命名表清空**：`FORMULA_LATEX` / `FORMULA_SPEECH` 的 **25 条映射全为孤儿**
+  （`l6_*` 8 + `pw_*`/`opt_pw_*`/`av_*` 17，无任何数据/代码引用），删除；
+  连带把 `art/line/formulas/` 里 8 个孤儿 `l6_*.png`（+`.import`）出库（资产文件数净减 16）。
+- **机制兜底（本条的真正价值）**：新增 `check_questions._check_named_formulas()`——
+  ① 数据里**引用未声明的 `{f:}`** ⇒ **直接报错**（根治旧症状：运行时静默变「公式」、题目不可答）；
+  ② **已声明但无人引用**的命名 ⇒ 看板列出（迁移后为 **0**，防止未来真实孤儿被死条目掩盖）。
+- **测试**：`_test_inline_math` 改为断言「迁移后 `FORMULA_LATEX` 为空」+ `{f:}` 机制不崩；
+  `_test_speech_rules` 增 3 断言覆盖可注入的 `formula_speech`（命中 / LaTeX 回退 / 全缺失回退「公式」）。
+- 全量十项绿：`CHECKED 108` / `TESTS 2012`（+4）/ `SMOKE 286` / `UI-SMOKE 416` / `LabSmoke TMP_OK` /
+  `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new` / `KNOWLEDGE hard-gaps=0` / `CONTENT-HEALTH 0 problems` /
+  `ASSETS 30.23 MB（3121 files，banned=0）`。
+- **注意**：`data/inline_math.json`（824 条 Unicode 片段映射）**未动**——仍作历史兼容层；
+  正文里的 Unicode 数学片段（`²`/`≤`/`α`）由 `SpeechRules.unicode_speech` 兜住口播，但**显示**仍依赖该表，
+  存量清理留作后续（`check_inline` 报告 261 个未覆盖片段，属 B7/A10 长期尾巴）。
 
 **现状（证据）**
 - `data/inline_math.json` **14186 行 / 824 条映射**，是「数学片段 → 图片/LaTeX」的唯一查表来源，
@@ -838,8 +866,8 @@
 - 由 A5 的校验器第 5 条兜底「新增片段必须已映射」。
 
 **验收**
-- `README.md` 的「改内容」小节有明确写法示例（LaTeX 优先）；
-- 新增关卡不再依赖新映射条目。
+- ~~`README.md` 的「改内容」小节有明确写法示例（LaTeX 优先）~~ ✅ 已达成（「公式写法(A10)」段）；
+- ~~新增关卡不再依赖新映射条目~~ ✅ 已达成（命名表清空，未声明 `{f:}` 直接报错）。
 
 **已实施（记录，`$$…$$` 直写 LaTeX）**
 - `InlineMath.gd` 新增 `$$LaTeX$$` 支持：`inline_formulas` 先做 `_inline_dollar`（经 MicroTeX 渲染为内联图，
@@ -847,7 +875,9 @@
 - 校验器适配：`check_questions.gd`/`check_inline.gd` 扫描前**剥离 `$$…$$` 区段**（不再触发「未覆盖」）。
 - 回归测试：`Tests.gd` 新增 `_test_inline_math()`（7 条断言：`$$` 去除、口播、分式、渲染/回退、`{f:}` 兼容）。
 - README「改内容」增写法示例；E2 的 `inequalities` 4 关已全部改用 `$$…$$`（177 段，渲染 0 失败）。
-- **残留**：存量 228 关仍用 Unicode 数学片段 + `{f:}` 命名（`inline_math.json` 未动）；`A5` 第 5 条兜底保留。
+- ~~**残留**：存量 228 关仍用 Unicode 数学片段 + `{f:}` 命名（`inline_math.json` 未动）~~ ⇒
+  已收口：`{f:}` 命名全部迁移/清空（见上「完成记录」）；`inline_math.json` 仍作历史兼容层，
+  仅剩「正文 Unicode 片段」这条长期尾巴（显示层，非本题范围）。`A5` 第 5 条兜底保留。
 
 ---
 
