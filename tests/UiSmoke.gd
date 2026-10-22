@@ -63,6 +63,7 @@ func _ready() -> void:
 	await _test_srs_review_entry()
 	await _test_report_screen()
 	await _test_content_fallback()
+	await _test_guides()
 
 	print("UI-SMOKE: %d ok, %d fail" % [_pass, _fail])
 	GameData.logout()
@@ -433,6 +434,79 @@ func _test_content_fallback() -> void:
 	holder.queue_free()
 	await get_tree().process_frame
 	GameData.content_problems = saved
+
+## F6：首次引导——关卡页首进弹引导气泡、地图页有「? 图例」、设置页有「重置引导」。
+func _test_guides() -> void:
+	var saved_seen := Settings.seen_guides
+	# 清空「已看过」，让引导处于「该显示」状态
+	Settings.seen_guides = {}
+
+	# ① 关卡页：首进应弹出引导遮罩 + 舞台动作条有「? 帮助」
+	var picks := _pick("res://scenes/LabStage.tscn", 1)
+	if not picks.is_empty() and GameData.start_level(picks[0][0], picks[0][1]):
+		var st = load("res://scenes/LabStage.tscn").instantiate()
+		add_child(st)
+		await get_tree().process_frame
+		await get_tree().process_frame
+		var btns := []
+		var labels := ""
+		var dims := 0
+		for n in _walk(st):
+			if n is Button:
+				btns.append(str((n as Button).text))
+			elif n is Label:
+				labels += (n as Label).text + "\n"
+			elif n is ColorRect:
+				dims += 1
+		_ok(dims > 0, "guide ui: 关卡页弹出了引导遮罩")
+		_ok(labels.find("先动手调一调") >= 0, "guide ui: 引导首步文案可见")
+		var has_help := false
+		for b in btns:
+			if b.find("? 帮助") >= 0:
+				has_help = true
+		_ok(has_help, "guide ui: 动作条有「? 帮助」")
+		st.queue_free()
+		await get_tree().process_frame
+
+	# ② 地图页：顶栏有「? 图例」按钮（可能同时自动弹出图例卡）
+	var tree = load("res://scenes/TheoremTree.tscn").instantiate()
+	add_child(tree)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var tbtns := []
+	var tlabels := ""
+	for n in _walk(tree):
+		if n is Button:
+			tbtns.append(str((n as Button).text))
+		elif n is Label:
+			tlabels += (n as Label).text + "\n"
+	var has_legend_btn := false
+	for b in tbtns:
+		if b.find("图例") >= 0:
+			has_legend_btn = true
+	_ok(has_legend_btn, "guide ui: 地图页有「? 图例」按钮")
+	_ok(tlabels.find("Boss 门") >= 0, "guide ui: 首进自动弹出图例卡")
+	tree.queue_free()
+	await get_tree().process_frame
+
+	# ③ 设置页：有「重置引导」按钮
+	var sm = load("res://scenes/Settings.tscn").instantiate()
+	add_child(sm)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var sbtns := []
+	for n in _walk(sm):
+		if n is Button:
+			sbtns.append(str((n as Button).text))
+	var has_reset := false
+	for b in sbtns:
+		if b.find("重置引导") >= 0:
+			has_reset = true
+	_ok(has_reset, "guide ui: 设置页有「重置引导」按钮")
+	sm.queue_free()
+	await get_tree().process_frame
+
+	Settings.seen_guides = saved_seen
 
 # ---------------------------------------------------------------- 工具
 

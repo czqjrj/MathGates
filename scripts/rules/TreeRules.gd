@@ -140,3 +140,15 @@ static func catmull_rom(pts: PackedVector2Array, per_seg: int) -> PackedVector2A
 			out.append(p)
 	out.append(pts[pts.size() - 1])
 	return out
+
+## 奖励文案(纯)：把 {coins, hint_tokens, coin_boost} 拼成「金币 +50 · 提示卡 +1」；
+## 全为 0 或空时返回「—」。宝箱与随机事件共用同一来源。
+static func reward_text(reward: Dictionary) -> String:
+	var parts: Array = []
+	if int(reward.get("coins", 0)) > 0:
+		parts.append("金币 +%d" % int(reward.get("coins", 0)))
+	if int(reward.get("hint_tokens", 0)) > 0:
+		parts.append("提示卡 +%d" % int(reward.get("hint_tokens", 0)))
+	if int(reward.get("coin_boost", 0)) > 0:
+		parts.append("金币加成 +%d" % int(reward.get("coin_boost", 0)))
+	return " · ".join(parts) if not parts.is_empty() else "—"

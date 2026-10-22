@@ -68,6 +68,8 @@ func _build_body() -> void:
 	vb.add_child(_divider())
 	vb.add_child(_toggle_row("编辑模式（全解锁）", "无需通关也可选择任意关卡（测试/编辑用）", Settings.editor_mode, Settings.set_editor_mode))
 	vb.add_child(_divider())
+	vb.add_child(_guide_row())
+	vb.add_child(_divider())
 	vb.add_child(UI.make_label("提示：调整字号后会自动重建当前页面以应用新的整体布局。", 13, UI.COL_TEXT_DIM))
 
 	var pad := Control.new()
@@ -329,6 +331,28 @@ func _toggle_row(title: String, sub: String, value: bool, on_change: Callable) -
 	)
 	row.add_child(btn)
 	return row
+
+## F6：引导重置——清掉「已看过」记录，下次进入关卡/地图会重新弹出一次性引导。
+func _guide_row() -> Control:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 12)
+	var col := VBoxContainer.new()
+	col.add_theme_constant_override("separation", 2)
+	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	col.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(col)
+	col.add_child(UI.make_label("新手引导", 18, UI.COL_TEXT))
+	col.add_child(UI.make_label("重置后，再次进入关卡/地图会重新展示一次性的机制说明", 13, UI.COL_TEXT_DIM))
+	var btn := UI.ghost_button("重置引导", _on_reset_guides, 17)
+	btn.custom_minimum_size = Vector2(132, 46)
+	btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(btn)
+	return row
+
+func _on_reset_guides() -> void:
+	Sound.play("select")
+	Settings.reset_guides()
+	Toast.show_toast("引导已重置，下次进入关卡/地图会重新展示")
 
 func _go_back() -> void:
 	Sound.play("select")

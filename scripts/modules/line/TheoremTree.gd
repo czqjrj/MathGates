@@ -662,6 +662,15 @@ func _ready() -> void:
 	Pet.spawn(self, "沿地图路径逐点点亮知识点吧！")
 	GameData.progress_changed.connect(_on_progress)
 	set_process(true)
+	_maybe_first_legend()
+
+## F6：首次进入地图页弹一次图例；看过即不再自动弹。`? 图例` 按钮可随时回看。
+func _maybe_first_legend() -> void:
+	if not Settings.guide_needed(GuideRules.ID_MAP_LEGEND):
+		return
+	GuideOverlay.legend(self, func() -> void:
+		Settings.mark_guide_seen(GuideRules.ID_MAP_LEGEND)
+	)
 
 func _on_progress() -> void:
 	_refresh_star()
@@ -859,6 +868,9 @@ func _build_topbar() -> void:
 	var sp := Control.new()
 	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hb.add_child(sp)
+	# F6：图例随时可回看（首次进入会自动弹出一次）
+	hb.add_child(UI.ghost_button("? 图例", func() -> void: GuideOverlay.legend(self, Callable()), 15))
+	hb.add_child(UI.hairline(Vector2(1, 18)))
 	_star_lbl = UI.mono_label("", 17, UI.COL_ACCENT)
 	hb.add_child(_star_lbl)
 	_refresh_star()
@@ -1433,14 +1445,7 @@ func _progress(have: int, need: int, col: Color) -> Control:
 	return wrap
 
 func _reward_text(reward: Dictionary) -> String:
-	var parts: Array = []
-	if int(reward.get("coins", 0)) > 0:
-		parts.append("金币 +%d" % int(reward.get("coins", 0)))
-	if int(reward.get("hint_tokens", 0)) > 0:
-		parts.append("提示卡 +%d" % int(reward.get("hint_tokens", 0)))
-	if int(reward.get("coin_boost", 0)) > 0:
-		parts.append("金币加成 +%d" % int(reward.get("coin_boost", 0)))
-	return " · ".join(parts) if not parts.is_empty() else "—"
+	return TreeRules.reward_text(reward)
 
 func _gate_section(need: int) -> Control:
 	var have := _region_stars()

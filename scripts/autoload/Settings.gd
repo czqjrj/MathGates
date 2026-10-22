@@ -27,6 +27,7 @@ const DEFAULTS := {
 	"textbook": "sujiao",
 	"editor_mode": false,
 	"challenge_timer": true,
+	"seen_guides": {},
 }
 
 var font_scale: float = 1.4
@@ -49,6 +50,9 @@ var textbook: String = "sujiao"
 var editor_mode: bool = false
 ## 关卡计时：关闭后，带时限的关卡不再计时(不显示计时、无超时/极速奖励)。
 var challenge_timer: bool = true
+## F6：已看过的引导 id(见 rules/GuideRules.gd)。设备级 UI 偏好，不进学生存档。
+## 结构：{ "first_level": true, "map_legend": true }。
+var seen_guides: Dictionary = {}
 
 func _ready() -> void:
 	load_settings()
@@ -75,6 +79,8 @@ func load_settings() -> void:
 	textbook = str(data.get("textbook", DEFAULTS["textbook"]))
 	editor_mode = bool(data.get("editor_mode", DEFAULTS["editor_mode"]))
 	challenge_timer = bool(data.get("challenge_timer", DEFAULTS["challenge_timer"]))
+	var sg = data.get("seen_guides", DEFAULTS["seen_guides"])
+	seen_guides = sg if typeof(sg) == TYPE_DICTIONARY else {}
 
 func save() -> void:
 	var f := FileAccess.open(PATH, FileAccess.WRITE)
@@ -198,6 +204,23 @@ func set_editor_mode(v: bool) -> void:
 
 func set_challenge_timer(v: bool) -> void:
 	challenge_timer = v
+	save()
+	changed.emit()
+
+# ---------------------------------------------------------------- F6 引导
+## 该引导是否还没看过（供界面决定是否弹出）。逻辑在 rules/GuideRules.gd。
+func guide_needed(id: String) -> bool:
+	return GuideRules.should_show(id, seen_guides)
+
+## 记下某条引导已看过并落盘。
+func mark_guide_seen(id: String) -> void:
+	seen_guides = GuideRules.mark_seen(seen_guides, id)
+	save()
+	changed.emit()
+
+## 重置全部引导（设置页「重置引导」），下次进入对应界面会重新弹出。
+func reset_guides() -> void:
+	seen_guides = GuideRules.reset(seen_guides)
 	save()
 	changed.emit()
 

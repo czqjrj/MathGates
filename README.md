@@ -18,7 +18,8 @@ scripts/         总控与共享逻辑(按职责分目录)
 				   TechBg.gd(科技背景)、Tts.gd(语音朗读:TTS 子系统,UI.tts_* 为薄转发)、
 				   InlineMath.gd(内联公式:{f:名称} 与 data/inline_math.json,UI.inline*/strip_formulas 为薄转发)、
 				   TtsOnline.gd(在线语音)、
-				   ContentFallback.gd(A18 内容数据异常时的用户可见兜底:兜底卡/主城横幅/复制错误信息)
+				   ContentFallback.gd(A18 内容数据异常时的用户可见兜底:兜底卡/主城横幅/复制错误信息)、
+				   GuideOverlay.gd(F6 首次引导绘制:多步气泡 + 图例卡 + 帮助面板)
   save/            SaveIO.gd(存档原子读写:临时文件校验 + 备份 + 替换;F5 起还含用户存档读取
 				   [升版迁移 + 主档/备份/旧档三级兜底] 与带版本号写入;GameData 存档 IO 委托于此)、
 				   SaveMigrate.gd(F5 存档 schema 版本号 + 升版迁移钩子)、
@@ -39,8 +40,9 @@ scripts/         总控与共享逻辑(按职责分目录)
 				   承载立体几何初步(solid_basic)与空间向量与立体几何(space)
   rules/           纯规则层(A4 上帝对象拆分的落点:无全局状态、可单测,门面方法留在原文件):
 				   PlayerRules(称号/勋章/防刷)、EconomyRules(经济结算)、PetRules/MasteryRules、
-				   StageRules(结算/答题乱序/填空解析)、TreeRules(知识树分组/解锁)、
+				   StageRules(结算/答题乱序/填空解析)、StageText(结算文案:评级/三星提示)、TreeRules(知识树分组/解锁/奖励文案)、
 				   CurriculumRules(教材排序/章节合并)、
+				   GuideRules(F6 首次引导:步骤表/图例条目/显示判定/重置)、
 				   SrsRules/SrsStore(G1 错题间隔重复:阶梯/到期/毕业 + 排程存取)、
 				   UserStore(存档层:存档 dict ⇄ 运行时字段转换 + 脏档兜底)、
 				   ReportRules/ReportExport(G3 学习报告:日历日/活动日志/汇总/家长视图 + 文本·CSV·JSON 导出)、
@@ -257,6 +259,32 @@ build/           导出产物(APK,git 忽略)
 覆盖：`Tests._test_save_migrate`（旧档→0 版本、幂等、高版本降级标记、不就地改入参）+ `Tests._test_progress_code`
 （encode/decode 往返、摘要不含题号与用户名、折行容忍、六类坏码一律拒绝、命名去重、`GameData` 导出→导入完整恢复）。
 **未覆盖（人工验收）**：真机两台设备间导出→导入的端到端目视核对（F5 验收项中的人工部分）。
+
+## 首次引导与机制说明（F6）
+
+新用户第一次进来时，以前的机制说明是**分散且隐式**的：关卡里的 `tip`/`hint`、探究轮的 `goal`、
+萌宠台词——都得学生自己先点出来才看得到。现在：**一次性引导**在首次进入时自动讲清玩法，
+「? 帮助 / ? 图例」按钮让它**随时可回看**，设置页可**重置**。
+
+| 环节 | 做法 |
+|---|---|
+| 第一关引导 | 4 步气泡：① 先动手调一调（拖滑块/拖点，图立刻重画）→ ② 提交答案（选选项或填答案）→ ③ 看解析（提示会扣评分）→ ④ **三星怎么拿**（全对且无提示＝三星，错一点＝两星，通关＝一星） |
+| 地图图例 | 首次进入知识体系页弹一次，讲清四类标记：**Boss 门**（本单元累计星数达标解锁）/ **宝箱**（星数门槛后可开启）/ **随机事件**（通关触发一次）/ **支线**（选做路线，不影响主线） |
+| 随时回看 | 关卡动作条「? 帮助」回看第一关引导；地图顶栏「? 图例」回看图例；两者都**不改变**「已看过」状态 |
+| 重置引导 | 设置页「重置引导」清空已看过记录，下次进入关卡/地图重新弹出 |
+| 动效解耦 | 引导属**表意内容**：关掉「界面动效」只弱化入场动画，**文字照常显示**（与 D4 语义一致） |
+| 状态存放 | 引导状态是**设备级 UI 偏好**，存 `Settings.seen_guides`（`user://settings.json`），**不进学生存档**、不动 F5 的存档 schema |
+
+代码分层（守 A4 行数红线）：`scripts/rules/GuideRules.gd`（步骤表 / 图例条目 / 显示判定 / 重置 / 标记，纯数据）
++ `scripts/ui/GuideOverlay.gd`（气泡与图例卡绘制）；`Settings` 提供 `guide_needed()` / `mark_guide_seen()` / `reset_guides()`。
+顺带把两个纯逻辑从大文件下沉（A4）：`StageRules.next_star_hint()` → 新文件 `scripts/rules/StageText.gd`
+（结算文案，与星级判定分离）、`TheoremTree._reward_text()` → `TreeRules.reward_text()`（宝箱/事件共用）。
+
+覆盖：`Tests._test_guide_rules`（步骤 3~4 步与顺序、图例四类、文案拼接、看过/未看过判定、
+`mark_seen`/`reset` 不就地改入参、关动效仍判定显示）+ `Tests._test_stage_rules`（`next_star_hint` 六种局面）
++ `Tests._test_tree_rules`（`reward_text` 五种组合）+ `UiSmoke._test_guides`（关卡页确实弹出遮罩与首步文案、
+动作条有「? 帮助」、地图页有「? 图例」且首进弹出图例卡、设置页有「重置引导」）。
+**未覆盖（人工验收）**：全新安装的学生「仅凭引导完成第一关并说清三星怎么来」的端到端目视核对。
 
 ## 内容数据体检 / 用户可见兜底（A18）
 

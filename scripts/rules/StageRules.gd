@@ -170,10 +170,10 @@ static func parse_math(text: String) -> Variant:
 # ---------------------------------------------------------------- 评级
 ## 结算评级(纯)：S = 3 星 + 全程零失误 + 不踩陷阱；3 星 A；2 星 B；其余 C。
 static func grade(stars: int, clean: int, total: int, trap_missed: bool) -> String:
-	if stars >= 3 and clean == total and not trap_missed:
-		return "S"
-	if stars >= 3:
-		return "A"
-	if stars == 2:
-		return "B"
-	return "C"
+	return StageText.grade(stars, clean, total, trap_missed)
+
+## P2 · 三星条件显式化：结算给出「下一星差在哪」的引导文案(无需引导时返回空串)。
+## 纯函数——由 StageBase 传入当前局面，规则在此单点维护。
+static func next_star_hint(stars: int, clean: int, total: int, trap_missed: bool,
+		boss_failed: bool, time_capped: bool, time_limit: float) -> String:
+	return StageText.next_star_hint(stars, clean, total, trap_missed, boss_failed, time_capped, time_limit)

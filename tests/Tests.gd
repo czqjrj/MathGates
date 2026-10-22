@@ -53,6 +53,7 @@ func _run() -> void:
 	_test_mastery_rules()
 	_test_stage_rules()
 	_test_tree_rules()
+	_test_guide_rules()
 	_test_legacy_binding()
 	_test_curriculum_rules()
 	_test_speech_rules()
@@ -1469,6 +1470,17 @@ func _test_stage_rules() -> void:
 	_eq(StageRules.norm_math("2²"), "pow(2,2)", "norm 上标转 pow")
 	_eq(StageRules.norm_math("2π"), "23.141592653589793", "norm π 展开(已知怪癖:数字前不插 *)")
 
+	# —— P2 三星引导文案 next_star_hint（A4 从 StageBase 下沉） ——
+	_ok(StageRules.next_star_hint(0, 3, 10, false, false, false, 0.0).contains("2 星"), "hint 0 星提示冲 2 星")
+	_ok(StageRules.next_star_hint(2, 7, 10, false, false, false, 0.0).contains("3 星"), "hint 2 星提示冲 3 星")
+	_eq(StageRules.next_star_hint(3, 10, 10, false, false, false, 0.0), "", "hint 3 星全对无提示")
+	_eq(StageRules.next_star_hint(3, 10, 10, true, false, false, 0.0), "不踩陷阱即可拿到 S 评级", "hint 踩陷阱提示 S")
+	_eq(StageRules.next_star_hint(3, 9, 10, false, false, false, 0.0), "全程 10 轮零失误可拿 S 评级", "hint 非全对提示 S")
+	_ok(StageRules.next_star_hint(3, 10, 10, false, true, false, 0.0).contains("归零"), "hint 守关失败单独提示")
+	_ok(StageRules.next_star_hint(3, 10, 10, false, false, true, 30.0).contains("超时降星"), "hint 超时附加提示")
+	var both := StageRules.next_star_hint(2, 7, 10, false, false, true, 30.0)
+	_ok(both.contains("3 星") and both.contains("超时降星"), "hint 多条件拼接")
+
 ## A4 第六刀：知识树布局纯规则 TreeRules(关卡分组/Catmull-Rom 平滑)。全部构造数据单测。
 func _test_tree_rules() -> void:
 	# —— 分组："N-M" 编号 + 单元标题 + Boss 殿后 ——
@@ -1577,6 +1589,70 @@ func _test_tree_rules() -> void:
 	]
 	_ok(not TreeRules.level_unlocked(1, ulv, {}, false), "unlock gate=0 回退上一关")
 	_ok(TreeRules.level_unlocked(1, ulv, { "l1": 1 }, false), "unlock gate=0 上一关星解锁")
+
+	# —— 奖励文案 reward_text（A4 从 TheoremTree 下沉，宝箱/事件共用） ——
+	_eq(TreeRules.reward_text({}), "—", "reward 空奖励回退破折号")
+	_eq(TreeRules.reward_text({ "coins": 0, "hint_tokens": 0 }), "—", "reward 全 0 回退破折号")
+	_eq(TreeRules.reward_text({ "coins": 50 }), "金币 +50", "reward 只金币")
+	_eq(TreeRules.reward_text({ "coins": 50, "hint_tokens": 1 }), "金币 +50 · 提示卡 +1", "reward 金币+提示卡")
+	_eq(TreeRules.reward_text({ "coins": 50, "hint_tokens": 1, "coin_boost": 2 }),
+		"金币 +50 · 提示卡 +1 · 金币加成 +2", "reward 三项全给")
+	_eq(TreeRules.reward_text({ "coin_boost": 3 }), "金币加成 +3", "reward 只加成")
+## F6：首次引导与机制说明纯规则（步骤表 / 图例条目 / 显示判定 / 重置 / 与动效开关解耦）。
+func _test_guide_rules() -> void:
+	# 第一关引导：3~4 步，字段齐全
+	var steps := GuideRules.first_level_steps()
+	_ok(steps.size() >= 3 and steps.size() <= 4, "guide 第一关 3~4 步")
+	var ids := []
+	for s in steps:
+		ids.append(str(s["id"]))
+		_ok(str(s["title"]) != "" and str(s["body"]) != "", "guide 步骤 %s 有标题与正文" % str(s["id"]))
+	_eq(ids, ["drag", "submit", "explain", "stars"], "guide 步骤顺序：拖动→提交→解析→拿星")
+
+	# 图例：四条（Boss 门/宝箱/随机事件/支线）
+	var legend := GuideRules.map_legend()
+	_eq(legend.size(), 4, "guide 图例四条")
+	var lids := []
+	for e in legend:
+		lids.append(str(e["id"]))
+		_ok(str(e["title"]) != "" and str(e["body"]) != "", "guide 图例 %s 有标题与正文" % str(e["id"]))
+	_eq(lids, ["boss_gate", "chest", "event", "optional"], "guide 图例覆盖四类标记")
+
+	# 文案拼接：含全部条目标题
+	var lt := GuideRules.legend_text()
+	_ok(lt.contains("Boss 门") and lt.contains("宝箱") and lt.contains("随机事件") and lt.contains("支线"),
+		"guide 图例文案含四类名称")
+	var ft := GuideRules.first_level_text()
+	_ok(ft.contains("三星怎么拿"), "guide 第一关文案含拿星说明")
+
+	# 显示判定：看过即不再显示
+	_ok(GuideRules.should_show(GuideRules.ID_MAP_LEGEND, {}), "guide 未看过要显示")
+	_ok(not GuideRules.should_show(GuideRules.ID_MAP_LEGEND, { GuideRules.ID_MAP_LEGEND: true }),
+		"guide 看过不再显示")
+	_ok(not GuideRules.should_show("", {}), "guide 空 id 不显示")
+
+	# mark_seen：不就地改入参，返回新字典
+	var seen := {}
+	var seen2 := GuideRules.mark_seen(seen, GuideRules.ID_FIRST_LEVEL)
+	_eq(seen.size(), 0, "guide mark_seen 不就地改入参")
+	_eq(seen2.size(), 1, "guide mark_seen 返回已标记字典")
+	_ok(not GuideRules.should_show(GuideRules.ID_FIRST_LEVEL, seen2), "guide 标记后不再显示")
+
+	# reset：只清引导键，其它设置键保留
+	var mixed := { GuideRules.ID_FIRST_LEVEL: true, GuideRules.ID_MAP_LEGEND: true, "其它设置": 1 }
+	var cleared := GuideRules.reset(mixed)
+	_eq(cleared.has(GuideRules.ID_FIRST_LEVEL), false, "guide reset 清除 first_level")
+	_eq(cleared.has(GuideRules.ID_MAP_LEGEND), false, "guide reset 清除 map_legend")
+	_eq(int(cleared.get("其它设置", 0)), 1, "guide reset 保留非引导键")
+	_eq(mixed.size(), 3, "guide reset 不就地改入参")
+
+	# 与 D4 动效开关解耦：引导是表意内容，关掉动效后 GuideRules 的判定不受影响
+	var saved_anim := Settings.animations
+	Settings.animations = false
+	_ok(GuideRules.should_show(GuideRules.ID_FIRST_LEVEL, {}), "guide 关动效仍判定需要显示")
+	var steps_off := GuideRules.first_level_steps()
+	_eq(steps_off.size(), steps.size(), "guide 关动效步骤数不变")
+	Settings.animations = saved_anim
 
 ## A2 收编：legacy 场景（SolidChallenge/ConicStage）仍是官方场景——课程表引用的
 ## method/conic key 必须在对应数据文件里存在（打错 key = 静默空关），且两类场景保持在用。

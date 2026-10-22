@@ -116,6 +116,19 @@ func _ready() -> void:
 	_add_pet()
 	_reset()
 	_enter_fx()
+	_maybe_first_guide()
+
+## F6：第一关的一次性引导（拖动 → 提交 → 看解析 → 拿星）。全库只在任意关首次进入时弹一次。
+func _maybe_first_guide() -> void:
+	if not Settings.guide_needed(GuideRules.ID_FIRST_LEVEL):
+		return
+	GuideOverlay.first_level(self, func() -> void:
+		Settings.mark_guide_seen(GuideRules.ID_FIRST_LEVEL)
+	)
+
+## F6：「? 帮助」——随时回看第一关引导。
+func _show_help() -> void:
+	GuideOverlay.help(self, "怎么玩这一关？", GuideRules.first_level_text())
 
 ## 读取关卡级节奏配置(全部可选，缺省沿用旧行为：无限时、连击条开启)。
 func _apply_rules() -> void:
@@ -733,26 +746,9 @@ func _grade(st: int, clean: int, total: int, trap_missed: bool) -> String:
 	return StageRules.grade(st, clean, total, trap_missed)
 
 ## P2 · 三星条件显式化：结算给出「下一星差在哪」的引导文案(无引导返回空串)。
+## A4：纯逻辑已下沉到 rules/StageRules.next_star_hint()。
 func _next_star_hint(st: int, clean: int, total: int) -> String:
-	if _boss_failed:
-		return "推演能量归零 · 补齐一次完整推演即可重新挑战"
-	var msg := ""
-	if st <= 0:
-		var need2 := int(ceil(0.6 * float(total)))
-		msg = "零失误 %d / %d 轮即可拿到 2 星（当前 %d）" % [need2, total, clean]
-	elif st == 2:
-		var need3 := int(ceil(0.8 * float(total)))
-		var lack := maxi(0, need3 - clean)
-		if lack > 0:
-			msg = "再 %d 轮零失误即可升到 3 星（需 %d / %d）" % [lack, need3, total]
-	elif _trap_missed:
-		msg = "不踩陷阱即可拿到 S 评级"
-	elif clean < total:
-		msg = "全程 %d 轮零失误可拿 S 评级" % total
-	if _time_capped:
-		var t := "超时降星：用时压到 %.0f 秒内可升回" % _time_limit
-		msg = t if msg == "" else msg + "  ·  " + t
-	return msg
+	return StageRules.next_star_hint(st, clean, total, _trap_missed, _boss_failed, _time_capped, _time_limit)
 
 func _finish() -> void:
 	_done = true
@@ -1116,6 +1112,7 @@ func _build_ui() -> void:
 	bh.add_child(UI.ghost_button("问萌宠", _ask_pet, 16))
 	bh.add_child(UI.voice_button(func() -> void: UI.tts_say(_q_speak if _q_speak != "" else _q.text), 16))
 	bh.add_child(UI.ghost_button("重新挑战", func() -> void: _reset(), 16))
+	bh.add_child(UI.ghost_button("? 帮助", _show_help, 16))
 	_next = Button.new()
 	_next.text = "下一关 →"
 	_next.custom_minimum_size = Vector2(_next_min_width(), 52)
