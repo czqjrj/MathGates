@@ -1429,17 +1429,7 @@ func _apply(d: Dictionary) -> void:
 	wrong_log = UserStore.normalize_wrong_modules(wrong_log, Callable(self, "domain_id_for_level"))
 
 func list_users() -> Array:
-	var arr: Array = []
-	for k in users.keys():
-		var d: Dictionary = users[k]
-		var used := 0
-		var sv = d.get("stars", {})
-		if typeof(sv) == TYPE_DICTIONARY:
-			for kk in sv.keys():
-				used += int(sv[kk])
-		arr.append({ "name": k, "avatar": str(d.get("avatar", "player")), "stars": used, "best_streak": int(d.get("best_streak", 0)) })
-	arr.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return str(a["name"]) < str(b["name"]))
-	return arr
+	return UserStore.list_summaries(users)
 
 ## A19：清掉所有「不存档」的会话态。login/logout/create_user/delete_user 后必须调用。
 ## 刻意**不重置** current_chapter_index/current_level_index/current_level：
@@ -1496,40 +1486,27 @@ func delete_user(nm: String) -> void:
 	_write_users()
 	progress_changed.emit()
 
-## 从指定文件读取并解析存档，失败返回空字典(不抛出)
-func _read_users_file(path: String) -> Dictionary:
-	return SaveIO.read_dict(path)
-
 func _load_users() -> void:
-	# 依次尝试：主存档 → 备份 → 旧版单人存档，任一损坏都能恢复
-	var data := _read_users_file(USERS_PATH)
-	var recovered := false
-	if data.is_empty():
-		data = _read_users_file(USERS_BAK)
-		recovered = not data.is_empty()
-	if not data.is_empty():
-		var u = data.get("users", {})
-		if typeof(u) == TYPE_DICTIONARY:
-			users = u
-		current_user = str(data.get("current", ""))
-	# 兼容旧版单人存档 → 迁移为「推演者」
-	if users.is_empty() and FileAccess.file_exists(SAVE_PATH):
-		var old = JSON.parse_string(FileAccess.get_file_as_string(SAVE_PATH))
-		if typeof(old) == TYPE_DICTIONARY:
-			old["avatar"] = "player"
-			users["推演者"] = old
-			current_user = "推演者"
+	# F5：读取 + 升版迁移 + 主档/备份/旧版单人档三级兜底，逻辑下沉到 save 层。
+	var r := SaveIO.load_users(USERS_PATH, USERS_BAK, SAVE_PATH)
+	if bool(r["recovered"]):
+		push_warning("主存档损坏，已从备份恢复")
+	if bool(r["downgraded"]):
+		push_warning("存档版本 %d 高于本版本 %d，已按只读兼容载入" % [int(r["schema"]), SaveMigrate.CURRENT])
+	users = r["users"]
+	current_user = str(r["current"])
 	if current_user != "" and users.has(current_user):
 		_apply(users[current_user])
 	else:
 		current_user = ""
 	# 从备份恢复后，立即把主存档写回，避免下次继续读备份
-	if recovered and current_user != "":
+	if bool(r["recovered"]) and current_user != "":
 		_write_users()
 
 ## 原子写入：先写临时文件并校验，备份旧档，再替换主档，避免中途被杀导致存档损坏
 func _write_users() -> void:
-	SaveIO.write_atomic(USERS_PATH, USERS_TMP, USERS_BAK, JSON.stringify({ "current": current_user, "users": users }))
+	SaveIO.write_users(USERS_PATH, USERS_TMP, USERS_BAK, current_user, users)
+
 
 ## 应用退到后台 / 关闭 时立即落盘，防止系统随时回收进程丢失进度
 func _notification(what: int) -> void:
@@ -1559,6 +1536,33 @@ func _save_soon() -> void:
 func _flush_pending_save() -> void:
 	if _save_pending:
 		_save()
+
+# ---------------------------------------------------------------- F5 进度导出 / 导入
+## 把当前用户的进度编成可复制的文本码（不含其它用户、不联网）。
+## 导出前先落盘，保证文本码反映最新进度。
+func export_code() -> String:
+	if current_user == "":
+		return ""
+	_save()
+	return ProgressCode.encode(current_user, users.get(current_user, {}))
+
+## 导入一段文本码，生成一个新用户（名重复则自动加后缀），并切换到它。
+## 返回 { "ok": bool, "error": String, "name": String }；失败不改变任何状态。
+func import_code(code: String, preferred_name: String = "") -> Dictionary:
+	var dec := ProgressCode.decode(code)
+	if not bool(dec["ok"]):
+		return dec
+	var nm := ProgressCode.pick_name(str(dec["name"]), preferred_name, users)
+	users[nm] = dec["user"]
+	_reset_session()
+	current_user = nm
+	_apply(users[nm])
+	_reset_daily_if_needed()
+	_eval_mastery(false)
+	_eval_medals(false)
+	_save()
+	progress_changed.emit()
+	return { "ok": true, "error": "", "name": nm }
 
 # ---------------------------------------------------------------- 学习报告 / 家长视图(G3)
 ## 报告周期（天）：7 = 周报，30 = 月报。

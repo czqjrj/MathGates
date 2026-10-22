@@ -1,5 +1,6 @@
 extends Control
-## 档案库 · 用户系统：展示当前进度、出错位置(错题本)、重点(按错误次数排序的知识点)。
+## 档案库 · 用户系统：展示当前进度、出错位置(错题本)、重点(按错误次数排序的知识点)，
+## 以及进度备份/跨设备迁移(F5)。
 
 func _ready() -> void:
 	theme = UI.make_theme()
@@ -96,6 +97,9 @@ func _build_body() -> void:
 
 	# ---- 错题与重点(明细统一收敛到「错题笔记」页) ----
 	vb.add_child(_wrong_summary_card())
+
+	# ---- 进度备份 · 跨设备迁移(F5) ----
+	vb.add_child(_backup_card())
 
 	vb.add_child(UI.gap(20))
 	UI.stagger_in(vb, 0.035, 0.24, 10)
@@ -424,3 +428,68 @@ func _wrong_summary_card() -> Control:
 		var info := GameData.level_info(str(top["level_id"]))
 		box.add_child(UI.make_label("重点：「%s · %s」累计错 %d 次" % [str(info.get("chapter", "")), str(info.get("name", "")), int(top["count"])], 14, Color("#ffd479")))
 	return card
+
+## 进度备份 · 跨设备迁移（F5）：导出为可复制的文本码 / 从文本码导入。
+## 只在本机生成与解析，不联网、不引入账号；文本码是明文，提示用户自行保管。
+func _backup_card() -> Control:
+	var card := UI.card(true, UI.COL_ACCENT, UI.COL_GLASS, Color("#45C7E5", 0.32), 14, 22, Color("#45C7E5", 0.18))
+	card.custom_minimum_size = Vector2(UiConst.CARD_W, 0)
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 12)
+	card.add_child(box)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 14)
+	box.add_child(head)
+	head.add_child(UI.make_label("进度备份 · 跨设备迁移", 20, UI.COL_TEXT))
+	var hsp := Control.new()
+	hsp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(hsp)
+	head.add_child(UI.mono_label("v%d" % SaveMigrate.CURRENT, 13, UI.COL_TEXT_DIM))
+	box.add_child(UI.make_label("换手机 / 重装 / 清数据前，导出一段进度码另存；在新设备上用「导入」恢复星级、勋章、萌宠与错题本。全程本地、不联网。", 13, UI.COL_TEXT_DIM))
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 14)
+	box.add_child(row)
+	row.add_child(UI.ghost_button("导出进度码", _on_export_code, 14))
+	row.add_child(UI.ghost_button("从进度码导入", _on_import_code, 14))
+	box.add_child(UI.make_label("提示：进度码是明文（像密码一样自行保管，勿公开分享）。", 12, Color(UI.COL_TEXT_DIM, 0.85)))
+	return card
+
+func _on_export_code() -> void:
+	Sound.play("select")
+	var code := GameData.export_code()
+	if code == "":
+		Toast.show_toast("请先选择或创建一个用户")
+		return
+	DisplayServer.clipboard_set(code)
+	# 同时写一份到应用私有目录，便于导出文件
+	var path := "user://progress_%s.txt" % GameData.current_user
+	var f := FileAccess.open(path, FileAccess.WRITE)
+	if f != null:
+		f.store_string(code)
+		f.close()
+	Toast.show_toast("进度码已复制到剪贴板（共 %d 字符）" % code.length())
+
+func _on_import_code() -> void:
+	Sound.play("select")
+	UI.input_dialog(self, "从进度码导入",
+		"粘贴在另一台设备导出的进度码。导入会新建一个用户，不影响现有进度。",
+		"MG1:……", _do_import)
+
+func _do_import(code: String) -> void:
+	if code.strip_edges() == "":
+		Toast.show_toast("没有填写进度码")
+		return
+	# 先解码给出摘要供确认，再真正导入
+	var dec := ProgressCode.decode(code)
+	if not bool(dec["ok"]):
+		Toast.show_toast("导入失败：%s" % str(dec["error"]))
+		return
+	var on_yes := func() -> void:
+		var res := GameData.import_code(code)
+		if bool(res["ok"]):
+			Toast.show_toast("已导入并切换到「%s」" % str(res["name"]))
+		else:
+			Toast.show_toast("导入失败：%s" % str(res["error"]))
+	UI.confirm(self, "确认导入",
+		"检测到进度：%s\n\n将新建为一个独立用户，不影响现有进度。" % ProgressCode.summary(dec["user"]),
+		on_yes, "导入")

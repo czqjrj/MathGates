@@ -19,7 +19,10 @@ scripts/         总控与共享逻辑(按职责分目录)
 				   InlineMath.gd(内联公式:{f:名称} 与 data/inline_math.json,UI.inline*/strip_formulas 为薄转发)、
 				   TtsOnline.gd(在线语音)、
 				   ContentFallback.gd(A18 内容数据异常时的用户可见兜底:兜底卡/主城横幅/复制错误信息)
-  save/            SaveIO.gd(存档原子读写:临时文件校验 + 备份 + 替换;GameData 存档 IO 委托于此)
+  save/            SaveIO.gd(存档原子读写:临时文件校验 + 备份 + 替换;F5 起还含用户存档读取
+				   [升版迁移 + 主档/备份/旧档三级兜底] 与带版本号写入;GameData 存档 IO 委托于此)、
+				   SaveMigrate.gd(F5 存档 schema 版本号 + 升版迁移钩子)、
+				   ProgressCode.gd(F5 进度导出/导入文本码:单个用户存档 ⇄ 可复制的 `MG1:` 码,不联网)
   screens/         BootSplash.gd(品牌启动屏,规避引擎启动屏缩放 bug)、Login.gd、MainHub.gd、
 				   WorldMap.gd、UserProfile.gd、LearningReport.gd(学习报告/家长视图 G3)、
 				   SettingsMenu.gd、ChapterNode.gd、
@@ -229,6 +232,31 @@ build/           导出产物(APK,git 忽略)
 覆盖：`Tests._test_user_store` + `_test_report_rules` + `_test_report_flow`（日历日往返与闰年、
 活动日志累加与排序、汇总正确率与活跃天、家长视图**不泄露题号与题目原文**、三种导出可用、存档往返）
 + `UiSmoke._test_report_screen`（报告页真实构建、周期切换切到 30 天、导出按钮存在、隐私说明可见）。
+
+## 存档版本化与进度迁移（F5）
+
+存档**带 schema 版本号**，载入时自动升版；进度可**导出为一段 `MG1:` 文本码**、在另一台设备导入恢复，
+不引入账号体系、不联网。换手机 / 重装 / 清数据前导出一段码即可保住 228 关星级、勋章、萌宠与错题本。
+
+| 环节 | 规则 |
+|---|---|
+| 版本号 | 存档顶层 `schema` 整数（当前 `SaveMigrate.CURRENT`）；**每次改存档结构必须 +1 并补一段迁移** |
+| 迁移 | `SaveMigrate.migrate()` 把任意版本升到当前；无 `schema` 的历史档视为版本 **0**（字段全靠默认值兜，0→1 仅登记版本、不动数据） |
+| 高版本档 | 来自更新版本的存档**不静默降级**：照读但 `downgraded=true`，由上层警示（避免「新设备导出、旧版导入」悄悄丢字段） |
+| 三级兜底 | 载入顺序：主档 → 备份 → 旧版单人档（`save.json` → 迁移为「推演者」）；从备份恢复后立即写回主档 |
+| 导出/导入 | `ProgressCode` 把**单个用户**的存档编成 `MG1:` + Base64(JSON)；导入时解码 + 升版，重名自动加 ` (2)` 后缀，**绝不覆盖既有进度** |
+| 隐私 | 文本码是**明文**（Base64 只是编码，非加密），界面提示用户「像密码一样保管、勿公开分享」；全程本地、不上传 |
+
+**入口**：档案库页「进度备份 · 跨设备迁移」卡片——「导出进度码」复制到剪贴板并写一份到 `user://progress_<用户名>.txt`；
+「从进度码导入」弹出多行输入框，粘贴后先给出摘要（★数 / 作答 / 错题 / 勋章 / 萌宠形态）供确认，再新建用户。
+
+代码分层（守 A4 行数红线）：`scripts/save/SaveMigrate.gd`（schema + 迁移钩子）+ `scripts/save/ProgressCode.gd`
+（文本码编解码 / 摘要 / 命名去重）纯规则；`SaveIO.load_users()` / `write_users()` 接管用户存档的读取（含迁移 + 三级兜底）
+与写入；`GameData` 只留门面（`export_code()` / `import_code()`），用户列表聚合下沉到 `UserStore.list_summaries()`。
+
+覆盖：`Tests._test_save_migrate`（旧档→0 版本、幂等、高版本降级标记、不就地改入参）+ `Tests._test_progress_code`
+（encode/decode 往返、摘要不含题号与用户名、折行容忍、六类坏码一律拒绝、命名去重、`GameData` 导出→导入完整恢复）。
+**未覆盖（人工验收）**：真机两台设备间导出→导入的端到端目视核对（F5 验收项中的人工部分）。
 
 ## 内容数据体检 / 用户可见兜底（A18）
 

@@ -161,3 +161,19 @@ static func normalize_wrong_modules(wrong_log: Dictionary, domain_of: Callable) 
 			r["module"] = did
 		out[key] = r
 	return out
+
+## 用户列表摘要（供登录页/档案库列表）：名字、头像、总星数、最高连击，按名字升序。
+## 纯聚合，不读 autoload；users：{ 名字 -> 存档 dict }。
+static func list_summaries(users: Dictionary) -> Array:
+	var arr: Array = []
+	for k in users.keys():
+		var d: Dictionary = users[k]
+		var used := 0
+		var sv = d.get("stars", {})
+		if typeof(sv) == TYPE_DICTIONARY:
+			for kk in (sv as Dictionary).keys():
+				used += int((sv as Dictionary)[kk])
+		arr.append({ "name": k, "avatar": str(d.get("avatar", "player")),
+			"stars": used, "best_streak": int(d.get("best_streak", 0)) })
+	arr.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return str(a["name"]) < str(b["name"]))
+	return arr

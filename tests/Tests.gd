@@ -57,6 +57,8 @@ func _run() -> void:
 	_test_curriculum_rules()
 	_test_speech_rules()
 	_test_session_reset()
+	_test_save_migrate()
+	_test_progress_code()
 	_test_adventure()
 	_test_inline_math()
 	_test_content_health()
@@ -1734,6 +1736,107 @@ func _test_session_reset() -> void:
 	_eq(GameData.current_level_id(), lid, "复位会话不关卡导航（current_level 由 start_level 设置）")
 	GameData.delete_user("a19_a")
 	GameData.delete_user("a19_b")
+	if saved_user != "":
+		GameData.login(saved_user)
+
+## F5①：存档版本化与升版迁移（scripts/save/SaveMigrate.gd）。
+func _test_save_migrate() -> void:
+	# 历史档（无 schema）视为版本 0，升到 CURRENT 且数据不动
+	var legacy := { "current": "小明", "users": { "小明": { "coins": 30 } } }
+	var m := SaveMigrate.migrate(legacy)
+	_eq(int(m["from"]), 0, "migrate: 无 schema 的旧档视为版本 0")
+	_eq(int(m["to"]), SaveMigrate.CURRENT, "migrate: 升到当前版本")
+	_eq(m["downgraded"], false, "migrate: 旧档不算降级")
+	_eq(int((m["data"] as Dictionary)["schema"]), SaveMigrate.CURRENT, "migrate: 结果打上版本号")
+	_eq(int((m["data"] as Dictionary)["users"]["小明"]["coins"]), 30, "migrate: 数据原样保留")
+	_ok(SaveMigrate.recognized(legacy), "migrate: 旧档被识别（未降级）")
+
+	# 已是当前版本的档：幂等，不再改数据
+	var cur := { "schema": SaveMigrate.CURRENT, "current": "", "users": {} }
+	var m2 := SaveMigrate.migrate(cur)
+	_eq(int(m2["to"]), SaveMigrate.CURRENT, "migrate: 当前版本幂等")
+	_eq((m2["data"] as Dictionary).size(), cur.size(), "migrate: 当前版本不改结构")
+
+	# 来自更高版本的档：不静默降级，标记出来
+	var future := { "schema": SaveMigrate.CURRENT + 1, "users": {} }
+	var m3 := SaveMigrate.migrate(future)
+	_eq(m3["downgraded"], true, "migrate: 高版本档标记为降级")
+	_eq(int(m3["to"]), SaveMigrate.CURRENT + 1, "migrate: 降级时不改版本号")
+	_ok(not SaveMigrate.recognized(future), "migrate: 高版本档不被识别")
+
+	# upgrade 便捷口：只管数据
+	_eq(int((SaveMigrate.upgrade({}) as Dictionary)["schema"]), SaveMigrate.CURRENT, "migrate: upgrade 只回数据")
+
+	# 原始输入不被就地修改（migrate 内部 duplicate）
+	var src := { "coins": 1 }
+	SaveMigrate.migrate(src)
+	_eq(src.has("schema"), false, "migrate: 不就地修改入参")
+
+## F5②：进度导出/导入文本码（scripts/save/ProgressCode.gd）——round-trip 与坏码拒绝。
+func _test_progress_code() -> void:
+	var user := {
+		"avatar": "boss", "coins": 120, "stars": { "L1": 3, "L2": 2 },
+		"total_questions": 40, "total_correct": 33,
+		"wrong_log": { "L1#0": { "count": 2 } }, "srs_plan": {},
+		"level_records": {}, "pet_parts": { "seq": 1 }, "pet_stage": 1,
+		"medals": { "first": 1 }, "activity": [],
+	}
+	# encode → decode round-trip
+	var code := ProgressCode.encode("小明", user)
+	_ok(code.begins_with(ProgressCode.PREFIX), "code: 带版本前缀")
+	var dec := ProgressCode.decode(code)
+	_eq(dec["ok"], true, "code: 自家文本码可解码")
+	_eq(str(dec["name"]), "小明", "code: 保留用户名")
+	_eq(int((dec["user"] as Dictionary)["coins"]), 120, "code: 金币还原")
+	_eq(int((dec["user"] as Dictionary)["stars"]["L1"]), 3, "code: 星级还原")
+	_eq(int((dec["user"] as Dictionary)["pet_stage"]), 1, "code: 萌宠形态还原")
+	_eq((dec["user"] as Dictionary).has("schema"), true, "code: 解码时已升版带 schema")
+
+	# 摘要：只给汇总量，不含题目原文
+	var sum := ProgressCode.summary(dec["user"])
+	_ok(sum.contains("★5"), "code: 摘要含总星数（3+2）")
+	_ok(sum.contains("勋章 1"), "code: 摘要含勋章数")
+	_ok(sum.find("小明") < 0 and sum.find("L1") < 0, "code: 摘要不含用户名/关卡 id")
+
+	# 粘贴时夹换行/空格仍可解
+	var wrapped := code.substr(0, 20) + "\n  " + code.substr(20)
+	_eq(ProgressCode.decode(wrapped)["ok"], true, "code: 容忍折行与空格")
+
+	# 坏码一律 ok=false，绝不抛出
+	_eq(ProgressCode.decode("")["ok"], false, "code: 空码拒绝")
+	_eq(ProgressCode.decode("hello")["ok"], false, "code: 非本应用码拒绝")
+	_eq(ProgressCode.decode("MG1:")["ok"], false, "code: 只有前缀拒绝")
+	_eq(ProgressCode.decode("MG1:!!!!")["ok"], false, "code: 坏 Base64 拒绝")
+	var not_json := ProgressCode.PREFIX + Marshalls.utf8_to_base64("just text")
+	_eq(ProgressCode.decode(not_json)["ok"], false, "code: 非 JSON 拒绝")
+	var no_user := ProgressCode.PREFIX + Marshalls.utf8_to_base64(JSON.stringify({ "name": "x" }))
+	_eq(ProgressCode.decode(no_user)["ok"], false, "code: 缺存档数据拒绝")
+	_ok(ProgressCode.describe("hello") != "", "code: describe 坏码给错误文案")
+
+	# 命名去重：不覆盖既有进度
+	_eq(ProgressCode.pick_name("小明", "", { "小明": {} }), "小明 (2)", "code: 重名加后缀")
+	_eq(ProgressCode.pick_name("小明", "小红", {}), "小红", "code: 偏好名优先")
+	_eq(ProgressCode.pick_name("", "", {}), "导入的用户", "code: 无名时给缺省名")
+
+	# GameData 门面：导出→导入到新用户，进度完整恢复
+	var saved_user := GameData.current_user
+	GameData.create_user("f5_src", "player")
+	GameData.coins = 77
+	GameData.stars["recur_add"] = 3
+	var round_code := GameData.export_code()
+	_ok(round_code.begins_with(ProgressCode.PREFIX), "code: GameData 导出可用")
+	var res := GameData.import_code(round_code, "f5_dst")
+	_eq(res["ok"], true, "code: GameData 导入成功")
+	_eq(str(res["name"]), "f5_dst", "code: 导入用偏好名")
+	_eq(GameData.current_user, "f5_dst", "code: 导入后切换到新用户")
+	_eq(GameData.coins, 77, "code: 导入恢复了金币")
+	_eq(int(GameData.stars.get("recur_add", 0)), 3, "code: 导入恢复了星级")
+	# 坏码导入：失败且不改变当前用户
+	var bad := GameData.import_code("nonsense")
+	_eq(bad["ok"], false, "code: 坏码导入失败")
+	_eq(GameData.current_user, "f5_dst", "code: 坏码导入不改变当前用户")
+	GameData.delete_user("f5_src")
+	GameData.delete_user("f5_dst")
 	if saved_user != "":
 		GameData.login(saved_user)
 

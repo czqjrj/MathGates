@@ -852,6 +852,59 @@ static func confirm(root: Node, title: String, msg: String, on_yes: Callable, ok
 	row.add_child(ok)
 	popup_in(center)
 
+## 通用「粘贴/输入」弹窗：多行文本 + 「取消 / 确定」。on_ok 收到用户输入的文字。
+static func input_dialog(root: Node, title: String, msg: String, placeholder: String, on_ok: Callable, ok_text: String = "确定") -> void:
+	var dim := ColorRect.new()
+	dim.color = Color(0, 0, 0, 0.55)
+	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	dim.mouse_filter = Control.MOUSE_FILTER_STOP
+	root.add_child(dim)
+	_active_confirm = dim
+	dim.tree_exiting.connect(func() -> void:
+		if _active_confirm == dim:
+			_active_confirm = null
+	)
+
+	var center := CenterContainer.new()
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_STOP
+	dim.add_child(center)
+
+	var pan := card(true, COL_ACCENT, COL_GLASS, Color(COL_ACCENT, 0.35), 14, 22, Color(COL_ACCENT, 0.22))
+	pan.custom_minimum_size = Vector2(560.0 * S, 0)
+	center.add_child(pan)
+
+	var vb := VBoxContainer.new()
+	vb.add_theme_constant_override("separation", 14)
+	pan.add_child(vb)
+	vb.add_child(make_label(title, 24, COL_TEXT, HORIZONTAL_ALIGNMENT_CENTER))
+	vb.add_child(make_label(msg, 16, COL_TEXT_DIM, HORIZONTAL_ALIGNMENT_CENTER))
+
+	var edit := TextEdit.new()
+	edit.placeholder_text = placeholder
+	edit.custom_minimum_size = Vector2(0, 150.0 * S)
+	edit.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+	edit.add_theme_font_size_override("font_size", fs(15))
+	vb.add_child(edit)
+
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 16)
+	vb.add_child(row)
+	row.add_child(ghost_button("取消", func() -> void: dim.queue_free(), 17))
+	var ok := Button.new()
+	ok.text = ok_text
+	ok.custom_minimum_size = Vector2(150, 48)
+	UI.primary_button(ok)
+	ok.pressed.connect(func() -> void:
+		var text := edit.text.strip_edges()
+		dim.queue_free()
+		on_ok.call(text)
+	)
+	row.add_child(ok)
+	popup_in(center)
+	edit.grab_focus()
+
 # ---------------------------------------------------------------- 语音朗读(TTS，实现见 Tts)
 static func tts_available() -> bool:
 	return Tts.available()
