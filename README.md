@@ -353,7 +353,7 @@ build/           导出产物(APK,git 忽略)
   `solid_basic_levels.json`（立体几何初步章）≠ `solid_methods.json`（方法章）。
   改错文件会**静默失效**——`check_questions` 已加自检兜底（章节 lab→文件存在性 / 孤儿文件 /
   近名对半引用即红灯）。
-- **公式写法(A10)**:新题/文案里的数学式子**直接写 LaTeX,并用 `$$…$$` 包裹**(运行时由 MicroTeX 渲染成内联公式图)。例:`"q": "不等式 $$x^{2}-2x-3>0$$ 的解集是?"`。旧的 `{f:名称}`(命名表 `scripts/ui/InlineMath.gd` 的 `FORMULA_LATEX`)仍兼容,但**新内容不再新增命名**、也**不再写 Unicode 数学片段**(`²`/`≤`/`α` 等;`data/inline_math.json` 已冻结为历史兼容层)。校验器 `check_questions.gd` 会忽略 `$$…$$` 区段(见 A5/A10)。
+- **公式写法(A10)**:新题/文案里的数学式子**直接写 LaTeX,并用 `$$…$$` 包裹**(运行时由 MicroTeX 渲染成内联公式图)。例:`"q": "不等式 $$x^{2}-2x-3>0$$ 的解集是?"`。**存量迁移已完成**——全库 `data/*.json` 已无 `{f:}` 引用,`FORMULA_LATEX`/`FORMULA_SPEECH` 命名表已清空(**不再新增命名**),也不再写 Unicode 数学片段(`²`/`≤`/`α` 等;`data/inline_math.json` 已冻结为历史兼容层)。`{f:}` 机制仍在,但数据里一旦引用未声明的名字,`check_questions.gd` 会**直接报错**(根治「运行时静默变『公式』、题目不可答」);`$$…$$` 区段则被校验器忽略(见 A5/A10)。
 
 ## 内容与教材的关系
 

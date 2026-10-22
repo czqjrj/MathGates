@@ -1693,6 +1693,10 @@ func _test_speech_rules() -> void:
 	_ok(out.find("大于") >= 0, "speech strip $$ 内大于")
 	_ok(out.find("公式") >= 0, "speech strip 未知命名回退公式")
 	_ok(out.find("平方") >= 0, "speech strip 正文 unicode")
+	# A10 迁移后命名表清空：{f:} 机制仍可用（注入映射），未声明名安全降级为「公式」
+	_eq(SpeechRules.formula_speech("foo", { "foo": "甲" }, {}), "甲", "speech 命中命名表")
+	_eq(SpeechRules.formula_speech("bar", {}, { "bar": "b^2" }), "b的平方", "speech 命名表缺失时用 LaTeX 转换")
+	_eq(SpeechRules.formula_speech("nope", {}, {}), "公式", "speech 全缺失回退「公式」")
 	# —— 盲点命令统计 ——
 	_eq(SpeechRules.unmapped_commands("\\foo \\bar \\foo").size(), 1, "speech 盲点去重")
 	_eq(SpeechRules.unmapped_commands("\\frac{x}{y}").size(), 0, "speech 已知命令非盲点")
@@ -2019,8 +2023,11 @@ func _test_inline_math() -> void:
 	var r := InlineMath.inline_formulas("当 $$x>0$$ 时")
 	_ok(r.find("$$") < 0, "inline_formulas 去掉 $$ 标记")
 	_ok(r.find("[img=") >= 0 or r.find("x>0") >= 0, "$$ 渲染或回退")
-	# {f:名称} 老路径仍可用
-	_ok(InlineMath.inline_formulas("看 {f:pw_xge_a}").find("{f:") < 0, "{f:} 仍被替换")
+	# {f:名称} 老路径（A10 迁移后命名表已清空，仅验证机制不崩、未声明名安全降级）
+	_ok(InlineMath.inline_formulas("看 {f:__no_such_formula__}").find("{f:") < 0,
+		"{f:} 标记仍被处理（不残留原文）")
+	# 命名表已清空是 A10 的验收状态：任何人再往数据里写 {f:} 都会被 check_questions 拦下
+	_eq(InlineMath.FORMULA_LATEX.size(), 0, "A10：FORMULA_LATEX 迁移后为空")
 
 ## A18：内容数据体检——坏数据要能变成「问题码 + 位置 + 人话」，好数据不许误报。
 func _test_content_health() -> void:

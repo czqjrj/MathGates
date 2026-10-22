@@ -1,5 +1,7 @@
 extends SceneTree
-## 校验 FORMULA_LATEX 8 条可运行时渲染（返回 .mttex bbcode，非 PNG 回退）。
+## 诊断：把 FORMULA_LATEX 里的命名公式逐个渲染成 PNG（排查运行时渲染 vs PNG 回退）。
+## 注：A10 迁移后 FORMULA_LATEX 已清空（全库改用 $$LaTeX$$），本工具仅在重新引入
+## 命名公式时才有意义，届时会打印 `mt-ok N / N`。
 func _initialize() -> void:
 	InlineMath._mt_ready()
 	var mt = Engine.get_singleton("MathTeX")

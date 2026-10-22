@@ -15,6 +15,7 @@ extends SceneTree
 ##
 ## 覆盖的 TODO 条目：
 ##   A5  结构 / ans 范围 / 选项重复 / 题干重复 / 轮次编号 / inline 覆盖
+##   A10 命名公式自检（引用了未声明的 {f:} → 报错；孤儿命名 → 看板）
 ##   A12 跨文件重名关卡数据
 ##   A17 命名/映射自检（章节 lab → 数据文件存在性 / 孤儿数据文件 / 单复数近名文件对）
 ##   B7  图片选项计数（看板）      B9  轮次标签编号错位（清单）
@@ -57,6 +58,8 @@ var _bad_distractor := 0
 var _key_owner := {}
 var _inline_missing := {}
 var _inline_checked := 0
+## A10 看板：已声明但全库无人引用的命名公式（存量迁移完成后应为空）。
+var _named_orphans: Array[String] = []
 ## B13 口播看板：公式段总数 / 含公式字段数 / 盲点命令计数。
 var _n_speech_seg := 0
 var _n_speech_field := 0
@@ -86,6 +89,7 @@ func _initialize() -> void:
 		_check_file(f)
 	_check_cross_file_dups()
 	_check_naming()
+	_check_named_formulas()
 	_report()
 
 # ---------------------------------------------------------------- 文件收集
@@ -377,6 +381,32 @@ func _scan_dir_refs(d: DirAccess, base: String, re: RegEx, referenced: Dictionar
 		f = d.get_next()
 	d.list_dir_end()
 
+# ---------------------------------------------------------------- A10 命名公式自检
+
+## A10：数据里引用的 {f:名称} 必须在 InlineMath.FORMULA_LATEX 声明——
+## 否则运行时静默回退成「公式」两个字（题目直接不可答）。
+## 另把「已声明但全库无人引用」的孤儿名字记进看板（存量迁移完成后应为空）。
+func _check_named_formulas() -> void:
+	var re := RegEx.new()
+	re.compile("\\{f:([A-Za-z0-9_]+)\\}")
+	var referenced := {}
+	var dd := DirAccess.open(DATA_DIR)
+	if dd == null:
+		return
+	for f in dd.get_files():
+		if not f.ends_with(".json"):
+			continue
+		for m in re.search_all(FileAccess.get_file_as_string(DATA_DIR + "/" + f)):
+			referenced[m.get_string(1)] = f
+	for name in referenced:
+		if not InlineMath.FORMULA_LATEX.has(name):
+			_add(DATA_DIR + "/" + str(referenced[name]), str(name),
+				"引用了未声明的命名公式 {f:%s}（运行时静默变「公式」，题目不可答；" % name +
+				"A10 起新内容请直接写 $$LaTeX$$）")
+	for name in InlineMath.FORMULA_LATEX:
+		if not referenced.has(name):
+			_named_orphans.append(str(name))
+
 # ---------------------------------------------------------------- 公式覆盖
 
 func _check_inline(path: String, key: String, field: String, t: String) -> void:
@@ -624,6 +654,9 @@ func _report() -> void:
 		blind = "；盲点: " + str(keys)
 	print("[看板] B13 口播: 公式段 %d 处（分布 %d 个文本字段）;盲点命令/公式 %d 种%s"
 		% [_n_speech_seg, _n_speech_field, _speech_blind.size(), blind])
+	print("[看板] A10 命名公式: 已声明 %d 个，孤儿（全库无人引用）%d 个%s"
+		% [InlineMath.FORMULA_LATEX.size(), _named_orphans.size(),
+			"" if _named_orphans.is_empty() else "：" + "，".join(_named_orphans)])
 	_chapter_board()
 	if _inline_missing.size() > 0:
 		var tops: Array = _inline_missing.keys()

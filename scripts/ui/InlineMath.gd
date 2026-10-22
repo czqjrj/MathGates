@@ -154,65 +154,14 @@ static func _latex_bbcode(latex: String, h: int) -> String:
 			return bb
 	return latex
 
-## {f:名称} 直挂公式的 name→LaTeX 映射（迁移到运行时渲染）。
-## 缺失的 name 仍回退 art/line/formulas/<name>.png。
-const FORMULA_LATEX := {
-	"l6_diff_formula": "||PA|-|PB|| \\le |AB|",
-	"l6_mid_tpl": "A\\cdot\\frac{x+x'}{2}+B\\cdot\\frac{y+y'}{2}+C=0",
-	"l6_origin_sym": "P(x,y)\\to P'(-x,-y)",
-	"l6_perp_tpl": "\\frac{x'-x}{A}=\\frac{y'-y}{B}",
-	"l6_reflect_formula": "x'=x-\\frac{2A(Ax+By+C)}{A^2+B^2},\\quad y'=y-\\frac{2B(Ax+By+C)}{A^2+B^2}",
-	"l6_sum_formula": "|PA|+|PB|\\ge|A'B|",
-	"l6_xaxis_sym": "P(x,y)\\to P'(x,-y)",
-	"l6_yx_sym": "P(a,b)\\to P'(b,a)",
-	# 分段函数值域实验
-	"pw_left": "f(x)=-(x-1)^2+1",
-	"pw_right": "f(x)=|x-3|-1",
-	"pw_g": "g(a)=-(a-1)^2+1",
-	"pw_xlt_a": "x<a",
-	"pw_xge_a": "x\\ge a",
-	"pw2_left": "f(x)=(1-2a)x+3a",
-	"pw2_right": "f(x)=x-\\frac{1}{x}",
-	"pw_xlt_1": "x<1",
-	"pw_xge_1": "x\\ge 1",
-	"opt_pw_a": "(-\\infty,\\,1-\\sqrt{2})\\cup(5,\\,+\\infty)",
-	"opt_pw_b": "[1-\\sqrt{2},\\,5)",
-	"opt_pw_c": "(-\\infty,\\,1-\\sqrt{2})\\cup[5,\\,+\\infty)",
-	"opt_pw_d": "[1-\\sqrt{2},\\,5]",
-	"av_0": "a=0",
-	"av_neg1": "a=-1",
-	"av_1": "a=1",
-	"av_half": "a=\\frac{1}{2}",
-}
+## {f:名称} 直挂公式的 name→LaTeX 映射（历史兼容层）。
+## A10 迁移完成后**已清空**：全库 data/*.json 不再有任何 {f:} 引用，数学式子一律 $$LaTeX$$。
+## 新内容请直接写 $$…$$（check_questions 会拦下未声明的 {f:}）；本表保留为空的兼容口。
+const FORMULA_LATEX := {}
 
 ## {f:名称} 的口播文案（朗读用）。缺失时回退到 FORMULA_LATEX 的通用 LaTeX→口播转换。
-const FORMULA_SPEECH := {
-	"l6_diff_formula": "PA 的绝对值减 PB 的绝对值的差，取绝对值，小于等于 AB 的绝对值",
-	"l6_mid_tpl": "A 乘 二分之 x 加 x 撇，加 B 乘 二分之 y 加 y 撇，加 C 等于 0",
-	"l6_origin_sym": "点 P，x y，关于原点对称到 P 撇，负 x 负 y",
-	"l6_perp_tpl": "A 分之 x 撇减 x，等于 B 分之 y 撇减 y",
-	"l6_reflect_formula": "x 撇等于 x 减 A 方加 B 方 分之 2A 乘 括号 Ax 加 By 加 C；y 撇同理",
-	"l6_sum_formula": "PA 的绝对值加 PB 的绝对值，大于等于 A 撇 B 的绝对值",
-	"l6_xaxis_sym": "点 P，x y，关于 x 轴对称到 P 撇，x 负 y",
-	"l6_yx_sym": "点 P，a b，关于直线 y 等于 x 对称到 P 撇，b a",
-	"pw_left": "f x 等于 负的括号 x 减 1 的平方，再加 1",
-	"pw_right": "f x 等于 x 减 3 的绝对值，再减 1",
-	"pw_g": "g a 等于 负的括号 a 减 1 的平方，再加 1",
-	"pw_xlt_a": "x 小于 a",
-	"pw_xge_a": "x 大于等于 a",
-	"pw2_left": "f x 等于 括号 1 减 2a 乘 x，再加 3a",
-	"pw2_right": "f x 等于 x 减 x 分之一",
-	"pw_xlt_1": "x 小于 1",
-	"pw_xge_1": "x 大于等于 1",
-	"opt_pw_a": "小于 1 减根号 2 的全体，或大于 5 的全体",
-	"opt_pw_b": "大于等于 1 减根号 2，且小于 5",
-	"opt_pw_c": "小于 1 减根号 2 的全体，或大于等于 5",
-	"opt_pw_d": "大于等于 1 减根号 2，且小于等于 5",
-	"av_0": "a 等于 0",
-	"av_neg1": "a 等于 负 1",
-	"av_1": "a 等于 1",
-	"av_half": "a 等于 二分之一",
-}
+## 同 FORMULA_LATEX：A10 迁移后清空；$$…$$ 由 SpeechRules 自动转口播。
+const FORMULA_SPEECH := {}
 
 ## 生成单个公式的内联图片 bbcode（优先运行时渲染，缺失/失败回退预烘焙 PNG）
 static func formula_img(name: String, h: int = 26) -> String:
