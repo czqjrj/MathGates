@@ -41,7 +41,7 @@
 | **A16** | 立几方法关内容在 GDScript（两套内容管线） | **P2** | 🟡 前提部分失效：题目已迁至 `data/solid_methods.json`；`scripts/modules/solid/topics/*.gd`（6 文件 3568 行）现为**纯几何/标注逻辑**（问号 0~1 处、无题干）→ 降级为「3D 场景代码与数据的分层整理」 |
 | **A17** | 数据文件命名易混（`conic`/`conics`、`vector`/`vectors`） | **P2** | 🟡 两步已落一（2026-10-21）：`463d06e` 校验器自检（孤儿/近名对半引用即红灯+反向验证）、`43a11f9` README 对照表；余「真重命名」为可选决策（两对文件均在用，重命名收益低） |
 | **A18** | 内容数据异常时缺用户可见兜底 | **P1** | ✅ 已完成（2026-10-21 第三十五轮 `rules/ContentHealth.gd` 体检 + `ui/ContentFallback.gd` 兜底卡/横幅 + `tools/check_content_health.gd` CI 闸门；顺带修真 bug：关卡 id `solid_angle` 被两章共用） |
-| **A19** | 多用户切换的会话状态残留 | **P2** | 切用户丢萌宠问候 |
+| **A19** | 多用户切换的会话状态残留 | **P2** | ✅ 已完成（2026-10-22 第三十六轮 `3bd4f59`：`_reset_session()` 收口不存档会话态，login/logout/create_user/delete_user 后复位；修复「切档后不再问候萌宠」；`·登记` 约定防回退） |
 | **B2** | 每关题量 3 → 5~8 | **P1** | 🟡 下限全线达标（2026-10-20：27/27 章 ≥ 5.0 题/关，全库平均 3.93；上探 6~7 题/关中段待续）。**2026-10-20 起暂缓，先做结构收敛** |
 | **B4** | 实验与追问不闭环 | **P1** | 探究轮形同虚设 |
 | **B5** | 干扰项改为诊断性干扰项 | **P1** | ✅ 已完成（2026-10-20 收官：黑名单校验器 + 42 轮整改 + 抽检 30 题；`tools/sample_distractors.gd`） |
@@ -133,12 +133,29 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`12df3c2`（`feat(A18)` 内容数据体检 / 用户可见兜底）；前一提交链：
-  `6abe822`（docs ASSETS 口径）→ `3029ee8`（docs 第三十四轮）→ `0d5cde4`（feat G3 学习报告）→
-  `8fdc5f0`（feat G1 错题间隔重复）→ `a885756`（docs 第三十三轮）→
-  `28a235f`（docs 第三十二轮）→ `b6e98d9`（F3 静止降耗）→…，
+- **最后提交**：`3bd4f59`（`feat(A19)` 切用户会话态复位）；前一提交链：
+  `f466402`（docs 第三十五轮）→ `12df3c2`（feat A18）→ `6abe822`（docs ASSETS 口径）→
+  `3029ee8`（docs 第三十四轮）→ `0d5cde4`（feat G3）→ `8fdc5f0`（feat G1）→…，
   已 push（`main` 与 `origin/main` 同步）。
-- **本轮交付（2026-10-21，第三十五轮）**：**A18 内容数据体检 / 用户可见兜底**（`12df3c2`）。
+- **本轮交付（2026-10-22，第三十六轮）**：**A19 切用户会话态复位**（`3bd4f59`）。
+  - 新增 `GameData._reset_session()`：集中重置不存档的会话态
+    （`pet_greeted_session` / `pet_away_days` / `review_focus` / `_save_pending`），
+    在 `login` / `logout` / `create_user` / `delete_user` 之后调用。
+  - **修复实测 bug**：`pet_greeted_session` 此前**无人复位**（`Login.gd`/`MainHub.gd` 置 `true`
+    后一直为 `true`）→ 同进程切用户后第二个用户拿不到萌宠问候；现一并复位。
+  - **边界（按用户决策）**：刻意**不重置** `current_chapter_index`/`current_level_index`/`current_level`
+    —— 关卡上下文由 `start_level()` 每次显式设置，且调试模式（全解锁）的关卡导航依赖它；
+    单测含反向断言守住。
+  - **约定落地**：`GameData` 顶部新增「会话态登记」注释块，不存档变量行尾标 `·登记`，
+    要求新增此类变量必须同步登记进 `_reset_session()`（靠机制兜，不靠记性）。
+  - 测试：`Tests._test_session_reset`（8 断言：A→B 切换 / `login` 切换 / `logout` / 反向不破坏导航）。
+  - 十项全绿：`CHECKED 108` / `TESTS 2008`（+8）/ `SMOKE 286` / `UI-SMOKE 416` /
+    `LabSmoke TMP_OK` / `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new（7 known）` /
+    `KNOWLEDGE hard-gaps=0` / `CONTENT-HEALTH 27 chapters / 0 problems` / `ASSETS 30.28 banned=0`。
+  - **A19 转 ✅**；`GameData.gd` 1558 → **1570/1600**（余 30，仍守 A4 红线）。
+  - **下一项建议**：**A10 存量迁移**（剩余 `{f:}` 全在 `function_lab_levels.json`，脚本化可做）；
+    或 **F5 存档版本化与导出/导入**；或回到内容侧 **B1/B2/B6**（结构线已基本清空）。
+- **上一轮（第三十五轮）**：**A18 内容数据体检 / 用户可见兜底**（`12df3c2`）。
   - **体检规则**：`rules/ContentHealth.gd`（122 行，纯规则：不读文件、不碰 autoload，
     入参 = 章节数组 + 已知场景集合 + 内容组键表）。七种问题码
     `E_EMPTY`/`E_DUP_ID`/`E_NO_LEVEL`/`E_NO_TITLE`/`E_NO_SCENE`/`E_BAD_REF`/`E_LOAD`，
@@ -520,8 +537,9 @@
 - **下次建议顺序**（按性价比）：
   > **2026-10-20 用户决策：暂停题目扩产，先做结构收敛。** B2 下限已全线达成（27/27 章 ≥ 5.0 题/关），
   > B1（21.4% → ≥30%）与 B2「上探 6~7 题/关中段」均为**纯内容批量生产**，可随时回归；当前转向 A/D/F 类结构问题。
-  1. **G1 已完成**（第三十三轮）→ 接下来 **G3 学习报告/家长视图**（纯逻辑与数据展示，可自动化验证、不依赖真机）；
-     若先做内容侧，则 **A13 字体替换 + F7 素材签字 + F2 keystore/真机**（需人工决策/下载/目视）。
+  1. **G1/G3/A18/A19 已完成**（第三十三/三十四/三十五/三十六轮）→ 接下来优先 **A10 存量迁移**
+     （剩余 `{f:}` 全在 `function_lab_levels.json`，可脚本化）；若先做内容侧，则
+     **A13 字体替换 + F7 素材签字 + F2 keystore/真机**（需人工决策/下载/目视）。
   2. 决策项待拍板：**G4/G5**；**A17 是否真重命名**（低优先）；**A2 迁移到 LabStage**（长期项）。
   3. 内容项回归：**B1 达标**（21.4% → ≥30%）、**B2 中段**（6~7 题/关）、**B6 理由选项占比**，
      结构收敛后按章继续（新题模板仍须内建 B5 规范）。
@@ -1119,7 +1137,19 @@
 
 ---
 
-### [ ] A19 · 多用户切换的会话状态残留（P2）
+### [x] A19 · 多用户切换的会话状态残留（P2）✅ 已完成（2026-10-22 第三十六轮 `3bd4f59`）
+
+**完成记录（2026-10-22 第三十六轮，`3bd4f59`）**
+- 新增 `GameData._reset_session()`：集中重置**不存档**的会话态
+  （`pet_greeted_session` / `pet_away_days` / `review_focus` / `_save_pending`），
+  在 `login` / `logout` / `create_user` / `delete_user` 之后调用。
+- 修复实测 bug：`pet_greeted_session` 此前无人复位 → 同进程切用户后第二个用户拿不到萌宠问候。
+- **边界（用户决策）**：刻意**不重置** `current_chapter_index` / `current_level_index` / `current_level`
+  —— 关卡上下文由 `start_level()` 每次显式设置，且调试模式（全解锁）的关卡导航依赖它；单测含反向断言。
+  （原文做法里的这四个字段据实调整，理由记在这里。）
+- **约定落地**：`GameData` 顶部新增「会话态登记」注释块，不存档变量行尾标 `·登记`，
+  新增此类变量必须同步登记进 `_reset_session()`。
+- 测试：`Tests._test_session_reset`（8 断言）；TESTS 2000 → 2008。
 
 **现状（证据）**
 - `pet_greeted_session`（`GameData.gd:142`，注释明确写「不存档」）只在
