@@ -23,7 +23,7 @@
 | 编号 | 标题 | 优先级 | 说明 |
 |---|---|---|---|
 | **A1** | `SequenceStage` 迁移到 `StageBase` | **P0** | ✅ 已完成（763 → 185 行，双轨消除） |
-| **B1** | 题型单一：把 `interact/gate` 与填空题用起来 | **P0** | 🟡 **新进展**（2026-10-22）：**参数调参师**「参数母版」**脚手架**入库（feat `ed965a2`）——15 个 JSON / **51 道** explore 关卡 + 4 个 Python 工具 + 方案文档 `docs/B1_参数调参师方案.md`。**尚未接入任何关卡**（运行时零影响）。探索关卡 gate 覆盖率实测 **9.2%**（25/273），可增补 **248 个**。**接入前必办**：① 繁体文案 1303 处须转简；② 接入 `*_levels.json` 后须过 B5 干扰项黑名单 + `sample_distractors` 抽样 + `check_questions`；③ 全库非四选一占比目标 **21.4% → ≥30%**（方案里的「~50%」是生成批次估算，**非实测**）。|
+| **B1** | 题型单一：把 `interact/gate` 与填空题用起来 | **P0** | 🟡 参数母版**脚手架**入库（`ed965a2`，51 道 explore 关卡）；第四十轮实测：**这批数据接不进现有 `LabPlane`**——51 个 scene 命中 **155 条**方言不兼容（读数比较式静默回退 0 / `range` 写数组令 `set_scene()` 中断 / 曲线 `fn` 未知→**全画成正弦波**），已落成闸门 `check_param_masters.gd` + 基线（修一条删一行，清零才谈接入）。gate 机制本身可用。探索关卡 gate 覆盖率 **9.2%**（25/273）。全库非四选一 **21.4%**，目标 ≥30%。|
 | **B3** | 「探究→建构→迁移」名不副实 | **P0** | 🟡 26/26 章探究轮题面已改写（陈述句 0.0%，验收①达标）；建构/迁移轮深化待续 |
 | **B9** | 轮次标签编号错乱（纯编校，可脚本修） | **P0** | ✅ 已完成（`fix_labels.gd`，错位归 0） |
 | **C1** | 重复通关无限刷经验/金币 | **P0** | ✅ 已完成（经验仅星升；重复奖励×0.3/日封顶） |
@@ -133,9 +133,41 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`ed965a2`（feat B1 脚手架）→ `233ab6b`（docs 第三十九轮）→ `a83d4d4`（feat F6）→
-  `08c6d66`（docs 第三十八轮）→ `ceae1ac`（feat F5）→ …，已 push（`main` 与 `origin/main` 同步）。
-- **并行批次入库（2026-10-22，feat `ed965a2`）**：**B1「参数调参师」参数母版脚手架**。
+- **最后提交**：`0a0a0c5`（feat B1 方言闸门，本轮）→ 上一提交链：
+  `cac8e04`（docs 记录 B1 脚手架）→ `ed965a2`（feat B1 脚手架）→ `233ab6b`（docs 第三十九轮）→
+  `a83d4d4`（feat F6）→ `08c6d66`（docs 第三十八轮）→ `ceae1ac`（feat F5）→ …，
+  已 push（`main` 与 `origin/main` 同步）。
+- **本轮交付（2026-10-22，第四十轮）**：**B1 参数母版接入可行性实测 + 方言闸门**（feat `0a0a0c5`）。
+  - **结论：上一轮入库的那批参数母版数据，现在接不进现有 `LabPlane`**（不是改文件名就能接的活）。
+    51 个 scene **全部**命中至少一条方言问题，合计 **155 条**硬不兼容，且**每条都在 Godot 4.7.2
+    上跑探针实测复现**，不是读代码猜：
+    `E_READOUT_CMP` **51**（读数写比较式 → 解析器只认算术，**静默回退 0**，学生看不出达标没）；
+    `E_RANGE_ARRAY` **44**（`range:[a,b]` 写成数组 → `LabPlane.gd:357` `float(Array)`
+    报 `Nonexistent 'float' constructor`，`set_scene()` 当场中断）；
+    `E_CURVE_FN` **44**（`cubic_factorized`/`deriv`/`circle_target`… 引擎没有 →
+    `_f_y()` 落回默认分支，**曲线全画成正弦波**）；`E_READOUT_FUNC` **15**（自造
+    `calc_max(f,a,b)`/`count_roots` → `_ex_func()` 返回 0）；`E_RANGE_MISSING` **1**。
+    另有 warn：`W_CURVE_KEY` 56（`roots` 等键引擎不读，零点语义丢失）、`W_TRAD` 51 关（繁体）。
+  - **好消息**：`gate` / `answers` / `tol` / `sliders` **门控机制本身没问题**
+    （`LabStage.gd:187/246/257` 原生支持；`circle`/`ellipse`/`parabola`/`hyperbola`/`line`/`vector`
+    6 章已这么跑着）。要接的只是**上面那五种写法差异**。
+  - **落地为机制**：新增 `tools/check_param_masters.gd`——专管这批**不以 `_levels.json` 结尾**、
+    因而 `check_questions` / `check_content_health` 扫描口径**都覆盖不到**的脚手架文件；
+    存量 155 条记入 `tools/param_master_baseline.txt`（**修一条删一行，清零才谈接入**），
+    `-- --write-baseline` 可重生成。已接进 CI（`.github/workflows/check.yml`）与 README 自检段。
+  - **闸门自己也不会跑偏**：`_self_check()` 回读 `LabPlane` 源码核对曲线/表达式函数白名单，
+    **双向**抓漂移（假阳性把能跑的判成不能跑、假阴性放过跑不了的）。
+    本轮就靠它抓出过一次我自己的白名单写错（多行 match 分支的 `log`/`ln` 被漏扫）。
+  - **顺带补漏**：§9.1「改完必跑」表此前**缺 `check_content_health` 一行**（A18 那轮漏记），已补，
+    并加上 `check_param_masters` 一行。
+  - 十项全绿（数字与上一轮一致，仅 `CHECKED` +1 新工具）：`CHECKED 114` / `TESTS 2094` / `SMOKE 286` /
+    `UI-SMOKE 422` / `LabSmoke TMP_OK` / `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new（7 known）` /
+    `KNOWLEDGE hard-gaps=0` / `CONTENT-HEALTH 0 problems` / `ASSETS 30.52 MB（3154 files，banned=0）`；
+    **新增第十一项** `PARAM-CHECK 15 files / 51 levels / 51 scenes / 0 new / 155 known / 107 warnings`。
+  - **下一项建议**：接入 B1 需要先**拍一条路**——① 改数据成引擎方言（机械、可批量、不动绘图核心，
+    但曲线种类受限于现成的 19 个）；② 扩 `LabPlane`（补三次因式曲线 + 比较运算 + `roots` 语义，
+    表达力强但要动 1300+ 行绘图核心，建议单独立项）。选①我可以立刻按基线逐条改并把 155 往 0 压。
+- **上一轮（并行批次入库，2026-10-22，feat `ed965a2`）**：**B1「参数调参师」参数母版脚手架**。
   - **性质**：**脚手架**，未接入任何关卡 → 运行时行为零变化，十项闸门数字与提交前完全一致。
   - **内容**：15 个 JSON（`data/param_master_*.json`、`data/*_param_auto.json`、
     `data/function_lab_param_master.json`、`data/function_lab_levels_param.json`），
@@ -1312,6 +1344,31 @@
   `check_questions`**（这批文件名不以 `_levels.json` 结尾，当前各闸门扫描口径**都不覆盖**它们）；
   ③ 方案文档里的「非四选一 ~50%」是**生成批次估算**，不要当成全库实测——全库口径仍以
   `check_questions` 看板的 **21.4%** 为准。
+- 🛑 **2026-10-22 第四十轮：接入可行性实测 → 这批数据现在接不进去**。
+  逐字段拿 `LabPlane` 的**真实解析口径**对过，并在 Godot 4.7.2 上跑探针复现：
+  `gate` / `answers` / `tol` / `sliders` 的门控机制**是好的**（`LabStage.gd:187/246/257` 原生支持，
+  `circle`/`ellipse`/`parabola`/`hyperbola`/`line`/`vector` 6 章已这么跑着），
+  但这批数据有 **155 条方言不兼容**（51 个 scene 全中过至少一条）：
+
+  | 问题 | 条数 | 接进去会怎样（均已实测） |
+  |---|---|---|
+  | `E_READOUT_CMP` 读数表达式写了 `<` `>` `==` | **51** | `_ex_expr()` 只支持 `+ - * / ^` 括号，解析失败**静默回退兜底值** → 「a≈1?」这类达标指示**永远显示 0**，学生看不出自己做对没 |
+  | `E_RANGE_ARRAY` `scene.range` 写成数组 `[-1,3]` | **44** | `LabPlane.gd:357` 是 `maxf(float(_scene["range"]), 1.0)`，只认**标量** → `float(Array)` 报 `Invalid call. Nonexistent 'float' constructor`，`set_scene()` 当场中断、视野停在旧值 |
+  | `E_CURVE_FN` 曲线 `fn` 引擎没有 | **44** | `_f_y()` 的 match **落回默认分支 `a*sin(b*x+c)+d`** → `cubic_factorized`/`deriv`/`circle_target`… **全画成正弦波**（实测 `cubic_factorized` 在 x=1 得 `0.8414709848079` = `sin(1.0)`） |
+  | `E_READOUT_FUNC` 自造函数 `calc_max(f,a,b)`/`count_roots` | **15** | `_ex_func()` 只有 `sqrt/abs/sin/cos/tan`，其余**返回 0.0** |
+  | `E_RANGE_MISSING` 无 `x`/`y`/`range` | **1** | 用引擎默认视野 |
+  | （warn）`W_CURVE_KEY` 曲线带 `roots` 等引擎不读的键 | 56 | 零点/参数语义**整个丢失** |
+  | （warn）`W_TRAD` 繁体文案 | 51 关 | 与全项目简体口径不一致 |
+
+  **结论**：这不是「改改文件名就能接」的活。要么**把数据改成引擎方言**（`range:[a,b]`→`x:[a,b],y:[c,d]`；
+  比较式读数→算术式；自造函数→现成的 5 个），要么**扩 `LabPlane`**（补三次因式曲线、比较运算、
+  `roots` 语义）——后者会动 1300+ 行的绘图核心，建议单独立项再拍。
+- ✅ **已把它变成闸门**（本轮 feat）：新增 `tools/check_param_masters.gd` +
+  `tools/param_master_baseline.txt`（存量 155 条记基线，**修一条删一行**，清零才谈接入），
+  已接进 CI 与 README/§9.1。它专门管这批**不以 `_levels.json` 结尾**、因而 `check_questions`
+  与 `check_content_health` 扫描口径都覆盖不到的脚手架文件。
+  白名单（曲线类型 / 表达式函数）由 `_self_check()` **回读 `LabPlane` 源码**核对，
+  双向防漂移（假阳性 + 假阴性）；写错的白名单已被它自己抓出来过一次。
 
 ---
 
@@ -2736,6 +2793,8 @@
 | `--headless --path . --script res://tools/check_assets.gd`（**新增，见 A13**） | `ASSETS: <MB> MB … banned=0, oversize=0`（不得出现 `ASSETS-FAIL`） |
 | `--headless --path . --script res://tools/check_knowledge.gd`（**新增，见 E1**） | `KNOWLEDGE: <c> chapters / <p> points / <l> levels mapped / hard-gaps=<n> (baseline <b>)`（不得出现 `KNOWLEDGE-FAIL`） |
 | `--headless --path . res://tools/LevelPreview.tscn -- --smoke`（**新增，见 G2**） | `LEVEL-PREVIEW-SMOKE: <N> ok, 0 fail`（作者工具链：数据定位回归 + 编辑往返 + 舞台抽样） |
+| `--headless --path . --script res://tools/check_content_health.gd`（**新增，见 A18**） | `CONTENT-HEALTH: <c> chapters / <l> levels / 0 problems (orphans=0)`（不得出现 `CONTENT-HEALTH-FAIL`） |
+| `--headless --path . --script res://tools/check_param_masters.gd`（**新增，见 B1**） | `PARAM-CHECK: <f> files / <l> levels / <s> scenes / <n> new / <k> known / <w> warnings`（不得出现 `PARAM-CHECK-FAIL`；存量在 `tools/param_master_baseline.txt`，修一条删一行） |
 
 > 引擎：Godot 4.7.2（本机 `D:\Program Files\Godot_v4.7.2-stable_win64.exe`——注意它是**可执行文件**
 > 而不是目录；且只有 GUI 子系统版本，**没有** console 变体），
@@ -2757,6 +2816,8 @@
 看 `banned` / `oversize` 即可）/
 `KNOWLEDGE: 27 chapters / 275 points / 275 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `CONTENT-HEALTH: 27 chapters / 275 levels / 0 problems (orphans=0)`（A18 内容体检，见下方注）/
+`PARAM-CHECK: 15 files / 51 levels / 51 scenes / 0 new / 155 known / 107 warnings`（B1 参数母版脚手架
+→ 引擎方言闸门；155 条存量全在 `tools/param_master_baseline.txt`，接入前须清零）/
 `LATEX-PROBE: conic C4 68 / C5 76 / C6 68 段 / 0 失败`（E2 收官）、
 `vector_physics 26 段 / 0 失败`、`prob_simulate 14 段 / 0 失败`（E3 收官；**探针需按组分进程**，
 写法见 E2 的 MicroTeX 累积崩溃注：扫 `$$([^$]+)$$` 逐段调 `InlineMath._latex_bbcode(latex,26)`，
@@ -2768,7 +2829,9 @@
 
 - 校验器基线：`tools/check_questions_baseline.txt`（**7 条已知**：题干重复 7；B9 轮次编号错位已归 0）；
   `tools/knowledge_gaps_baseline.txt`（**0 条硬缺口**：集合基数 4→3→2、两角和差与二倍角
-  2026-10-19 由 `trig_sumdiff`/`trig_double` 补齐 → 0，余下 gaps 仅 optional=true）。
+  2026-10-19 由 `trig_sumdiff`/`trig_double` 补齐 → 0，余下 gaps 仅 optional=true）；
+  `tools/param_master_baseline.txt`（**155 条已知**：B1 参数母版脚手架与 `LabPlane` 的方言不兼容，
+  2026-10-22 第四十轮实测建立——**接入前须清零**，修一条删一行，见 B1）。
 - CI：`.github/workflows/check.yml`（push/PR 跑上面各条；`gdextension/bin/` 不入库 → 顺带回归 PNG 回退不崩）。
 
 ### 9.2 本文件基线数字（改完请同步更新）
