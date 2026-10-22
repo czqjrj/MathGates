@@ -321,7 +321,17 @@ build/           导出产物(APK,git 忽略)
 
 ## 自检与 CI
 
-改完**必跑**（顺序任意，全绿才提交）：
+**一条命令跑完全部 11 项**（自动找 Godot 4.7.2、自动 `--import`、失败给日志路径、全绿退出码 0）：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1        # 约 150 秒
+powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI-SMOKE / LEVEL-PREVIEW
+powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Godot "<godot472.exe>"   # 引擎不在常见路径时
+```
+
+换机后**先跑它**：全绿说明环境与基线一致。不绿先解决环境，别动代码。
+
+单项手工跑（顺序任意，全绿才提交）：
 
 ```
 & "<godot4.7.2.exe>" --headless --path . --script res://tools/check_all.gd
