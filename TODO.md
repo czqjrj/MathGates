@@ -23,7 +23,7 @@
 | 编号 | 标题 | 优先级 | 说明 |
 |---|---|---|---|
 | **A1** | `SequenceStage` 迁移到 `StageBase` | **P0** | ✅ 已完成（763 → 185 行，双轨消除） |
-| **B1** | 题型单一：把 `interact/gate` 与填空题用起来 | **P0** | 🟡 **新进展**（2026-10-23）：**参数调参师**玩法落地！已生成 **18 道**趣味实验题覆盖函数/几何/数列/概率四大模块（`param_master_*.json`）。探索关卡 gate 覆盖率仅 9.2%（25/273），可增补 **248 个**。工具就绪（批量生成脚本），待 Godot 测试后扩展。当前非四选一比例 ~50%，目标提升至 **≥70%**。|
+| **B1** | 题型单一：把 `interact/gate` 与填空题用起来 | **P0** | 🟡 **新进展**（2026-10-22）：**参数调参师**「参数母版」**脚手架**入库（feat `ed965a2`）——15 个 JSON / **51 道** explore 关卡 + 4 个 Python 工具 + 方案文档 `docs/B1_参数调参师方案.md`。**尚未接入任何关卡**（运行时零影响）。探索关卡 gate 覆盖率实测 **9.2%**（25/273），可增补 **248 个**。**接入前必办**：① 繁体文案 1303 处须转简；② 接入 `*_levels.json` 后须过 B5 干扰项黑名单 + `sample_distractors` 抽样 + `check_questions`；③ 全库非四选一占比目标 **21.4% → ≥30%**（方案里的「~50%」是生成批次估算，**非实测**）。|
 | **B3** | 「探究→建构→迁移」名不副实 | **P0** | 🟡 26/26 章探究轮题面已改写（陈述句 0.0%，验收①达标）；建构/迁移轮深化待续 |
 | **B9** | 轮次标签编号错乱（纯编校，可脚本修） | **P0** | ✅ 已完成（`fix_labels.gd`，错位归 0） |
 | **C1** | 重复通关无限刷经验/金币 | **P0** | ✅ 已完成（经验仅星升；重复奖励×0.3/日封顶） |
@@ -133,9 +133,24 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`a83d4d4`（feat F6，本轮）→ 上一提交链：
-  `08c6d66`（docs 第三十八轮）→ `ceae1ac`（feat F5）→ `8edc84d`（docs 第三十七轮）→
-  `4277788`（feat A10）→ …，已 push（`main` 与 `origin/main` 同步）。
+- **最后提交**：`ed965a2`（feat B1 脚手架）→ `233ab6b`（docs 第三十九轮）→ `a83d4d4`（feat F6）→
+  `08c6d66`（docs 第三十八轮）→ `ceae1ac`（feat F5）→ …，已 push（`main` 与 `origin/main` 同步）。
+- **并行批次入库（2026-10-22，feat `ed965a2`）**：**B1「参数调参师」参数母版脚手架**。
+  - **性质**：**脚手架**，未接入任何关卡 → 运行时行为零变化，十项闸门数字与提交前完全一致。
+  - **内容**：15 个 JSON（`data/param_master_*.json`、`data/*_param_auto.json`、
+    `data/function_lab_param_master.json`、`data/function_lab_levels_param.json`），
+    合计 **51 道** explore 关卡；4 个 Python 工具（`tools/analyze_gate_coverage.py`、
+    `tools/generate_param_masters.py`、`tools/generate_all_param_masters.py`、
+    `tools/convert_explore_to_param_master.py`）；方案文档 `docs/B1_参数调参师方案.md`。
+  - **实测数据**：explore 关卡 **273** 个，其中带 `gate` 验证的仅 **25** 个 → 覆盖率 **9.2%**，
+    可增补 **248** 个；这是 B1 后续扩题的主战场。
+  - **接入前必办（本次未做）**：① **繁体文案 1303 处**须转简体（全项目口径为简体）；
+    ② 接入 `*_levels.json` 后须重新过 **B5 干扰项黑名单 + `sample_distractors` 抽样 +
+    `check_questions`**（这批文件目前不以 `_levels.json` 结尾，各闸门扫描口径都不覆盖它们）；
+    ③ 方案里的「非四选一 ~50%」是生成批次估算、**非实测**——B1 的真实目标是
+    **全库**非四选一占比 **21.4% → ≥30%**，以 `check_questions` 看板为准。
+  - **注意**：本批文件由**并行会话**产出，尚未接进 Godot；续做时请从「接入关卡」这一步开始，
+    而不是重新生成。
 - **本轮交付（2026-10-22，第三十九轮）**：**F6 首次引导与机制说明**（feat `a83d4d4`）。
   - **① 一次性引导**：新增 `scripts/rules/GuideRules.gd`（纯规则：步骤表/图例条目/显示判定/重置）
     + `scripts/ui/GuideOverlay.gd`（绘制）。第一关 4 步气泡（拖动→提交→解析→**三星怎么拿**）；
@@ -156,7 +171,7 @@
     `CONTENT-HEALTH 0 problems` / `ASSETS 30.45 MB（3143 files，banned=0）`。
   - **F6 转 ✅**（全新学生仅凭引导过第一关留人工验收）；README 新增「首次引导与机制说明（F6）」段。
   - **下一项建议**：人工三件套 **A13/F7/F2**（需决策/下载/目视）；或内容侧 **B1/B2/B6**
-    （B1 另有并行会话在做参数母版，注意不要误改 `data/*_param*.json`）；
+    （B1 参数母版脚手架已入库 `ed965a2`，**下一步是接入关卡**而非重新生成，见 B1 进度）；
     或 **F7/G4/G5 决策项**（G4/G5 仅需拍板，不实现）。
 - **上一轮（第三十八轮）**：**F5 存档版本化与进度迁移**（`ceae1ac`）。
   - **① 版本化**：新增 `scripts/save/SaveMigrate.gd`——存档 `schema` + 升版迁移钩子
@@ -1285,6 +1300,18 @@
   2026-10-20 起 B2 扩题新增轮次以填空为主，覆盖复数/圆锥曲线（`conic_levels.json` 与 `conics_levels.json` 两处）/
   递推求通项/随机变量/函数与分段/不等式/立体几何初步/导数及其应用/数学思想综合/集合与逻辑/平面向量初步/
   立体几何 `solid`/成对数据的统计分析 等章，已使占比回升约 2.3 个点）。
+- 🟡 **2026-10-22 参数母版脚手架入库**（feat `ed965a2`，**尚未接入关卡**）：新增
+  「参数调参师」玩法的**参数母版**数据 15 个 JSON / **51 道** explore 关卡
+  （`data/param_master_*.json` + `data/*_param_auto.json` + `data/function_lab_param_master.json`
+  + `data/function_lab_levels_param.json`），配套 4 个 Python 工具（覆盖分析 / 按模块批量生成 /
+  既有 explore 关卡批量转换）与方案文档 `docs/B1_参数调参师方案.md`。
+  实测：**explore 273 轮里只有 25 轮带 `gate` 验证（9.2%）**，即可增补 **248 轮** —— 这正是
+  「把探究轮转纯 `interact`」那条路的最大存量，比机械转换填空的余量大一个数量级。
+  **下一步不是重新生成，而是接入**：① 繁体文案 **1303 处**须转简（全项目口径为简体）；
+  ② 接进 `*_levels.json` 后须重新过 **B5 干扰项黑名单 + `sample_distractors` 抽样 +
+  `check_questions`**（这批文件名不以 `_levels.json` 结尾，当前各闸门扫描口径**都不覆盖**它们）；
+  ③ 方案文档里的「非四选一 ~50%」是**生成批次估算**，不要当成全库实测——全库口径仍以
+  `check_questions` 看板的 **21.4%** 为准。
 
 ---
 
@@ -2726,7 +2753,7 @@
 `QUESTION-CHECK: 26 files / 269 levels / 1057 questions / 0 new / 7 known / 3 warnings`
 （A5 校验器，存量问题见下方基线；看板另有「干扰项黑名单命中 0 处」见 B5、「anim 演示覆盖 **13/26 文件**」见 D2）/
 `PERF idle 171 / lab_plane 259 / lab3d 251`（µs，headless CPU 处理耗时，见 `tools/perf_probe.tscn`）/
-`ASSETS: ≈30.45 MB over 3143 files … banned=0, oversize=0`（A13 护栏；末位随测试产物/并行内容批次微漂移，
+`ASSETS: ≈30.49 MB over 3151 files … banned=0, oversize=0`（A13 护栏；末位随测试产物/内容批次微漂移，
 看 `banned` / `oversize` 即可）/
 `KNOWLEDGE: 27 chapters / 275 points / 275 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `CONTENT-HEALTH: 27 chapters / 275 levels / 0 problems (orphans=0)`（A18 内容体检，见下方注）/
