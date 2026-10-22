@@ -95,6 +95,8 @@ var _level_mastery: Dictionary = {}   # 缓存：level_id -> 0..1
 var _domain_mastery: Dictionary = {}  # 缓存：domain_id -> 0..1
 
 # ---- 用户系统(多用户) ----
+## 会话态登记（A19）：下列变量**不存档**，切用户时必须清掉——新增此类变量须
+## 同时登记进 `_reset_session()`，否则会出现「上一个用户的残留」（如切档后不再问候萌宠）。
 var users: Dictionary = {}              # 用户名 -> 存档 dict
 var current_user: String = ""           # 当前登录用户名("" 表示未登录)
 var avatar: String = "player"
@@ -108,9 +110,9 @@ var pet_fed: int = 0                    # 萌宠投喂次数
 var pet_satiety: float = 1.0            # 饱食度 0..1(随时间下降，投喂回满)
 var pet_mood: float = 0.8               # 心情 0..1(答对/投喂上升，答错/久未互动下降)
 var pet_last_seen: int = 0              # 上次互动时间戳(秒)；用于跨会话衰减
-var pet_away_days: float = 0.0          # 本次登录距上次互动天数(不存档，供萌宠问候)
+var pet_away_days: float = 0.0          # 本次登录距上次互动天数(不存档，供萌宠问候)·登记
 var regions_seen: int = 0               # 已见过的解锁区域数(用于"解锁新区域"庆祝)
-var pet_greeted_session: bool = false   # 本次运行是否已让萌宠撒娇(不存档)
+var pet_greeted_session: bool = false   # 本次运行是否已让萌宠撒娇(不存档)·登记
 var chapter_order: Array = []           # 知识体系首页章节卡片的自定义顺序(章节 id 列表)
 var free_roam: bool = false               # 编辑/自由模式：解锁全部关卡
 
@@ -120,8 +122,8 @@ var current_level_index: int = -1
 var current_level: Dictionary = {}
 var last_chapter_id: String = ""   # 上次学习的章节 id(跨启动记住「正在学习」，即使重开也应置顶)
 
-var _save_pending: bool = false   # 是否有一次延迟落盘待执行(见 _save_soon)
-var review_focus: int = -1        # 错题深链要优先显示的题号(原始 qi)，-1 表示无
+var _save_pending: bool = false   # 是否有一次延迟落盘待执行(见 _save_soon)·登记
+var review_focus: int = -1        # 错题深链要优先显示的题号(原始 qi)，-1 表示无·登记
 
 # ---- 收集 / 养成(可存档) ----
 var owned_avatars: Array = ["player"]  # 已解锁头像 id
@@ -1439,12 +1441,22 @@ func list_users() -> Array:
 	arr.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return str(a["name"]) < str(b["name"]))
 	return arr
 
+## A19：清掉所有「不存档」的会话态。login/logout/create_user/delete_user 后必须调用。
+## 刻意**不重置** current_chapter_index/current_level_index/current_level：
+## 关卡上下文由每次 start_level() 显式设置，且调试模式（全解锁）下清掉会破坏关卡导航。
+func _reset_session() -> void:
+	pet_greeted_session = false
+	pet_away_days = 0.0
+	review_focus = -1
+	_save_pending = false
+
 func create_user(nm: String, av: String) -> bool:
 	nm = nm.strip_edges()
 	if nm == "" or users.has(nm):
 		return false
 	users[nm] = _blank_user()
 	users[nm]["avatar"] = av
+	_reset_session()
 	current_user = nm
 	_apply(users[nm])
 	_reset_daily_if_needed()
@@ -1457,6 +1469,7 @@ func create_user(nm: String, av: String) -> bool:
 func login(nm: String) -> bool:
 	if not users.has(nm):
 		return false
+	_reset_session()
 	current_user = nm
 	_apply(users[nm])
 	_reset_daily_if_needed()
@@ -1472,12 +1485,14 @@ func logout() -> void:
 		users[current_user] = _snapshot()
 	_write_users()
 	current_user = ""
+	_reset_session()
 	progress_changed.emit()
 
 func delete_user(nm: String) -> void:
 	users.erase(nm)
 	if current_user == nm:
 		current_user = ""
+		_reset_session()
 	_write_users()
 	progress_changed.emit()
 

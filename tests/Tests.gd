@@ -56,6 +56,7 @@ func _run() -> void:
 	_test_legacy_binding()
 	_test_curriculum_rules()
 	_test_speech_rules()
+	_test_session_reset()
 	_test_adventure()
 	_test_inline_math()
 	_test_content_health()
@@ -1695,6 +1696,42 @@ func _test_speech_rules() -> void:
 	# —— 盲点命令统计 ——
 	_eq(SpeechRules.unmapped_commands("\\foo \\bar \\foo").size(), 1, "speech 盲点去重")
 	_eq(SpeechRules.unmapped_commands("\\frac{x}{y}").size(), 0, "speech 已知命令非盲点")
+
+## A19：切用户后会话态不得残留（同进程 A→B 切换仍应有萌宠问候）。
+## 会话态 = 不存档变量：pet_greeted_session / pet_away_days / review_focus / _save_pending。
+func _test_session_reset() -> void:
+	var saved_user := GameData.current_user
+	GameData.create_user("a19_a", "player")
+	# 模拟 A 用户已问候过萌宠、停在错题深链题号上
+	GameData.pet_greeted_session = true
+	GameData.pet_away_days = 2.5
+	GameData.review_focus = 3
+	GameData.create_user("a19_b", "player")
+	_ok(not GameData.pet_greeted_session, "切用户后 pet_greeted_session 复位（B 用户仍会得到问候）")
+	_eq(GameData.pet_away_days, 0.0, "切用户后 pet_away_days 复位")
+	_eq(GameData.review_focus, -1, "切用户后 review_focus 复位")
+	# 已登录状态下直接 login 另一个用户，同样复位
+	GameData.login("a19_a")
+	_eq(GameData.current_user, "a19_a", "login 切回 A")
+	GameData.pet_greeted_session = true
+	GameData.login("a19_b")
+	_ok(not GameData.pet_greeted_session, "login 切用户后复位")
+	# logout 也要复位
+	GameData.pet_greeted_session = true
+	GameData.logout()
+	_eq(GameData.current_user, "", "logout 清空当前用户")
+	_ok(not GameData.pet_greeted_session, "logout 后复位")
+	# 反向：会话复位不得破坏关卡导航（current_level 由 start_level 显式设置，不参与复位）
+	GameData.login("a19_a")
+	GameData.start_level(0, 1)
+	var lid := GameData.current_level_id()
+	GameData.logout()
+	GameData.login("a19_a")
+	_eq(GameData.current_level_id(), lid, "复位会话不关卡导航（current_level 由 start_level 设置）")
+	GameData.delete_user("a19_a")
+	GameData.delete_user("a19_b")
+	if saved_user != "":
+		GameData.login(saved_user)
 
 ## C1/C2：重复通关不再无限刷经验/金币；当日重试降级星级上限。
 func _test_anti_farm() -> void:
