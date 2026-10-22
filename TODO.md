@@ -23,7 +23,7 @@
 | 编号 | 标题 | 优先级 | 说明 |
 |---|---|---|---|
 | **A1** | `SequenceStage` 迁移到 `StageBase` | **P0** | ✅ 已完成（763 → 185 行，双轨消除） |
-| **B1** | 题型单一：把 `interact/gate` 与填空题用起来 | **P0** | 🟡 参数母版**脚手架**入库（`ed965a2`，51 道 explore 关卡）；第四十轮实测：**这批数据接不进现有 `LabPlane`**——51 个 scene 命中 **155 条**方言不兼容（读数比较式静默回退 0 / `range` 写数组令 `set_scene()` 中断 / 曲线 `fn` 未知→**全画成正弦波**），已落成闸门 `check_param_masters.gd` + 基线（修一条删一行，清零才谈接入）。gate 机制本身可用。探索关卡 gate 覆盖率 **9.2%**（25/273）。全库非四选一 **21.4%**，目标 ≥30%。|
+| **B1** | 题型单一：把 `interact/gate` 与填空题用起来 | **P0** | 🟡 参数母版**脚手架**入库（`ed965a2`，51 道 explore 关卡）；第四十轮实测这批数据接不进现有 `LabPlane`（**155 条**方言不兼容），已落成闸门 `check_param_masters.gd` + 基线。第四十一轮修掉**不需要设计决策的 59 条**（51 条比较式读数改偏差读数 + 8 处 `pow(q,3)`；繁体 **51 关清零**）→ **96 条**，剩 `E_RANGE_ARRAY 44` / `E_CURVE_FN 44` / `E_READOUT_FUNC 7` / `E_RANGE_MISSING 1` 待「改数据 vs 扩引擎」拍板。gate 机制本身可用。探索关卡 gate 覆盖率 **9.2%**（25/273）。全库非四选一 **21.4%**，目标 ≥30%。|
 | **B3** | 「探究→建构→迁移」名不副实 | **P0** | 🟡 26/26 章探究轮题面已改写（陈述句 0.0%，验收①达标）；建构/迁移轮深化待续 |
 | **B9** | 轮次标签编号错乱（纯编校，可脚本修） | **P0** | ✅ 已完成（`fix_labels.gd`，错位归 0） |
 | **C1** | 重复通关无限刷经验/金币 | **P0** | ✅ 已完成（经验仅星升；重复奖励×0.3/日封顶） |
@@ -133,11 +133,38 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`0a0a0c5`（feat B1 方言闸门，本轮）→ 上一提交链：
-  `cac8e04`（docs 记录 B1 脚手架）→ `ed965a2`（feat B1 脚手架）→ `233ab6b`（docs 第三十九轮）→
+- **最后提交**：`aad3f41`（feat B1 方言修正第一刀，本轮）→ 上一提交链：
+  `caf5901`（docs 第四十轮）→ `0a0a0c5`（feat B1 方言闸门）→ `cac8e04`（docs 记录 B1 脚手架）→
+  `ed965a2`（feat B1 脚手架）→ `233ab6b`（docs 第三十九轮）→
   `a83d4d4`（feat F6）→ `08c6d66`（docs 第三十八轮）→ `ceae1ac`（feat F5）→ …，
   已 push（`main` 与 `origin/main` 同步）。
-- **本轮交付（2026-10-22，第四十轮）**：**B1 参数母版接入可行性实测 + 方言闸门**（feat `0a0a0c5`）。
+- **本轮交付（2026-10-22，第四十一轮）**：**B1 参数母版方言修正第一刀（155 → 96）**（feat `aad3f41`）。
+  - **只做「不需要拍板」的三类**，新增 `tools/fix_param_master_dialect.py`
+    （`--dry-run` / `--apply` / `--no-t2s`；**行级定点替换、不重序列化 JSON**，
+    因为这批文件 CRLF/LF 混用，整体 `json.dumps` 会造出几百行无关 diff）。
+  - **① 比较式读数 51 条 → 偏差读数**：`abs(a-1)<0.15` → `abs(a-1)`，label 改成
+    「a 与 1 的偏差」。引擎本就没有比较运算，原来的读数**恒为 0**；改成偏差后学生能看着数字
+    往 0 收敛，且与关卡 `tol` 阈值天然一致。`k>=0` 退回显示 `k`，条件写进 label（纯文本不求值）。
+  - **② `pow(q,3)` → `q*q*q`（8 处）**：必须与①**同一趟**做——`abs(2*pow(q,3)-16)<0.1`
+    同时中两类，只剥比较式会留下 `pow`，闸门把「刚修完的结果」报成新问题（修数据时的典型自伤）。
+  - **③ 繁体 51 关 → 0**：`zhconv` 逐字转简，**只作用于汉字区间、不碰标点**
+    （否则「」会被换成 “”，与全项目引号口径冲突；LaTeX 命令是 ASCII 不受影响）。
+    实际改动 **2543 个汉字**，比上一轮闸门估的 1303 多近一倍——因为那张繁体表本身不全。
+  - **顺手修掉闸门自己的假阳性**：`TRAD` 表里混了 `像`/`形`/`曲` 三个**简繁同形**字，
+    导致「圆锥曲线」的 `曲` 被永久点名（51 关恒有 30 条永远修不掉的假警告）。
+    已剔除并写成约定：**只收简繁不同形的字**；现表长 66，逐字用 `zhconv` 验过同形数为 0。
+  - **结果**：`PARAM-CHECK 155 known / 107 warnings` → **`96 known / 56 warnings`**；
+    基线文件 110 行 → 53 行。剩余全部需决策：`E_RANGE_ARRAY 44` / `E_CURVE_FN 44` /
+    `E_READOUT_FUNC 7`（`atan` 4 + `calc_max/calc_min/count_roots` 3）/ `E_RANGE_MISSING 1`；
+    warn 只剩 `W_CURVE_KEY 56`（`roots` 等键引擎不读，零点语义丢失）。
+  - 十项全绿：`CHECKED 114` / `TESTS 2094` / `SMOKE 286` / `UI-SMOKE 422` / `LabSmoke TMP_OK` /
+    `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new（7 known）` / `KNOWLEDGE hard-gaps=0` /
+    `CONTENT-HEALTH 0 problems` / `ASSETS 30.53 MB（3155 files，banned=0）`；
+    `PARAM-CHECK 15 files / 51 levels / 51 scenes / 0 new / 96 known / 56 warnings`。
+  - **下一项建议**：仍卡在同一个岔路口——`E_RANGE_ARRAY`/`E_CURVE_FN` 那 88 条要「改数据」
+    还是「扩 `LabPlane`」取决于你要不要保留 `cubic_factorized`/`deriv`/`circle_target` 这类
+    表达力。选①（改数据）我继续压到 0；选②（扩引擎）我先出改动面与回归风险评估。
+- **上一轮（2026-10-22，第四十轮）**：**B1 参数母版接入可行性实测 + 方言闸门**（feat `0a0a0c5`）。
   - **结论：上一轮入库的那批参数母版数据，现在接不进现有 `LabPlane`**（不是改文件名就能接的活）。
     51 个 scene **全部**命中至少一条方言问题，合计 **155 条**硬不兼容，且**每条都在 Godot 4.7.2
     上跑探针实测复现**，不是读代码猜：
@@ -1369,6 +1396,26 @@
   与 `check_content_health` 扫描口径都覆盖不到的脚手架文件。
   白名单（曲线类型 / 表达式函数）由 `_self_check()` **回读 `LabPlane` 源码**核对，
   双向防漂移（假阳性 + 假阴性）；写错的白名单已被它自己抓出来过一次。
+- ✅ **2026-10-22 第四十一轮：先砍「不需要拍板」的 59 条**（155 → **96**，warn 107 → **56**）。
+  新增 `tools/fix_param_master_dialect.py`（`--dry-run` / `--apply` / `--no-t2s`），
+  **行级定点替换、不重序列化 JSON**（这批文件 CRLF/LF 混用，整体 `json.dumps` 会产生几百行无关 diff；
+  与 `tools/fix_labels.gd` 同口径）。做了三件事：
+  - **比较式读数 51 条 → 偏差读数**：`abs(a-1)<0.15` → `abs(a-1)`，label 同步改写为
+    「a 与 1 的偏差」。这不是将就——关卡的 `tol` 本就是达标阈值，「偏差 < 0.15 即过关」
+    比一个恒为 0 的布尔读数对学生更有用。`k>=0` 这类无偏差可言的退回显示 `k`，
+    条件写进 label（label 是纯文本，引擎不参与求值）。
+  - **`pow(q,3)` → `q*q*q`（8 处）**：必须和上一条**同一趟**做。`abs(2*pow(q,3)-16)<0.1`
+    **同时**中了比较式与未知函数，只剥比较式的话剩下的 expr 仍带 `pow`，闸门会把「刚修完的结果」
+    报成一条新问题——这是修数据时最容易踩的自伤。
+  - **繁体 51 关 → 0**：用 `zhconv` 逐字转简，**只作用于汉字区间，不碰标点**
+    （否则「」会被换成 “”，与全项目引号口径打架；LaTeX 命令是 ASCII 天然不受影响）。
+    实际改动 **2543 个汉字**——比上一轮闸门估的 1303 多近一倍，因为那张繁体字表本身不全。
+- ⚠️ **闸门自己也修了个假阳性**：`TRAD` 表里混进了 `像`/`形`/`曲` 三个**简繁同形**字，
+  导致「圆锥曲线」里的 `曲` 被永久报成繁体（51 关里恒有 30 条永远修不掉的假警告）。
+  已剔除并把「只收不同形字」写成约定；现在表长 66，逐字用 `zhconv` 验过同形数为 0。
+- **剩余 96 条**（全部需决策，已不在本轮范围内）：`E_RANGE_ARRAY 44`、`E_CURVE_FN 44`、
+  `E_READOUT_FUNC 7`（`atan` 4 + `calc_max/calc_min/count_roots` 3）、`E_RANGE_MISSING 1`。
+  另有 `W_CURVE_KEY 56`（`roots` 等键引擎不读，零点语义丢失）——这条也只能靠扩引擎解决。
 
 ---
 
@@ -2805,19 +2852,19 @@
 > `Parse Error: Could not find type "BossHud"`。用编辑器打开一次，或跑
 > `& "<godot472.exe>" --headless --path . --import`（新增 `class_name` 文件后同样要跑一次）。
 
-**当前回归基线**（改完请对照，数字只能升不能降；2026-10-22 第三十九轮 F6 首次引导后）：
+**当前回归基线**（改完请对照，数字只能升不能降；2026-10-22 第四十一轮 B1 方言修正后）：
 `CHECKED 113 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 2094 passed, 0 failed` / `SMOKE: 286 ok, 0 fail` /
 `UI-SMOKE: 422 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
 `LEVEL-PREVIEW-SMOKE: 7474 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
 `QUESTION-CHECK: 26 files / 269 levels / 1057 questions / 0 new / 7 known / 3 warnings`
 （A5 校验器，存量问题见下方基线；看板另有「干扰项黑名单命中 0 处」见 B5、「anim 演示覆盖 **13/26 文件**」见 D2）/
 `PERF idle 171 / lab_plane 259 / lab3d 251`（µs，headless CPU 处理耗时，见 `tools/perf_probe.tscn`）/
-`ASSETS: ≈30.49 MB over 3151 files … banned=0, oversize=0`（A13 护栏；末位随测试产物/内容批次微漂移，
+`ASSETS: ≈30.53 MB over 3155 files … banned=0, oversize=0`（A13 护栏；末位随测试产物/内容批次微漂移，
 看 `banned` / `oversize` 即可）/
 `KNOWLEDGE: 27 chapters / 275 points / 275 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `CONTENT-HEALTH: 27 chapters / 275 levels / 0 problems (orphans=0)`（A18 内容体检，见下方注）/
-`PARAM-CHECK: 15 files / 51 levels / 51 scenes / 0 new / 155 known / 107 warnings`（B1 参数母版脚手架
-→ 引擎方言闸门；155 条存量全在 `tools/param_master_baseline.txt`，接入前须清零）/
+`PARAM-CHECK: 15 files / 51 levels / 51 scenes / 0 new / 96 known / 56 warnings`（B1 参数母版脚手架
+→ 引擎方言闸门；96 条存量全在 `tools/param_master_baseline.txt`，接入前须清零）/
 `LATEX-PROBE: conic C4 68 / C5 76 / C6 68 段 / 0 失败`（E2 收官）、
 `vector_physics 26 段 / 0 失败`、`prob_simulate 14 段 / 0 失败`（E3 收官；**探针需按组分进程**，
 写法见 E2 的 MicroTeX 累积崩溃注：扫 `$$([^$]+)$$` 逐段调 `InlineMath._latex_bbcode(latex,26)`，
@@ -2830,8 +2877,8 @@
 - 校验器基线：`tools/check_questions_baseline.txt`（**7 条已知**：题干重复 7；B9 轮次编号错位已归 0）；
   `tools/knowledge_gaps_baseline.txt`（**0 条硬缺口**：集合基数 4→3→2、两角和差与二倍角
   2026-10-19 由 `trig_sumdiff`/`trig_double` 补齐 → 0，余下 gaps 仅 optional=true）；
-  `tools/param_master_baseline.txt`（**155 条已知**：B1 参数母版脚手架与 `LabPlane` 的方言不兼容，
-  2026-10-22 第四十轮实测建立——**接入前须清零**，修一条删一行，见 B1）。
+  `tools/param_master_baseline.txt`（**96 条已知**：B1 参数母版脚手架与 `LabPlane` 的方言不兼容，
+  2026-10-22 第四十轮实测建立、第四十一轮由 155 修到 96——**接入前须清零**，修一条删一行，见 B1）。
 - CI：`.github/workflows/check.yml`（push/PR 跑上面各条；`gdextension/bin/` 不入库 → 顺带回归 PNG 回退不崩）。
 
 ### 9.2 本文件基线数字（改完请同步更新）
