@@ -1,0 +1,132 @@
+{
+  "param_master": {
+    "title": "参数调参师 · 函数特性实验",
+    "method": "动态实验 · 条件筛选 · 综合应用",
+    "color": "#9C27B0",
+    "summary": "通过拖动滑块观察函数图像变化，找到满足多个条件的参数范围，培养「数形结合」思想。",
+    "levels": [
+      {
+        "name": "PM-1 调出三个零点",
+        "type": "explore",
+        "goal": "拖动 a、b 两个滑块，让 f(x) = x³ + ax² + bx 同时满足：①过原点 ②有两个极值点 ③极大值为正",
+        "q": "函数 $$f(x)=x^3+ax^2+bx$$。拖动滑块改变 a、b，观察函数图像的零点个数与极值变化——当参数落在什么范围时，函数会有三个不同的零点？",
+        "steps": [
+          "① 拖动 a 和 b 滑块，观察图像形状如何变化",
+          "② 注意导数 f'(x) = 3x² + 2ax + b 的判别式 Δ = (2a)² - 4·3·b",
+          "③ 当 Δ > 0 时有两个极值点，进一步调整使极大值 > 0、极小值 < 0",
+          "④ 观察图像与 x 轴交点个数（即零点个数）"
+        ],
+        "tip": "三次函数要有三个零点，需要：①有两个极值点（导数 Δ > 0）；②极大值与极小值异号。试试 a = -3, b = 2 的组合！",
+        "confirm": "我找到了一个符合条件的组合",
+        "gate": true,
+        "answers": {
+          "a": -3,
+          "b": 2
+        },
+        "tol": {
+          "a": 0.5,
+          "b": 0.5
+        },
+        "goals": [
+          {
+            "id": "two_extrema",
+            "condition": "(2*a)^2 - 12*b > 0",
+            "display": "Δ = {(2*a)^2 - 12*b:.2f} > 0 ✓",
+            "hint": "导数需要有兩個不同實根"
+          },
+          {
+            "id": "positive_max",
+            "condition": "let x1 = (-2*a + sqrt((2*a)^2 - 12*b))/6; f(x1) > 0",
+            "display": "极大值 > 0 ✓",
+            "hint": "調高極大值或降低極小值"
+          },
+          {
+            "id": "three_zeros",
+            "condition": "let f = lambda x: x**3 + a*x**2 + b*x; let dx = 0.01; count = 0; for i in range(-1000, 1000): if f(i*dx)*f((i+1)*dx) < 0: count += 1; count >= 3",
+            "display": "三個零點 ✓",
+            "hint": "確保三個交點分開"
+          }
+        ],
+        "retry": "條件未滿足：{unmet_goals}。試試調整 a、b 讓圖像穿過 x 軸三次。",
+        "ask": "三次函數 f(x) = x³ + ax² + bx 有三個不同零點的充要條件是？",
+        "opts": [
+          "導數判別式 Δ > 0 且極大值與極小值異號",
+          "只需導數有兩個實根即可",
+          "只需要 f(0) = 0",
+          "a > 0 且 b > 0"
+        ],
+        "ans": 0,
+        "hint": "三個零點意味著圖像穿過 x 軸三次，必須有兩個極值點且它們在 x 軸兩側。",
+        "explain": "三次函數有三個不同零點的條件：① f'(x) = 3x² + 2ax + b 有兩個不同實根 ⇒ Δ = 4a² - 12b > 0；② 這兩個極值點的函數值異號，保證圖像上下穿過 x 軸各兩次。當 a = -3, b = 2 時，f(x) = x³ - 3x² + 2x = x(x-1)(x-2)，零點為 0、1、2。",
+        "success": "太棒了！你找到的 (a, b) = ({a}, {b}) 確實讓函數有三個零點。記住這個模式：Δ > 0 且極值異號。",
+        "scene": {
+          "range": [-3, 5],
+          "sliders": [
+            {"name": "a", "min": -5, "max": 5, "value": 0, "step": 0.1, "label": "二次項係數 a"},
+            {"name": "b", "min": -5, "max": 5, "value": 0, "step": 0.1, "label": "一次項係數 b"}
+          ],
+          "curves": [
+            {"fn": "cubic", "coeffs": [1, "a", "b", 0], "color": "#9C27B0", "label": "f(x)"}
+          ],
+          "points": [
+            {"p": [0, 0], "label": "O", "color": "#ff5722"}
+          ],
+          "readouts": [
+            {"label": "Δ", "expr": "(2*a)^2 - 12*b", "color": "#4caf50"},
+            {"label": "極大值", "expr": "calc_max(f,a,b)", "color": "#ffeb3b"},
+            {"label": "極小值", "expr": "calc_min(f,a,b)", "color": "#f44336"},
+            {"label": "零點數", "expr": "count_roots(a,b)", "color": "#2196f3"}
+          ]
+        }
+      },
+      {
+        "name": "PM-2 調出单调递增",
+        "type": "explore",
+        "goal": "拖动 k，让 f(x) = x³ + kx 在整个定义域上单调递增",
+        "q": "函數 $$f(x)=x^3+kx$$。拖动滑块 k，觀察函數的增減性變化——當 k 取什麼範圍時，f(x) 在 R 上單調遞增？",
+        "steps": [
+          "① 拖動 k 改變斜率參數",
+          "② 觀察切線斜率 f'(x) = 3x² + k 是否始終 ≥ 0",
+          "③ 當 f'(x) ≥ 0 對所有 x 成立時，函數單調遞增"
+        ],
+        "tip": "單調遞增的條件是導數 f'(x) = 3x² + k ≥ 0 對一切 x 成立。由於 3x² ≥ 0，只要 k ≥ 0 即可！",
+        "confirm": "我明白了",
+        "gate": true,
+        "answers": {
+          "k": 0
+        },
+        "tol": {
+          "k": 0.1
+        },
+        "goals": [
+          {
+            "id": "non_negative_deriv",
+            "condition": "k >= 0",
+            "display": "f'(x) = 3x² + k ≥ 0 恒成立 ✓",
+            "hint": "3x² 的最小值是 0，所以..."
+          }
+        ],
+        "retry": "當 k = {k} 時，f'(x) 在某些地方會變成負數（例如 x = 0 附近）。試試 k ≥ 0。",
+        "ask": "函數 f(x) = x³ + kx 在 R 上單調遞增的充要條件是？",
+        "opts": ["k ≥ 0", "k > 0", "k = 0", "任意實數 k"],
+        "ans": 0,
+        "hint": "f'(x) = 3x² + k，而 3x² ≥ 0 恆成立。",
+        "explain": "f'(x) = 3x² + k。因為 3x² ≥ 0 對所有 x ∈ R 都成立，所以 f'(x) ≥ k。要讓 f'(x) ≥ 0 恒成立，只需 k ≥ 0。當 k = 0 時，f'(x) = 3x² ≥ 0，等號在 x = 0 處取到，此時函數仍然單調遞增（非嚴格）。",
+        "success": "正確！k ≥ 0 時 f'(x) ≥ 0 恒成立，函數單調遞增。",
+        "scene": {
+          "range": [-3, 3],
+          "sliders": [
+            {"name": "k", "min": -3, "max": 3, "value": 0, "step": 0.1, "label": "係數 k"}
+          ],
+          "curves": [
+            {"fn": "cubic_simple", "coeffs": [1, 0, "k", 0], "color": "#9C27B0", "label": "f(x)"}
+          ],
+          "readouts": [
+            {"label": "f'(0)", "expr": "k", "color": "#ff9800"},
+            {"label": "f'的最小值", "expr": "k", "color": "#4caf50"}
+          ]
+        }
+      }
+    ]
+  }
+}
