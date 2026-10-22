@@ -66,7 +66,10 @@ tools/           开发/测试脚本:check_all.gd(脚本检查)、check_question
 				 lab3d_render_check(立体几何/空间向量 3D 场景渲染自检,需真实窗口)、
 				 json_text(G2 JSON 文本级修改工具:括号匹配定位,不重排文件)、
 				 LevelPreview.tscn + level_preview.gd(G2 关卡预览器/编辑器,见「关卡作者工具链」)、
-				 scaffold_level.gd(G2 关卡脚手架:一键生成新关卡组骨架,默认 dry-run)
+				 scaffold_level.gd(G2 关卡脚手架:一键生成新关卡组骨架,默认 dry-run)、
+				 check_param_masters.gd + param_master_baseline.txt(B1 参数母版→LabPlane 引擎方言闸门,
+				 存量基线,修一条删一行)、fix_param_master_dialect.py(按上述闸门修数据:比较式读数→
+				 偏差读数、pow→乘法、繁转简;行级替换不重排 JSON,默认 dry-run)
 tests/           回归测试(GameData 纯逻辑)
 build/           导出产物(APK,git 忽略)
 ```
@@ -341,7 +344,8 @@ build/           导出产物(APK,git 忽略)
   这批 `data/param_master*.json` / `data/*_param_auto.json` **不以 `_levels.json` 结尾**，
   上面两个闸门的扫描口径都不覆盖它们——字段写成引擎不认识的样子时**不会有任何红灯**，
   接进关卡才是静默坏给学生看（视野中断 / 曲线全画成正弦波 / 读数恒为 0 / 门控永远不过）。
-  存量 155 条记在 `tools/param_master_baseline.txt`，**改一条删一行**；删干净才谈接入。
+  存量 96 条记在 `tools/param_master_baseline.txt`，**改一条删一行**；删干净才谈接入。
+  其中「不需要设计决策」的两类已由 `tools/fix_param_master_dialect.py` 修掉（155 → 96）。
   白名单（曲线类型 / 表达式函数）由 `_self_check()` 回读 `LabPlane` 源码核对，防口径漂移。
 - 以上检查已接入 CI（`.github/workflows/check.yml`，push/PR 自动跑）：五件套 + UiSmoke + check_assets +
   check_questions + check_knowledge + check_content_health + check_param_masters +
