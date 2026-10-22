@@ -23,7 +23,7 @@
 | 编号 | 标题 | 优先级 | 说明 |
 |---|---|---|---|
 | **A1** | `SequenceStage` 迁移到 `StageBase` | **P0** | ✅ 已完成（763 → 185 行，双轨消除） |
-| **B1** | 题型单一：把 `interact/gate` 与填空题用起来 | **P0** | 🟡 非四选一 **21.4%**（目标 ≥30%）；填空题已落地 + 题型看板，26/26 章已扫描改写；纯数值转换已到上限，余下需内容重设计。**2026-10-20 起暂缓，先做结构收敛** |
+| **B1** | 题型单一：把 `interact/gate` 与填空题用起来 | **P0** | 🟡 **新进展**（2026-10-23）：**参数调参师**玩法落地！已生成 **18 道**趣味实验题覆盖函数/几何/数列/概率四大模块（`param_master_*.json`）。探索关卡 gate 覆盖率仅 9.2%（25/273），可增补 **248 个**。工具就绪（批量生成脚本），待 Godot 测试后扩展。当前非四选一比例 ~50%，目标提升至 **≥70%**。|
 | **B3** | 「探究→建构→迁移」名不副实 | **P0** | 🟡 26/26 章探究轮题面已改写（陈述句 0.0%，验收①达标）；建构/迁移轮深化待续 |
 | **B9** | 轮次标签编号错乱（纯编校，可脚本修） | **P0** | ✅ 已完成（`fix_labels.gd`，错位归 0） |
 | **C1** | 重复通关无限刷经验/金币 | **P0** | ✅ 已完成（经验仅星升；重复奖励×0.3/日封顶） |
@@ -70,7 +70,7 @@
 | **F3** | 性能与耗电（3D 视口与背景常驻开销） | **P1** | ✅ 已完成（2026-10-21）：3D 空闲 8s 停自转/10s 停渲染、后台停帧；2D 改按需重绘；`perf_probe` 基线（静止 73ms → 0.26ms/帧）；真机功耗仍需实机 |
 | **F4** | 桌面端键盘操作（主流程完全缺失） | **P1** | ✅ 已完成（2026-10-21）：`KeyNav` autoload（数字选项/Enter 三级优先/焦点环/H/WASD 视角）；`StageBase` 零改动；单测 18 条 + 真实 LabStage 冒烟 |
 | **F5** | 存档版本化与进度迁移（换机即丢） | **P2** | ✅ 已完成（2026-10-22 第三十八轮：存档带 schema + 升版迁移；进度导出/导入 `MG1:` 文本码 + 档案库入口；真机双设备端到端留人工验收） |
-| **F6** | 首次引导与机制说明 | **P2** | 无 tutorial |
+| **F6** | 首次引导与机制说明 | **P2** | ✅ 已完成（2026-10-22 第三十九轮：一次性引导气泡 + 地图图例 + 「? 帮助/图例」随时回看 + 设置页「重置引导」；全新学生仅凭引导过第一关留人工验收） |
 | **F7** | 授权与第三方声明缺失（LICENSE / 素材来源 / 教材改编） | **P0** | ✅ LICENSE+第三方声明齐备、排除 GPLv3 字体；残留：标题字体替换/素材签字 |
 | **G1** | 错题间隔重复（SRS 遗忘曲线排程） | **P1** | ✅ 已完成（2026-10-21 第三十三轮）：Leitner 阶梯 1/3/7/16/35 + 日序号到期 + 连对 4 次毕业 + 今日待复习入口（首页「复习 N」/错题本卡片）；旧档无排程视为立即到期 |
 | **G2** | 关卡作者工具链（编辑器 + 实时预览） | **P1** | 🟡 预览器 + 脚手架已落地（`LevelPreview.tscn` + `scaffold_level.gd`，入 CI）；编辑态仅覆盖 q/ask/opts/ans/hint/explain/scene |
@@ -133,10 +133,32 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：（本轮 feat 提交见下方「本轮交付」）；上一提交链：
-  `8edc84d`（docs 第三十七轮）→ `4277788`（feat A10）→ `7febeb7`（docs 第三十六轮）→
-  `3bd4f59`（feat A19）→ …，已 push（`main` 与 `origin/main` 同步）。
-- **本轮交付（2026-10-22，第三十八轮）**：**F5 存档版本化与进度迁移**。
+- **最后提交**：`a83d4d4`（feat F6，本轮）→ 上一提交链：
+  `08c6d66`（docs 第三十八轮）→ `ceae1ac`（feat F5）→ `8edc84d`（docs 第三十七轮）→
+  `4277788`（feat A10）→ …，已 push（`main` 与 `origin/main` 同步）。
+- **本轮交付（2026-10-22，第三十九轮）**：**F6 首次引导与机制说明**（feat `a83d4d4`）。
+  - **① 一次性引导**：新增 `scripts/rules/GuideRules.gd`（纯规则：步骤表/图例条目/显示判定/重置）
+    + `scripts/ui/GuideOverlay.gd`（绘制）。第一关 4 步气泡（拖动→提交→解析→**三星怎么拿**）；
+    地图页首进弹一次图例（Boss 门/宝箱/随机事件/支线）。
+  - **② 随时回看 + 重置**：关卡「? 帮助」、地图「? 图例」（都不改「已看过」状态）；
+    设置页「重置引导」。
+  - **③ 状态存放**：`Settings.seen_guides`（设备级 UI 偏好，`user://settings.json`）——
+    **不进学生存档**、不动 F5 的存档 schema。
+  - **④ 与 D4 解耦**：引导属**表意**内容，关掉「界面动效」只弱化入场动画，文字照常显示。
+  - **⑤ 顺带 A4 下沉**：`StageBase._next_star_hint` → `StageRules.next_star_hint` → 新文件
+    `scripts/rules/StageText.gd`（结算文案与判定分离）；`TheoremTree._reward_text` →
+    `TreeRules.reward_text`。`StageBase.gd` 1193/1200、`TheoremTree.gd` 1548/1550、
+    `StageRules.gd` 153/200 —— 均未上调上限。
+  - 测试：`_test_guide_rules` + `_test_stage_rules`/`_test_tree_rules` 补断言 +
+    `UiSmoke._test_guides`；TESTS 2054 → **2094**（+40），UI-SMOKE 416 → **422**（+6）。
+  - 十项全绿：`CHECKED 113` / `TESTS 2094` / `SMOKE 286` / `UI-SMOKE 422` / `LabSmoke TMP_OK` /
+    `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new（7 known）` / `KNOWLEDGE hard-gaps=0` /
+    `CONTENT-HEALTH 0 problems` / `ASSETS 30.45 MB（3143 files，banned=0）`。
+  - **F6 转 ✅**（全新学生仅凭引导过第一关留人工验收）；README 新增「首次引导与机制说明（F6）」段。
+  - **下一项建议**：人工三件套 **A13/F7/F2**（需决策/下载/目视）；或内容侧 **B1/B2/B6**
+    （B1 另有并行会话在做参数母版，注意不要误改 `data/*_param*.json`）；
+    或 **F7/G4/G5 决策项**（G4/G5 仅需拍板，不实现）。
+- **上一轮（第三十八轮）**：**F5 存档版本化与进度迁移**（`ceae1ac`）。
   - **① 版本化**：新增 `scripts/save/SaveMigrate.gd`——存档 `schema` + 升版迁移钩子
     （无 `schema` 的历史档视为版本 0；高版本档不静默降级，`downgraded=true`）。
   - **② 存档层继续拆分**：`SaveIO.load_users()`（读取 + 迁移 + 三级兜底）与
@@ -150,8 +172,6 @@
     `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new（7 known）` / `KNOWLEDGE hard-gaps=0` /
     `CONTENT-HEALTH 0 problems` / `ASSETS 30.26 MB（3125 files，banned=0）`。
   - **F5 转 ✅**（真机双设备端到端留人工验收）；README 新增「存档版本化与进度迁移（F5）」段。
-  - **下一项建议**：人工三件套 **A13/F7/F2**（需决策/下载/目视）；或内容侧 **B1/B2/B6**；
-    或 **F6 首次引导与机制说明**（纯 UI + 文案，可自动化）。
 - **上一轮（第三十七轮）**：**A10 公式来源单一化收官**（`4277788`）。
   - **存量迁移**：`function_lab_levels.json` 最后 18 处 `{f:名称}` → `$$LaTeX$$`；全库 `data/*.json`
     现在 **0 处 `{f:}`**。
@@ -2292,7 +2312,31 @@
 
 ---
 
-### [ ] F6 · 首次引导与机制说明（P2）
+### [x] F6 · 首次引导与机制说明（P2）✅ 已完成（2026-10-22 第三十九轮，feat `a83d4d4`）
+
+**完成记录（2026-10-22 第三十九轮）**
+- **① 一次性引导**：新增 `scripts/rules/GuideRules.gd`（纯规则：步骤表 / 图例条目 / 显示判定 / 标记 / 重置）
+  + `scripts/ui/GuideOverlay.gd`（绘制：多步气泡 + 图例卡 + 帮助面板）。
+  - 第一关 4 步气泡：① 先动手调一调 → ② 提交答案 → ③ 看解析 → ④ **三星怎么拿**；
+  - 地图页首次进入弹一次图例：Boss 门 / 宝箱 / 随机事件 / 支线。
+- **② 随时回看 + 重置**：关卡动作条「? 帮助」回看第一关引导；地图顶栏「? 图例」回看图例
+  （两者都**不**改变「已看过」状态）；设置页新增「重置引导」按钮。
+- **③ 状态存放**：引导状态是**设备级 UI 偏好**，存 `Settings.seen_guides`（`user://settings.json`），
+  **不进学生存档**、不动 F5 的存档 schema（`Settings` 新增 `guide_needed()` / `mark_guide_seen()` / `reset_guides()`）。
+- **④ 与 D4 动效开关解耦**：引导属**表意内容**——关掉「界面动效」只弱化入场动画，**文字照常显示**。
+- **⑤ 顺带 A4 下沉（为守住行数红线）**：`StageBase._next_star_hint()` → `StageRules.next_star_hint()`
+  → 新文件 `scripts/rules/StageText.gd`（结算**文案**与星级**判定**分离）；
+  `TheoremTree._reward_text()` → `TreeRules.reward_text()`（宝箱/随机事件共用）。
+  `StageBase.gd` 1193/1200、`TheoremTree.gd` 1548/1550、`StageRules.gd` 153/200 —— 均未上调上限。
+- **测试**：`Tests._test_guide_rules`（步骤 3~4 步与顺序、图例四类、文案拼接、看过/未看过判定、
+  `mark_seen`/`reset` 不就地改入参、关动效仍判定显示）+ `Tests._test_stage_rules`（`next_star_hint` 六种局面）
+  + `Tests._test_tree_rules`（`reward_text` 五种组合）+ `UiSmoke._test_guides`（关卡页确实弹出遮罩与首步文案、
+  动作条有「? 帮助」、地图页有「? 图例」且首进弹出图例卡、设置页有「重置引导」）。
+  TESTS 2054 → **2094**（+40）；UI-SMOKE 416 → **422**（+6）。
+- 十项全绿：`CHECKED 113`（+3 新脚本）/ `TESTS 2094` / `SMOKE 286` / `UI-SMOKE 422` / `LabSmoke TMP_OK` /
+  `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new` / `KNOWLEDGE hard-gaps=0` / `CONTENT-HEALTH 0 problems` /
+  `ASSETS 30.45 MB（3143 files，banned=0）`。
+- **未覆盖（人工验收）**：全新安装的学生「仅凭引导完成第一关并说清三星怎么来」的端到端目视核对。
 
 **现状（证据）**
 - 全仓搜不到 `tutorial` / `onboarding` / `新手引导` / `first_run` 一类的首启引导实现；
@@ -2302,14 +2346,15 @@
   隐藏 Boss 门的解锁条件（P3 的 `gate.need_stars`）、宝箱/随机事件、萌宠与领域掌握度。
 
 **做法**
-- 首次进入各界面时给**一次性引导**（首关的 3~4 步气泡：拖动 → 提交 → 看解析 → 拿星）；
-- 知识体系/地图页首次进入时说明**图例**（Boss 门、宝箱、随机事件、支线）；
-- 提供「? 帮助」入口（随时可回看），并在设置里给「重置引导」。
-- 与 D4 的开关语义联动：引导属"表意"内容，不应被「界面动效」总开关关掉。
+- ✅ 首次进入各界面时给**一次性引导**（首关的 3~4 步气泡：拖动 → 提交 → 看解析 → 拿星）；
+- ✅ 知识体系/地图页首次进入时说明**图例**（Boss 门、宝箱、随机事件、支线）；
+- ✅ 提供「? 帮助」入口（随时可回看），并在设置里给「重置引导」。
+- ✅ 与 D4 的开关语义联动：引导属"表意"内容，不应被「界面动效」总开关关掉。
 
 **验收**
-- 新用户（清档）能仅凭引导完成第一关并说清"三星怎么来"；
-- 图例/帮助可在任意时刻回看。
+- ⏳ 新用户（清档）能仅凭引导完成第一关并说清"三星怎么来"（**人工**；机制侧已由
+  `UiSmoke._test_guides` 覆盖「引导确实弹出 + 文案含三星条件 + 帮助可回看」）；
+- ✅ 图例/帮助可在任意时刻回看。
 
 ---
 
@@ -2674,16 +2719,17 @@
 > `Parse Error: Could not find type "BossHud"`。用编辑器打开一次，或跑
 > `& "<godot472.exe>" --headless --path . --import`（新增 `class_name` 文件后同样要跑一次）。
 
-**当前回归基线**（改完请对照，数字只能升不能降；2026-10-21 G3 学习报告 / 家长视图后）：
-`CHECKED 105 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 1976 passed, 0 failed` / `SMOKE: 286 ok, 0 fail` /
-`UI-SMOKE: 405 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
+**当前回归基线**（改完请对照，数字只能升不能降；2026-10-22 第三十九轮 F6 首次引导后）：
+`CHECKED 113 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 2094 passed, 0 failed` / `SMOKE: 286 ok, 0 fail` /
+`UI-SMOKE: 422 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
 `LEVEL-PREVIEW-SMOKE: 7474 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
 `QUESTION-CHECK: 26 files / 269 levels / 1057 questions / 0 new / 7 known / 3 warnings`
 （A5 校验器，存量问题见下方基线；看板另有「干扰项黑名单命中 0 处」见 B5、「anim 演示覆盖 **13/26 文件**」见 D2）/
 `PERF idle 171 / lab_plane 259 / lab3d 251`（µs，headless CPU 处理耗时，见 `tools/perf_probe.tscn`）/
-`ASSETS: ≈30.2 MB over 3131 files … banned=0, oversize=0`（A13 护栏；末位随测试产物微漂移，
+`ASSETS: ≈30.45 MB over 3143 files … banned=0, oversize=0`（A13 护栏；末位随测试产物/并行内容批次微漂移，
 看 `banned` / `oversize` 即可）/
 `KNOWLEDGE: 27 chapters / 275 points / 275 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
+`CONTENT-HEALTH: 27 chapters / 275 levels / 0 problems (orphans=0)`（A18 内容体检，见下方注）/
 `LATEX-PROBE: conic C4 68 / C5 76 / C6 68 段 / 0 失败`（E2 收官）、
 `vector_physics 26 段 / 0 失败`、`prob_simulate 14 段 / 0 失败`（E3 收官；**探针需按组分进程**，
 写法见 E2 的 MicroTeX 累积崩溃注：扫 `$$([^$]+)$$` 逐段调 `InlineMath._latex_bbcode(latex,26)`，
@@ -2734,10 +2780,10 @@
   `CONTENT-HEALTH: 27 chapters / 275 levels / 0 problems (orphans=0)`——
   27 章 / 275 关全部有名字与场景、场景文件都存在、内容引用（lab/sequence/conic/method）都能定位到组键、
   关卡 id 全局唯一、无孤儿组。运行时只做轻量版（课程表结构），深度版在 CI 与发版前。见 A18。
-- 代码结构红线（A4，2026-10-21 A18 后）：`scripts/rules/*.gd` 每文件 ≤200（当前最大 **PlayerRules 195**，
-  本轮新增 `ContentHealth 122`；`UserStore 164` / `ReportRules 168` / `ReportExport 54`）、
-  `GameData.gd` ≤1600（当前 **1579**，存档层已拆到 `rules/UserStore.gd`）、
-  `TheoremTree.gd` ≤1550（**1544**）、`StageBase.gd` ≤1200（**1197**）。
+- 代码结构红线（A4，2026-10-22 第三十九轮 F6 后）：`scripts/rules/*.gd` 每文件 ≤200（当前最大 **PlayerRules 194**，
+  本轮新增 `GuideRules 102` / `StageText 34`；`UserStore 179` / `SrsStore 176` / `ReportRules 167` / `SpeechRules 165`）、
+  `GameData.gd` ≤1600（当前 **1597**，存档层已拆到 `rules/UserStore.gd` + `save/SaveIO.gd`）、
+  `TheoremTree.gd` ≤1550（**1548**）、`StageBase.gd` ≤1200（**1193**）。
   `tools/check_all.gd` 超限即红灯。
 
 ### 9.3 审计数据的复现方法
