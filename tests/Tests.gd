@@ -55,6 +55,7 @@ func _run() -> void:
 	_test_tree_rules()
 	_test_guide_rules()
 	_test_meta_defs()
+	_test_content_rules()
 	_test_legacy_binding()
 	_test_curriculum_rules()
 	_test_speech_rules()
@@ -2337,3 +2338,35 @@ func _test_content_health() -> void:
 	_eq(real["ok"], true, "content: the shipped curriculum passes the health check")
 	_eq(GameData.content_ok(), true, "content: GameData reports healthy content")
 	_eq((GameData.content_health()["problems"] as Array).size(), 0, "content: GameData has no problems")
+
+## B12：提示语泄露答案的判定（ContentRules 纯函数）。
+func _test_content_rules() -> void:
+	# 归一化：只剥 $$ 定界符，保留公式内容；标点/空白全去
+	_eq(ContentRules.norm_text("开口向上 ↔ x²=2py（p>0）。"), "开口向上↔x²=2pyp>0",
+		"b12: norm strips punctuation but keeps math")
+	_eq(ContentRules.norm_text("$$y=2x-1$$"), "y=2x-1", "b12: norm keeps the content inside $$")
+
+	# 硬泄露：hint 里出现正确项原文
+	_ok(ContentRules.hint_leaks("随时间变化的趋势用折线图。", "折线图"), "b12: literal answer in hint is a leak")
+	_ok(not ContentRules.hint_leaks("先看数据是时间序列还是分类比较。", "折线图"), "b12: method-only hint is fine")
+	_ok(ContentRules.hint_leaks("配方得 y=−(x−10)²+100。", ContentRules.num_text(100)),
+		"b12: numeric answer written into the hint is a leak")
+	_eq(ContentRules.num_text(12.0), "12", "b12: integral float prints without decimals")
+	_eq(ContentRules.num_text(1.5), "1.5", "b12: non-integral float keeps decimals")
+	# 数值答案：2 位就判，但要求数字边界（16 不能命中 2016/160）
+	_ok(ContentRules.hint_leaks_num("b²=16，tan45°=1。", "16"), "b12: a 2-digit numeric answer in the hint is a leak")
+	_ok(not ContentRules.hint_leaks_num("共有 2016 名学生。", "16"), "b12: digit boundary rejects 16 inside 2016")
+	_ok(not ContentRules.hint_leaks_num("长度为 160 米。", "16"), "b12: digit boundary rejects 16 inside 160")
+	_ok(not ContentRules.hint_leaks_num("先配方求顶点。", "100"), "b12: a method-only hint does not carry the number")
+
+	# 短答案不判硬泄露（「圆」「1」太容易巧合）
+	_ok(not ContentRules.hint_leaks("到两定点距离之比为常数，轨迹是圆。", "圆"),
+		"b12: answers shorter than 3 chars are not a hard leak")
+
+	# 软指标：换说法复述（答案 70% 以上被连续片段覆盖）
+	var r := ContentRules.repeat_ratio("点斜式：y−1=2(x−1)。", "y=2x−1")
+	_ok(r >= ContentRules.SOFT_RATIO, "b12: restating the answer raises the repeat ratio (got %.2f)" % r)
+	_eq(ContentRules.repeat_ratio("先求导得斜率，再用点斜式。", "y=2x−1") < ContentRules.SOFT_RATIO, true,
+		"b12: a method hint keeps the ratio low")
+	_eq(ContentRules.lcs_len("abc", ""), 0, "b12: lcs with empty string is 0")
+	_eq(ContentRules.lcs_len("xaby", "abyz"), 3, "b12: lcs finds the longest common run")

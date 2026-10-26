@@ -41,6 +41,8 @@ var _posref_re: RegEx
 ## B8 看板用：模糊的顺序措辞（可能指数列的项，不硬报）
 var _orderref_re: RegEx
 var _order_ref_hits := 0
+## B12 看板：hint 与正确项「换说法复述」的题数（硬泄露另走 _add）
+var _hint_soft := 0
 # ---- 看板统计
 var _n_files := 0
 var _n_levels := 0
@@ -190,6 +192,7 @@ func _check_stage(path: String, key: String, group_no: int, idx: int, s: Variant
 			_n_interact += 1
 		_check_inline(path, key, where + ".q", q)
 		_check_inline(path, key, where + ".ask", str(st.get("ask", "")))
+		_check_hint_leak(path, key, where, st)
 		_check_label(path, key, group_no, where, st)
 		_check_anim(path, st)
 		return
@@ -265,6 +268,7 @@ func _check_stage(path: String, key: String, group_no: int, idx: int, s: Variant
 	_check_inline(path, key, where + ".goal", str(st.get("goal", "")))
 	_check_inline(path, key, where + ".tip", str(st.get("tip", "")))
 	_check_option_refs(path, key, where, st)
+	_check_hint_leak(path, key, where, st)
 	_check_label(path, key, group_no, where, st)
 	_check_anim(path, st)
 
@@ -286,6 +290,40 @@ func _check_option_refs(path: String, key: String, where: String, st: Dictionary
 				% [where, f, m.get_string()])
 		for _m in _orderref_re.search_all(t):
 			_order_ref_hits += 1
+
+## B12：hint 是**直接显示**的（选项会打乱，提示不会），所以提示里出现正确项原文
+## 就等于把答案抄给学生。硬规则只抓「字面包含」（≥3 字，`ContentRules`）；
+## 「换个说法复述」判不了代数等价，只进看板，靠 `tools/sample_hints.gd` 抽检。
+func _check_hint_leak(path: String, key: String, where: String, st: Dictionary) -> void:
+	var hint := str(st.get("hint", ""))
+	if hint.strip_edges() == "":
+		return
+	var ans: Variant = st.get("ans", null)
+	if ans == null:
+		return
+	var opts: Variant = st.get("opts", null)
+	if typeof(opts) == TYPE_ARRAY and (opts as Array).size() >= 2:
+		var arr: Array = opts
+		if ans is Array:
+			# 多选：泄露「其中一个」不等于泄露答案，只进看板
+			for v in (ans as Array):
+				var t := str(arr[int(v)])
+				if ContentRules.hint_leaks(hint, t) \
+						or ContentRules.repeat_ratio(hint, t) >= ContentRules.SOFT_RATIO:
+					_hint_soft += 1
+			return
+		var correct := str(arr[int(ans)])
+		if ContentRules.repeat_ratio(hint, correct) >= ContentRules.SOFT_RATIO:
+			_hint_soft += 1
+		if ContentRules.hint_leaks(hint, correct):
+			_add(path, key, "%s hint 含正确项原文「%s」（B12：提示只给方法，不给结论）"
+				% [where, correct.substr(0, 24)])
+		return
+	# 填空/输入轮：ans 是数值，hint 里直接写出这个数同样是泄露
+	if typeof(ans) == TYPE_FLOAT or typeof(ans) == TYPE_INT:
+		var nt := ContentRules.num_text(ans)
+		if ContentRules.hint_leaks_num(hint, nt):
+			_add(path, key, "%s hint 含答案数值「%s」（B12：提示只给方法，不给结论）" % [where, nt])
 
 ## B9：轮次标签编号必须等于该关卡在本文件中的序号（如第 3 关的轮次应形如 "3-x"）。
 func _check_label(path: String, key: String, group_no: int, where: String, st: Dictionary) -> void:
@@ -677,6 +715,7 @@ func _report() -> void:
 	print("[看板] 轮次编号错位: %d 处（%d 文件，见 B9）" % [_num_mismatch, _num_mismatch_files.size()])
 	print("[看板] 干扰项黑名单命中: %d 处（B5 目标 0；范畴错误型干扰项须换成错误路径型）" % _bad_distractor)
 	print("[看板] 解析按顺序指代选项（模糊类，需人读）: %d 处（B8；硬规则只兜「选项N」）" % _order_ref_hits)
+	print("[看板] hint 换说法复述正确项（模糊类，需人读）: %d 题（B12；硬规则只兜「含原文」）" % _hint_soft)
 	if not _naming_pairs.is_empty():
 		print("[看板] A17 近名文件对: %s（编辑时勿改错）" % "，".join(_naming_pairs))
 	var blind := ""
