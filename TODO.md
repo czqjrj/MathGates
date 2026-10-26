@@ -46,7 +46,7 @@
 | **B4** | 实验与追问不闭环 | **P1** | 探究轮形同虚设 |
 | **B5** | 干扰项改为诊断性干扰项 | **P1** | ✅ 已完成（2026-10-20 收官：黑名单校验器 + 42 轮整改 + 抽检 30 题；`tools/sample_distractors.gd`） |
 | **B6** | 选项过短、退化为结果核对 | **P1** | 概念性误解测不出来 |
-| **B7** | 图片选项回归 LaTeX 文本 | **P1** | 180 处图片选项 |
+| **B7** | 图片选项回归 LaTeX 文本 | **P1** | ✅ 已完成（2026-10-26 第四十六轮）：关卡文件 **188 处**图片选项全改 `$$LaTeX$$`（`vector` 44 / `recurrence` 42 / `ellipse` 22 / `conic` 6 + 立几方法 74），`data/` 下 `opts` 引用 `res://art/**` 归零；顺带补 22 条「选项变文本后才暴露」的 hint 泄露 |
 | **B11** | 模块间质量方差过大 | **P1** | 同一品牌下深度差 3 倍 |
 | **A4** | 上帝对象拆分（`GameData`/`StageBase`/`TheoremTree`） | **P2** | ✅ 已收口（2026-10-21 第二十五轮 `7b4f8be`）：九刀拆出规则层七文件 696 行，三文件 4725→4311 行；行数红线进 `check_all`（超限即红灯）+ README「代码结构红线」；全程无行为变化、九件套绿 |
 | **A7** | 版本声明漂移（文档 vs `project.godot` vs GDExtension） | **P2** | ✅ 已完成（文档基线 + 版本策略已记录） |
@@ -133,12 +133,42 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`88c90de`（feat B12 提示语闸门，本轮）→ 上一提交链：
-  `ae0c076`（docs 第四十四轮）→ `bda56d7`（feat B8 选项顺序规范化）→
-  `997c6bb`（docs 第四十三轮）→ `2f92964`（feat A15 元内容出代码）→
-  `e5a670c`（docs 第四十二轮）→ `0e742e4`（chore 换机交接基建）→ …，
-  已 push（`main` 与 `origin/main` 同步）。
-- **本轮交付（2026-10-26，第四十五轮）**：**B12 提示语泄露答案**（feat `88c90de`）。
+- **最后提交**：`9eea080`（feat B7 图片选项转文本，本轮）→ `93edd32`（feat A10 残余 114 处图片选项）→
+  `251b3c9`（docs 第四十五轮）→ `88c90de`（feat B12 提示语闸门）→ `ae0c076`（docs 第四十四轮）→
+  `bda56d7`（feat B8 选项顺序规范化）→ `997c6bb`（docs 第四十三轮）→ …，
+  **未 push**（`git log origin/main..HEAD` 即本轮三笔：转换 114 → 转换 74 → 本文档）。
+- **本轮交付（2026-10-26，第四十六轮）**：**B7 图片选项回归 LaTeX 文本收官**（feat `9eea080`，连带 `93edd32`）。
+  - **总量修正**：清单写 180 处（114 关卡 + 66 已删的 `questions.json`），但 `data/solid_methods.json`
+    的 **74 处**从没统计过 → 实际 **188 处**。
+  - **两刀分开做**：`93edd32` 处理 `conic`/`ellipse`/`recurrence`/`vector` 的 114 处。难点不在替换，
+    而在**上游 B8 刚把选项顺序洗过**：直接 `stash pop` 会 100+ 冲突。做法是先从本地 diff 里
+    机械抽出「png 路径 → LaTeX」映射（104 条、107 组替换，双向校验一一对应），stash → 快进 →
+    按映射重放到新文件，再用结构化 diff 证明「新 HEAD + 映射 == 工作区，0 意外差异」。
+    这样 `ans` 索引跟着上游走、文本跟着本地走，两边都不丢。
+  - **本轮的 74 处**：立几方法 66 张图，按文件名语义 + 题干/hint + `solid/topics/*.gd` 的真实坐标核对
+    （`sm_A000` → `$$A(0,0,0)$$`、`sm_xeq2` → `$$x=2$$`、`sm_Req3r` → `$$R=3r$$` …）。
+    `opt_eq1~4` 没有源可查，正确答案按球心 (2,1,2)、R²=9 定，干扰项取「符号翻转 / R 当 R² / 81」
+    三种典型错误路径（**数学终审留人工**）。
+  - **B12 的真盲区被这一轮照出来**：选项是图片时，答案是 `res://art/...png` 字符串，
+    `hint_leaks()` 永远匹配不上，所以「hint 直接写 `R = 3r。`」这种明晃晃的泄露全部漏检。
+    转成文本后闸门立刻抓到 4 条硬泄露；实际按「hint 是否已给出本关结论」人工过了一遍，
+    **共改 22 条**（`r = √13。`、`S = 54 + 18√3。`、`底面切点是 (2, 2, 2)。` …）→ 全部改成给方法不给结论。
+    复核：用 Python 复刻 `ContentRules.norm_text` 扫全库 → 硬泄露 0、数值泄露 0。
+  - **验收口径**：`data/` 下任何 `opts` 都不再引用 `res://art/**`（含上一轮）；`formula` 字段剩下的
+    12 张 `fq_*.png` 是**插图**，不是选项，不在 B7 范围。
+  - **留的尾巴**：188 张公式图已无引用但未出库（A13）。`DrawUtil` / `InlineMath` / `SequencePlane`
+    存在按名字动态拼路径的加载点，删之前要先做「动态引用」排查，别只看静态 grep。
+  - **换机坑（本机现踩）**：这台机器的 Godot 是**非 console 版**（`Godot_v4.7.2-stable_win64.exe`，
+    没有 `_console.exe`）→ `tools/run_checks.ps1` 用 `& exe *> log` 收不到任何输出，
+    11 项全部 `FAIL (0.0s)`、日志是空的（不是检查真的挂了）。绕法：给每条命令加 `--log-file <log>` 再读文件。
+    修 `run_checks.ps1` 时应做成「日志为空 → 自动带 `--log-file` 重跑一次」的兜底。
+  - 十一项全绿（`--log-file` 方式）：`CHECKED 116` / `TESTS 2205` / `SMOKE 286` / `UI-SMOKE 422` /
+    `LabSmoke TMP_OK` / `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new（7 known / 2 warnings）` /
+    `KNOWLEDGE hard-gaps=0` / `CONTENT-HEALTH 0 problems` / `ASSETS 30.61 MB（3165 files）` /
+    `PARAM-CHECK 0 new / 96 known`。
+  - **下一项建议**：**B6 选项过短**（P1，纯编校，能机械找候选：选项长度 < 4 字且非公式/数值）；
+    或 **B10 题干套路化**（7 处重复已在基线）；B1 仍卡在「改数据 vs 扩 LabPlane」需要拍板。
+- **上一轮（2026-10-26，第四十五轮）**：**B12 提示语泄露答案**（feat `88c90de`）。
   - **判定放规则层，不放工具里**：新增 `scripts/rules/ContentRules.gd`（纯函数、无 IO，99 行）——
     `hint_leaks()` 字面包含、`hint_leaks_num()` 答案数值（**带数字边界**，防 `16` 命中 `2016`）、
     `repeat_ratio()` 最长公共子串占正确项的比例。规则层能被 `Tests` 直接钉住（新增 16 条断言），
@@ -1765,7 +1795,7 @@
 
 ---
 
-### [ ] B7 · 图片选项回归 LaTeX 文本（P1）
+### [x] B7 · 图片选项回归 LaTeX 文本（P1）✅ 2026-10-26 第四十六轮收官
 
 **现状（证据）**
 - **180 处图片选项**：关卡文件 114 处（`vector` 44 / `recurrence` 42 / `ellipse` 22 / `conic` 6），
@@ -1783,6 +1813,24 @@
 **验收**
 - `check_questions.gd` 统计「图片选项数」归零（图形题除外）；
 - TTS 朗读选项可用（手动抽检）。
+
+**收官记录（2026-10-26 第四十六轮，实际 188 处）**
+- 原清单只统计了 114 处：`data/solid_methods.json` 的 **74 处**（6 个立几方法章）漏计，
+  所以实际总量是 **188 处**，不是 180。
+- **114 处**：`93edd32` 与上游 B8 的洗牌结果做「路径 → LaTeX」重放（先 stash、再快进、后按映射重套），
+  保证「洗牌后的 `ans` 索引」与「新 LaTeX 文本」对应关系零漂移；结构性比对 0 处意外差异。
+- **74 处**：立几方法章的 66 张图，按文件名语义 + 题干/hint + `scripts/modules/solid/topics/*.gd`
+  里的真实顶点坐标逐条核对（如 `sm_A000` → `$$A(0,0,0)$$`、`sm_xeq2` → `$$x=2$$`）；
+  `opt_eq1~4` 四张球面方程图无源可查，正确答案按题面球心 (2,1,2)、R²=9 定，
+  三个干扰项用「符号翻转 / 把 R 当 R² / 81」三种典型错误路径补齐（数学终审留人工）。
+- **顺带补 22 条 hint**：选项从图片变文本后，原来「hint 里直接用 Unicode 把答案写一遍」
+  （`R = 3r。`、`r = √13。`、`底面切点是 (2, 2, 2)。` 等）全被 B12 闸门抓到 → 一律改成「给方法不给结论」。
+  这也说明 B12 当时的 `19 → 0` 对**图片选项**是盲区：图片选项的答案是路径字符串，闸门看不见。
+- 结果：`data/` 下 `opts` 引用 `res://art/**` **归零**（含上一轮 114 处）；`formula` 字段的 12 张
+  `fq_*.png` 是**插图不是选项**，不在 B7 范围（若也要转，需要先改 `formula` 字段的消费端）。
+- **未做**：188 张已无引用的公式图（`art/**/formulas/{qn_,opt_,sm_}*.png`）尚未出库——
+  属 A13 资源治理，且 `DrawUtil` / `InlineMath` / `SequencePlane` 有按名字动态拼路径的加载点，
+  需要先确认无动态引用再删。
 
 ---
 
@@ -3047,15 +3095,17 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
 | `--headless --path . --script res://tools/check_param_masters.gd`（**新增，见 B1**） | `PARAM-CHECK: <f> files / <l> levels / <s> scenes / <n> new / <k> known / <w> warnings`（不得出现 `PARAM-CHECK-FAIL`；存量在 `tools/param_master_baseline.txt`，修一条删一行） |
 
 > 引擎：Godot 4.7.2（本机 `D:\Program Files\Godot_v4.7.2-stable_win64.exe`——注意它是**可执行文件**
-> 而不是目录；且只有 GUI 子系统版本，**没有** console 变体），
-> 直连控制台取输出会丢，须用 `Start-Process -Wait -RedirectStandardOutput/Error` 重定向。
+> 而不是目录；且只有 GUI 子系统版本，**没有** console 变体）。
+> 直连控制台、`*>` 重定向、`Start-Process -RedirectStandardOutput` **都收不到输出**（第四十六轮实测：
+> 日志文件是空的，11 项全 `FAIL (0.0s)`，看着像检查挂了）。唯一可靠写法是让引擎自己落盘：
+> `& $exe --headless --path . --log-file <log> <参数>`，再读 `<log>`。
 > 换机后的工具链安装与已知坑见 `docs/环境配置.md`。
 >
 > **换机首次打开**：必须先让 Godot 生成全局类缓存，否则 `class_name`（如 `BossHud`、`SrsStore`）会连锁报
 > `Parse Error: Could not find type "BossHud"`。用编辑器打开一次，或跑
 > `& "<godot472.exe>" --headless --path . --import`（新增 `class_name` 文件后同样要跑一次）。
 
-**当前回归基线**（改完请对照，数字只能升不能降；2026-10-26 第四十五轮 B12 提示语闸门后）：
+**当前回归基线**（改完请对照，数字只能升不能降；2026-10-26 第四十六轮 B7 图片选项转文本后）：
 `CHECKED 116 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 2205 passed, 0 failed` / `SMOKE: 286 ok, 0 fail` /
 `UI-SMOKE: 422 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
 `LEVEL-PREVIEW-SMOKE: 7474 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
@@ -3063,7 +3113,7 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
 （A5 校验器，存量问题见下方基线；看板另有「干扰项黑名单命中 0 处」见 B5、「anim 演示覆盖 **13/26 文件**」见 D2、
 「hint 换说法复述 **1** 题」见 B12）/
 `PERF idle 171 / lab_plane 259 / lab3d 251`（µs，headless CPU 处理耗时，见 `tools/perf_probe.tscn`）/
-`ASSETS: ≈30.61 MB over 3162 files … banned=0, oversize=0`（A13 护栏；末位随测试产物/内容批次微漂移，
+`ASSETS: ≈30.61 MB over 3165 files … banned=0, oversize=0`（A13 护栏；末位随测试产物/内容批次微漂移，
 看 `banned` / `oversize` 即可）/
 `KNOWLEDGE: 27 chapters / 275 points / 275 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `CONTENT-HEALTH: 27 chapters / 275 levels / 0 problems (orphans=0)`（A18 内容体检，见下方注）/
@@ -3091,7 +3141,9 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
   平均 **3.93 题/关**（`check_questions` 口径：1057 = 单选 834 + 多选 4 + 填空 219；无选项 `interact` 4 另计）。
 - 题型分布（`check_questions.gd` 看板）：单选 **834**，多选 **4**，`interact` **4**，填空 **219**；
   非四选一占比 **21.4%**（B1 目标 ≥30%；B2 扩题时新增轮次一律用填空/多选/`interact`，可同步抬高此值）。
-- 选项：图片选项 **114** 处（位于 36 道题）；`ans==0` **209/834（25.1%）**（B8 已用
+- 选项：图片选项 **0 处**（B7 收官：`conic`/`ellipse`/`recurrence`/`vector` 114 处 +
+  立几方法 74 处，共 **188 处**全改 `$$LaTeX$$`；`data/` 下 `opts` 已无 `res://art/**` 引用。
+  `formula` 字段另剩 12 张 `fq_*.png` 插图，不属选项）；`ans==0` **209/834（25.1%）**（B8 已用
   `tools/shuffle_options.py` 按内容哈希定序；**>35% 即硬失败**。「解析按位置指代选项」归零，
   「第 N 项/最后一项/依次是」这类模糊措辞 **3 处**只在看板，需人读）；分布 0=209 / 1=187 / 2=220 / 3=218
   （第四十五轮修 `conic C1/5` 答案键后 1↔2 各挪一，总数与比例不变）。
