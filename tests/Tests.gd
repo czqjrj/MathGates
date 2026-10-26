@@ -54,6 +54,7 @@ func _run() -> void:
 	_test_stage_rules()
 	_test_tree_rules()
 	_test_guide_rules()
+	_test_meta_defs()
 	_test_legacy_binding()
 	_test_curriculum_rules()
 	_test_speech_rules()
@@ -1653,6 +1654,66 @@ func _test_guide_rules() -> void:
 	var steps_off := GuideRules.first_level_steps()
 	_eq(steps_off.size(), steps.size(), "guide 关动效步骤数不变")
 	Settings.animations = saved_anim
+
+## A15：元游戏内容已从代码迁到 `data/meta.json`——这里锁住「装载成功 + 结构不变」。
+## 存档按 id 存（`medals{}` / `pet_parts{}`），所以 **id 集合是兼容性契约**：
+## 改 id 必须同时写迁移，否则老存档的已解锁内容会集体失联。
+func _test_meta_defs() -> void:
+	_ok(PlayerRules.meta_loaded(), "meta 已装载（ranks + medals 非空）")
+	# 数量：与迁移前一致（2026-10-26 A15 搬迁时点）
+	_eq(GameData.AVATARS.size(), 6, "meta avatars 6 个")
+	_eq(PlayerRules.RANKS.size(), 7, "meta ranks 7 档")
+	_eq(PlayerRules.MEDALS.size(), 19, "meta medals 19 枚")
+	_eq(GameData.DAILY_MISSIONS.size(), 4, "meta daily_missions 4 条")
+	_eq(GameData.DOMAINS.size(), 7, "meta domains 7 个")
+	_eq(GameData.PET_FORMS.size(), 8, "meta pet_forms 8 档")
+	_eq(GameData.LORE.size(), 7, "meta lore 7 段")
+	# 头像：id 唯一且含默认 "player"
+	var aids := {}
+	for a in GameData.AVATARS:
+		aids[str(a.get("id", ""))] = true
+	_eq(aids.size(), GameData.AVATARS.size(), "头像 id 唯一")
+	_ok(aids.has("player"), "默认头像 player 存在")
+	# 称号：首档 ratio=0，且单调不减（否则低星玩家没有称号）
+	_ok(is_zero_approx(float(PlayerRules.RANKS[0]["ratio"])), "称号首档 ratio=0")
+	var mono := true
+	for i in range(1, PlayerRules.RANKS.size()):
+		if float(PlayerRules.RANKS[i]["ratio"]) < float(PlayerRules.RANKS[i - 1]["ratio"]):
+			mono = false
+	_ok(mono, "称号 ratio 单调不减")
+	# 勋章：id 唯一 + 规则字段齐全（数据驱动的前提）
+	var mids := {}
+	for m in PlayerRules.MEDALS:
+		var mid := str(m.get("id", ""))
+		_ok(not mids.has(mid), "勋章 id 唯一：" + mid)
+		mids[mid] = true
+		_ok(str(m.get("kind", "")) != "", "勋章有 kind：" + mid)
+		if str(m.get("kind", "")) == "count":
+			_ok(str(m.get("metric", "")) != "" and m.has("value"), "count 类勋章有 metric/value：" + mid)
+	_eq(mids.size(), 19, "勋章 id 集合大小 19")
+	for must in ["first_clear", "stars_50", "boss_all", "pet_10"]:
+		_ok(mids.has(must), "勋章 id 保持：" + must)
+	# 每日任务：metric 必须是引擎认识的四种，goal 必须为正
+	for mm in GameData.DAILY_MISSIONS:
+		var mt := str(mm.get("metric", ""))
+		_ok(mt in ["answers", "clears", "coins", "streak"], "任务 metric 合法：" + mt)
+		_ok(int(mm.get("goal", 0)) > 0, "任务 goal > 0：" + str(mm.get("id", "")))
+	# 领域 ↔ 碑文一一对应
+	var dids := {}
+	for d in GameData.DOMAINS:
+		dids[str(d.get("id", ""))] = true
+	var lids := {}
+	for l in GameData.LORE:
+		lids[str(l.get("id", ""))] = true
+	_eq(dids.size(), lids.size(), "领域与碑文数量一致")
+	for did in dids:
+		_ok(lids.has(did), "领域有碑文：" + did)
+		_ok(not GameData.lore_for(did).is_empty(), "lore_for 取得到：" + did)
+	# 降级路径：内容损坏导致 PET_FORMS 为空时不能崩
+	var saved_forms = GameData.PET_FORMS
+	GameData.PET_FORMS = []
+	_eq(GameData.pet_form_name(), "", "PET_FORMS 为空时 pet_form_name 不崩")
+	GameData.PET_FORMS = saved_forms
 
 ## A2 收编：legacy 场景（SolidChallenge/ConicStage）仍是官方场景——课程表引用的
 ## method/conic key 必须在对应数据文件里存在（打错 key = 静默空关），且两类场景保持在用。

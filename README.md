@@ -49,6 +49,8 @@ scripts/         总控与共享逻辑(按职责分目录)
 				   ContentHealth(A18 内容数据完整性检查:章节结构/关卡 id 唯一/场景存在/内容引用定位);
 				   单文件 ≤200 行红线
 data/            课程表与题库 JSON(curriculum/questions + 各模块 *_levels.json)
+				  + meta.json(A15 元游戏内容:头像/称号/勋章/每日任务/领域/萌宠形态/碑文)
+				  + knowledge_map.json / textbooks.json 等;
 art/             美术 PNG/WebP + 公式小图 + Android 图标 + 标题字体(art/fonts/,放入行书 ttf 即自动启用)
 audio/           音效 wav
 tools/           开发/测试脚本:check_all.gd(脚本检查)、check_questions.gd(内容校验器:
@@ -413,6 +415,7 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Godot "<godot472.
 ## 改内容
 
 - 课程/章节/解锁关系:`data/curriculum.json`
+- **元游戏内容(A15)**:头像、称号阶梯、勋章(展示字段 + 达成规则)、每日任务、知识领域、萌宠形态名、馆灵碑文,全部在 `data/meta.json`。改文案/加勋章/调阈值**不用改代码**;勋章 `id` 是存档契约(`medals{}`/`pet_parts{}` 按 id 存),**改名必须配迁移**。改完 `check_content_health` 会验 id 唯一/必填字段/称号比例单调/领域↔碑文一一对应。
 - 教材版本(苏教/人教A/人教B/北师大/湘教/沪教):分册、章节排序与章号:`data/textbooks.json`
 - 各模块关卡:**全仓只有一份权威题库 `data/*_levels.json`**(原通用题库 `data/questions.json` 与 Battle 兜底关卡已于 2026-10-20 随 TODO A3/A12 删除——其 42 题仅被 Battle.gd 消费且 275 关全部带 scene,通道不可达)。几何类章节(圆/椭圆/向量/直线)已统一为 `lab` 三阶段格式,对应 `circle_levels.json / ellipse_levels.json / vector_levels.json / line_levels.json`,场景统一为 `res://scenes/LabStage.tscn`
 - 立体几何 / 空间向量章节已统一为 `lab3d` 三阶段真实 3D 格式,对应 `solid_basic_levels.json`(立体几何初步,含「基本事实(公理)」旗舰关 `solid_axiom`)与 `space_levels.json`(空间向量与立体几何),场景统一为 `res://scenes/Lab3DStage.tscn`。3D 场景描述见 `scripts/modules/lab3d/SolidBuilder.gd`

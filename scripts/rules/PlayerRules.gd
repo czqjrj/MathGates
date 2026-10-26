@@ -5,17 +5,14 @@ class_name PlayerRules
 ## 每个函数都能被 tests/Tests.gd::_test_player_rules() 用构造数据直接单测。
 
 # ---------------------------------------------------------------- 称号阶梯(按满星比例达成)
-const RANKS := [
-	{ "title": "窥数者",     "ratio": 0.00 },
-	{ "title": "演算者",     "ratio": 0.06 },
-	{ "title": "衍算师",     "ratio": 0.15 },
-	{ "title": "定理执笔人", "ratio": 0.30 },
-	{ "title": "公理谛听者", "ratio": 0.50 },
-	{ "title": "衍数尊者",   "ratio": 0.70 },
-	{ "title": "衍数阁主",   "ratio": 0.88 },
-]
+## A15：本表已迁到 `data/meta.json` 的 `ranks`，此处保留**空的静态注入位**，
+## 由 GameData._load_meta() 在启动时填入（rules 层不自己做 IO）。
+## 每项 {title, ratio}；ratio 为「占满星总数的比例」阈值。
+static var RANKS: Array = []
 
 static func rank_index(total_stars: int, max_stars: int) -> int:
+	if RANKS.is_empty():
+		return 0
 	var mx := maxi(1, max_stars)
 	var idx := 0
 	for i in RANKS.size():
@@ -24,10 +21,14 @@ static func rank_index(total_stars: int, max_stars: int) -> int:
 	return idx
 
 static func rank_title(total_stars: int, max_stars: int) -> String:
+	if RANKS.is_empty():
+		return ""
 	return str(RANKS[rank_index(total_stars, max_stars)]["title"])
 
 ## 称号进度：{title, next_title, cur, span, need, ratio}(已满级 next_title 为空)
 static func rank_progress(total_stars: int, max_stars: int) -> Dictionary:
+	if RANKS.is_empty():
+		return { "title": "", "next_title": "", "cur": 0, "span": 1, "need": 0, "ratio": 0.0 }
 	var s := total_stars
 	var mx := maxi(1, max_stars)
 	var idx := rank_index(s, mx)
@@ -113,27 +114,11 @@ static func chapter_master_any(chapters: Array, stars: Dictionary) -> bool:
 
 # ---------------------------------------------------------------- 勋章 / 成就
 ## 勋章/成就定义。symbol 为徽章中央字符；达成条件见 medal_met()。
-const MEDALS := [
-	{ "id": "first_clear",   "name": "初露锋芒", "desc": "首次通关任意关卡",             "symbol": "初", "color": "#5ee6ff" },
-	{ "id": "clear_10",      "name": "小有心得", "desc": "通关 10 个关卡",               "symbol": "十", "color": "#5ee6ff" },
-	{ "id": "clear_30",      "name": "登堂入室", "desc": "通关 30 个关卡",               "symbol": "堂", "color": "#a878ff" },
-	{ "id": "clear_60",      "name": "融会贯通", "desc": "通关 60 个关卡",               "symbol": "贯", "color": "#a878ff" },
-	{ "id": "perfect_1",     "name": "一丝不苟", "desc": "首次满星通关",                 "symbol": "满", "color": "#ffd479" },
-	{ "id": "perfect_10",    "name": "完美主义", "desc": "满星关卡达到 10 个",           "symbol": "完", "color": "#ffd479" },
-	{ "id": "perfect_30",    "name": "精益求精", "desc": "满星关卡达到 30 个",           "symbol": "精", "color": "#f6bd16" },
-	{ "id": "chapter_master","name": "章节通解", "desc": "任意章节集满全部星星",         "symbol": "章", "color": "#45C7E5" },
-	{ "id": "stars_50",      "name": "星辉初绽", "desc": "累计获得 50 颗星",             "symbol": "星", "color": "#5ee6ff" },
-	{ "id": "stars_150",     "name": "星河璀璨", "desc": "累计获得 150 颗星",            "symbol": "河", "color": "#a878ff" },
-	{ "id": "stars_300",     "name": "满天星斗", "desc": "累计获得 300 颗星",            "symbol": "斗", "color": "#ffd479" },
-	{ "id": "answer_100",    "name": "勤学不辍", "desc": "累计作答 100 题",              "symbol": "勤", "color": "#34d399" },
-	{ "id": "answer_500",    "name": "博览群题", "desc": "累计作答 500 题",              "symbol": "博", "color": "#34d399" },
-	{ "id": "accuracy_80",   "name": "精准推演", "desc": "作答满 50 题且正确率 ≥ 80%",    "symbol": "准", "color": "#34d399" },
-	{ "id": "coins_1000",    "name": "富甲一方", "desc": "金币累计达到 1000",            "symbol": "金", "color": "#ffd479" },
-	{ "id": "boss_first",    "name": "破阵者",   "desc": "通关任意隐藏 Boss",            "symbol": "破", "color": "#fb7185" },
-	{ "id": "boss_all",      "name": "无冕之王", "desc": "通关全部隐藏 Boss",            "symbol": "王", "color": "#fb7185" },
-	{ "id": "pet_3",         "name": "亲密伙伴", "desc": "投喂萌宠 3 次",                "symbol": "友", "color": "#4dd6a8" },
-	{ "id": "pet_10",        "name": "形影不离", "desc": "投喂萌宠 10 次",               "symbol": "伴", "color": "#4dd6a8" },
-]
+## 勋章定义。A15：本表已迁到 `data/meta.json`，此处保留为**空的静态注入位**，
+## 由 GameData._load_meta() 在启动时填入（rules 层不自己做 IO）。
+## 每条含**展示字段**（name/desc/symbol/color）与**达成规则**（kind/metric/value 等），
+## 两者同源，避免「改了文案却没改阈值」的双份真相。
+static var MEDALS: Array = []
 
 static func medal_def(id: String) -> Dictionary:
 	for m in MEDALS:
@@ -149,33 +134,33 @@ static func medals_in_order(unlocked: Dictionary) -> Array:
 			arr.append(m)
 	return arr
 
-## 单枚勋章的达成判定。ctx 由调用方(GameData._medal_ctx())一次性汇总：
+## 单枚勋章的达成判定。A15 起**数据驱动**：规则来自 `data/meta.json` 的
+## `kind` / `metric` / `value`（accuracy 类用 `min_questions` + `ratio`），
+## 与 desc 文案同源，避免「改了文案却没改阈值」的双份真相。
+## ctx 由调用方(GameData._medal_ctx())一次性汇总：
 ## { cleared, full_star, total_stars, total_questions, accuracy,
 ##   coins_earned, pet_fed, boss_total, boss_cleared, chapter_master }
+## 未知 id / meta 未加载时返回 false（不抛错，避免内容损坏拖垮存档流程）。
 static func medal_met(id: String, ctx: Dictionary) -> bool:
-	match id:
-		"first_clear":    return int(ctx.get("cleared", 0)) >= 1
-		"clear_10":       return int(ctx.get("cleared", 0)) >= 10
-		"clear_30":       return int(ctx.get("cleared", 0)) >= 30
-		"clear_60":       return int(ctx.get("cleared", 0)) >= 60
-		"perfect_1":      return int(ctx.get("full_star", 0)) >= 1
-		"perfect_10":     return int(ctx.get("full_star", 0)) >= 10
-		"perfect_30":     return int(ctx.get("full_star", 0)) >= 30
-		"chapter_master": return bool(ctx.get("chapter_master", false))
-		"stars_50":       return int(ctx.get("total_stars", 0)) >= 50
-		"stars_150":      return int(ctx.get("total_stars", 0)) >= 150
-		"stars_300":      return int(ctx.get("total_stars", 0)) >= 300
-		"answer_100":     return int(ctx.get("total_questions", 0)) >= 100
-		"answer_500":     return int(ctx.get("total_questions", 0)) >= 500
-		"accuracy_80":    return int(ctx.get("total_questions", 0)) >= 50 and float(ctx.get("accuracy", 0.0)) >= 0.8
-		"coins_1000":     return int(ctx.get("coins_earned", 0)) >= 1000
-		"boss_first":     return int(ctx.get("boss_cleared", 0)) >= 1
+	var m := medal_def(id)
+	if m.is_empty():
+		return false
+	match str(m.get("kind", "")):
+		"count":
+			return int(ctx.get(str(m.get("metric", "")), 0)) >= int(m.get("value", 0))
+		"flag":
+			return bool(ctx.get(str(m.get("metric", "")), false))
+		"accuracy":
+			var enough := int(ctx.get("total_questions", 0)) >= int(m.get("min_questions", 0))
+			return enough and float(ctx.get("accuracy", 0.0)) >= float(m.get("ratio", 1.0))
 		"boss_all":
 			var total := int(ctx.get("boss_total", 0))
 			return total > 0 and int(ctx.get("boss_cleared", 0)) >= total
-		"pet_3":          return int(ctx.get("pet_fed", 0)) >= 3
-		"pet_10":         return int(ctx.get("pet_fed", 0)) >= 10
 	return false
+
+## A15：meta 是否已装载（UI/测试可用来判断是否走了降级路径）。
+static func meta_loaded() -> bool:
+	return not RANKS.is_empty() and not MEDALS.is_empty()
 
 # ---------------------------------------------------------------- 关卡结算防刷公式(C1/C2)
 const REPEAT_REWARD_RATE := 0.3        ## 重复通关(未刷新星级)的奖励折扣

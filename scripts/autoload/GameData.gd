@@ -17,65 +17,20 @@ const USERS_PATH := "user://users.json"
 const USERS_TMP := "user://users.tmp"   # 原子写入的临时文件
 const USERS_BAK := "user://users.bak"   # 上一个良好存档的备份
 
-## 可选头像
-const AVATARS := [
-	{ "id": "player", "icon": "player", "color": "#5ee6ff" },
-	{ "id": "boss", "icon": "boss_generic", "color": "#fb7185" },
-	{ "id": "book", "icon": "icon_book", "color": "#ffa64d" },
-	{ "id": "map", "icon": "icon_map", "color": "#45C7E5" },
-	{ "id": "tree", "icon": "icon_tree", "color": "#a878ff" },
-	{ "id": "train", "icon": "icon_train", "color": "#4dd6a8" },
-]
-
-## A4：称号阶梯(RANKS)/勋章(MEDALS)/星级统计/玩家等级/防刷公式已切到
-## scripts/rules/PlayerRules.gd（纯规则层，可直接单测）；本类保留 GameData.xxx() 门面，
-## 存档、通知、音效仍在门面之后。
-
-## 每日任务：metric 对应当日增量(answers/clears/coins)或当日峰值(streak)。
-const DAILY_MISSIONS := [
-	{ "id": "d_answer", "name": "勤勉推演", "desc": "今日作答 20 题",     "metric": "answers", "goal": 20,  "coins": 80,  "exp": 40 },
-	{ "id": "d_clear",  "name": "破关斩将", "desc": "今日通关 3 个关卡",   "metric": "clears",  "goal": 3,   "coins": 120, "exp": 60 },
-	{ "id": "d_coins",  "name": "聚沙成塔", "desc": "今日获得 200 金币",   "metric": "coins",   "goal": 200, "coins": 60,  "exp": 30 },
-	{ "id": "d_streak", "name": "连击达人", "desc": "今日达成 5 连击",     "metric": "streak",  "goal": 5,   "coins": 100, "exp": 50 },
-]
-
-## 知识领域：把课程章节归入 7 个领域，用于「掌握度」聚合与萌宠知识进化。
-## chapters 为该领域涵盖的章节 id；掌握度由领域内关卡的星级 / 清关质量 / 错题聚合而来。
-const DOMAINS := [
-	{ "id": "seq",     "title": "数列·律动",     "color": "#ff99c3",
-		"chapters": ["recurrence_methods", "sequences"] },
-	{ "id": "solid",   "title": "立体几何·形体", "color": "#45c7e5",
-		"chapters": ["solid", "solid_basic"] },
-	{ "id": "conic",   "title": "圆锥曲线·曲线", "color": "#5ad8a6",
-		"chapters": ["conic", "conics", "ellipse", "hyperbola", "parabola"] },
-	{ "id": "line",    "title": "直线与圆·轨迹", "color": "#a878ff",
-		"chapters": ["line_eq", "circle_eq"] },
-	{ "id": "space",   "title": "空间向量·维度", "color": "#45c7e5",
-		"chapters": ["space"] },
-	{ "id": "vector",  "title": "平面向量·方向", "color": "#9270ca",
-		"chapters": ["vector", "vectors"] },
-	{ "id": "algebra", "title": "代数综合·根基", "color": "#5ee6ff",
-		"chapters": ["set_logic", "inequalities", "functions", "trig", "probability",
-			"derivative", "complex", "counting", "thinking",
-			"statistics", "random_var", "corr_data"] },
-]
-
-## 萌宠形态名(下标 = 已解锁部件数)
-const PET_FORMS := ["初芽", "萌芽", "启智", "明理", "通达", "博识", "睿智", "衍数·完形"]
+## A15：元游戏内容（头像 / 称号 / 勋章 / 每日任务 / 领域 / 萌宠形态 / 碑文）已迁到
+## `data/meta.json`。本类只保留**同名运行期变量**做注入位——所有既有调用点
+## （`GameData.AVATARS` / `PlayerRules.MEDALS` 等）无需改动。
+## 好处：改文案、加勋章、调阈值不必改代码；id 唯一性与必填字段由 check_content_health 兜。
+## 注意：`PlayerRules` 是纯规则层（不做 IO），称号/勋章由 `_load_meta()` **注入**其静态表。
+const META_PATH := "res://data/meta.json"
+var AVATARS: Array = []          # 可选头像 [{id,icon,color}]
+var DAILY_MISSIONS: Array = []   # 每日任务 [{id,name,desc,metric,goal,coins,exp}]
+var DOMAINS: Array = []          # 知识领域 [{id,title,color,chapters[]}]
+var PET_FORMS: Array = []        # 萌宠形态名(下标 = 已解锁部件数)
+var LORE: Array = []             # 馆灵记忆碑文 [{id,title,text}]（id 与 DOMAINS 对应）
 
 ## 错题账结清（答对还清最后一笔错账）时奖励的金币。
 const WRONG_CLEAR_COINS := 5
-
-## 馆灵记忆碑文：每掌握一个领域，寻回一段失落的档案(与 DOMAINS 的 id 对应)。
-const LORE := [
-	{ "id": "seq",     "title": "碑文·归序", "text": "万物流转皆有其序，离散之间，自见通项。" },
-	{ "id": "solid",   "title": "碑文·筑形", "text": "平面不足立物，便向上升起一维，形体自会闭合。" },
-	{ "id": "conic",   "title": "碑文·弧光", "text": "一束光斜切圆锥，弧线便得有了名字。" },
-	{ "id": "line",    "title": "碑文·直轨", "text": "两点定其向，一点与斜率定其形。" },
-	{ "id": "space",   "title": "碑文·维度", "text": "给每个方向一个坐标，空间便不再幽深难测。" },
-	{ "id": "vector",  "title": "碑文·方向", "text": "有向的线段，藏着长度与夹角两种真相。" },
-	{ "id": "algebra", "title": "碑文·根基", "text": "一切推演，皆从数与式的根基生长。" },
-]
 
 var chapters: Array = []
 var textbook: String = "sujiao"          # 当前教材版本(苏教/人教A/北师大…)
@@ -144,8 +99,36 @@ var events_seen: Dictionary = {}       # level_id -> 触发时间戳(随机事�
 func _ready() -> void:
 	_load_textbooks()
 	_load_curriculum()
+	# A15：meta 必须在 _load_curriculum() **之后**——后者会整体覆写 content_problems，
+	# 先装载的话 meta 的问题记录会被清掉。
+	_load_meta()
 	_load_users()
 	_sync_free_roam_from_settings()
+
+# ---------------------------------------------------------------- A15 元游戏内容
+## 从 data/meta.json 装载头像 / 称号 / 勋章 / 每日任务 / 领域 / 萌宠形态 / 碑文。
+## rules 层不自己做 IO，所以称号与勋章在这里**注入** PlayerRules 的静态表。
+## 文件缺失或损坏：记一条 A18 内容问题并保持空表——UI 与规则层都有空表守卫，不会崩。
+func _load_meta() -> void:
+	var data = null
+	if FileAccess.file_exists(META_PATH):
+		data = JSON.parse_string(FileAccess.get_file_as_string(META_PATH))
+	if typeof(data) != TYPE_DICTIONARY:
+		content_problems.append(ContentHealth.problem("E_META", META_PATH, "找不到或无法解析元游戏内容文件"))
+		return
+	AVATARS = _meta_arr(data, "avatars")
+	DAILY_MISSIONS = _meta_arr(data, "daily_missions")
+	DOMAINS = _meta_arr(data, "domains")
+	PET_FORMS = _meta_arr(data, "pet_forms")
+	LORE = _meta_arr(data, "lore")
+	PlayerRules.RANKS = _meta_arr(data, "ranks")
+	PlayerRules.MEDALS = _meta_arr(data, "medals")
+	if AVATARS.is_empty() or PlayerRules.MEDALS.is_empty() or PlayerRules.RANKS.is_empty():
+		content_problems.append(ContentHealth.problem("E_META", META_PATH, "元游戏内容缺少 avatars / medals / ranks"))
+
+func _meta_arr(data: Dictionary, key: String) -> Array:
+	var v = data.get(key, [])
+	return v if typeof(v) == TYPE_ARRAY else []
 
 # ---------------------------------------------------------------- 教材版本
 func _load_textbooks() -> void:
@@ -935,6 +918,8 @@ func pet_part_count() -> int:
 	return pet_parts.size()
 
 func pet_form_name() -> String:
+	if PET_FORMS.is_empty():
+		return ""
 	return PET_FORMS[clampi(pet_stage, 0, PET_FORMS.size() - 1)]
 
 # ------------------------------------------------ 叙事：馆灵记忆碑文
