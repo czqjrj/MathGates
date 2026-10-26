@@ -23,8 +23,8 @@
 | 编号 | 标题 | 优先级 | 说明 |
 |---|---|---|---|
 | **A1** | `SequenceStage` 迁移到 `StageBase` | **P0** | ✅ 已完成（763 → 185 行，双轨消除） |
-| **B1** | 题型单一：把 `interact/gate` 与填空题用起来 | **P0** | 🟡 参数母版**脚手架**入库（`ed965a2`，51 道 explore 关卡）；第四十轮实测这批数据接不进现有 `LabPlane`（**155 条**方言不兼容），已落成闸门 `check_param_masters.gd` + 基线。第四十一轮修掉**不需要设计决策的 59 条**（51 条比较式读数改偏差读数 + 8 处 `pow(q,3)`；繁体 **51 关清零**）→ **96 条**，剩 `E_RANGE_ARRAY 44` / `E_CURVE_FN 44` / `E_READOUT_FUNC 7` / `E_RANGE_MISSING 1` 待「改数据 vs 扩引擎」拍板。gate 机制本身可用。探索关卡 gate 覆盖率 **9.2%**（25/273）。全库非四选一 **21.4%**，目标 ≥30%。|
-| **B3** | 「探究→建构→迁移」名不副实 | **P0** | 🟡 26/26 章探究轮题面已改写（陈述句 0.0%，验收①达标）；建构/迁移轮深化待续 |
+| **B1** | 题型单一：把 `interact/gate` 与填空题用起来 | **P0** | 🟡 参数母版 155 条方言已全清（第四十七轮 `PARAM-CHECK 0 known`）；**51 道 explore 中仅 7 道可用**（场景只用引擎原生图元），已修好并接入课程表/知识点，其余 44 道因场景用了引擎不读的键（`coeffs/slope/center/radius/eccentricity/roots`、`points_scatter/bar_chart`）**需逐关手工移植**。合并遗留已清零：`QUESTION-CHECK 79 new→0`、`orphans 15→0`、轮次标签 `51→0`。全库非四选一 **21.3%**（目标 ≥30%，未达标）。 |
+| **B3** | 「探究→建构→迁移」名不副实 | **P0** | 🟡 26/26 章探究轮题面已改写（陈述句 **2/280 = 0.7%**，验收①达标）；建构/迁移轮标准已按「复习优先」修订，试点待启动 |
 | **B9** | 轮次标签编号错乱（纯编校，可脚本修） | **P0** | ✅ 已完成（`fix_labels.gd`，错位归 0） |
 | **C1** | 重复通关无限刷经验/金币 | **P0** | ✅ 已完成（经验仅星升；重复奖励×0.3/日封顶） |
 | **C2** | 星级只升不降 + 免费重试 + 四选一 → 进度可刷 | **P0** | ✅ 已完成（当日第 3 次起星级上限 2） |
@@ -133,8 +133,8 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`870de1d`（docs B3 标准按复习优先修订）→ `4f74823`（docs 续接点）→ `32f9f4a`（docs B3 标准）→ `6b9c7c7`（docs 第四十七轮 B1）→ `7f0918a`（feat B1）→ …
-  **未 push**（本轮收尾提交后同步）。
+- **最后提交**：`4d7d48b`（feat B1 遗留清零）→ `f95915b`（docs B1 指标纠错）→ `870de1d`（docs B3 复习优先修订）→ `32f9f4a`（docs B3 标准）→ …
+  **已同步 `origin/main`**。
 
 - **本轮工作 I（2026-10-26，第四十七轮）：B10 题干套路化与重复清理**（feat `b67a9b5`）。
   - **8 处改写 +2 处区分**：
@@ -176,6 +176,15 @@
   - **B1 遗留已清零（2026-10-26）**：`QUESTION-CHECK 79 new → 0` / `orphans 15 → 0` / 轮次标签错位 `51 → 0`；
     保留 7 个参数实验关并接入课程表 + 知识点，丢弃 44 道场景不可用的 explore（曲线键引擎不读）。
   - **下一项建议**：B4（实验与追问闭环，与 B3 新标准同源）→ B11（模块间质量方差）→ E5（教材核对）；
+- **本轮工作 IV（2026-10-26）：B1 合并遗留清零**（feat `4d7d48b`）。
+  - **发现**：上一轮并入的 51 道参数母版 explore 里，多数场景用了引擎不读的键
+    （`curves` 的 `coeffs/slope/center/radius/eccentricity/roots`、`points_scatter/bar_chart`），
+    画面会退化成正弦波或空白；另有 gate 目标滑块不可达、题干与既有探究轮同题。
+  - **处理**：删 8 个不可用/重复组（44 关）；保留 7 个 `param_auto` 关并修好（抛物线 `parr`+`mirror`、
+    多面体 gate `n=4`、题干改「带终点的任务句」、轮次重编号），接入课程表（BOSS 前）+ 新增 7 个知识点。
+  - **结果**：`QUESTION-CHECK 79 new→0`、`orphans 15→0`、轮次标签 `51→0`；1064 题 / 276 组 / 282 关；
+    `KNOWLEDGE 282 points / 282 mapped / hard-gaps=0`；`SMOKE 293` / `TESTS 2232` / ALL GREEN。
+  - **B1 仍未达标**：非四选一 21.3%（目标 ≥30%）；余 44 关参数母版需逐关移植（场景键不支持）。
 - **上轮补记（第四十六轮 B7 图片选项转 LaTeX，保留备查）**：
   - **总量修正**：清单写 180 处（114 关卡 + 66 已删的 `questions.json`），但 `data/solid_methods.json`
     的 **74 处**从没统计过 → 实际 **188 处**。
@@ -1576,10 +1585,11 @@
   | 填空 | 219 | 219 | - |
   | 题目总数 | 1061 | **1064** | 净增 3（+7 保留、-44 丢弃、其余原样） |
   | **非四选一占比** | **21.4%** | **21.3%** | ❗**未达标**（目标 ≥30%） |
+- **❗纠错（2026-10-26 复核）**：合并时曾按「explore 一律算非四选一」统计得 49.2%，**该口径错误**——
   `explore` 关卡结构是 `gate + answers + 4 个 opts`，收尾仍要四选一，`check_questions.gd` 计入单选。
   官方看板实测（清理后）：**单选 841 / 多选 4 / interact 4 / 填空 219 → 非四选一 21.3%**。
   合并当时总题量 1061 → 1112（占比被摊薄）；清理掉 44 道不可用/重复的 explore 后为 1064。
-- **✅ 2026-10-26 遗留清零（feat 待提交）**：合并引入的 `79 new` → **0 new**，`orphans 15` → **0**。
+- **✅ 2026-10-26 遗留清零（feat `4d7d48b`）**：合并引入的 `79 new` → **0 new**，`orphans 15` → **0**，轮次标签 `51` → **0**。
   * **删掉 8 个「画面会画错/空白」的合并组**（曲线用了引擎不读的键：`coeffs/slope/center/radius/eccentricity/roots`，
     以及引擎没有的 `points_scatter/bar_chart`）：`function_lab_param`、`function_lab_master`、`function_master`、
     `param_demos`、`param_all_comprehensive`、`geometry_param`、`sequence_param`、`probability_param`。
@@ -1589,13 +1599,25 @@
     - 7 条题干与既有探究轮同题 → 全部改写为「带明确终点的任务句」（并让终点与 gate 目标一致）
     - 轮次标签统一重编号为 `<组序号>-<轮次>`
   * **接入课程表 + 知识点矩阵**：7 关分别挂到 `circle_eq/ellipse/line_eq/parabola/solid_basic/space/trig`，
-    插入位置在 BOSS 之前；`knowledge_map` 各挂到对应知识点。
+    插入位置在 BOSS 之前；`knowledge_map` 各新增 1 个知识点（275 → 282）。
 - **结论**：B1「接入链路」已打通（7 关可玩、闸门全清），但**题型指标仍未达标（21.3%）**；
   真正提升非四选一需把 explore 的收尾四选一**改为纯 gate 交互或数值填空**（内容改写，非机械合并）；
   其余 44 道参数母版关卡的场景需逐关手工移植（引擎不支持的键太多），留作后续专项。
 - **九项全绿**：`CHECKED 116` / `TESTS 2232` (+27) / `SMOKE 293` / `LabSmoke TMP_OK` /
   `QUESTION-CHECK 0 new / 0 known` / `CONTENT-HEALTH orphans=0` / `KNOWLEDGE 282 levels mapped` /
   `PARAM-CHECK 0 new / 0 known / 0 warnings` / `ASSETS 30.64 MB (3148 files)`
+
+**剩余工作清单（可执行，按性价比排序）**
+1. **移植 44 关参数母版**（内容专项）：逐关把引擎不读的键换成原生图元——
+   `coeffs` → `a/b/c/d`；`slope/intercept` → `fn:"linear"`；`center/radius` → `circles[]`；
+   `eccentricity` → `ellipses[]`；`roots` → 拆成 `points` 或扩 `LabPlane` 的三次曲线；
+   `points_scatter` → `scatter`；`bar_chart` → `bars`。每关移植后必须确认「滑块能到 gate 目标值」。
+2. **提升非四选一占比（21.3% → ≥30%）**：三条路径——
+   (a) 把 explore 的收尾四选一改为纯 `gate` 交互（去掉 `opts`，达标即过关）；
+   (b) 用真实错误路径设计多选辨析；
+   (c) 迁移轮改数值填空。按 (a) 最省力：7 个参数实验关先试点。
+3. **B4 联合验收**：追问与实验闭环（与 7 个新关的「拖完 → 追问」同一件事）。
+- ✅ 能力已落地：`StageBase` 新增 `type:"input"` 数值/公式填空题
   （`_build_input`/`_submit_input`/`_parse_math`/`_norm_math`，复用 `SolidChallenge` 的数学解析），
   已接入 `LabStage`/`SequenceStage`/`Lab3DStage`；多选（`ans` 为数组）沿用旧机制。
 - ✅ `check_questions.gd` 看板新增「题型：单选/多选/interact/填空」与「非四选一占比」。
@@ -1613,7 +1635,7 @@
   2026-10-20 起 B2 扩题新增轮次以填空为主，覆盖复数/圆锥曲线（`conic_levels.json` 与 `conics_levels.json` 两处）/
   递推求通项/随机变量/函数与分段/不等式/立体几何初步/导数及其应用/数学思想综合/集合与逻辑/平面向量初步/
   立体几何 `solid`/成对数据的统计分析 等章，已使占比回升约 2.3 个点）。
-- 🟡 **2026-10-22 参数母版脚手架入库**（feat `ed965a2`，**尚未接入关卡**）：新增（**→ 已于第四十七轮全部接入，见本节上方「收官记录」**）
+- 🟡 **2026-10-22 参数母版脚手架入库**（feat `ed965a2`，**尚未接入关卡**）：新增（**→ 第四十七轮接入 7 关、余 44 关待逐关移植，见本节上方「收官记录」**）
   「参数调参师」玩法的**参数母版**数据 15 个 JSON / **51 道** explore 关卡
   （`data/param_master_*.json` + `data/*_param_auto.json` + `data/function_lab_param_master.json`
   + `data/function_lab_levels_param.json`），配套 4 个 Python 工具（覆盖分析 / 按模块批量生成 /
