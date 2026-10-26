@@ -57,7 +57,9 @@ tools/           开发/测试脚本:check_all.gd(脚本检查)、check_question
 				 结构/答案范围/选项与题干重复/轮次编号/公式覆盖 + 内容看板,含基线机制)、
 				 check_questions_baseline.txt(已知问题基线)、fix_labels.gd(轮次标签编号批量重编:
 				 预览/--apply,文本级替换保留排版)、shuffle_options.py(B8 选项顺序规范化:
-				 按内容哈希定序、幂等、span 级改写不动排版,预览/--apply)、smoke_scene(全场景冒烟)、
+				 按内容哈希定序、幂等、span 级改写不动排版,预览/--apply)、
+				 sample_hints.gd(B12 提示语抽检:按「hint 与正确项重合度」从高到低打印,
+				 取最靠前 N 条——最高的都过了,全体就都过了)、smoke_scene(全场景冒烟)、
 				 pack_math_res(把 gdextension/res 打包为 res.bin,排除 GPLv3 字体)、
 				 optimize_art(A13 降采样超大图,默认 dry-run)、check_assets(A13 资源入库/体积护栏)、
 				 check_knowledge(E1 知识点覆盖矩阵校验+生成 docs/知识点覆盖矩阵.md,
@@ -443,6 +445,14 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Godot "<godot472.
   请直接引用**选项内容**。`check_questions.gd` 对「选项+下标/字母」**硬报错**。
   ② **禁止** `以上都对/都不正确` 这类选项(命中 `SHUFFLE_MARKERS` 会**关闭**该题乱序)。出题时**先写干扰项、最后填正确项**;
   存量顺序已由 `python tools/shuffle_options.py` 规范化(`ans==0` 90.8% → 25.1%,再看板 `ans==0 > 35%` 即红灯)。
+
+- **提示语写法(B12)**:`hint` 是**直接显示给学生**的(选项会乱序,提示不会),所以提示**只给方法/方向,不给结论**:
+  ① **禁止**把正确项原文写进 hint(含公式、术语、数值),"点斜式:y−1=2(x−1)"对答案 y=2x−1 就是泄露;
+  ② 数值答案:**禁止**在 hint 里写出该数值(含"由…=12"这种推到一半的结果);
+  ③ 范围/端点题:问"取两个极端是多少度",别直接写"可以合拢到 0°、张平到 180°";
+  ④ 可以写"用夹角公式 $$\\tan\\theta=|(k-1)/(1+k)|$$,把 45° 代入解 k"这种**路径**。
+  `check_questions.gd` 硬报"hint 含正确项原文(≥3 字)"与"hint 含答案数值(≥2 位,数字边界)";
+  "换说法复述"判不了代数等价,只进看板,用 `godot --headless --path . --script res://tools/sample_hints.gd -- 30` 人读抽检。
 
 ## 内容与教材的关系
 
