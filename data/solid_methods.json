@@ -19,10 +19,10 @@
           "reveal": 2.6,
           "q": "PA=3、PB=4、PC=5 两两垂直，补成的长方体的长宽高是？",
           "opts": [
-            "res://art/formulas/sm_2x3x4_f745eeb6.png",
-            "res://art/formulas/sm_4x5x6_36c71748.png",
-            "res://art/formulas/sm_3x4x5_e8a8c133.png",
-            "res://art/formulas/sm_3x5x5_e24b5037.png"
+            "$$2\\times3\\times4$$",
+            "$$4\\times5\\times6$$",
+            "$$3\\times4\\times5$$",
+            "$$3\\times5\\times5$$"
           ],
           "ans": 2,
           "hint": "三条直角棱本身就是长、宽、高。"
@@ -48,13 +48,13 @@
           "q": "补成的长方体与三棱锥共用外接球，直径就是体对角线：",
           "formula": "res://art/formulas/fq_complement_diag.png",
           "opts": [
-            "res://art/formulas/opt_5r2_2.png",
-            "res://art/formulas/opt_r50.png",
-            "res://art/formulas/opt_5r2.png",
-            "res://art/formulas/opt_25_2.png"
+            "$$\\dfrac{5\\sqrt{2}}{2}$$",
+            "$$\\sqrt{50}$$",
+            "$$5\\sqrt{2}$$",
+            "$$\\dfrac{25}{2}$$"
           ],
           "ans": 0,
-          "hint": "R = √50 ÷ 2 = 5√2 / 2。"
+          "hint": "直径是补成长方体的体对角线，半径再取一半：先算三条棱的平方和再开根。"
         },
         {
           "name": "第 5 关 · 定球心",
@@ -96,7 +96,7 @@
             "4"
           ],
           "ans": 0,
-          "hint": "直径 = √(2²+4²+4²) = √36 = 6，故 R = 3。"
+          "hint": "体对角线 = √(长²+宽²+高²)，半径是体对角线的一半。"
         }
       ]
     },
@@ -112,13 +112,13 @@
           "reveal": 1.4,
           "q": "以 A 为原点建立空间直角坐标系，四个顶点中哪一个是原点？",
           "opts": [
-            "res://art/formulas/sm_A000_f28d4a73.png",
-            "res://art/formulas/sm_B400_b1a3c17d.png",
-            "res://art/formulas/sm_C130_c58b7b8d.png",
-            "res://art/formulas/sm_P424_bb1c27e6.png"
+            "$$A(0,0,0)$$",
+            "$$B(4,0,0)$$",
+            "$$C(1,3,0)$$",
+            "$$P(4,2,4)$$"
           ],
           "ans": 0,
-          "hint": "题目以 A 为原点。"
+          "hint": "原点的三个坐标分量都是 0，对照选项排除。"
         },
         {
           "name": "第 2 关 · 顶点坐标",
@@ -126,10 +126,10 @@
           "reveal": 2.4,
           "q": "点 P 的坐标是？",
           "opts": [
-            "res://art/formulas/sm_424_ea977031.png",
-            "res://art/formulas/sm_212_f95f79c5.png",
-            "res://art/formulas/sm_130_7ca9fd07.png",
-            "res://art/formulas/sm_000_96374018.png"
+            "$$(4,2,4)$$",
+            "$$(2,1,2)$$",
+            "$$(1,3,0)$$",
+            "$$(0,0,0)$$"
           ],
           "ans": 0,
           "hint": "看图上的坐标标注。"
@@ -141,13 +141,13 @@
           "q": "由 OA = OB，两边平方后展开得到：",
           "formula": "res://art/formulas/fq_vector_eq.png",
           "opts": [
-            "res://art/formulas/sm_xeq1_6ba939bc.png",
-            "res://art/formulas/sm_xeq2_57f851fd.png",
-            "res://art/formulas/sm_xeq3_739719aa.png",
-            "res://art/formulas/sm_xeq4_e537a705.png"
+            "$$x=1$$",
+            "$$x=2$$",
+            "$$x=3$$",
+            "$$x=4$$"
           ],
           "ans": 1,
-          "hint": "-8x + 16 = 0 → x = 2。"
+          "hint": "两式相减消去平方项，得到只含 x 的一次方程，再解它。"
         },
         {
           "name": "第 4 关 · 求半径",
@@ -158,11 +158,11 @@
           "opts": [
             "2",
             "3",
-            "res://art/formulas/opt_r5.png",
-            "res://art/formulas/opt_r8.png"
+            "$$\\sqrt{5}$$",
+            "$$\\sqrt{8}$$"
           ],
           "ans": 1,
-          "hint": "R = √(4+1+4) = 3。"
+          "hint": "R 就是球心到原点的距离：三个坐标的平方和再开根。"
         },
         {
           "name": "第 5 关 · 球面方程",
@@ -172,13 +172,13 @@
           "cam_zoom": 2.1,
           "q": "外接球的球面方程是？",
           "opts": [
-            "res://art/formulas/opt_eq1.png",
-            "res://art/formulas/opt_eq2.png",
-            "res://art/formulas/opt_eq3.png",
-            "res://art/formulas/opt_eq4.png"
+            "$$(x-2)^{2}+(y-1)^{2}+(z-2)^{2}=9$$",
+            "$$(x+2)^{2}+(y+1)^{2}+(z+2)^{2}=9$$",
+            "$$(x-2)^{2}+(y-1)^{2}+(z-2)^{2}=3$$",
+            "$$(x-2)^{2}+(y-1)^{2}+(z-2)^{2}=81$$"
           ],
           "ans": 0,
-          "hint": "球心 (2,1,2),R² = 9。"
+          "hint": "球面方程是 (x−a)²+(y−b)²+(z−c)²=R²，把上一关的球心与半径代入。"
         }
       ]
     },
@@ -210,13 +210,13 @@
           "q": "底面外接圆半径 r 由正弦定理确定：",
           "formula": "res://art/formulas/fq_geom_sine.png",
           "opts": [
-            "res://art/formulas/opt_sqrt13.png",
-            "res://art/formulas/opt_2sqrt3.png",
-            "res://art/formulas/opt_sqrt10.png",
-            "res://art/formulas/opt_13_2.png"
+            "$$\\sqrt{13}$$",
+            "$$2\\sqrt{3}$$",
+            "$$\\sqrt{10}$$",
+            "$$\\dfrac{13}{2}$$"
           ],
           "ans": 0,
-          "hint": "r = √13。"
+          "hint": "正弦定理 r = a / (2sin A)，把底面的边与角代进去。"
         },
         {
           "name": "第 3 关 · 求高度 h",
@@ -230,7 +230,7 @@
             "12"
           ],
           "ans": 1,
-          "hint": "h = PA / 2 = 6。"
+          "hint": "球心在过底面外心的垂线上，由 OA = OP 列方程解出 h。"
         },
         {
           "name": "第 4 关 · 求半径 R",
@@ -244,10 +244,10 @@
             "5",
             "6",
             "7",
-            "res://art/formulas/opt_sqrt13.png"
+            "$$\\sqrt{13}$$"
           ],
           "ans": 2,
-          "hint": "R² = 13 + 36 = 49，故 R = 7。"
+          "hint": "在 Rt△OO′A 中用勾股定理：R² = r² + OO′²，最后取正根。"
         },
         {
           "name": "第 5 关 · 易错点",
@@ -263,7 +263,7 @@
             "顶点处"
           ],
           "ans": 1,
-          "hint": "钝角三角形的外心落在三角形外部。"
+          "hint": "先画出外接圆，观察圆心落在三角形内部还是外部。"
         }
       ]
     },
@@ -287,7 +287,7 @@
             "216"
           ],
           "ans": 1,
-          "hint": "V = 36。"
+          "hint": "三条棱两两垂直：V = (1/6)·PA·PB·PC。"
         },
         {
           "name": "第 2 关 · 表面积 S",
@@ -296,13 +296,13 @@
           "q": "三棱锥的全面积：",
           "formula": "res://art/formulas/fq_insphere_s.png",
           "opts": [
-            "res://art/formulas/opt_54p18r3.png",
-            "res://art/formulas/opt_36r3.png",
-            "res://art/formulas/opt_54p9r3.png",
+            "$$54+18\\sqrt{3}$$",
+            "$$36\\sqrt{3}$$",
+            "$$54+9\\sqrt{3}$$",
             "72"
           ],
           "ans": 0,
-          "hint": "S = 54 + 18√3。"
+          "hint": "三个直角侧面 + 一个正三角形底面，分别求出后相加。"
         },
         {
           "name": "第 3 关 · 等体积法式",
@@ -310,13 +310,13 @@
           "reveal": 3.5,
           "q": "等体积法的核心关系式是？",
           "opts": [
-            "res://art/formulas/opt_V3Sr.png",
-            "res://art/formulas/opt_VSr.png",
-            "res://art/formulas/opt_V2Sr.png",
-            "res://art/formulas/opt_Vsphere.png"
+            "$$V=\\dfrac{1}{3}Sr$$",
+            "$$V=Sr$$",
+            "$$V=2Sr$$",
+            "$$V=\\dfrac{4}{3}\\pi R^{3}$$"
           ],
           "ans": 0,
-          "hint": "分割成以 r 为高的锥体：V = (1/3)·S·r。"
+          "hint": "把球心与四个面连起来，棱锥被切成四个以 r 为高的小锥体，体积之和不变。"
         },
         {
           "name": "第 4 关 · 求内切半径",
@@ -325,13 +325,13 @@
           "q": "由等体积法，内切球半径 r:",
           "formula": "res://art/formulas/fq_insphere_r.png",
           "opts": [
-            "res://art/formulas/opt_3mr3.png",
-            "res://art/formulas/opt_3pr3.png",
-            "res://art/formulas/opt_r3.png",
-            "res://art/formulas/opt_3_2.png"
+            "$$3-\\sqrt{3}$$",
+            "$$3+\\sqrt{3}$$",
+            "$$\\sqrt{3}$$",
+            "$$\\dfrac{3}{2}$$"
           ],
           "ans": 0,
-          "hint": "r = 3 - √3。"
+          "hint": "等体积法 r = 3V / S表，V 与 S表 在前两关都已求出。"
         },
         {
           "name": "第 5 关 · 底面切点",
@@ -339,13 +339,13 @@
           "reveal": 5.4,
           "q": "内切球与底面 △ABC 的切点坐标是？",
           "opts": [
-            "res://art/formulas/sm_222_7303fe8e.png",
-            "res://art/formulas/sm_rr0_6f131db0.png",
-            "res://art/formulas/sm_000_96374018.png",
-            "res://art/formulas/sm_666_57a52b60.png"
+            "$$(2,2,2)$$",
+            "$$(r,r,0)$$",
+            "$$(0,0,0)$$",
+            "$$(6,6,6)$$"
           ],
           "ans": 0,
-          "hint": "底面切点是 (2, 2, 2)。"
+          "hint": "球心 (r,r,r) 向底面作垂线，垂足就是切点。"
         }
       ]
     },
@@ -362,13 +362,13 @@
           "q": "棱长 a = 6 的正四面体，其高：",
           "formula": "res://art/formulas/fq_inout_h.png",
           "opts": [
-            "res://art/formulas/opt_2r6.png",
-            "res://art/formulas/opt_r6.png",
-            "res://art/formulas/opt_4r6.png",
-            "res://art/formulas/opt_3r2.png"
+            "$$2\\sqrt{6}$$",
+            "$$\\sqrt{6}$$",
+            "$$4\\sqrt{6}$$",
+            "$$3\\sqrt{2}$$"
           ],
           "ans": 0,
-          "hint": "h = 2√6。"
+          "hint": "先求底面外接圆半径，再在与棱构成的直角三角形里用勾股定理。"
         },
         {
           "name": "第 2 关 · 内切球半径",
@@ -377,13 +377,13 @@
           "q": "正四面体的内切球半径 r:",
           "formula": "res://art/formulas/fq_inout_inr.png",
           "opts": [
-            "res://art/formulas/opt_r6_2.png",
-            "res://art/formulas/opt_r6.png",
-            "res://art/formulas/opt_r3_2.png",
-            "res://art/formulas/opt_3_2.png"
+            "$$\\dfrac{\\sqrt{6}}{2}$$",
+            "$$\\sqrt{6}$$",
+            "$$\\dfrac{\\sqrt{3}}{2}$$",
+            "$$\\dfrac{3}{2}$$"
           ],
           "ans": 0,
-          "hint": "r = √6 / 2。"
+          "hint": "等体积法：r = 3V / S表，正四面体的 V 与 S表 都能用棱长表示。"
         },
         {
           "name": "第 3 关 · 外接球半径",
@@ -392,13 +392,13 @@
           "q": "正四面体的外接球半径 R:",
           "formula": "res://art/formulas/fq_inout_outR.png",
           "opts": [
-            "res://art/formulas/opt_3r6_2.png",
-            "res://art/formulas/opt_r6_2.png",
-            "res://art/formulas/opt_3r6.png",
-            "res://art/formulas/opt_r6.png"
+            "$$\\dfrac{3\\sqrt{6}}{2}$$",
+            "$$\\dfrac{\\sqrt{6}}{2}$$",
+            "$$3\\sqrt{6}$$",
+            "$$\\sqrt{6}$$"
           ],
           "ans": 0,
-          "hint": "R = 3√6 / 2。"
+          "hint": "球心在高上：用棱长表示球心到顶点、到底面中心的距离，列等式解出 R。"
         },
         {
           "name": "第 4 关 · 半径关系",
@@ -406,13 +406,13 @@
           "reveal": 5.9,
           "q": "正四面体外接球半径 R 与内切球半径 r 的关系是？",
           "opts": [
-            "res://art/formulas/sm_Reqr_7428d291.png",
-            "res://art/formulas/sm_Req2r_7856231f.png",
-            "res://art/formulas/sm_Req3r_71200eed.png",
-            "res://art/formulas/sm_Req4r_bc0f26ec.png"
+            "$$R=r$$",
+            "$$R=2r$$",
+            "$$R=3r$$",
+            "$$R=4r$$"
           ],
           "ans": 2,
-          "hint": "R = 3r。"
+          "hint": "同一条高上，球心把它分成 3 : 1 的两段，据此比较两个半径。"
         },
         {
           "name": "第 5 关 · 高度关系",
@@ -422,13 +422,13 @@
           "cam_zoom": 2.3,
           "q": "沿一条高观察，恒有？",
           "opts": [
-            "res://art/formulas/sm_Rpreqh_3f196db2.png",
-            "res://art/formulas/sm_Rmreqh_c9961846.png",
-            "res://art/formulas/sm_2Rpreqh_ab01b020.png",
-            "res://art/formulas/sm_Rp2reqh_dbc8d1d4.png"
+            "$$R+r=h$$",
+            "$$R-r=h$$",
+            "$$2R+r=h$$",
+            "$$R+2r=h$$"
           ],
           "ans": 0,
-          "hint": "R + r = h。"
+          "hint": "沿高看：球心到顶点是 R、到底面是 r，两段首尾相接就是整条高。"
         }
       ]
     },
@@ -459,13 +459,13 @@
           "q": "在直角 △POA 中，tan∠PAO 的值：",
           "formula": "res://art/formulas/fq_angle_tan.png",
           "opts": [
-            "res://art/formulas/opt_r6_2.png",
-            "res://art/formulas/opt_r3_2.png",
-            "res://art/formulas/opt_r2_2.png",
-            "res://art/formulas/opt_1_2.png"
+            "$$\\dfrac{\\sqrt{6}}{2}$$",
+            "$$\\dfrac{\\sqrt{3}}{2}$$",
+            "$$\\dfrac{\\sqrt{2}}{2}$$",
+            "$$\\dfrac{1}{2}$$"
           ],
           "ans": 0,
-          "hint": "tan∠PAO = √6 / 2。"
+          "hint": "在 Rt△POA 中，tan 是对边 PO 比邻边 OA，两条边都能从图上读出。"
         },
         {
           "name": "第 3 关 · 二面角平面角",
@@ -487,13 +487,13 @@
           "reveal": 4.7,
           "q": "由 tan∠PMO = √3，二面角 P-AB-C 等于？",
           "opts": [
-            "res://art/formulas/sm_30deg_ee97aeee.png",
-            "res://art/formulas/sm_45deg_e61fa75a.png",
-            "res://art/formulas/sm_60deg_82db883b.png",
-            "res://art/formulas/sm_90deg_462f40ab.png"
+            "$$30^{\\circ}$$",
+            "$$45^{\\circ}$$",
+            "$$60^{\\circ}$$",
+            "$$90^{\\circ}$$"
           ],
           "ans": 2,
-          "hint": "tan = √3 → 60°。"
+          "hint": "先由 tan 值确定这个角，再判断它与二面角相等还是互余。"
         },
         {
           "name": "第 5 关 · 方法核心",
