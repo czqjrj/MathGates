@@ -52,7 +52,7 @@
 | **A7** | 版本声明漂移（文档 vs `project.godot` vs GDExtension） | **P2** | ✅ 已完成（文档基线 + 版本策略已记录） |
 | **A8** | 「地图」隐喻套在清单结构上 | **P2** | 产品层，长期方向 |
 | **A9** | 工作区残留（`*.log` / `*.pck`） | **P2** | ✅ 已完成（已清理） |
-| **B8** | 正确项恒写在第 1 位（92.7%） | **P2** | 编校规范 |
+| **B8** | 正确项恒写在第 1 位（92.7%） | **P2** | ✅ 已完成（2026-10-26 第四十四轮：`tools/shuffle_options.py` 按内容哈希定序，幂等 + span 级改写不动格式；`ans==0` 90.8% → 25.1%；顺带修 9 处「解析按位置指代选项」的真 bug，闸门进 `check_questions`） |
 | **B10** | 题干套路化与重复 | **P2** | 编校质量 |
 | **B12** | 提示语泄露答案 | **P2** | 编校质量 |
 | **B13** | 朗读/无障碍路径不完整且双路径不一致 | **P1** | 🟡 第一步完成（2026-10-21 `94b3acb`：双路径统一走 SpeechRules 转换器，盲点命令 5→0，口播看板进 check_questions）；余人工抽检听感 |
@@ -133,11 +133,43 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`2f92964`（feat A15 元内容出代码，本轮）→ 上一提交链：
-  `e5a670c`（docs 第四十二轮）→ `afe05af`（fix run_checks）→ `0e742e4`（chore 换机交接基建）→
+- **最后提交**：`bda56d7`（feat B8 选项顺序规范化，本轮）→ 上一提交链：
+  `997c6bb`（docs 第四十三轮）→ `2f92964`（feat A15 元内容出代码）→
+  `e5a670c`（docs 第四十二轮）→ `0e742e4`（chore 换机交接基建）→
   `7f8aaa5`（docs 第四十一轮）→ `aad3f41`（feat B1 方言修正）→ …，
   已 push（`main` 与 `origin/main` 同步）。
-- **本轮交付（2026-10-26，第四十三轮）**：**A15 元游戏内容出代码**（`data/meta.json`，feat `2f92964`）。
+- **本轮交付（2026-10-26，第四十四轮）**：**B8 选项顺序规范化**（feat `bda56d7`）。
+  - **口径先修正**：原记录 699/754（92.7%）是按题数；按「有 `opts` 的选择题」重算
+    是 **757/834（90.8%）**，另 4 题是多选（`ans` 为数组）。
+  - **不是随机洗牌，是按内容哈希定序**：`sort(key=sha256(文件:关卡:轮次\0选项原文))`。
+    因此**幂等**——复跑 0 题变化，不需要种子、不用给数据塞「已洗过」标记。
+  - **绝不重新序列化 JSON**：26 个文件全是手工排版（小数组单行、`scene` 紧凑），
+    整体 `json.dump` 会全文件重排成无法审阅的 diff。新工具 `tools/shuffle_options.py`
+    只做 **span 级替换**（只动 `opts` 元素排列 + `ans` 数字），CRLF/LF、缩进、逗号
+    风格原样保留；顺手用同一套 span 能力写了个 `--dry-run`。
+  - **跳过关掉乱序的题**（与 `StageRules.SHUFFLE_MARKERS` 同一词表）；多选按索引重映射。
+  - **顺带发现并修掉真 bug（本轮最有价值的产出）**：显示字母是**按打乱后的显示位置**
+    重排的，所以「选项2 混淆了 ∈ 与 ⊆」「B 忽略了定义域」这类解析**在运行时早就指错**。
+    这不是编校卫生，是内容错误。共改 **9 处**（8 `explain` + 1 `hint`），一律改成
+    直接引用**选项内容**：`set_relation` / `set_complement`×2 / `logic_special` /
+    `vec_basis` / `func_parity` / `stat_sampling` / `trig_sumdiff`。
+    另 `solid_axiom/8` 的「以上都不对」会关闭整题乱序 → 换成真干扰项
+    「共面直线（相交或平行）」，该题随全库纳入乱序。
+  - **新增文案遵守 A10**：新写的裸公式改成 `$$LaTeX$$`，`inline` 未覆盖片段 261 → **260**（没倒退）。
+  - **闸门**：`check_questions.gd` 新增 `_check_option_refs()`——`hint/explain/success/tip`
+    里出现「选项+下标/字母」**硬报错**；「第 N 项 / 最后一项 / 依次是」只进**看板**
+    （数学文本里常指数列的项，硬报会大量误伤）。`ans==0 > 35%` 从 warning **升级为
+    硬失败**（签名 `__global__||…`，故意进不了基线）。
+  - **反向验证**：注入「选项0」→ `1 new / exit 1`（已还原）。**全量终检**：838 题与
+    `HEAD` 逐题比对——808 题顺序变化、**正确答案文本零变化**、白名单外零字段改动、
+    仅 1 处刻意替换干扰项；diff **1613 增 / 1613 删**（纯换位）。
+  - 结果：`ans==0` **757/834（90.8%）→ 209/834（25.1%）**，分布 209/186/221/218。
+  - 十一项全绿：`CHECKED 114` / `TESTS 2189` / `SMOKE 286` / `UI-SMOKE 422` / `LabSmoke TMP_OK` /
+    `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new（7 known / 2 warnings）` / `KNOWLEDGE hard-gaps=0` /
+    `CONTENT-HEALTH 0 problems` / `ASSETS 30.58 MB（3158 files）` / `PARAM-CHECK 0 new / 96 known`。
+  - **下一项建议**：**B12 提示语泄露答案**（先出清单再改，与本轮同一套路：先扫后改、能机械
+    就机械）；B1 仍卡在「改数据 vs 扩 LabPlane」需要拍板。
+- **上一轮（2026-10-26，第四十三轮）**：**A15 元游戏内容出代码**（`data/meta.json`，feat `2f92964`）。
   - **7 组常量迁出**：`AVATARS` / `RANKS` / `MEDALS` / `DAILY_MISSIONS` / `DOMAINS` /
     `PET_FORMS` / `LORE` → `data/meta.json`（415 行）。`PET_FORMS` 是原计划外的一组，
     但它同样是纯展示文案，留着就还是「改内容要改代码」。
@@ -1727,21 +1759,51 @@
 
 ---
 
-### [ ] B8 · 正确项恒写在第 1 位（P2）
+### [x] B8 · 正确项恒写在第 1 位（P2）✅ 2026-10-26 第四十四轮收官（`tools/shuffle_options.py`）
 
 **现状（证据）**
-- `ans == 0` 占 **699/754（92.7%）**；`ans==1` 36、`ans==2` 12、`ans==3` 5。
-- **运行时确实会打乱选项**（`StageBase._opt_order_for` → `_shuffle_allowed`，默认开；
-  754 题里只有 1 题因选项含「以上/都对」等标记而关闭乱序）——**所以不直接漏答案**。
-- 但它说明：**没有任何人审阅过选项顺序与干扰项合理性**（与 B5 同源）。
+- 原记录 `ans == 0` 占 699/754（92.7%）；按「有 `opts` 的选择题」重算是 **757/834（90.8%）**
+  （`ans==1` 43 / `ans==2` 24 / `ans==3` 10，另 4 题为多选 `ans` 是数组）。
+- **运行时确实会打乱选项**（`StageBase` → `StageRules.order_for`，按**显示位置**标 A/B/C/D；
+  默认开，仅 1 题因选项含「以上」关闭）——**所以不直接漏答案**。
+- 但它说明：**没有任何人审阅过选项顺序**；更糟的是**关掉乱序时答案恒在 A**。
 
-**做法**
-- 出题规范：写题时先写 3 个干扰项、最后填正确项；或在提交前随机化一次存储顺序；
-- 禁止在选项中使用 `以上都对/都不正确`（会关闭乱序），改用明确表述。
+**做法（实际落地）**
+- **不是随机洗牌，而是按内容哈希定序**：`order = sort(key=sha256(文件:关卡:轮次\0选项原文))`。
+  好处是**幂等**——同一份内容跑几次结果都一样，不需要随机种子，也不需要往数据里塞「已洗过」标记。
+  正确项落在哪一位由内容决定，838 题下等价均匀。
+- **绝不重新序列化 JSON**。题库是手工排版的（小数组写一行、`scene` 紧凑），整体 `json.dump`
+  会把 26 个文件全部重排成无法审阅的巨型 diff。工具只做 **span 级替换**：
+  只改 `opts` 数组内元素的排列与 `ans` 的数字，其余字节（含 CRLF/LF、缩进、逗号风格）原样保留。
+- **跳过关掉乱序的题**（与 `StageRules.SHUFFLE_MARKERS` 同一份词表），否则「以上都不对」会被排到中间。
+- **多选**（`ans` 为数组）按索引重映射，集合语义不变。
+- 出题规范同步写进 README：**先写干扰项、最后填正确项**；**禁止** `以上都对/都不正确`（会关乱序）。
+
+**顺带修掉的真 bug：解析按位置指代选项**
+- 因为显示字母是**按打乱后的位置**重排的，所以「选项2 混淆了 ∈ 与 ⊆」「B 忽略了定义域」这类写法
+  **在运行时早已指错**——学生看到的是另一个选项。这是内容错误，不只是编校卫生。
+- 修了 **9 处**（8 条 `explain` + 1 条 `hint`，全部改为直接引用选项**内容**）：
+  `set_relation` / `set_complement`×2 / `logic_special` / `vec_basis` / `func_parity` /
+  `stat_sampling` / `trig_sumdiff`。
+- 另 1 处 `solid_axiom/8` 的「以上都不对」会**关闭乱序**，换成真干扰项「共面直线（相交或平行）」，
+  该题随全库一起纳入乱序。
+- 新增的裸公式按 A10 约定写成 `$$LaTeX$$`，`inline` 未覆盖片段 261 → **260**（没倒退）。
+
+**闸门（防复发）**
+- `check_questions.gd` 新增 `_check_option_refs()`：`hint/explain/success/tip` 里出现
+  **「选项+下标/字母」即硬报错**（语义无歧义，不会误伤）；「第 N 项 / 最后一项 / 依次是」
+  只进**看板**（数学文本里常指数列的项，硬报会大量误伤）。
+- `ans==0 > 35%` 从 warning **升级为硬失败**（签名 `__global__||…`，故意进不了基线）。
 
 **验收**
-- `ans==0` 占比降到 ≤ 35%（随机基线 25% ± 容差）；
-- `check_questions.gd` 增加该分布看板。
+- `ans==0` **757/834（90.8%）→ 209/834（25.1%）**；分布 0=209 / 1=186 / 2=221 / 3=218（≤35% ✅）。
+- 看板已进 `check_questions.gd`（`ans 原始分布` + `解析按顺序指代选项（模糊类）`）。
+- **反向验证**：往某条 `explain` 注入「选项0」→ `1 new / exit 1`（已还原）。
+- **全量终检**：838 题与 `HEAD` 逐题比对 —— 808 题顺序变化、**正确答案文本零变化**、
+  白名单外**零字段改动**、仅 1 处刻意替换干扰项。26 文件 diff **1613 增 / 1613 删**（纯换位）。
+- 十一项全绿：`CHECKED 114` / `TESTS 2189` / `SMOKE 286` / `UI-SMOKE 422` / `LabSmoke TMP_OK` /
+  `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new（7 known / 2 warnings）` / `KNOWLEDGE hard-gaps=0` /
+  `CONTENT-HEALTH 0 problems` / `ASSETS 30.58 MB（3158 files）` / `PARAM-CHECK 0 new / 96 known`。
 
 ---
 
@@ -2932,7 +2994,7 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
 | `--headless --path . res://tests/Tests.tscn` | `TESTS: <N> passed, 0 failed` |
 | `--headless --path . res://tools/smoke_scene.tscn` | `SMOKE: <N> ok, 0 fail` |
 | `--headless --path . res://tests/LabSmoke.tscn` | 末尾 `TMP_OK` |
-| `--headless --path . --script res://tools/check_questions.gd`（**已完成，见 A5**） | `QUESTION-CHECK: … / 0 new / 0 problems`（存量记基线） |
+| `--headless --path . --script res://tools/check_questions.gd`（**已完成，见 A5**） | `QUESTION-CHECK: … / 0 new / 0 problems`（存量记基线；**B8 起 `ans==0` >35% 不进基线、直接红灯**） |
 | `--headless --path . res://tests/UiSmoke.tscn`（**新增，见 A11**） | `UI-SMOKE: … ok, 0 fail` |
 | `--headless --path . --script res://tools/verify_inline.gd` | 末尾 `VERIFY_TABLE: total=<N> fail=0`（MicroTeX 渲染复验，改动 `res/` 或字体后必跑） |
 | `--headless --path . --script res://tools/check_assets.gd`（**新增，见 A13**） | `ASSETS: <MB> MB … banned=0, oversize=0`（不得出现 `ASSETS-FAIL`） |
@@ -2985,7 +3047,9 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
   平均 **3.93 题/关**（`check_questions` 口径：1057 = 单选 834 + 多选 4 + 填空 219；无选项 `interact` 4 另计）。
 - 题型分布（`check_questions.gd` 看板）：单选 **834**，多选 **4**，`interact` **4**，填空 **219**；
   非四选一占比 **21.4%**（B1 目标 ≥30%；B2 扩题时新增轮次一律用填空/多选/`interact`，可同步抬高此值）。
-- 选项：图片选项 **114** 处（位于 36 道题）；`ans==0` **757/834（90.8%）**（B8 偏高；新题已刻意分散 ans 位置）。
+- 选项：图片选项 **114** 处（位于 36 道题）；`ans==0` **209/834（25.1%）**（B8 已用
+  `tools/shuffle_options.py` 按内容哈希定序；**>35% 即硬失败**。「解析按位置指代选项」归零，
+  「第 N 项/最后一项/依次是」这类模糊措辞 **3 处**只在看板，需人读）。
 - 探究轮 **273**，其中题面为陈述句 **0（0.0%）**（`check_questions.gd` 口径；B3 目标 <20%；原始人工口径 221/230）。
 - 轮次标签编号错位 **0 处**（B9 已修复：`tools/fix_labels.gd` 批量重编，规范 `<关卡序号>-<轮次> <阶段名>`）。
 - 资源体积（A13 已治理）：仓库 tracked 合计 **29.6MB**（治理前 48.4MB；`art/` 已无 `.xcf`，源文件移至 `assets_src/`，

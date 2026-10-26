@@ -56,7 +56,8 @@ audio/           音效 wav
 tools/           开发/测试脚本:check_all.gd(脚本检查)、check_questions.gd(内容校验器:
 				 结构/答案范围/选项与题干重复/轮次编号/公式覆盖 + 内容看板,含基线机制)、
 				 check_questions_baseline.txt(已知问题基线)、fix_labels.gd(轮次标签编号批量重编:
-				 预览/--apply,文本级替换保留排版)、smoke_scene(全场景冒烟)、
+				 预览/--apply,文本级替换保留排版)、shuffle_options.py(B8 选项顺序规范化:
+				 按内容哈希定序、幂等、span 级改写不动排版,预览/--apply)、smoke_scene(全场景冒烟)、
 				 pack_math_res(把 gdextension/res 打包为 res.bin,排除 GPLv3 字体)、
 				 optimize_art(A13 降采样超大图,默认 dry-run)、check_assets(A13 资源入库/体积护栏)、
 				 check_knowledge(E1 知识点覆盖矩阵校验+生成 docs/知识点覆盖矩阵.md,
@@ -436,6 +437,12 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Godot "<godot472.
   改错文件会**静默失效**——`check_questions` 已加自检兜底（章节 lab→文件存在性 / 孤儿文件 /
   近名对半引用即红灯）。
 - **公式写法(A10)**:新题/文案里的数学式子**直接写 LaTeX,并用 `$$…$$` 包裹**(运行时由 MicroTeX 渲染成内联公式图)。例:`"q": "不等式 $$x^{2}-2x-3>0$$ 的解集是?"`。**存量迁移已完成**——全库 `data/*.json` 已无 `{f:}` 引用,`FORMULA_LATEX`/`FORMULA_SPEECH` 命名表已清空(**不再新增命名**),也不再写 Unicode 数学片段(`²`/`≤`/`α` 等;`data/inline_math.json` 已冻结为历史兼容层)。`{f:}` 机制仍在,但数据里一旦引用未声明的名字,`check_questions.gd` 会**直接报错**(根治「运行时静默变『公式』、题目不可答」);`$$…$$` 区段则被校验器忽略(见 A5/A10)。
+
+- **选项顺序与解析写法(B8)**:运行时会**按显示位置**重排选项并标 A/B/C/D(`StageRules.order_for`),所以
+  ① **解析/提示里禁止按位置指代选项**(「选项2 混淆了 ∈ 与 ⊆」「B 忽略了定义域」——乱序后指向另一个选项);
+  请直接引用**选项内容**。`check_questions.gd` 对「选项+下标/字母」**硬报错**。
+  ② **禁止** `以上都对/都不正确` 这类选项(命中 `SHUFFLE_MARKERS` 会**关闭**该题乱序)。出题时**先写干扰项、最后填正确项**;
+  存量顺序已由 `python tools/shuffle_options.py` 规范化(`ans==0` 90.8% → 25.1%,再看板 `ans==0 > 35%` 即红灯)。
 
 ## 内容与教材的关系
 
