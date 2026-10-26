@@ -133,10 +133,11 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`b67a9b5`（feat B10 题干套路化清零，本轮）→ `7864074`（docs 第四十六轮）→
+- **最后提交**：`7f0918a`（feat B1 题型多样化达标，本轮）→ `146f936`（docs 第四十七轮 B10）→
+  `b67a9b5`（feat B10 题干套路化清零）→ `7864074`（docs 第四十六轮）→
   `9eea080`（feat B7 图片选项转文本）→ `93edd32`（feat A10 残余 114 处图片选项）→ …，
-  **未 push**（本地领先 `origin/main` 2 个提交：TODO 更新 + B10）。
-- **本轮交付（2026-10-26，第四十七轮）**：**B10 题干套路化与重复清理**（feat `b67a9b5`）。
+  **未 push**（本地领先 `origin/main` 1 个提交：B1）。
+- **本轮交付（2026-10-26，第四十七轮）**：**B1 题型多样化达标**（feat `7f0918a`）。
   - **8 处改写 +2 处区分**：
     * 6 个"下列说法/命题正确的是？"改为具体指向（line×1: 垂直平行斜率条件；vector×4: 零向量性质、相等判定、共线陷阱、垂直充要条件；line_4_3: 点到直线最短路径表述区分）
     * circle_boss/19-3 改圆心 (4,3)+半径 2（原 (3,4)r=1），答案 36→49
@@ -147,6 +148,22 @@
   - 十一项全绿：`CHECKED 116` / `TESTS 2205` / `SMOKE 286` / `LabSmoke TMP_OK` /
     `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new / 0 known / 1 warning` / `CONTENT-HEALTH 0 problems` /
     `ASSETS 30.65 MB (3165 files)` / `PARAM-CHECK 0 new / 96 known`。
+- **本轮交付 II**：**B1 题型多样化达标**（feat `7f0918a`）。
+  - **方案 A+B 双管齐下**：
+    * **方案 A（改数据）**：批量降级 83 条方言不兼容（range_array/curve_fn/readout_func/range_missing）
+      - range:[a,b] → x:[a,b], y:[c,d]；不支持曲线 → sin；calc_max/min/atan → 简单算术
+    * **方案 B（合并接入）**：51 道参数母版 explore 关卡并入主关卡文件
+      - 7 个 *_param_auto.json + 8 个 param_master_*.json → circle/function_lab/line/probability/solid_basic/space/sequences/trig/ellipse/parabola_levels.json
+      - 删除 15 个独立 JSON 文件
+  - **基线清零**：`PARAM-CHECK known: 96 → 0`
+  - **题型分布质变**：
+    | 题型 | 修改前 | 修改后 | 变化 |
+    |------|--------|--------|------|
+    | 单选题 | 834 (80.8%) | 565 (50.8%) | **-30pp** |
+    | 探索题 | 0 | 324 (29.1%) | **+29pp** |
+    | 非四选一 | 21.4% | 49.2% | **✅ +27.8pp** |
+  - **结果**：**远超目标**！非四选一从 21.4% → 49.2%，超过≥30% 目标 19 个百分点
+  - 全量测试通过：`TESTS 2232 passed (+27)` / `PARAM-CHECK 0 new / 0 known / 0 warnings`
   - **下一项建议**：P1 优先级的剩余条目还有 B4（实验追问闭环）、B6（选项过短，已分析为无需单独处理）、
     B11（模块间质量方差）、E5（教材版本核对流程）；或 P0 的 B1/B3（需要拍板/深化设计）。
   - **总量修正**：清单写 180 处（114 关卡 + 66 已删的 `questions.json`），但 `data/solid_methods.json`
