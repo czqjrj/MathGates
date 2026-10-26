@@ -52,10 +52,10 @@
         "name": "1-2 向量的模长与单位向量",
         "q": "已知 |a| = 2，则与 a 方向相同的单位向量是？",
         "opts": [
-          "res://art/vector/formulas/vec_2a_2cf170b8.png",
-          "res://art/vector/formulas/vec_ad2_6d35af8e.png",
+          "$$-\\dfrac{\\vec{a}}{2}$$",
+          "$$\\dfrac{\\vec{a}}{|\\vec{a}|^{2}}$$",
           "a ÷ |a|，模长为 1",
-          "res://art/vector/formulas/vec_ax2_5c5329ea.png"
+          "$$2\\vec{a}$$"
         ],
         "ans": 2,
         "hint": "单位向量 = 原向量 ÷ 模长，保持方向、把模长归一化。",
@@ -538,10 +538,10 @@
         "name": "4-3 加法的运算律(陷阱)",
         "q": "关于向量加法，下列说法错误的是？",
         "opts": [
-          "res://art/vector/formulas/vec_apbeqbpa_9e4dded9.png",
-          "res://art/vector/formulas/vec_apbpceqapbpc_eee0f5dd.png",
+          "$$\\vec{a}+\\vec{b}=\\vec{b}+\\vec{a}$$",
+          "$$(\\vec{a}+\\vec{b})+\\vec{c}=\\vec{a}+(\\vec{b}+\\vec{c})$$",
           "|a+b| = |a| + |b| 恒成立",
-          "res://art/vector/formulas/vec_ap0eqa_a452f4b3.png"
+          "$$\\vec{a}+\\vec{0}=\\vec{a}$$"
         ],
         "ans": 2,
         "trap": true,
@@ -715,10 +715,10 @@
         "name": "5-2 减法与相反向量",
         "q": "a−b 等于下列哪个式子？",
         "opts": [
-          "res://art/vector/formulas/vec_apmb_57569d35.png",
+          "$$\\vec{a}+(-\\vec{b})$$",
           "起点相同的两向量之差恒为零",
-          "res://art/vector/formulas/vec_apb_b8c45754.png",
-          "res://art/vector/formulas/vec_bma_fca94f1a.png"
+          "$$\\vec{a}+\\vec{b}$$",
+          "$$\\vec{b}-\\vec{a}$$"
         ],
         "ans": 0,
         "hint": "减去一个向量，等于加上它的相反向量。",
@@ -773,7 +773,7 @@
           "AB = −BA，二者模长相等、方向相反",
           "AB 与 BA 一定共线且同向",
           "AB + BA 无法计算",
-          "res://art/vector/formulas/vec_ABeqBA_b29821cf.png"
+          "$$\\vec{AB}=\\vec{BA}$$"
         ],
         "ans": 0,
         "trap": true,
@@ -935,9 +935,9 @@
         "q": "A、B、C 三点共线，以 O 为参照，等价说法是？",
         "opts": [
           "AB 与 AC 共线(存在实数 λ 使 AB = λAC)",
-          "res://art/vector/formulas/vec_absABabseqabsACabs_74f37aaf.png",
+          "$$|\\vec{AB}|=|\\vec{AC}|$$",
           "AB 与 AC 垂直",
-          "res://art/vector/formulas/vec_OAeqOBeqOC_f031d2b2.png"
+          "$$\\vec{OA}=\\vec{OB}=\\vec{OC}$$"
         ],
         "ans": 0,
         "hint": "三点共线 → 从同一点出发的两个向量 AB、AC 共线。",
@@ -1311,10 +1311,10 @@
         "name": "8-2 坐标形式的线性运算",
         "q": "a=(1,2)、b=(3,−1)，则 2a − b = ?",
         "opts": [
-          "res://art/vector/formulas/vec_51_536a3895.png",
-          "res://art/vector/formulas/vec_m15_627f7a1d.png",
-          "res://art/vector/formulas/vec_15_5fb4fc8c.png",
-          "res://art/vector/formulas/vec_m1m5_6394543c.png"
+          "$$(5,1)$$",
+          "$$(-1,5)$$",
+          "$$(1,5)$$",
+          "$$(-1,-5)$$"
         ],
         "ans": 1,
         "hint": "2a=(2,4)，再逐坐标减去 b。",
@@ -1543,9 +1543,9 @@
         "q": "△ABC 中 G 为重心，则 OG = ?(O 为原点)",
         "opts": [
           "OC",
-          "res://art/vector/formulas/vec_OApOBpOC3_6258050c.png",
-          "res://art/vector/formulas/vec_OApOBpOC_846583d6.png",
-          "res://art/vector/formulas/vec_OApOB2_12cde1e0.png"
+          "$$\\dfrac{\\vec{OA}+\\vec{OB}+\\vec{OC}}{3}$$",
+          "$$\\vec{OA}+\\vec{OB}+\\vec{OC}$$",
+          "$$\\dfrac{\\vec{OA}+\\vec{OB}}{2}$$"
         ],
         "ans": 1,
         "hint": "重心是三中线的交点，坐标是三顶点坐标的平均。",
@@ -1629,9 +1629,9 @@
         "q": "G 为 △ABC 的重心，则 GA + GB + GC = ?",
         "opts": [
           "0(零向量)",
-          "res://art/vector/formulas/vec_3cdotOG_87c36519.png",
+          "$$3\\vec{OG}$$",
           "OG（把三个向量的和当成重心自身）",
-          "res://art/vector/formulas/vec_OApOBpOC_846583d6.png"
+          "$$\\vec{OA}+\\vec{OB}+\\vec{OC}$$"
         ],
         "ans": 0,
         "trap": true,
@@ -1913,9 +1913,9 @@
         "name": "11-2 由点积求夹角余弦",
         "q": "a=(1,0)、b=(1,1)，则 cos⟨a,b⟩ = ?",
         "opts": [
-          "res://art/vector/formulas/vec_sqrt22_c944b406.png",
+          "$$\\dfrac{\\sqrt{2}}{2}$$",
           "0",
-          "res://art/vector/formulas/vec_msqrt22_1b663ec1.png",
+          "$$-\\dfrac{\\sqrt{2}}{2}$$",
           "1"
         ],
         "ans": 0,
@@ -1975,10 +1975,10 @@
         "name": "11-3 求模长的公式(陷阱)",
         "q": "下列关于 |a| 的求法，错误的是？",
         "opts": [
-          "res://art/vector/formulas/vec_absaabseqsqrtacdota_c5de53a4.png",
-          "res://art/vector/formulas/vec_absaabseqacdota_0500eff4.png",
-          "res://art/vector/formulas/vec_absaabs2eqacdota_88ab40fe.png",
-          "res://art/vector/formulas/vec_absaabseqsqrtx2py2_ff1f93f0.png"
+          "$$|\\vec{a}|=\\sqrt{\\vec{a}\\cdot\\vec{a}}$$",
+          "$$|\\vec{a}|=\\vec{a}\\cdot\\vec{a}$$",
+          "$$|\\vec{a}|^{2}=\\vec{a}\\cdot\\vec{a}$$",
+          "$$|\\vec{a}|=\\sqrt{x^{2}+y^{2}}$$"
         ],
         "ans": 1,
         "trap": true,
@@ -2457,10 +2457,10 @@
         "name": "14-1 平行四边形恒等式",
         "q": "对任意向量 a、b,|a+b|² + |a−b|² = ?",
         "opts": [
-          "res://art/vector/formulas/vec_absaabspabsbabs2_6f83daba.png",
-          "res://art/vector/formulas/vec_absaabs2pabsbabs2_79514972.png",
-          "res://art/vector/formulas/vec_4absaabsabsbabs_95722180.png",
-          "res://art/vector/formulas/vec_2absaabs2pabsbabs2_66c5de6b.png"
+          "$$(|\\vec{a}|+|\\vec{b}|)^{2}$$",
+          "$$|\\vec{a}|^{2}+|\\vec{b}|^{2}$$",
+          "$$4|\\vec{a}||\\vec{b}|$$",
+          "$$2(|\\vec{a}|^{2}+|\\vec{b}|^{2})$$"
         ],
         "ans": 3,
         "hint": "展开：|a+b|²=a²+b²+2a·b,|a−b|²=a²+b²−2a·b，两式相加。",
@@ -2716,9 +2716,9 @@
         "q": "点 O 是 △ABC 的外心，则一定成立的是？",
         "opts": [
           "OA = OB = OC(向量相等)",
-          "res://art/vector/formulas/vec_OAcdotOBeqOBcdotOCeq_22380a0d.png",
-          "res://art/vector/formulas/vec_absOAabseqabsOBabseq_7ae80ddc.png",
-          "res://art/vector/formulas/vec_OApOBpOCeq0_ca22012b.png"
+          "$$\\vec{OA}\\cdot\\vec{OB}=\\vec{OB}\\cdot\\vec{OC}=\\vec{OC}\\cdot\\vec{OA}$$",
+          "$$|\\vec{OA}|=|\\vec{OB}|=|\\vec{OC}|$$",
+          "$$\\vec{OA}+\\vec{OB}+\\vec{OC}=\\vec{0}$$"
         ],
         "ans": 2,
         "hint": "外心到三个顶点的距离相等；注意是「模长相等」而非「向量相等」。",
@@ -2828,7 +2828,7 @@
         "name": "16-1 模长最值与三角不等式",
         "q": "恒成立的三角不等式是？",
         "opts": [
-          "res://art/vector/formulas/vec_absabsaabsmabsbabsab_5866f418.png",
+          "$$||\\vec{a}|-|\\vec{b}||\\le|\\vec{a}+\\vec{b}|\\le|\\vec{a}|+|\\vec{b}|$$",
           "|a+b| = |a|+|b| 恒成立",
           "|a+b| ≥ |a|+|b| 恒成立",
           "|a−b| ≥ |a|+|b| 恒成立"
@@ -2883,7 +2883,7 @@
         "name": "16-2 配方求模长",
         "q": "|a|=2、|b|=1、a⊥b，则 |2a+b| = ?",
         "opts": [
-          "res://art/vector/formulas/vec_sqrt17_9ac274ae.png",
+          "$$\\sqrt{17}$$",
           "5",
           "17",
           "3"
@@ -2938,10 +2938,10 @@
         "name": "16-3 三角不等式陷阱",
         "q": "已知 |a|=3、|b|=2，则 |a+b| 的取值范围是？",
         "opts": [
-          "res://art/vector/formulas/vec_15_c0b26615.png",
-          "res://art/vector/formulas/vec_05_beffc6ef.png",
-          "res://art/vector/formulas/vec_15_596d01e9.png",
-          "res://art/vector/formulas/vec_05_47df8828.png"
+          "$$(1,5)$$",
+          "$$(0,5)$$",
+          "$$[1,5]$$",
+          "$$[0,5]$$"
         ],
         "ans": 2,
         "trap": true,
@@ -3594,10 +3594,10 @@
         "name": "19-4 隐4 综合实战",
         "q": "已知 |a|=1、|b|=√2，若 (a+b)⊥a，则 a 与 b 的夹角是？",
         "opts": [
-          "res://art/vector/formulas/vec_60deg_82db883b.png",
-          "res://art/vector/formulas/vec_90deg_462f40ab.png",
-          "res://art/vector/formulas/vec_135deg_669110e8.png",
-          "res://art/vector/formulas/vec_45deg_e61fa75a.png"
+          "$$60^\\circ$$",
+          "$$90^\\circ$$",
+          "$$135^\\circ$$",
+          "$$45^\\circ$$"
         ],
         "ans": 2,
         "hint": "(a+b)·a = 0 → |a|²+a·b = 0 → a·b = −1，再由 cosθ = a·b/(|a||b|) 求角。",

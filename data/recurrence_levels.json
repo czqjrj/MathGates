@@ -15,8 +15,8 @@
         "opts": [
           "只剩 aₙ − a₁（中间项全部相消）",
           "只剩 aₙ + a₁",
-          "res://art/inline/in_3b57a90895.png",
-          "res://art/inline/in_aa5e190196.png"
+          "$$a_n-a_{n-1}$$",
+          "$$a_1-a_n$$"
         ],
         "ans": 0,
         "success": "对！这正是「叠加相消」：中间的 a₂,…,aₙ₋₁ 加、减各出现一次，正好抵消。",
@@ -47,10 +47,10 @@
         "type": "choice",
         "q": "已知 a₁ = 1，aₙ₊₁ − aₙ = 2n，则 aₙ = ?",
         "opts": [
-          "res://art/inline/in_e1ebb9f8f4.png",
-          "res://art/inline/in_c95afc56c3.png",
-          "res://art/inline/in_3d2d621afb.png",
-          "res://art/inline/in_02c0ca992e.png"
+          "$$n^{2}-n-1$$",
+          "$$n^{2}+n+1$$",
+          "$$n^{2}-n+1$$",
+          "$$2n$$"
         ],
         "ans": 2,
         "hint": "累加：aₙ = a₁ + 2(1+2+…+(n−1)) = 1 + n(n−1)。",
@@ -157,8 +157,8 @@
         "ask": "把上述 n−1 个等式相乘后，等号左边变成了什么？",
         "opts": [
           "只剩 aₙ · a₁",
-          "res://art/inline/in_4a29c50a8b.png",
-          "res://art/inline/in_b30ff47ccb.png",
+          "$$\\dfrac{a_1}{a_n}$$",
+          "$$a_n\\cdot a_{n-1}$$",
           "只剩 aₙ / a₁（中间项全部约掉）"
         ],
         "ans": 3,
@@ -190,10 +190,10 @@
         "type": "choice",
         "q": "已知 a₁ = 1，且 aₙ₊₁ = 2ⁿ·aₙ，则 aₙ = ?",
         "opts": [
-          "res://art/inline/in_cada76da1f.png",
-          "res://art/inline/in_3a5fa370ce.png",
-          "res://art/inline/in_c6ee82419c.png",
-          "res://art/inline/in_563bdb2708.png"
+          "$$2^{\\frac{n(n-1)}{2}}$$",
+          "$$2^{n^{2}}$$",
+          "$$2^{\\frac{n(n+1)}{2}}$$",
+          "$$2^{n-1}$$"
         ],
         "ans": 0,
         "hint": "累乘：aₙ = 2¹ · 2² · … · 2ⁿ⁻¹ = 2^(1+2+…+(n−1))。",
@@ -271,10 +271,10 @@
         "confirm": "实验完成，回答追问",
         "ask": "aₙ₊₁ = p·aₙ + q 的「不动点」λ（数列收敛的极限）等于？",
         "opts": [
-          "res://art/inline/in_406ccad09c.png",
-          "res://art/inline/in_19ed4c9329.png",
-          "res://art/inline/in_30e195fc82.png",
-          "res://art/inline/in_69908f152a.png"
+          "$$\\dfrac{p}{1-q}$$",
+          "$$\\dfrac{q}{1+p}$$",
+          "$$\\dfrac{q}{p-1}$$",
+          "$$\\dfrac{q}{1-p}$$"
         ],
         "ans": 3,
         "success": "对！让 aₙ₊₁ = aₙ = λ，解出 λ。",
@@ -312,10 +312,10 @@
         "type": "choice",
         "q": "已知 a₁ = 1，aₙ₊₁ = 2aₙ + 3，则 aₙ = ?",
         "opts": [
-          "res://art/inline/in_3e07969347.png",
-          "res://art/inline/in_fe68a29438.png",
-          "res://art/inline/in_0b56b8fbaf.png",
-          "res://art/inline/in_1f40e387cc.png"
+          "$$3\\cdot 2^{n}-3$$",
+          "$$2^{n+1}-3$$",
+          "$$2^{n+1}+3$$",
+          "$$2^{n}-3$$"
         ],
         "ans": 1,
         "hint": "λ = 3/(1−2) = −3，则 (aₙ + 3) 是公比为 2 的等比数列。",
@@ -441,10 +441,10 @@
         "type": "choice",
         "q": "已知 a₁ = 1，aₙ₊₁ = aₙ/(2aₙ + 1)，则 aₙ = ?",
         "opts": [
-          "res://art/inline/in_598dfb2828.png",
-          "res://art/inline/in_51fcde4d48.png",
-          "res://art/inline/in_21f0bbf2ba.png",
-          "res://art/inline/in_26f3f6ef60.png"
+          "$$\\dfrac{1}{2n-1}$$",
+          "$$\\dfrac{1}{2n+1}$$",
+          "$$\\dfrac{1}{n+1}$$",
+          "$$2n-1$$"
         ],
         "ans": 0,
         "hint": "取倒数：1/aₙ₊₁ = 1/aₙ + 2，故数列 (1/aₙ) 是首项 1、公差 2 的等差。",
@@ -577,10 +577,10 @@
         "type": "choice",
         "q": "已知 a₁ = 1，aₙ₊₁ = 3aₙ，则 lg aₙ = ?",
         "opts": [
-          "res://art/inline/in_c55c0b49b3.png",
-          "res://art/inline/in_a54e5f890e.png",
-          "res://art/inline/in_886aac0a55.png",
-          "res://art/inline/in_a18473c80c.png"
+          "$$(n+1)\\lg 3$$",
+          "$$(n-1)\\lg 2$$",
+          "$$(n-1)\\lg 3$$",
+          "$$n\\lg 3$$"
         ],
         "ans": 2,
         "hint": "lg aₙ 是首项 lg a₁ = 0、公差 lg 3 的等差。",
@@ -613,10 +613,10 @@
         "type": "choice",
         "q": "对于形如 aₙ₊₁ = c·aₙ^k（aₙ>0）的递推，两边取对数后变为？",
         "opts": [
-          "res://art/inline/in_8370a1ee38.png",
-          "res://art/inline/in_3d3e35f069.png",
-          "res://art/inline/in_55ed1d1e59.png",
-          "res://art/inline/in_55164855e8.png"
+          "$$\\lg a_{n+1}=\\lg c+k a_n$$",
+          "$$\\lg a_{n+1}=k(\\lg c+\\lg a_n)$$",
+          "$$\\lg a_{n+1}=\\lg c+k\\lg a_n$$",
+          "$$\\lg a_{n+1}=c+k\\lg a_n$$"
         ],
         "ans": 2,
         "hint": "对数运算：lg(c·aₙ^k) = lg c + k·lg aₙ。",
@@ -671,10 +671,10 @@
         "confirm": "实验完成，回答追问",
         "ask": "aₙ 与 Sₙ 的关系是？",
         "opts": [
-          "res://art/inline/in_a0ef082376.png",
-          "res://art/inline/in_7ad2a89a62.png",
-          "res://art/inline/in_704b698262.png",
-          "res://art/inline/in_af950c3ed1.png"
+          "$$a_n=S_{n+1}-S_n$$",
+          "$$a_n=S_n+S_{n-1}$$",
+          "$$a_n=S_n-S_{n-1}$$",
+          "$$a_n=S_n-S_{n+1}$$"
         ],
         "ans": 2,
         "success": "对！每个柱子的高度差就是对应的 aₙ。",
@@ -711,10 +711,10 @@
         "type": "choice",
         "q": "已知 Sₙ = n² + n，则 aₙ = ?",
         "opts": [
-          "res://art/inline/in_02c0ca992e.png",
-          "res://art/inline/in_bdf30577d2.png",
-          "res://art/inline/in_bb62636c1f.png",
-          "res://art/inline/in_d26a2ef69b.png"
+          "$$2n$$",
+          "$$n^{2}$$",
+          "$$2n-1$$",
+          "$$2n+1$$"
         ],
         "ans": 0,
         "hint": "aₙ = Sₙ − Sₙ₋₁ = (n²+n) − ((n−1)²+(n−1))。",
@@ -749,9 +749,9 @@
         "q": "已知 Sₙ 求 aₙ 时，下列说法正确的是？",
         "opts": [
           "a₁ 用 S₁ 单独验证；n≥2 时 aₙ = Sₙ − Sₙ₋₁",
-          "res://art/inline/in_7ad2a89a62.png",
+          "$$a_n=S_n+S_{n-1}$$",
           "对一切 n 都用 aₙ = Sₙ − Sₙ₋₁",
-          "res://art/inline/in_3cb01af83a.png"
+          "$$a_1=S_2-S_1$$"
         ],
         "ans": 0,
         "trap": true,

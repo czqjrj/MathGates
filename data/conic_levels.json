@@ -67,11 +67,11 @@
     "levels": [
       { "name": "3-1 椭圆的斜率积", "mode": 1,
         "q": "椭圆上点 P 与两顶点 A、B 连线斜率之积 k(PA)·k(PB) = ?",
-        "opts": ["res://art/conic/formulas/opt_conic_negab.png", "res://art/conic/formulas/opt_conic_pos.png", "res://art/conic/formulas/opt_conic_neg.png", "0"], "ans": 2,
+        "opts": ["$$-\\dfrac{a^{2}}{b^{2}}$$", "$$\\dfrac{b^{2}}{a^{2}}$$", "$$-\\dfrac{b^{2}}{a^{2}}$$", "0"], "ans": 2,
         "hint": "椭圆：k(PA)·k(PB) = -b²/a²。" },
       { "name": "3-2 双曲线的斜率积", "mode": 2,
         "q": "双曲线上点 P 与两顶点连线斜率之积 k(PA)·k(PB) = ?",
-        "opts": ["0", "res://art/conic/formulas/opt_conic_pos.png", "res://art/conic/formulas/opt_conic_neg.png", "res://art/conic/formulas/opt_conic_negab.png"], "ans": 1,
+        "opts": ["0", "$$\\dfrac{b^{2}}{a^{2}}$$", "$$-\\dfrac{b^{2}}{a^{2}}$$", "$$-\\dfrac{a^{2}}{b^{2}}$$"], "ans": 1,
         "hint": "双曲线：k(PA)·k(PB) = +b²/a²。" },
       { "name": "3-3 斜率积的符号与曲线", "mode": 2,
         "q": "若点 P 与两定点 A、B 连线的斜率之积为 [b]负[/b]常数（不等于 0），则 P 的轨迹通常是？",
