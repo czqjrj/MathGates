@@ -36,7 +36,11 @@ var _issues: Array[String] = []          ## "file|key|detail"
 var _known := {}                         ## 基线签名集合
 var _label_re: RegEx
 var _cjk: RegEx
-
+## B8：解析/提示里按**位置**指代选项（运行时会打乱选项，写死的位置会指错）
+var _posref_re: RegEx
+## B8 看板用：模糊的顺序措辞（可能指数列的项，不硬报）
+var _orderref_re: RegEx
+var _order_ref_hits := 0
 # ---- 看板统计
 var _n_files := 0
 var _n_levels := 0
@@ -79,6 +83,10 @@ func _initialize() -> void:
 	_label_re.compile("^([0-9]+)[-.．]")
 	_cjk = RegEx.new()
 	_cjk.compile("[\\x{2e80}-\\x{303f}\\x{31c0}-\\x{9fff}\\x{f900}-\\x{faff}\\x{fe30}-\\x{fe4f}\\x{ff00}-\\x{ffef}]+")
+	_posref_re = RegEx.new()
+	_posref_re.compile("选项\\s*[0-9A-D]")
+	_orderref_re = RegEx.new()
+	_orderref_re.compile("最后\\s*[一两二三1-4]\\s*项|第\\s*[1-4]\\s*项|依次是")
 	_dollar = RegEx.new()
 	_dollar.compile("\\$\\$[^$]+\\$\\$")
 	# 触发 inline_math.json 加载（纯中文入参，不会触发 MicroTeX 渲染）
@@ -256,8 +264,28 @@ func _check_stage(path: String, key: String, group_no: int, idx: int, s: Variant
 	_check_inline(path, key, where + ".success", str(st.get("success", "")))
 	_check_inline(path, key, where + ".goal", str(st.get("goal", "")))
 	_check_inline(path, key, where + ".tip", str(st.get("tip", "")))
+	_check_option_refs(path, key, where, st)
 	_check_label(path, key, group_no, where, st)
 	_check_anim(path, st)
+
+## B8：解析/提示里**按位置指代选项**是隐性错误——`StageBase` 按**显示位置**标 A/B/C/D，
+## 而选项默认会被打乱（`StageRules.order_for`），所以「选项2 混淆了 ∈ 与 ⊆」这类写法
+## 一旦乱序就指向另一个选项，比写错更糟的是它看起来还很确定。
+##
+## 硬规则只收语义无歧义的「选项+下标/字母」；「第 N 项 / 最后一项 / 依次是」只进看板——
+## 数学文本里它们常指数列的项、裂项求和项，硬报会大量误伤。
+func _check_option_refs(path: String, key: String, where: String, st: Dictionary) -> void:
+	if st.get("opts", null) == null:
+		return
+	for f in ["hint", "explain", "success", "tip"]:
+		var t := str(st.get(f, ""))
+		if t == "":
+			continue
+		for m in _posref_re.search_all(t):
+			_add(path, key, "%s.%s 按位置指代选项「%s」（选项会被打乱，请改成直接引用选项内容）"
+				% [where, f, m.get_string()])
+		for _m in _orderref_re.search_all(t):
+			_order_ref_hits += 1
 
 ## B9：轮次标签编号必须等于该关卡在本文件中的序号（如第 3 关的轮次应形如 "3-x"）。
 func _check_label(path: String, key: String, group_no: int, where: String, st: Dictionary) -> void:
@@ -613,6 +641,12 @@ func _report() -> void:
 
 	var new_issues: Array[String] = []
 	var known_hits := 0
+	# B8：正确项位置分布是全库指标，不挂在某一关上，所以在这里补一条硬性检查。
+	# 存量已从 90.8% 修到 ~25%；此后新增内容若又把正确项堆在第 1 位，直接红灯（不可进基线）。
+	var a0 := int(_ans_hist.get(0, 0))
+	if _n_choice > 0 and float(a0) / float(_n_choice) > 0.35:
+		_issues.append("__global__||ans==0 占 %d/%d（%.1f%%，>35%%）：见 B8，用 tools/shuffle_options.py 重排"
+			% [a0, _n_choice, 100.0 * float(a0) / float(_n_choice)])
 	for i in _issues:
 		if _known.has(i):
 			known_hits += 1
@@ -622,9 +656,6 @@ func _report() -> void:
 	var warns: Array[String] = []
 	if _dup_stem > 0:
 		warns.append("题干重复 %d 处（warn）" % _dup_stem)
-	var ans0 := int(_ans_hist.get(0, 0))
-	if _n_choice > 0 and float(ans0) / float(_n_choice) > 0.35:
-		warns.append("ans==0 占 %d/%d（%.1f%%，偏高，见 B8）" % [ans0, _n_choice, 100.0 * float(ans0) / float(_n_choice)])
 	if _inline_missing.size() > 0:
 		warns.append("inline 公式未覆盖片段 %d 个（见 B7/A10；另见 tools/check_inline.gd）" % _inline_missing.size())
 
@@ -640,11 +671,12 @@ func _report() -> void:
 			% [_n_explore_stmt, _n_explore, 100.0 * float(_n_explore_stmt) / float(_n_explore)])
 	print("[看板] 选项: 图片 %d 处（%d 题）" % [_img_opt_count, _img_opt_questions])
 	print("[看板] ans 原始分布: 0=%d(%.1f%%) 1=%d 2=%d 3=%d"
-		% [ans0, (100.0 * float(ans0) / float(maxi(1, _n_choice))),
+		% [a0, (100.0 * float(a0) / float(maxi(1, _n_choice))),
 			int(_ans_hist.get(1, 0)), int(_ans_hist.get(2, 0)), int(_ans_hist.get(3, 0))])
 	print("[看板] anim 演示覆盖: %d/%d 文件" % [_anim_files.size(), _n_files])
 	print("[看板] 轮次编号错位: %d 处（%d 文件，见 B9）" % [_num_mismatch, _num_mismatch_files.size()])
 	print("[看板] 干扰项黑名单命中: %d 处（B5 目标 0；范畴错误型干扰项须换成错误路径型）" % _bad_distractor)
+	print("[看板] 解析按顺序指代选项（模糊类，需人读）: %d 处（B8；硬规则只兜「选项N」）" % _order_ref_hits)
 	if not _naming_pairs.is_empty():
 		print("[看板] A17 近名文件对: %s（编辑时勿改错）" % "，".join(_naming_pairs))
 	var blind := ""
