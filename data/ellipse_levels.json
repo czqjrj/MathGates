@@ -11,20 +11,104 @@
         "q": "动手实验：F₁(−3,0)、F₂(3,0)，动点 P 在椭圆上(长轴 2a=10)。拖动滑块让 P 绕椭圆一周，读数 |PF₁|+|PF₂| 会随 P 的位置变化吗？",
         "scene": {
           "anim": [
-            {"a": "vars", "to": {"t": 360}, "dur": 3.2, "hold": 0.6},
-            {"a": "vars", "to": {"t": 60}, "dur": 0.8, "hold": 0.2}
+            {
+              "a": "vars",
+              "to": {
+                "t": 360
+              },
+              "dur": 3.2,
+              "hold": 0.6
+            },
+            {
+              "a": "vars",
+              "to": {
+                "t": 60
+              },
+              "dur": 0.8,
+              "hold": 0.2
+            }
           ],
           "range": 7,
-          "sliders": [ { "name": "t", "min": 0, "max": 360, "value": 60, "step": 5, "label": "P 的位置角 t(°)" } ],
-          "ellipses": [ { "a": 5, "b": 4, "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": 3, "axis": "x", "color": "#fb7185" } ],
-          "links": [ { "a": [0, 0], "b": ["5*cos(t)", "4*sin(t)"], "color": "#c084fc", "label": "|OP|" } ],
-          "points": [ { "p": ["5*cos(t)", "4*sin(t)"], "label": "P", "color": "#ffd479" } ],
-          "segments": [
-            { "p1": ["5*cos(t)", "4*sin(t)"], "p2": [-3, 0], "color": "#5ee6ff" },
-            { "p1": ["5*cos(t)", "4*sin(t)"], "p2": [3, 0], "color": "#5ee6ff" }
+          "sliders": [
+            {
+              "name": "t",
+              "min": 0,
+              "max": 360,
+              "value": 60,
+              "step": 5,
+              "label": "P 的位置角 t(°)"
+            }
           ],
-          "readouts": [ { "label": "|PF₁|+|PF₂|", "expr": "sqrt((5*cos(t)+3)^2+(4*sin(t))^2)+sqrt((5*cos(t)-3)^2+(4*sin(t))^2)", "color": "#ffd479" } ]
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 4,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": 3,
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ],
+          "links": [
+            {
+              "a": [
+                0,
+                0
+              ],
+              "b": [
+                "5*cos(t)",
+                "4*sin(t)"
+              ],
+              "color": "#c084fc",
+              "label": "|OP|"
+            }
+          ],
+          "points": [
+            {
+              "p": [
+                "5*cos(t)",
+                "4*sin(t)"
+              ],
+              "label": "P",
+              "color": "#ffd479"
+            }
+          ],
+          "segments": [
+            {
+              "p1": [
+                "5*cos(t)",
+                "4*sin(t)"
+              ],
+              "p2": [
+                -3,
+                0
+              ],
+              "color": "#5ee6ff"
+            },
+            {
+              "p1": [
+                "5*cos(t)",
+                "4*sin(t)"
+              ],
+              "p2": [
+                3,
+                0
+              ],
+              "color": "#5ee6ff"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "|PF₁|+|PF₂|",
+              "expr": "sqrt((5*cos(t)+3)^2+(4*sin(t))^2)+sqrt((5*cos(t)-3)^2+(4*sin(t))^2)",
+              "color": "#ffd479"
+            }
+          ]
         },
         "goal": "让 P 绕椭圆走一圈，确认 |PF₁|+|PF₂| 恒等于 10(= 2a)。",
         "steps": [
@@ -35,7 +119,12 @@
         "tip": "椭圆上任意一点都满足 |PF₁|+|PF₂| = 2a；这正是椭圆的第一定义。",
         "confirm": "观察完成，进入追问",
         "ask": "随着 P 在椭圆上移动，|PF₁|+|PF₂| 的值？",
-        "opts": ["恒等于 10", "随 P 位置不断变化", "恒等于 8", "最小值 8、最大值 10"],
+        "opts": [
+          "恒等于 10",
+          "随 P 位置不断变化",
+          "恒等于 8",
+          "最小值 8、最大值 10"
+        ],
         "ans": 0,
         "hint": "把 P 拖到不同位置，读一读左上角的和。",
         "explain": "第一定义：到两焦点距离之和为常数 2a=10(a=5>c=3)的轨迹是椭圆，2a 即长轴长。",
@@ -56,31 +145,87 @@
         "scene": {
           "range": 7,
           "points": [
-            { "p": [-3, 0], "label": "F₁", "color": "#fb7185" },
-            { "p": [3, 0], "label": "F₂", "color": "#fb7185" }
+            {
+              "p": [
+                -3,
+                0
+              ],
+              "label": "F₁",
+              "color": "#fb7185"
+            },
+            {
+              "p": [
+                3,
+                0
+              ],
+              "label": "F₂",
+              "color": "#fb7185"
+            }
           ],
-          "segments": [ { "p1": [-3, 0], "p2": [3, 0], "color": "#ffd47999" } ]
+          "segments": [
+            {
+              "p1": [
+                -3,
+                0
+              ],
+              "p2": [
+                3,
+                0
+              ],
+              "color": "#ffd47999"
+            }
+          ]
         }
       },
       {
         "name": "1-3 迁移应用 · 退化成线段",
         "q": "若动点 P 满足 |PF₁| + |PF₂| = |F₁F₂|(即 2a = 2c)，则 P 的轨迹是？",
-        "opts": ["不存在", "线段 F₁F₂", "椭圆", "圆"],
+        "opts": [
+          "不存在",
+          "线段 F₁F₂",
+          "椭圆",
+          "圆"
+        ],
         "ans": 1,
         "hint": "当到两定点的距离之和恰好等于两定点间的距离时，P 只能落在线段上。",
         "explain": "2a = 2c 时轨迹退化为线段 F₁F₂，这是判定轨迹时最经典的陷阱。",
         "scene": {
           "range": 7,
           "points": [
-            { "p": [-3, 0], "label": "F₁", "color": "#fb7185" },
-            { "p": [3, 0], "label": "F₂", "color": "#fb7185" }
+            {
+              "p": [
+                -3,
+                0
+              ],
+              "label": "F₁",
+              "color": "#fb7185"
+            },
+            {
+              "p": [
+                3,
+                0
+              ],
+              "label": "F₂",
+              "color": "#fb7185"
+            }
           ],
-          "segments": [ { "p1": [-3, 0], "p2": [3, 0], "color": "#ff7ea8" } ]
+          "segments": [
+            {
+              "p1": [
+                -3,
+                0
+              ],
+              "p2": [
+                3,
+                0
+              ],
+              "color": "#ff7ea8"
+            }
+          ]
         }
       }
     ]
   },
-
   "ellipse_1_2": {
     "title": "第1关 · 椭圆起源 · 02",
     "method": "椭圆第二定义与轨迹",
@@ -93,23 +238,99 @@
         "q": "动手实验：椭圆 x²/25+y²/9=1，右焦点 F(4,0)，右准线 x=25/4。拖动滑块让 P 沿椭圆移动，比值 |PF|÷d 会随 P 的位置变化吗？",
         "scene": {
           "range": 8,
-          "sliders": [ { "name": "t", "min": 0, "max": 360, "value": 60, "step": 5, "label": "P 的位置角 t(°)" } ],
-          "ellipses": [ { "a": 5, "b": 3, "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": 4, "axis": "x", "color": "#fb7185" } ],
-          "lines": [ { "A": 1, "B": 0, "C": -6.25, "color": "#5ee6ff", "dash": true, "label": "x=25/4" } ],
-          "points": [ { "p": ["5*cos(t)", "3*sin(t)"], "label": "P", "color": "#ffd479" } ],
-          "segments": [
-            { "p1": ["5*cos(t)", "3*sin(t)"], "p2": [4, 0], "color": "#5ee6ff" },
-            { "p1": ["5*cos(t)", "3*sin(t)"], "p2": [6.25, "3*sin(t)"], "color": "#a878ff", "dash": true }
+          "sliders": [
+            {
+              "name": "t",
+              "min": 0,
+              "max": 360,
+              "value": 60,
+              "step": 5,
+              "label": "P 的位置角 t(°)"
+            }
           ],
-          "readouts": [ { "label": "|PF|÷d", "expr": "sqrt((5*cos(t)-4)^2+(3*sin(t))^2)/(6.25-5*cos(t))", "color": "#ffd479" } ]
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 3,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": 4,
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ],
+          "lines": [
+            {
+              "A": 1,
+              "B": 0,
+              "C": -6.25,
+              "color": "#5ee6ff",
+              "dash": true,
+              "label": "x=25/4"
+            }
+          ],
+          "points": [
+            {
+              "p": [
+                "5*cos(t)",
+                "3*sin(t)"
+              ],
+              "label": "P",
+              "color": "#ffd479"
+            }
+          ],
+          "segments": [
+            {
+              "p1": [
+                "5*cos(t)",
+                "3*sin(t)"
+              ],
+              "p2": [
+                4,
+                0
+              ],
+              "color": "#5ee6ff"
+            },
+            {
+              "p1": [
+                "5*cos(t)",
+                "3*sin(t)"
+              ],
+              "p2": [
+                6.25,
+                "3*sin(t)"
+              ],
+              "color": "#a878ff",
+              "dash": true
+            }
+          ],
+          "readouts": [
+            {
+              "label": "|PF|÷d",
+              "expr": "sqrt((5*cos(t)-4)^2+(3*sin(t))^2)/(6.25-5*cos(t))",
+              "color": "#ffd479"
+            }
+          ]
         },
         "goal": "让 P 绕椭圆一周，确认 |PF|÷d 恒等于离心率 e = 0.8。",
-        "steps": ["拖动 t 移动 P", "观察 |PF| 与到准线距离 d 同步变化", "比值 <1 且保持不变"],
+        "steps": [
+          "拖动 t 移动 P",
+          "观察 |PF| 与到准线距离 d 同步变化",
+          "比值 <1 且保持不变"
+        ],
         "tip": "椭圆是到焦点距离与到相应准线距离之比等于 e(<1)的点的轨迹。",
         "confirm": "观察完成，进入追问",
         "ask": "椭圆上点 P 到焦点距离与到相应准线距离之比等于？",
-        "opts": ["a", "1", "离心率 e", "c"],
+        "opts": [
+          "a",
+          "1",
+          "离心率 e",
+          "c"
+        ],
         "ans": 2,
         "hint": "这正是椭圆的第二定义，比值就是离心率。",
         "explain": "第二定义：|PF|/d = e（0<e<1），本题 e = c/a = 4/5 = 0.8。",
@@ -118,32 +339,72 @@
       {
         "name": "2-2 建构知识 · 用第二定义判断轨迹",
         "q": "动点 M 到定点 F(2,0) 的距离与它到定直线 l:x=8 的距离之比恒为 1/2。则 M 的轨迹是？",
-        "opts": ["抛物线", "双曲线", "圆", "椭圆"],
+        "opts": [
+          "抛物线",
+          "双曲线",
+          "圆",
+          "椭圆"
+        ],
         "ans": 3,
         "hint": "到焦点与到准线距离之比 = e;0<e<1 时轨迹是椭圆。",
         "explain": "比值为 1/2 ∈ (0,1)，符合椭圆第二定义，故轨迹是椭圆。",
         "scene": {
           "range": 8,
-          "points": [ { "p": [2, 0], "label": "F(2,0)", "color": "#fb7185" } ],
-          "lines": [ { "A": 1, "B": 0, "C": -8, "color": "#5ee6ff", "dash": true, "label": "x=8" } ]
+          "points": [
+            {
+              "p": [
+                2,
+                0
+              ],
+              "label": "F(2,0)",
+              "color": "#fb7185"
+            }
+          ],
+          "lines": [
+            {
+              "A": 1,
+              "B": 0,
+              "C": -8,
+              "color": "#5ee6ff",
+              "dash": true,
+              "label": "x=8"
+            }
+          ]
         }
       },
       {
         "name": "2-3 迁移应用 · 比值与 e 的关系",
         "q": "若动点 M 到定点 F 的距离与到定直线 l 的距离之比为 e(e>0)。当 e 满足什么条件时轨迹是椭圆？",
-        "opts": ["e = 1", "0 < e < 1", "e > 1", "e ≠ 1"],
+        "opts": [
+          "e = 1",
+          "0 < e < 1",
+          "e > 1",
+          "e ≠ 1"
+        ],
         "ans": 1,
         "hint": "比较两种距离：椭圆上的点到焦点的距离小于到准线的距离，所以比值落在 1 的哪一侧？另两个边界（相等、更大）各对应什么曲线？",
         "explain": "第二定义中 0<e<1 对应椭圆；e=1 是抛物线，e>1 是双曲线。",
         "scene": {
           "range": 7,
-          "ellipses": [ { "a": 5, "b": 3, "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": 4, "axis": "x", "color": "#fb7185" } ]
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 3,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": 4,
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ]
         }
       }
     ]
   },
-
   "ellipse_1_3": {
     "title": "第1关 · 椭圆起源 · 03",
     "method": "椭圆方程的建立",
@@ -157,27 +418,97 @@
         "scene": {
           "range": 9,
           "sliders": [
-            { "name": "a", "min": 4, "max": 6, "value": 5, "step": 0.5, "label": "长半轴 a" },
-            { "name": "c", "min": 0, "max": 3, "value": 3, "step": 0.5, "label": "半焦距 c" }
+            {
+              "name": "a",
+              "min": 4,
+              "max": 6,
+              "value": 5,
+              "step": 0.5,
+              "label": "长半轴 a"
+            },
+            {
+              "name": "c",
+              "min": 0,
+              "max": 3,
+              "value": 3,
+              "step": 0.5,
+              "label": "半焦距 c"
+            }
           ],
-          "ellipses": [ { "a": "a", "b": "sqrt(a*a-c*c)", "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": "c", "axis": "x", "color": "#fb7185" } ],
+          "ellipses": [
+            {
+              "a": "a",
+              "b": "sqrt(a*a-c*c)",
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": "c",
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ],
           "points": [
-            { "p": ["a", 0], "label": "A", "color": "#5ee6ff" },
-            { "p": [0, "sqrt(a*a-c*c)"], "label": "B", "color": "#a878ff" }
+            {
+              "p": [
+                "a",
+                0
+              ],
+              "label": "A",
+              "color": "#5ee6ff"
+            },
+            {
+              "p": [
+                0,
+                "sqrt(a*a-c*c)"
+              ],
+              "label": "B",
+              "color": "#a878ff"
+            }
           ],
-          "segments": [ { "p1": [0, 0], "p2": ["a", 0], "color": "#5ee6ff", "label": "a" } ],
+          "segments": [
+            {
+              "p1": [
+                0,
+                0
+              ],
+              "p2": [
+                "a",
+                0
+              ],
+              "color": "#5ee6ff",
+              "label": "a"
+            }
+          ],
           "readouts": [
-            { "label": "b", "expr": "sqrt(a*a-c*c)" },
-            { "label": "b²+c²", "expr": "sqrt(a*a-c*c)*sqrt(a*a-c*c)+c*c", "color": "#ffd479" }
+            {
+              "label": "b",
+              "expr": "sqrt(a*a-c*c)"
+            },
+            {
+              "label": "b²+c²",
+              "expr": "sqrt(a*a-c*c)*sqrt(a*a-c*c)+c*c",
+              "color": "#ffd479"
+            }
           ]
         },
         "goal": "拖动 a、c，确认 b²+c² 始终等于 a²。",
-        "steps": ["固定 a，增大 c：椭圆变扁、b 变小", "观察 b²+c² 一栏", "b²+c² 恒等于 a²"],
+        "steps": [
+          "固定 a，增大 c：椭圆变扁、b 变小",
+          "观察 b²+c² 一栏",
+          "b²+c² 恒等于 a²"
+        ],
         "tip": "椭圆中 a 最大：b² = a² − c²，即 a² = b² + c²。",
         "confirm": "观察完成，进入追问",
         "ask": "椭圆 x²/a²+y²/b²=1(a>b>0) 中，a、b、c 的关系是？",
-        "opts": ["b² = a² + c²", "a = b + c", "a² = b² + c²", "c² = a² + b²"],
+        "opts": [
+          "b² = a² + c²",
+          "a = b + c",
+          "a² = b² + c²",
+          "c² = a² + b²"
+        ],
         "ans": 2,
         "hint": "a 是长半轴，最大；c 是半焦距。",
         "explain": "a² = b² + c²，即 b² = a² − c²，这是椭圆的基本关系。",
@@ -186,32 +517,67 @@
       {
         "name": "3-2 建构知识 · 由定义写标准方程",
         "q": "焦点在 x 轴上、且 a = 5、c = 3 的椭圆的标准方程是？",
-        "opts": ["x²/25 + y²/9 = 1", "x²/25 + y²/16 = 1", "x²/9 + y²/25 = 1", "x²/16 + y²/25 = 1"],
+        "opts": [
+          "x²/25 + y²/9 = 1",
+          "x²/25 + y²/16 = 1",
+          "x²/9 + y²/25 = 1",
+          "x²/16 + y²/25 = 1"
+        ],
         "ans": 1,
         "hint": "先由 b² = a² − c² 求 b²，焦点在 x 轴则 a² 在 x² 下方。",
         "explain": "b² = 25 − 9 = 16，焦点在 x 轴故 x²/25 + y²/16 = 1。",
         "scene": {
           "range": 7,
-          "ellipses": [ { "a": 5, "b": 4, "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": 3, "axis": "x", "color": "#fb7185" } ]
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 4,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": 3,
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ]
         }
       },
       {
         "name": "3-3 迁移应用 · 焦点在 y 轴",
         "q": "椭圆的焦点在 y 轴上，且 a = 4、c = 2。其标准方程是？",
-        "opts": ["x²/4 + y²/16 = 1", "x²/16 + y²/4 = 1", "x²/12 + y²/16 = 1", "x²/16 + y²/12 = 1"],
+        "opts": [
+          "x²/4 + y²/16 = 1",
+          "x²/16 + y²/4 = 1",
+          "x²/12 + y²/16 = 1",
+          "x²/16 + y²/12 = 1"
+        ],
         "ans": 2,
         "hint": "焦点在 y 轴，则 a² 在 y² 下方；b² = a² − c² = 16 − 4。",
         "explain": "b² = 16 − 4 = 12，焦点在 y 轴故 y²/16 + x²/12 = 1。",
         "scene": {
           "range": 6,
-          "ellipses": [ { "a": 4, "b": 3.4641, "axis": "y", "color": "#ff7ea8" } ],
-          "foci": [ { "c": 2, "axis": "y", "color": "#fb7185" } ]
+          "ellipses": [
+            {
+              "a": 4,
+              "b": 3.4641,
+              "axis": "y",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": 2,
+              "axis": "y",
+              "color": "#fb7185"
+            }
+          ]
         }
       }
     ]
   },
-
   "ellipse_2_1": {
     "title": "第2关 · 椭圆参数 · 01",
     "method": "标准方程与几何性质",
@@ -224,23 +590,65 @@
         "q": "动手实验：长半轴 a 固定为 5，拖动滑块改变离心率 e，椭圆的圆扁程度与焦点位置会怎样随 e 变化？",
         "scene": {
           "range": 7,
-          "sliders": [ { "name": "e", "min": 0.05, "max": 0.95, "value": 0.2, "step": 0.01, "label": "离心率 e" } ],
-          "ellipses": [ { "a": 5, "b": "sqrt(25-(5*e)^2)", "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": "5*e", "axis": "x", "color": "#fb7185" } ],
+          "sliders": [
+            {
+              "name": "e",
+              "min": 0.05,
+              "max": 0.95,
+              "value": 0.2,
+              "step": 0.01,
+              "label": "离心率 e"
+            }
+          ],
+          "ellipses": [
+            {
+              "a": 5,
+              "b": "sqrt(25-(5*e)^2)",
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": "5*e",
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ],
           "readouts": [
-            { "label": "e", "expr": "e" },
-            { "label": "b", "expr": "sqrt(25-(5*e)^2)", "color": "#ffd479" }
+            {
+              "label": "e",
+              "expr": "e"
+            },
+            {
+              "label": "b",
+              "expr": "sqrt(25-(5*e)^2)",
+              "color": "#ffd479"
+            }
           ]
         },
         "goal": "把 e 调到 0.6，体会此时椭圆的圆扁程度。",
-        "steps": ["拖动 e 从小到大", "观察椭圆越来越扁、焦点越来越靠外", "把 e 调到 0.6"],
+        "steps": [
+          "拖动 e 从小到大",
+          "观察椭圆越来越扁、焦点越来越靠外",
+          "把 e 调到 0.6"
+        ],
         "tip": "e = c/a ∈ (0,1)：e 越接近 0 越像圆，越接近 1 越扁。",
         "confirm": "调好了，看看结论",
         "gate": true,
-        "answers": { "e": 0.6 },
-        "tol": { "e": 0.03 },
+        "answers": {
+          "e": 0.6
+        },
+        "tol": {
+          "e": 0.03
+        },
         "ask": "离心率 e 的取值范围是？",
-        "opts": ["e > 1", "e = 1", "0 ≤ e ≤ 1", "0 < e < 1"],
+        "opts": [
+          "e > 1",
+          "e = 1",
+          "0 ≤ e ≤ 1",
+          "0 < e < 1"
+        ],
         "ans": 3,
         "hint": "e = c/a，而椭圆中 0 < c < a。",
         "explain": "椭圆中 0<c<a，故 0<e<1;e→0 趋近于圆，e→1 趋近于线段。",
@@ -257,26 +665,58 @@
         "explain": "a = 5、b = 4，c = √(25−16) = 3，焦距 2c = 6。记得 a 最大。",
         "scene": {
           "range": 7,
-          "ellipses": [ { "a": 5, "b": 4, "axis": "x", "color": "#ff7ea8", "label": "x²/25+y²/16=1" } ],
-          "foci": [ { "c": 3, "axis": "x", "color": "#fb7185" } ]
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 4,
+              "axis": "x",
+              "color": "#ff7ea8",
+              "label": "x²/25+y²/16=1"
+            }
+          ],
+          "foci": [
+            {
+              "c": 3,
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ]
         }
       },
       {
         "name": "4-3 迁移应用 · 焦点看分母",
         "q": "椭圆 x²/9 + y²/16 = 1 的焦点在？",
-        "opts": ["x 轴上，(±3, 0)", "y 轴上，(0, ±3)", "圆上，无焦点", "y 轴上，(0, ±√7)"],
+        "opts": [
+          "x 轴上，(±3, 0)",
+          "y 轴上，(0, ±3)",
+          "圆上，无焦点",
+          "y 轴上，(0, ±√7)"
+        ],
         "ans": 3,
         "hint": "哪个分母大，长轴就在哪条坐标轴上；焦点跟着长轴走。",
         "explain": "a 最大：分母大的项对应长轴，故焦点在 y 轴；c = √(16−9) = √7，焦点 (0, ±√7)。",
         "scene": {
           "range": 7,
-          "ellipses": [ { "a": 4, "b": 3, "axis": "y", "color": "#ff7ea8", "label": "x²/9+y²/16=1" } ],
-          "foci": [ { "c": 2.6458, "axis": "y", "color": "#fb7185" } ]
+          "ellipses": [
+            {
+              "a": 4,
+              "b": 3,
+              "axis": "y",
+              "color": "#ff7ea8",
+              "label": "x²/9+y²/16=1"
+            }
+          ],
+          "foci": [
+            {
+              "c": 2.6458,
+              "axis": "y",
+              "color": "#fb7185"
+            }
+          ]
         }
       }
     ]
   },
-
   "ellipse_2_2": {
     "title": "第2关 · 椭圆参数 · 02",
     "method": "焦点位置与方程形式",
@@ -290,21 +730,57 @@
         "scene": {
           "range": 8,
           "sliders": [
-            { "name": "m", "min": 1, "max": 9, "value": 5, "step": 1, "label": "x² 的分母 m" },
-            { "name": "n", "min": 1, "max": 9, "value": 3, "step": 1, "label": "y² 的分母 n" }
+            {
+              "name": "m",
+              "min": 1,
+              "max": 9,
+              "value": 5,
+              "step": 1,
+              "label": "x² 的分母 m"
+            },
+            {
+              "name": "n",
+              "min": 1,
+              "max": 9,
+              "value": 3,
+              "step": 1,
+              "label": "y² 的分母 n"
+            }
           ],
-          "ellipses": [ { "a": "sqrt(m)", "b": "sqrt(n)", "axis": "x", "color": "#ff7ea8" } ],
+          "ellipses": [
+            {
+              "a": "sqrt(m)",
+              "b": "sqrt(n)",
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
           "readouts": [
-            { "label": "m", "expr": "m" },
-            { "label": "n", "expr": "n" }
+            {
+              "label": "m",
+              "expr": "m"
+            },
+            {
+              "label": "n",
+              "expr": "n"
+            }
           ]
         },
         "goal": "让 m > n 再让 m < n，观察长轴(焦点)从 x 轴切换到 y 轴。",
-        "steps": ["令 m>n：长轴在 x 轴", "令 m<n：长轴在 y 轴", "得出结论：看谁的分母大"],
+        "steps": [
+          "令 m>n：长轴在 x 轴",
+          "令 m<n：长轴在 y 轴",
+          "得出结论：看谁的分母大"
+        ],
         "tip": "分母大的项所对应的坐标轴就是长轴(焦点)所在轴。",
         "confirm": "观察完成，进入追问",
         "ask": "椭圆 x²/m + y²/n = 1(m>n>0) 的焦点在？",
-        "opts": ["x 轴上", "当 $$m>n$$ 时在 $$y$$ 轴上（把大分母挂到纵轴）", "y 轴上", "原点上"],
+        "opts": [
+          "x 轴上",
+          "当 $$m>n$$ 时在 $$y$$ 轴上（把大分母挂到纵轴）",
+          "y 轴上",
+          "原点上"
+        ],
         "ans": 0,
         "hint": "m>n，x² 的分母更大，长轴在 x 轴。",
         "explain": "分母大的项对应长轴：m>n 说明 a²=m 在 x² 下，焦点在 x 轴。",
@@ -313,13 +789,25 @@
       {
         "name": "5-2 建构知识 · 含参椭圆的焦点",
         "q": "方程 x²/(4−k) + y²/(k−1) = 1 表示焦点在 x 轴上的椭圆，则 k 的取值范围是？",
-        "opts": ["2.5 < k < 4", "1 < k < 2.5", "1 < k < 4", "k < 2.5"],
+        "opts": [
+          "2.5 < k < 4",
+          "1 < k < 2.5",
+          "1 < k < 4",
+          "k < 2.5"
+        ],
         "ans": 1,
         "hint": "表示椭圆需两分母都为正，且焦点在 x 轴需 4−k > k−1。",
         "explain": "需 4−k>0 且 k−1>0 且 4−k>k−1，解得 1<k<2.5。",
         "scene": {
           "range": 8,
-          "ellipses": [ { "a": 3.5, "b": 3, "axis": "x", "color": "#ff7ea8" } ]
+          "ellipses": [
+            {
+              "a": 3.5,
+              "b": 3,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ]
         }
       },
       {
@@ -332,13 +820,25 @@
         "explain": "a²=16、e=c/a=1/2 ⇒ c=2、c²=4，b²=m=16−4=12。",
         "scene": {
           "range": 7,
-          "ellipses": [ { "a": 4, "b": 3.4641, "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": 2, "axis": "x", "color": "#fb7185" } ]
+          "ellipses": [
+            {
+              "a": 4,
+              "b": 3.4641,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": 2,
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ]
         }
       }
     ]
   },
-
   "ellipse_2_3": {
     "title": "第2关 · 椭圆参数 · 03",
     "method": "离心率求值",
@@ -351,20 +851,58 @@
         "q": "动手实验：固定 a=5，拖动滑块改变 b，椭圆形状与离心率 e=√(1−b²/a²) 会怎样随 b 变化？",
         "scene": {
           "range": 7,
-          "sliders": [ { "name": "b", "min": 1, "max": 5, "value": 4, "step": 0.25, "label": "短半轴 b" } ],
-          "ellipses": [ { "a": 5, "b": "b", "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": "sqrt(25-b*b)", "axis": "x", "color": "#fb7185" } ],
+          "sliders": [
+            {
+              "name": "b",
+              "min": 1,
+              "max": 5,
+              "value": 4,
+              "step": 0.25,
+              "label": "短半轴 b"
+            }
+          ],
+          "ellipses": [
+            {
+              "a": 5,
+              "b": "b",
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": "sqrt(25-b*b)",
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ],
           "readouts": [
-            { "label": "b", "expr": "b" },
-            { "label": "e", "expr": "sqrt(1-b*b/25)", "color": "#ffd479" }
+            {
+              "label": "b",
+              "expr": "b"
+            },
+            {
+              "label": "e",
+              "expr": "sqrt(1-b*b/25)",
+              "color": "#ffd479"
+            }
           ]
         },
         "goal": "让 b 从 5 减到 1，观察 e 从 0 增大到接近 1。",
-        "steps": ["b=5：圆，e=0", "减小 b：椭圆变扁，e 变大", "b→1：e 趋近最大"],
+        "steps": [
+          "b=5：圆，e=0",
+          "减小 b：椭圆变扁，e 变大",
+          "b→1：e 趋近最大"
+        ],
         "tip": "e = √(1 − b²/a²)：b 越接近 a 越圆(e 越小)，b 越小越扁(e 越大)。",
         "confirm": "观察完成，进入追问",
         "ask": "椭圆中若 a 与 b 无限接近(趋于相等)，离心率 e 趋于？",
-        "opts": ["√2", "0", "1", "0.5"],
+        "opts": [
+          "√2",
+          "0",
+          "1",
+          "0.5"
+        ],
         "ans": 1,
         "hint": "a=b 时椭圆变成圆，对应 c=0。",
         "explain": "a→b 时 c→0，e=c/a→0;圆是离心率为 0 的退化椭圆。",
@@ -380,8 +918,21 @@
         "explain": "a=5、c=4，e=c/a=4/5=0.8。",
         "scene": {
           "range": 7,
-          "ellipses": [ { "a": 5, "b": 3, "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": 4, "axis": "x", "color": "#fb7185" } ]
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 3,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": 4,
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ]
         }
       },
       {
@@ -394,13 +945,25 @@
         "explain": "e² = 1 − b²/a² = 1/4，故 e = 1/2。",
         "scene": {
           "range": 7,
-          "ellipses": [ { "a": 4, "b": "2*sqrt(3)", "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": 2, "axis": "x", "color": "#fb7185" } ]
+          "ellipses": [
+            {
+              "a": 4,
+              "b": "2*sqrt(3)",
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": 2,
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ]
         }
       }
     ]
   },
-
   "ellipse_3_1": {
     "title": "第3关 · 焦点三角形 · 01",
     "method": "焦半径 · 焦点三角形",
@@ -413,23 +976,99 @@
         "q": "动手实验：椭圆 x²/25+y²/9=1，焦点 F₁(−4,0)、F₂(4,0)。拖动滑块让 P 沿椭圆移动，焦点三角形 △PF₁F₂ 的面积 S 如何随 P 的位置变化？",
         "scene": {
           "range": 7,
-          "sliders": [ { "name": "t", "min": 0, "max": 360, "value": 90, "step": 5, "label": "P 的位置角 t(°)" } ],
-          "ellipses": [ { "a": 5, "b": 3, "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": 4, "axis": "x", "color": "#fb7185" } ],
-          "points": [ { "p": ["5*cos(t)", "3*sin(t)"], "label": "P", "color": "#ffd479" } ],
-          "segments": [
-            { "p1": ["5*cos(t)", "3*sin(t)"], "p2": [-4, 0], "color": "#5ee6ff" },
-            { "p1": ["5*cos(t)", "3*sin(t)"], "p2": [4, 0], "color": "#5ee6ff" },
-            { "p1": [-4, 0], "p2": [4, 0], "color": "#ffd47999" }
+          "sliders": [
+            {
+              "name": "t",
+              "min": 0,
+              "max": 360,
+              "value": 90,
+              "step": 5,
+              "label": "P 的位置角 t(°)"
+            }
           ],
-          "readouts": [ { "label": "S", "expr": "4*abs(3*sin(t))", "color": "#ffd479" } ]
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 3,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": 4,
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ],
+          "points": [
+            {
+              "p": [
+                "5*cos(t)",
+                "3*sin(t)"
+              ],
+              "label": "P",
+              "color": "#ffd479"
+            }
+          ],
+          "segments": [
+            {
+              "p1": [
+                "5*cos(t)",
+                "3*sin(t)"
+              ],
+              "p2": [
+                -4,
+                0
+              ],
+              "color": "#5ee6ff"
+            },
+            {
+              "p1": [
+                "5*cos(t)",
+                "3*sin(t)"
+              ],
+              "p2": [
+                4,
+                0
+              ],
+              "color": "#5ee6ff"
+            },
+            {
+              "p1": [
+                -4,
+                0
+              ],
+              "p2": [
+                4,
+                0
+              ],
+              "color": "#ffd47999"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "S",
+              "expr": "4*abs(3*sin(t))",
+              "color": "#ffd479"
+            }
+          ]
         },
         "goal": "让 P 从短轴端点(面积最大)移到长轴端点(面积最小)，观察 S = 4|y₀| 并找出 S=6 的位置。",
-        "steps": ["拖动 t，观察 S=4|y₀|", "P 在短轴端点 (0,±3) 时 S 最大 = 12", "P 在长轴端点 (±5,0) 时 S=0"],
+        "steps": [
+          "拖动 t，观察 S=4|y₀|",
+          "P 在短轴端点 (0,±3) 时 S 最大 = 12",
+          "P 在长轴端点 (±5,0) 时 S=0"
+        ],
         "tip": "焦点三角形面积 S = ½·(2c)·|y₀| = c|y₀|;本题 S = 4|y₀|。",
         "confirm": "观察完成，进入追问",
         "ask": "焦点三角形 △PF₁F₂ 的面积 S(P(x₀,y₀)) 等于？",
-        "opts": ["b·|y₀| = 3|y₀|", "c·|y₀| = 5|y₀|", "c·|y₀| = 4|y₀|", "2c·|y₀| = 8|y₀|"],
+        "opts": [
+          "b·|y₀| = 3|y₀|",
+          "c·|y₀| = 5|y₀|",
+          "c·|y₀| = 4|y₀|",
+          "2c·|y₀| = 8|y₀|"
+        ],
         "ans": 2,
         "hint": "以 F₁F₂ 为底(长 2c)，底边上的高是 |y₀|。",
         "explain": "S = ½·2c·|y₀| = c|y₀| = 4|y₀|；P 在短轴端点时 S 最大为 bc=12。",
@@ -449,8 +1088,21 @@
         "explain": "焦点在 x 轴时 |PF₁| = a + ex₀、|PF₂| = a − ex₀；焦点在 y 轴时把 x₀ 换成 y₀。",
         "scene": {
           "range": 6,
-          "ellipses": [ { "a": 5, "b": 3, "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": 4, "axis": "x", "color": "#fb7185" } ]
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 3,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": 4,
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ]
         }
       },
       {
@@ -467,13 +1119,25 @@
         "explain": "椭圆：S = b²·tan(θ/2)，且当 P 位于短轴端点时 θ 最大；双曲线才是 S = b²·cot(θ/2)。",
         "scene": {
           "range": 6,
-          "ellipses": [ { "a": 5, "b": 3, "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": 4, "axis": "x", "color": "#fb7185" } ]
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 3,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": 4,
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ]
         }
       }
     ]
   },
-
   "ellipse_3_2": {
     "title": "第3关 · 焦点三角形 · 02",
     "method": "焦点三角形的性质",
@@ -486,22 +1150,88 @@
         "q": "动手实验：椭圆 x²/25+y²/9=1，焦点 F₁(−4,0)、F₂(4,0)。拖动滑块让 P 沿椭圆移动，顶角 ∠F₁PF₂ 如何变化？它在什么位置取最大？",
         "scene": {
           "range": 7,
-          "sliders": [ { "name": "t", "min": 0, "max": 360, "value": 90, "step": 5, "label": "P 的位置角 t(°)" } ],
-          "ellipses": [ { "a": 5, "b": 3, "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": 4, "axis": "x", "color": "#fb7185" } ],
-          "points": [ { "p": ["5*cos(t)", "3*sin(t)"], "label": "P", "color": "#ffd479" } ],
-          "segments": [
-            { "p1": ["5*cos(t)", "3*sin(t)"], "p2": [-4, 0], "color": "#5ee6ff" },
-            { "p1": ["5*cos(t)", "3*sin(t)"], "p2": [4, 0], "color": "#5ee6ff" }
+          "sliders": [
+            {
+              "name": "t",
+              "min": 0,
+              "max": 360,
+              "value": 90,
+              "step": 5,
+              "label": "P 的位置角 t(°)"
+            }
           ],
-          "readouts": [ { "label": "cos∠F₁PF₂", "expr": "((sqrt((5*cos(t)+4)^2+(3*sin(t))^2))^2+(sqrt((5*cos(t)-4)^2+(3*sin(t))^2))^2-64)/(2*sqrt((5*cos(t)+4)^2+(3*sin(t))^2)*sqrt((5*cos(t)-4)^2+(3*sin(t))^2))", "color": "#ffd479" } ]
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 3,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": 4,
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ],
+          "points": [
+            {
+              "p": [
+                "5*cos(t)",
+                "3*sin(t)"
+              ],
+              "label": "P",
+              "color": "#ffd479"
+            }
+          ],
+          "segments": [
+            {
+              "p1": [
+                "5*cos(t)",
+                "3*sin(t)"
+              ],
+              "p2": [
+                -4,
+                0
+              ],
+              "color": "#5ee6ff"
+            },
+            {
+              "p1": [
+                "5*cos(t)",
+                "3*sin(t)"
+              ],
+              "p2": [
+                4,
+                0
+              ],
+              "color": "#5ee6ff"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "cos∠F₁PF₂",
+              "expr": "((sqrt((5*cos(t)+4)^2+(3*sin(t))^2))^2+(sqrt((5*cos(t)-4)^2+(3*sin(t))^2))^2-64)/(2*sqrt((5*cos(t)+4)^2+(3*sin(t))^2)*sqrt((5*cos(t)-4)^2+(3*sin(t))^2))",
+              "color": "#ffd479"
+            }
+          ]
         },
         "goal": "让 P 从长轴端点移到短轴端点，观察 cos∠F₁PF₂ 何时最小(顶角最大)。",
-        "steps": ["P 在长轴端点：顶角接近 0，cos 接近 1", "P 移到短轴端点：顶角最大", "顶角最大发生在短轴端点"],
+        "steps": [
+          "P 在长轴端点：顶角接近 0，cos 接近 1",
+          "P 移到短轴端点：顶角最大",
+          "顶角最大发生在短轴端点"
+        ],
         "tip": "∠F₁PF₂ 随 P 从长轴端点移向短轴端点而增大，在短轴端点取最大值。",
         "confirm": "观察完成，进入追问",
         "ask": "P 在椭圆上运动时，∠F₁PF₂ 的最大值出现在？",
-        "opts": ["长轴端点", "焦点处", "短轴端点", "处处相等"],
+        "opts": [
+          "长轴端点",
+          "焦点处",
+          "短轴端点",
+          "处处相等"
+        ],
         "ans": 2,
         "hint": "观察读数 cos∠F₁PF₂ 的最小值出现在哪里。",
         "explain": "P 位于短轴端点时 ∠F₁PF₂ 最大；此时 cosθ 最小。",
@@ -517,8 +1247,21 @@
         "explain": "|PF₁|+|PF₂|=10，|PF₁|²+|PF₂|²=64；乘积=(10²−64)/2=18。",
         "scene": {
           "range": 7,
-          "ellipses": [ { "a": 5, "b": 3, "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": 4, "axis": "x", "color": "#fb7185" } ]
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 3,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": 4,
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ]
         }
       },
       {
@@ -531,13 +1274,25 @@
         "explain": "S = ½·|PF₁|·|PF₂| = ½·18 = 9，也等于 b²·tan45°=9。",
         "scene": {
           "range": 7,
-          "ellipses": [ { "a": 5, "b": 3, "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": 4, "axis": "x", "color": "#fb7185" } ]
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 3,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": 4,
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ]
         }
       }
     ]
   },
-
   "ellipse_3_3": {
     "title": "第3关 · 焦点三角形 · 03",
     "method": "焦半径取值范围",
@@ -550,19 +1305,78 @@
         "q": "动手实验：椭圆 x²/25+y²/9=1，左焦点 F₁(−4,0)。拖动滑块让 P 沿椭圆移动，|PF₁| = 5 + 0.8x₀ 随 P 的位置如何变化？它的取值范围是多少？",
         "scene": {
           "range": 8,
-          "sliders": [ { "name": "t", "min": 0, "max": 360, "value": 0, "step": 5, "label": "P 的位置角 t(°)" } ],
-          "ellipses": [ { "a": 5, "b": 3, "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": 4, "axis": "x", "color": "#fb7185" } ],
-          "points": [ { "p": ["5*cos(t)", "3*sin(t)"], "label": "P", "color": "#ffd479" } ],
-          "segments": [ { "p1": ["5*cos(t)", "3*sin(t)"], "p2": [-4, 0], "color": "#5ee6ff", "label": "|PF₁|" } ],
-          "readouts": [ { "label": "|PF₁|", "expr": "sqrt((5*cos(t)+4)^2+(3*sin(t))^2)", "color": "#ffd479" } ]
+          "sliders": [
+            {
+              "name": "t",
+              "min": 0,
+              "max": 360,
+              "value": 0,
+              "step": 5,
+              "label": "P 的位置角 t(°)"
+            }
+          ],
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 3,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": 4,
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ],
+          "points": [
+            {
+              "p": [
+                "5*cos(t)",
+                "3*sin(t)"
+              ],
+              "label": "P",
+              "color": "#ffd479"
+            }
+          ],
+          "segments": [
+            {
+              "p1": [
+                "5*cos(t)",
+                "3*sin(t)"
+              ],
+              "p2": [
+                -4,
+                0
+              ],
+              "color": "#5ee6ff",
+              "label": "|PF₁|"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "|PF₁|",
+              "expr": "sqrt((5*cos(t)+4)^2+(3*sin(t))^2)",
+              "color": "#ffd479"
+            }
+          ]
         },
         "goal": "让 P 走遍椭圆，找出 |PF₁| 的最大值与最小值。",
-        "steps": ["P 到右顶点 (5,0)：|PF₁|=9 最大", "P 到左顶点 (−5,0)：|PF₁|=1 最小", "范围 [a−c, a+c] = [1, 9]"],
+        "steps": [
+          "P 到右顶点 (5,0)：|PF₁|=9 最大",
+          "P 到左顶点 (−5,0)：|PF₁|=1 最小",
+          "范围 [a−c, a+c] = [1, 9]"
+        ],
         "tip": "焦半径 |PF₁| = a + ex₀ ∈ [a−c, a+c]；x₀ 越大力越大。",
         "confirm": "观察完成，进入追问",
         "ask": "椭圆 x²/25+y²/9=1 上点 P 到左焦点距离的取值范围是？",
-        "opts": ["[1, 5]", "[0, 10]", "[4, 5]", "[1, 9]"],
+        "opts": [
+          "[1, 5]",
+          "[0, 10]",
+          "[4, 5]",
+          "[1, 9]"
+        ],
         "ans": 3,
         "hint": "|PF₁| = a + ex₀，x₀∈[−5,5]，e=0.8。",
         "explain": "|PF₁|∈[a−c, a+c] = [5−4, 5+4] = [1, 9]。",
@@ -578,26 +1392,56 @@
         "explain": "|PF₁|+|PF₂| = 2a = 10，故 |PF₂| = 10 − 3 = 7。",
         "scene": {
           "range": 7,
-          "ellipses": [ { "a": 5, "b": 3, "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": 4, "axis": "x", "color": "#fb7185" } ]
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 3,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": 4,
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ]
         }
       },
       {
         "name": "9-3 迁移应用 · 距离之和的最值",
         "q": "椭圆 x²/25+y²/9=1 上点 P 到两焦点距离之和为？",
-        "opts": ["恒为 8", "恒为 5", "最小 8、最大 10", "恒为 10"],
+        "opts": [
+          "恒为 8",
+          "恒为 5",
+          "最小 8、最大 10",
+          "恒为 10"
+        ],
         "ans": 3,
         "hint": "这就是椭圆的第一定义。",
         "explain": "由定义 |PF₁|+|PF₂| = 2a = 10，与 P 的位置无关。",
         "scene": {
           "range": 7,
-          "ellipses": [ { "a": 5, "b": 3, "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": 4, "axis": "x", "color": "#fb7185" } ]
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 3,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": 4,
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ]
         }
       }
     ]
   },
-
   "ellipse_4_1": {
     "title": "第4关 · 中点弦 · 01",
     "method": "点差法 · 中点弦",
@@ -610,25 +1454,98 @@
         "q": "动手实验：椭圆 x²/25+y²/9=1，A(5,0) 为定点，弦 AB 的另一端 B 在椭圆上，M 为 AB 中点。拖动滑块移动 B，k_AB·k_OM 是否随 B 的位置变化？",
         "scene": {
           "range": 7,
-          "sliders": [ { "name": "t", "min": 0, "max": 360, "value": 120, "step": 5, "label": "B 的位置角 t(°)" } ],
-          "ellipses": [ { "a": 5, "b": 3, "axis": "x", "color": "#ff7ea8" } ],
+          "sliders": [
+            {
+              "name": "t",
+              "min": 0,
+              "max": 360,
+              "value": 120,
+              "step": 5,
+              "label": "B 的位置角 t(°)"
+            }
+          ],
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 3,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
           "points": [
-            { "p": [5, 0], "label": "A", "color": "#5ee6ff" },
-            { "p": ["5*cos(t)", "3*sin(t)"], "label": "B", "color": "#ffd479" },
-            { "p": ["(5+5*cos(t))/2", "(3*sin(t))/2"], "label": "M", "color": "#a878ff" }
+            {
+              "p": [
+                5,
+                0
+              ],
+              "label": "A",
+              "color": "#5ee6ff"
+            },
+            {
+              "p": [
+                "5*cos(t)",
+                "3*sin(t)"
+              ],
+              "label": "B",
+              "color": "#ffd479"
+            },
+            {
+              "p": [
+                "(5+5*cos(t))/2",
+                "(3*sin(t))/2"
+              ],
+              "label": "M",
+              "color": "#a878ff"
+            }
           ],
           "segments": [
-            { "p1": [5, 0], "p2": ["5*cos(t)", "3*sin(t)"], "color": "#ffd479" },
-            { "p1": [0, 0], "p2": ["(5+5*cos(t))/2", "(3*sin(t))/2"], "color": "#a878ff", "dash": true }
+            {
+              "p1": [
+                5,
+                0
+              ],
+              "p2": [
+                "5*cos(t)",
+                "3*sin(t)"
+              ],
+              "color": "#ffd479"
+            },
+            {
+              "p1": [
+                0,
+                0
+              ],
+              "p2": [
+                "(5+5*cos(t))/2",
+                "(3*sin(t))/2"
+              ],
+              "color": "#a878ff",
+              "dash": true
+            }
           ],
-          "readouts": [ { "label": "k_AB·k_OM", "expr": "(3*sin(t)/(5*cos(t)-5))*((3*sin(t))/(5+5*cos(t)))", "color": "#ffd479" } ]
+          "readouts": [
+            {
+              "label": "k_AB·k_OM",
+              "expr": "(3*sin(t)/(5*cos(t)-5))*((3*sin(t))/(5+5*cos(t)))",
+              "color": "#ffd479"
+            }
+          ]
         },
         "goal": "移动 B，确认 k_AB·k_OM 恒等于 −b²/a² = −0.36。",
-        "steps": ["拖动 t 移动 B", "盯住读数 k_AB·k_OM", "换个 B 再看，读数不变"],
+        "steps": [
+          "拖动 t 移动 B",
+          "盯住读数 k_AB·k_OM",
+          "换个 B 再看，读数不变"
+        ],
         "tip": "把 A、B 代入椭圆方程相减(点差法)，可得 k_AB·k_OM = −b²/a²，与弦无关。",
         "confirm": "观察完成，进入追问",
         "ask": "椭圆 x²/a²+y²/b²=1 的弦 AB 中点为 M(O 为原点)，则 k_AB·k_OM = ?",
-        "opts": ["$$-\\dfrac{a^{2}}{b^{2}}$$", "$$\\dfrac{a^{2}}{b^{2}}$$", "$$\\dfrac{b^{2}}{a^{2}}$$", "$$-\\dfrac{b^{2}}{a^{2}}$$"],
+        "opts": [
+          "$$-\\dfrac{a^{2}}{b^{2}}$$",
+          "$$\\dfrac{a^{2}}{b^{2}}$$",
+          "$$\\dfrac{b^{2}}{a^{2}}$$",
+          "$$-\\dfrac{b^{2}}{a^{2}}$$"
+        ],
         "ans": 3,
         "hint": "点差法：两式相减后，斜率乘积与中点坐标挂钩。",
         "explain": "k_AB·k_OM = −b²/a² = −9/25 = −0.36；焦点在 y 轴时变为 −a²/b²。",
@@ -648,8 +1565,24 @@
         "explain": "k_AB·k_OM = −b²/a²；若焦点在 y 轴，公式变为 −a²/b²(把 a、b 对调)。",
         "scene": {
           "range": 6,
-          "ellipses": [ { "a": 5, "b": 3, "axis": "x", "color": "#ff7ea8" } ],
-          "points": [ { "p": [2.5, 1.5], "label": "M", "color": "#a878ff" } ]
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 3,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "points": [
+            {
+              "p": [
+                2.5,
+                1.5
+              ],
+              "label": "M",
+              "color": "#a878ff"
+            }
+          ]
         }
       },
       {
@@ -666,12 +1599,18 @@
         "explain": "点差法求出的直线未必与椭圆相交；必须代回联立检验 Δ>0，M 在椭圆内部的点才有满足条件的弦。",
         "scene": {
           "range": 6,
-          "ellipses": [ { "a": 5, "b": 3, "axis": "x", "color": "#ff7ea8" } ]
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 3,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ]
         }
       }
     ]
   },
-
   "ellipse_4_2": {
     "title": "第4关 · 中点弦 · 02",
     "method": "中点弦的求法与应用",
@@ -685,20 +1624,77 @@
         "scene": {
           "range": 7,
           "sliders": [
-            { "name": "mx", "min": -4, "max": 4, "value": 2, "step": 0.5, "label": "M 的横坐标 x_M" },
-            { "name": "my", "min": -2, "max": 2, "value": 1, "step": 0.5, "label": "M 的纵坐标 y_M" }
+            {
+              "name": "mx",
+              "min": -4,
+              "max": 4,
+              "value": 2,
+              "step": 0.5,
+              "label": "M 的横坐标 x_M"
+            },
+            {
+              "name": "my",
+              "min": -2,
+              "max": 2,
+              "value": 1,
+              "step": 0.5,
+              "label": "M 的纵坐标 y_M"
+            }
           ],
-          "ellipses": [ { "a": 5, "b": 3, "axis": "x", "color": "#ff7ea8" } ],
-          "points": [ { "p": ["mx", "my"], "label": "M", "color": "#a878ff" } ],
-          "lines": [ { "p1": ["mx-2", "my-2*(-(9/25)*(mx/my))"], "p2": ["mx+2", "my+2*(-(9/25)*(mx/my))"], "color": "#ffd479" } ],
-          "readouts": [ { "label": "k", "expr": "-(9/25)*(mx/my)", "color": "#ffd479" } ]
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 3,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "points": [
+            {
+              "p": [
+                "mx",
+                "my"
+              ],
+              "label": "M",
+              "color": "#a878ff"
+            }
+          ],
+          "lines": [
+            {
+              "p1": [
+                "mx-2",
+                "my-2*(-(9/25)*(mx/my))"
+              ],
+              "p2": [
+                "mx+2",
+                "my+2*(-(9/25)*(mx/my))"
+              ],
+              "color": "#ffd479"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "k",
+              "expr": "-(9/25)*(mx/my)",
+              "color": "#ffd479"
+            }
+          ]
         },
         "goal": "移动 M，观察中点位置如何决定弦的斜率 k = −(9/25)(x_M/y_M)。",
-        "steps": ["拖动 mx、my 改变中点 M", "观察弦的倾斜方向", "M 越靠外，|k| 越大"],
+        "steps": [
+          "拖动 mx、my 改变中点 M",
+          "观察弦的倾斜方向",
+          "M 越靠外，|k| 越大"
+        ],
         "tip": "中点弦斜率 k = −(b²/a²)·(x_M/y_M)，由中点坐标唯一确定。",
         "confirm": "观察完成，进入追问",
         "ask": "椭圆 x²/25+y²/9=1 中以 M(2, 1) 为中点的弦所在直线的斜率是？",
-        "opts": ["−25/18", "18/25", "−18/25", "−9/25"],
+        "opts": [
+          "−25/18",
+          "18/25",
+          "−18/25",
+          "−9/25"
+        ],
         "ans": 2,
         "hint": "k = −(b²/a²)(x_M/y_M) = −(9/25)(2/1)。",
         "explain": "k = −(9/25)·(2/1) = −18/25。",
@@ -707,15 +1703,43 @@
       {
         "name": "11-2 建构知识 · 求中点弦方程",
         "q": "椭圆 x²/16 + y²/4 = 1 中，以 M(2, 1) 为中点的弦所在直线的方程是？",
-        "opts": ["x − 2y = 0", "2x + y − 5 = 0", "x + 2y = 0", "x + 2y − 4 = 0"],
+        "opts": [
+          "x − 2y = 0",
+          "2x + y − 5 = 0",
+          "x + 2y = 0",
+          "x + 2y − 4 = 0"
+        ],
         "ans": 3,
         "hint": "k = −(b²/a²)(x_M/y_M) = −(4/16)(2/1) = −1/2，再用点斜式。",
         "explain": "k = −(1/4)·2 = −1/2，过 M(2,1)：y−1 = −½(x−2)，即 x + 2y − 4 = 0。",
         "scene": {
           "range": 6,
-          "ellipses": [ { "a": 4, "b": 2, "axis": "x", "color": "#ff7ea8" } ],
-          "points": [ { "p": [2, 1], "label": "M", "color": "#a878ff" } ],
-          "lines": [ { "A": 1, "B": 2, "C": -4, "color": "#ffd479" } ]
+          "ellipses": [
+            {
+              "a": 4,
+              "b": 2,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "points": [
+            {
+              "p": [
+                2,
+                1
+              ],
+              "label": "M",
+              "color": "#a878ff"
+            }
+          ],
+          "lines": [
+            {
+              "A": 1,
+              "B": 2,
+              "C": -4,
+              "color": "#ffd479"
+            }
+          ]
         }
       },
       {
@@ -728,12 +1752,18 @@
         "explain": "k_AB·k_OM = −b²/a² = −4/16 = −1/4，与弦的位置无关。",
         "scene": {
           "range": 6,
-          "ellipses": [ { "a": 4, "b": 2, "axis": "x", "color": "#ff7ea8" } ]
+          "ellipses": [
+            {
+              "a": 4,
+              "b": 2,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ]
         }
       }
     ]
   },
-
   "ellipse_4_3": {
     "title": "第4关 · 中点弦 · 03",
     "method": "弦中点与轨迹",
@@ -746,21 +1776,67 @@
         "q": "动手实验：椭圆 x²/16+y²/4=1，一组斜率为 k 的平行弦。拖动滑块改变 k，这些弦中点的轨迹是什么形状？",
         "scene": {
           "range": 7,
-          "sliders": [ { "name": "k", "min": -3, "max": 3, "value": 1, "step": 0.25, "label": "平行弦斜率 k" } ],
-          "ellipses": [ { "a": 4, "b": 2, "axis": "x", "color": "#ff7ea8" } ],
-          "lines": [
-            { "A": "k", "B": -1, "C": 1, "color": "#5ee6ff" },
-            { "A": "k", "B": -1, "C": 0, "color": "#5ee6ff" },
-            { "A": "k", "B": -1, "C": -1, "color": "#5ee6ff" }
+          "sliders": [
+            {
+              "name": "k",
+              "min": -3,
+              "max": 3,
+              "value": 1,
+              "step": 0.25,
+              "label": "平行弦斜率 k"
+            }
           ],
-          "readouts": [ { "label": "k", "expr": "k", "color": "#ffd479" } ]
+          "ellipses": [
+            {
+              "a": 4,
+              "b": 2,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "lines": [
+            {
+              "A": "k",
+              "B": -1,
+              "C": 1,
+              "color": "#5ee6ff"
+            },
+            {
+              "A": "k",
+              "B": -1,
+              "C": 0,
+              "color": "#5ee6ff"
+            },
+            {
+              "A": "k",
+              "B": -1,
+              "C": -1,
+              "color": "#5ee6ff"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "k",
+              "expr": "k",
+              "color": "#ffd479"
+            }
+          ]
         },
         "goal": "改变斜率 k，观察一族平行弦及其中点都落在过原点的一条直线上。",
-        "steps": ["拖动 k 改变平行弦方向", "观察各弦中点共线", "中点轨迹是过原点的直线"],
+        "steps": [
+          "拖动 k 改变平行弦方向",
+          "观察各弦中点共线",
+          "中点轨迹是过原点的直线"
+        ],
         "tip": "斜率为 k 的平行弦，其中点轨迹是过原点的直线 y = −(b²/(a²k))·x。",
         "confirm": "观察完成，进入追问",
         "ask": "椭圆中一族平行弦(斜率都为 k)的中点轨迹是？",
-        "opts": ["一条抛物线", "过原点的一条直线", "一个同心椭圆", "一个圆"],
+        "opts": [
+          "一条抛物线",
+          "过原点的一条直线",
+          "一个同心椭圆",
+          "一个圆"
+        ],
         "ans": 1,
         "hint": "由点差法，中点坐标满足 k_OM·k = −b²/a²(定值)，故 O、M 共线。",
         "explain": "k_OM = −b²/(a²k) 为定值，故各中点都在过原点的定直线上。",
@@ -769,30 +1845,53 @@
       {
         "name": "12-2 建构知识 · 弦中点的轨迹类型",
         "q": "椭圆 x²/a²+y²/b²=1 中，过定点(非中心)的弦的中点轨迹通常是？",
-        "opts": ["抛物线", "圆", "一段椭圆(弧)", "直线"],
+        "opts": [
+          "抛物线",
+          "圆",
+          "一段椭圆(弧)",
+          "直线"
+        ],
         "ans": 2,
         "hint": "用点差法把中点 (x₀,y₀) 与定点联系起来，消参后得到同类曲线。",
         "explain": "过定点的弦的中点轨迹通常是与原椭圆同类型的一段曲线(弧)，需注意弦存在的范围。",
         "scene": {
           "range": 6,
-          "ellipses": [ { "a": 4, "b": 2, "axis": "x", "color": "#ff7ea8" } ]
+          "ellipses": [
+            {
+              "a": 4,
+              "b": 2,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ]
         }
       },
       {
         "name": "12-3 迁移应用 · 中点弦与范围",
         "q": "求中点弦问题时，除了用点差法得到斜率，还必须注意？",
-        "opts": ["中点必须在椭圆内部，弦才存在", "斜率必须为正", "中点必须在椭圆外部", "弦必须过原点"],
+        "opts": [
+          "中点必须在椭圆内部，弦才存在",
+          "斜率必须为正",
+          "中点必须在椭圆外部",
+          "弦必须过原点"
+        ],
         "ans": 0,
         "hint": "只有椭圆内部的点才可能成为弦的中点。",
         "explain": "中点必须在椭圆内部(否则不存在以它为 mid 的弦)，且联立后需 Δ>0。",
         "scene": {
           "range": 6,
-          "ellipses": [ { "a": 4, "b": 2, "axis": "x", "color": "#ff7ea8" } ]
+          "ellipses": [
+            {
+              "a": 4,
+              "b": 2,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ]
         }
       }
     ]
   },
-
   "ellipse_5_1": {
     "title": "第5关 · 直线与椭圆 · 01",
     "method": "联立 · 硬解定理",
@@ -805,23 +1904,67 @@
         "q": "动手实验：椭圆 x²/16+y²/4=1，直线 y=x+m。拖动滑块改变 m，先让直线与椭圆相交，判别式 Δ 与弦长 |AB| 如何随之变化？",
         "scene": {
           "range": 6,
-          "sliders": [ { "name": "m", "min": -6, "max": 6, "value": 6, "step": 0.25, "label": "截距参数 m" } ],
-          "ellipses": [ { "a": 4, "b": 2, "axis": "x", "color": "#ff7ea8" } ],
-          "lines": [ { "A": 1, "B": -1, "C": "m", "color": "#5ee6ff", "label": "y = x + m" } ],
+          "sliders": [
+            {
+              "name": "m",
+              "min": -6,
+              "max": 6,
+              "value": 6,
+              "step": 0.25,
+              "label": "截距参数 m"
+            }
+          ],
+          "ellipses": [
+            {
+              "a": 4,
+              "b": 2,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "lines": [
+            {
+              "A": 1,
+              "B": -1,
+              "C": "m",
+              "color": "#5ee6ff",
+              "label": "y = x + m"
+            }
+          ],
           "readouts": [
-            { "label": "Δ", "expr": "5120-256*m*m" },
-            { "label": "|AB|", "expr": "sqrt(2)*sqrt(5120-256*m*m)/20", "color": "#ffd479" }
+            {
+              "label": "Δ",
+              "expr": "5120-256*m*m"
+            },
+            {
+              "label": "|AB|",
+              "expr": "sqrt(2)*sqrt(5120-256*m*m)/20",
+              "color": "#ffd479"
+            }
           ]
         },
         "goal": "把 m 调到 0，使 |AB| ≈ 5.06(Δ 最大、弦最长)。",
-        "steps": ["从 m=6(无交点)开始下调", "观察 Δ 由负变正，直线开始与椭圆相交", "调到 m=0，弦长最大 ≈ 5.06"],
+        "steps": [
+          "从 m=6(无交点)开始下调",
+          "观察 Δ 由负变正，直线开始与椭圆相交",
+          "调到 m=0，弦长最大 ≈ 5.06"
+        ],
         "tip": "y=kx+m 代入椭圆得二次方程；两交点 ⇔ Δ>0，弦长随 Δ 增大而增大。",
         "confirm": "调好了，看看结论",
         "gate": true,
-        "answers": { "m": 0 },
-        "tol": { "m": 0.15 },
+        "answers": {
+          "m": 0
+        },
+        "tol": {
+          "m": 0.15
+        },
         "ask": "直线与椭圆有两个交点时，联立所得二次方程的判别式 Δ 满足？",
-        "opts": ["Δ < 0", "Δ 与交点数无关", "Δ > 0", "Δ = 0"],
+        "opts": [
+          "Δ < 0",
+          "Δ 与交点数无关",
+          "Δ > 0",
+          "Δ = 0"
+        ],
         "ans": 2,
         "hint": "两个不同交点对应二次方程有两个不等实根。",
         "explain": "两交点 ⇔ 方程有两个不等实根 ⇔ Δ>0；Δ=0 相切，Δ<0 无交点。",
@@ -842,9 +1985,34 @@
         "explain": "过 x 轴定点优先设 x = ty + m；注意 t = 1/k 是冠以符号的量，并非斜率本身。",
         "scene": {
           "range": 6,
-          "ellipses": [ { "a": 4, "b": 2, "axis": "x", "color": "#ff7ea8" } ],
-          "points": [ { "p": [2, 0], "label": "M", "color": "#ffd479" } ],
-          "lines": [ { "A": 1, "B": -1, "C": -2, "color": "#5ee6ff", "label": "x = ty + 2", "dash": true } ]
+          "ellipses": [
+            {
+              "a": 4,
+              "b": 2,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "points": [
+            {
+              "p": [
+                2,
+                0
+              ],
+              "label": "M",
+              "color": "#ffd479"
+            }
+          ],
+          "lines": [
+            {
+              "A": 1,
+              "B": -1,
+              "C": -2,
+              "color": "#5ee6ff",
+              "label": "x = ty + 2",
+              "dash": true
+            }
+          ]
         }
       },
       {
@@ -861,12 +2029,18 @@
         "explain": "它只适用于焦点在 x 轴的标准椭圆；焦点在 y 轴系数要互换，且 y = kx + m 会漏掉竖直线 x = m，需单独讨论。",
         "scene": {
           "range": 6,
-          "ellipses": [ { "a": 4, "b": 2, "axis": "x", "color": "#ff7ea8" } ]
+          "ellipses": [
+            {
+              "a": 4,
+              "b": 2,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ]
         }
       }
     ]
   },
-
   "ellipse_5_2": {
     "title": "第5关 · 直线与椭圆 · 02",
     "method": "弦长与中点",
@@ -879,17 +2053,56 @@
         "q": "动手实验：椭圆 x²/16+y²/4=1，过原点、斜率为 k 的直线。拖动滑块改变 k，弦长 |AB| = 2·√((16·4·(1+k²))/(4+16k²)) 如何变化？什么时候最长？",
         "scene": {
           "range": 6,
-          "sliders": [ { "name": "k", "min": -4, "max": 4, "value": 0, "step": 0.25, "label": "斜率 k" } ],
-          "ellipses": [ { "a": 4, "b": 2, "axis": "x", "color": "#ff7ea8" } ],
-          "lines": [ { "A": "k", "B": -1, "C": 0, "color": "#5ee6ff", "label": "y = kx" } ],
-          "readouts": [ { "label": "|AB|", "expr": "2*sqrt((64*(1+k*k))/(4+16*k*k))", "color": "#ffd479" } ]
+          "sliders": [
+            {
+              "name": "k",
+              "min": -4,
+              "max": 4,
+              "value": 0,
+              "step": 0.25,
+              "label": "斜率 k"
+            }
+          ],
+          "ellipses": [
+            {
+              "a": 4,
+              "b": 2,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "lines": [
+            {
+              "A": "k",
+              "B": -1,
+              "C": 0,
+              "color": "#5ee6ff",
+              "label": "y = kx"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "|AB|",
+              "expr": "2*sqrt((64*(1+k*k))/(4+16*k*k))",
+              "color": "#ffd479"
+            }
+          ]
         },
         "goal": "让 k 从 0 增大，观察弦长先增大后减小，找出最长的弦(即长轴)。",
-        "steps": ["k=0：弦为长轴，|AB|=8", "增大 |k|：弦长变短", "|k|→∞：弦趋于短轴，|AB|→4"],
+        "steps": [
+          "k=0：弦为长轴，|AB|=8",
+          "增大 |k|：弦长变短",
+          "|k|→∞：弦趋于短轴，|AB|→4"
+        ],
         "tip": "过中心的弦中最长的是长轴(2a)；它是所有过心弦的最大者。",
         "confirm": "观察完成，进入追问",
         "ask": "椭圆的所有过中心的弦中，最长的是？",
-        "opts": ["通径", "沿 $$y$$ 轴方向的弦最长（以为斜率越大弦越长）", "长轴，长为 2a", "短轴，长为 2b"],
+        "opts": [
+          "通径",
+          "沿 $$y$$ 轴方向的弦最长（以为斜率越大弦越长）",
+          "长轴，长为 2a",
+          "短轴，长为 2b"
+        ],
         "ans": 2,
         "hint": "观察读数 |AB| 在 k=0 时取得最大值。",
         "explain": "过中心的弦中长轴最长(2a=8)；短轴最短(2b=4)。",
@@ -898,32 +2111,71 @@
       {
         "name": "14-2 建构知识 · 弦长公式",
         "q": "直线 y = kx + m 与椭圆相交于 A、B 两点，则弦长 |AB| = ?（Δ 为联立后二次方程的判别式，A 为二次项系数）",
-        "opts": ["√(1+k²)·Δ/|A|", "√Δ/|A|", "√(1+k²)·√Δ/|A|", "(1+k²)·Δ/|A|"],
+        "opts": [
+          "√(1+k²)·Δ/|A|",
+          "√Δ/|A|",
+          "√(1+k²)·√Δ/|A|",
+          "(1+k²)·Δ/|A|"
+        ],
         "ans": 2,
         "hint": "|AB| = √(1+k²)·|x₁−x₂|，而 |x₁−x₂| = √Δ/|A|。",
         "explain": "弦长公式 |AB| = √(1+k²)·√Δ/|A|，注意根号下是 Δ。",
         "scene": {
           "range": 6,
-          "ellipses": [ { "a": 4, "b": 2, "axis": "x", "color": "#ff7ea8" } ],
-          "lines": [ { "A": 1, "B": -1, "C": 0, "color": "#5ee6ff", "label": "y = x" } ]
+          "ellipses": [
+            {
+              "a": 4,
+              "b": 2,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "lines": [
+            {
+              "A": 1,
+              "B": -1,
+              "C": 0,
+              "color": "#5ee6ff",
+              "label": "y = x"
+            }
+          ]
         }
       },
       {
         "name": "14-3 迁移应用 · 中点坐标",
         "q": "直线 y = x + m 与椭圆 x²/16+y²/4=1 交于 A、B，则 AB 中点的横坐标 x₀ 与 m 的关系是？",
-        "opts": ["x₀ = −m/2", "x₀ = m/5", "x₀ = −5m/4", "x₀ = −4m/5"],
+        "opts": [
+          "x₀ = −m/2",
+          "x₀ = m/5",
+          "x₀ = −5m/4",
+          "x₀ = −4m/5"
+        ],
         "ans": 3,
         "hint": "联立得 20x²+32mx+16(m²−4)=0，x₀=(x₁+x₂)/2=−(32m/20)/2。",
         "explain": "x₁+x₂ = −32m/20 = −8m/5，故 x₀ = −4m/5。",
         "scene": {
           "range": 6,
-          "ellipses": [ { "a": 4, "b": 2, "axis": "x", "color": "#ff7ea8" } ],
-          "lines": [ { "A": 1, "B": -1, "C": 0, "color": "#5ee6ff", "label": "y = x + m" } ]
+          "ellipses": [
+            {
+              "a": 4,
+              "b": 2,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "lines": [
+            {
+              "A": 1,
+              "B": -1,
+              "C": 0,
+              "color": "#5ee6ff",
+              "label": "y = x + m"
+            }
+          ]
         }
       }
     ]
   },
-
   "ellipse_5_3": {
     "title": "第5关 · 直线与椭圆 · 03",
     "method": "位置关系与最值",
@@ -936,17 +2188,56 @@
         "q": "动手实验：椭圆 x²/16+y²/4=1，直线 y=x+m。拖动滑块，你能找到直线与椭圆相切(Δ=0)的临界位置吗？",
         "scene": {
           "range": 7,
-          "sliders": [ { "name": "m", "min": -6, "max": 6, "value": 0, "step": 0.1, "label": "截距参数 m" } ],
-          "ellipses": [ { "a": 4, "b": 2, "axis": "x", "color": "#ff7ea8" } ],
-          "lines": [ { "A": 1, "B": -1, "C": "m", "color": "#5ee6ff", "label": "y = x + m" } ],
-          "readouts": [ { "label": "Δ", "expr": "5120-256*m*m", "color": "#ffd479" } ]
+          "sliders": [
+            {
+              "name": "m",
+              "min": -6,
+              "max": 6,
+              "value": 0,
+              "step": 0.1,
+              "label": "截距参数 m"
+            }
+          ],
+          "ellipses": [
+            {
+              "a": 4,
+              "b": 2,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "lines": [
+            {
+              "A": 1,
+              "B": -1,
+              "C": "m",
+              "color": "#5ee6ff",
+              "label": "y = x + m"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "Δ",
+              "expr": "5120-256*m*m",
+              "color": "#ffd479"
+            }
+          ]
         },
         "goal": "把 m 调到使 Δ=0 的临界值 |m| = 2√5 ≈ 4.47，观察直线与椭圆相切。",
-        "steps": ["Δ>0：相交", "把 |m| 增大到临界值：Δ=0 相切", "再增大：Δ<0 相离"],
+        "steps": [
+          "Δ>0：相交",
+          "把 |m| 增大到临界值：Δ=0 相切",
+          "再增大：Δ<0 相离"
+        ],
         "tip": "相切 ⇔ Δ=0，此时直线与椭圆只有一个公共点。",
         "confirm": "观察完成，进入追问",
         "ask": "直线 y = x + m 与椭圆 x²/16+y²/4=1 相切时，|m| = ?",
-        "opts": ["4", "2√5", "20", "√5"],
+        "opts": [
+          "4",
+          "2√5",
+          "20",
+          "√5"
+        ],
         "ans": 1,
         "hint": "令 Δ = 5120 − 256m² = 0。",
         "explain": "5120 − 256m² = 0 ⇒ m² = 20 ⇒ |m| = 2√5 ≈ 4.47。",
@@ -955,31 +2246,63 @@
       {
         "name": "15-2 建构知识 · 位置关系判定",
         "q": "直线与椭圆的位置关系(相交/相切/相离)可由联立后方程的判别式 Δ 判定，对应关系是？",
-        "opts": ["恒相交", "Δ>0 相交，Δ=0 相切，Δ<0 相离", "Δ<0 相交，Δ=0 相切，Δ>0 相离", "与 Δ 无关"],
+        "opts": [
+          "恒相交",
+          "Δ>0 相交，Δ=0 相切，Δ<0 相离",
+          "Δ<0 相交，Δ=0 相切，Δ>0 相离",
+          "与 Δ 无关"
+        ],
         "ans": 1,
         "hint": "两个交点、一个交点、无交点分别对应两个不等根、重根、无实根。",
         "explain": "Δ>0 ⇔ 两交点(相交)；Δ=0 ⇔ 重根(相切)；Δ<0 ⇔ 无实根(相离)。",
         "scene": {
           "range": 6,
-          "ellipses": [ { "a": 4, "b": 2, "axis": "x", "color": "#ff7ea8" } ]
+          "ellipses": [
+            {
+              "a": 4,
+              "b": 2,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ]
         }
       },
       {
         "name": "15-3 迁移应用 · 最值问题",
         "q": "椭圆 x²/4+y²=1 上点 P(2cosθ, sinθ) 到直线 x + y − 4 = 0 的距离最大值为？",
-        "opts": ["√5", "4", "(4 + √5)/√2", "(4 − √5)/√2"],
+        "opts": [
+          "√5",
+          "4",
+          "(4 + √5)/√2",
+          "(4 − √5)/√2"
+        ],
         "ans": 2,
         "hint": "点线距离 d = |2cosθ + sinθ − 4|/√2，而 2cosθ+sinθ 的范围是 [−√5, √5]。",
         "explain": "d = |2cosθ+sinθ−4|/√2，2cosθ+sinθ ∈ [−√5,√5]，取最小值 −√5 时 |…−4| 最大 = 4+√5。",
         "scene": {
           "range": 6,
-          "ellipses": [ { "a": 2, "b": 1, "axis": "x", "color": "#ff7ea8" } ],
-          "lines": [ { "A": 1, "B": 1, "C": -4, "color": "#5ee6ff", "dash": true, "label": "x+y−4=0" } ]
+          "ellipses": [
+            {
+              "a": 2,
+              "b": 1,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "lines": [
+            {
+              "A": 1,
+              "B": 1,
+              "C": -4,
+              "color": "#5ee6ff",
+              "dash": true,
+              "label": "x+y−4=0"
+            }
+          ]
         }
       }
     ]
   },
-
   "ellipse_boss": {
     "title": "隐藏Boss · 椭圆综合试炼",
     "method": "焦点三角形 · 离心率 · 硬解综合",
@@ -992,9 +2315,15 @@
       "color": "#FF5B7F",
       "player_hp_bonus": 1,
       "enrage_at": 0.5,
-      "reward": { "first_clear_coins": 240 }
+      "reward": {
+        "first_clear_coins": 240
+      }
     },
-    "rules": { "star_time": 150, "time_limit": 300, "show_combo_bar": true },
+    "rules": {
+      "star_time": 150,
+      "time_limit": 300,
+      "show_combo_bar": true
+    },
     "levels": [
       {
         "name": "16-1 焦点三角 · 面积到 9",
@@ -1002,22 +2331,88 @@
         "q": "综合试炼：椭圆 x²/25+y²/9=1，焦点 F₁(−4,0)、F₂(4,0)。拖动滑块让 P 沿椭圆运动，观察焦点三角形面积 S=4|y₀| 的变化，你能找出使 S=9 的位置吗？",
         "scene": {
           "range": 7,
-          "sliders": [ { "name": "t", "min": 0, "max": 360, "value": 90, "step": 5, "label": "P 的位置角 t(°)" } ],
-          "ellipses": [ { "a": 5, "b": 3, "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": 4, "axis": "x", "color": "#fb7185" } ],
-          "points": [ { "p": ["5*cos(t)", "3*sin(t)"], "label": "P", "color": "#ffd479" } ],
-          "segments": [
-            { "p1": ["5*cos(t)", "3*sin(t)"], "p2": [-4, 0], "color": "#5ee6ff" },
-            { "p1": ["5*cos(t)", "3*sin(t)"], "p2": [4, 0], "color": "#5ee6ff" }
+          "sliders": [
+            {
+              "name": "t",
+              "min": 0,
+              "max": 360,
+              "value": 90,
+              "step": 5,
+              "label": "P 的位置角 t(°)"
+            }
           ],
-          "readouts": [ { "label": "S", "expr": "4*abs(3*sin(t))", "color": "#ffd479" } ]
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 3,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": 4,
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ],
+          "points": [
+            {
+              "p": [
+                "5*cos(t)",
+                "3*sin(t)"
+              ],
+              "label": "P",
+              "color": "#ffd479"
+            }
+          ],
+          "segments": [
+            {
+              "p1": [
+                "5*cos(t)",
+                "3*sin(t)"
+              ],
+              "p2": [
+                -4,
+                0
+              ],
+              "color": "#5ee6ff"
+            },
+            {
+              "p1": [
+                "5*cos(t)",
+                "3*sin(t)"
+              ],
+              "p2": [
+                4,
+                0
+              ],
+              "color": "#5ee6ff"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "S",
+              "expr": "4*abs(3*sin(t))",
+              "color": "#ffd479"
+            }
+          ]
         },
         "goal": "把 S 调到 9，体会「角条件 ⇄ 面积条件」的转化。",
-        "steps": ["拖动 t 观察 S=4|y₀|", "S 最大为 12(短轴端点)", "S=9 时 |y₀|=2.25"],
+        "steps": [
+          "拖动 t 观察 S=4|y₀|",
+          "S 最大为 12(短轴端点)",
+          "S=9 时 |y₀|=2.25"
+        ],
         "tip": "当 ∠F₁PF₂=90° 时，S = b²·tan45° = b² = 9。",
         "confirm": "观察完成，进入追问",
         "ask": "当 ∠F₁PF₂ = 90° 时，椭圆 x²/25+y²/9=1 的焦点三角形面积 S = ?",
-        "opts": ["b² = 9", "a² = 25", "c·b = 12", "2b² = 18"],
+        "opts": [
+          "b² = 9",
+          "a² = 25",
+          "c·b = 12",
+          "2b² = 18"
+        ],
         "ans": 0,
         "hint": "椭圆焦点三角形面积 S = b²·tan(θ/2)；θ=90° 时 tan45°=1。",
         "explain": "S = b²tan(θ/2) = 9·tan45° = 9。",
@@ -1037,8 +2432,21 @@
         "explain": "焦点三角形 ∠F₁PF₂ 最大发生在短轴端点，此时 cosθ_min = 1 − 2e²；要能取到 120° 需 1 − 2e² ≤ cos120° = −1/2，得 e ≥ √3/2。",
         "scene": {
           "range": 6,
-          "ellipses": [ { "a": 5, "b": 3, "axis": "x", "color": "#ff7ea8" } ],
-          "foci": [ { "c": 4, "axis": "x", "color": "#fb7185" } ]
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 3,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": 4,
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ]
         }
       },
       {
@@ -1055,8 +2463,157 @@
         "explain": "a²=4、b²=1、m=2：A=1+4k²、B=16k、C=12，Δ=16(4k²−3)。两交点 ⇔ Δ>0 ⇔ k²>3/4 ⇔ |k|>√3/2。",
         "scene": {
           "range": 5,
-          "ellipses": [ { "a": 2, "b": 1, "axis": "x", "color": "#ff7ea8" } ]
+          "ellipses": [
+            {
+              "a": 2,
+              "b": 1,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ]
         }
+      }
+    ]
+  },
+  "param_auto_ellipse_1_1": {
+    "title": "参数调参师 · 自动生成 · 第1关 · 椭圆起源 · 01",
+    "method": "批量转换 · 智能目标检测",
+    "color": "#9C27B0",
+    "summary": "从原有 explore 关卡自动转换生成的参数调参师题目，共 1 道。",
+    "levels": [
+      {
+        "name": "PM-ELLIPSE_1-1 实验探究 · 距离之和为定值",
+        "type": "explore",
+        "q": "动手实验：F₁(−3,0)、F₂(3,0)，动点 P 在椭圆上(长轴 2a=10)。拖动滑块让 P 绕椭圆一周，读数 |PF₁|+|PF₂| 会随 P 的位置变化吗？",
+        "scene": {
+          "anim": [
+            {
+              "a": "vars",
+              "to": {
+                "t": 360
+              },
+              "dur": 3.2,
+              "hold": 0.6
+            },
+            {
+              "a": "vars",
+              "to": {
+                "t": 60
+              },
+              "dur": 0.8,
+              "hold": 0.2
+            }
+          ],
+          "range": 7,
+          "sliders": [
+            {
+              "name": "t",
+              "min": 0,
+              "max": 360,
+              "value": 60,
+              "step": 5,
+              "label": "P 的位置角 t(°)"
+            }
+          ],
+          "ellipses": [
+            {
+              "a": 5,
+              "b": 4,
+              "axis": "x",
+              "color": "#ff7ea8"
+            }
+          ],
+          "foci": [
+            {
+              "c": 3,
+              "axis": "x",
+              "color": "#fb7185"
+            }
+          ],
+          "links": [
+            {
+              "a": [
+                0,
+                0
+              ],
+              "b": [
+                "5*cos(t)",
+                "4*sin(t)"
+              ],
+              "color": "#c084fc",
+              "label": "|OP|"
+            }
+          ],
+          "points": [
+            {
+              "p": [
+                "5*cos(t)",
+                "4*sin(t)"
+              ],
+              "label": "P",
+              "color": "#ffd479"
+            }
+          ],
+          "segments": [
+            {
+              "p1": [
+                "5*cos(t)",
+                "4*sin(t)"
+              ],
+              "p2": [
+                -3,
+                0
+              ],
+              "color": "#5ee6ff"
+            },
+            {
+              "p1": [
+                "5*cos(t)",
+                "4*sin(t)"
+              ],
+              "p2": [
+                3,
+                0
+              ],
+              "color": "#5ee6ff"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "|PF₁|+|PF₂|",
+              "expr": "sqrt((5*cos(t)+3)^2+(4*sin(t))^2)+sqrt((5*cos(t)-3)^2+(4*sin(t))^2)",
+              "color": "#ffd479"
+            }
+          ]
+        },
+        "goal": "拖动滑块使t=180.0",
+        "steps": [
+          "拖动 t：P 沿椭圆移动",
+          "盯住左上读数 |PF₁|+|PF₂|",
+          "③ 把参数调到目标值：t=180.0",
+          "④ 达到目标时左上角显示「✓」"
+        ],
+        "tip": "椭圆上任意一点都满足 |PF₁|+|PF₂| = 2a；这正是椭圆的第一定义。",
+        "confirm": "参数已经调到目标值",
+        "ask": "拖动滑块使参数达到目标值的操作要点是？",
+        "opts": [
+          "逐一调整各参数直到读数显示「✓」",
+          "随机拖动直到图像符合预期",
+          "只调整一个参数即可",
+          "不需要调整"
+        ],
+        "ans": 0,
+        "hint": "把 P 拖到不同位置，读一读左上角的和。",
+        "explain": "第一定义：到两焦点距离之和为常数 2a=10(a=5>c=3)的轨迹是椭圆，2a 即长轴长。",
+        "success": "太棒了！你找到的参数组合 t=180.0 满足条件。",
+        "gate": true,
+        "answers": {
+          "t": 180.0
+        },
+        "tol": {
+          "t": 9.1
+        },
+        "retry": "参数还未完全对准目标：\n  • t 当前={{t}}，需要 t=180.0"
       }
     ]
   }

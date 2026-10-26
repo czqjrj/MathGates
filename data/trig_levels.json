@@ -11,18 +11,57 @@
         "q": "拖动滑块改变角 θ，观察终边绕原点旋转时点 P 的坐标如何变化——点 P 的坐标与角 θ 之间是什么关系？",
         "scene": {
           "anim": [
-            {"a": "vars", "to": {"theta": 210}, "dur": 2.6, "hold": 0.6},
-            {"a": "vars", "to": {"theta": 330}, "dur": 2.2, "hold": 0.4}
+            {
+              "a": "vars",
+              "to": {
+                "theta": 210
+              },
+              "dur": 2.6,
+              "hold": 0.6
+            },
+            {
+              "a": "vars",
+              "to": {
+                "theta": 330
+              },
+              "dur": 2.2,
+              "hold": 0.4
+            }
           ],
-          "x": [-1.8, 1.8],
-          "y": [-1.4, 1.4],
-          "unit_circle": { "angle": "theta", "label": "P", "show_sin": true, "show_cos": true },
-          "sliders": [{ "name": "theta", "label": "θ°", "min": 0, "max": 360, "value": 30, "step": 1 }],
+          "x": [
+            -1.8,
+            1.8
+          ],
+          "y": [
+            -1.4,
+            1.4
+          ],
+          "unit_circle": {
+            "angle": "theta",
+            "label": "P",
+            "show_sin": true,
+            "show_cos": true
+          },
+          "sliders": [
+            {
+              "name": "theta",
+              "label": "θ°",
+              "min": 0,
+              "max": 360,
+              "value": 30,
+              "step": 1
+            }
+          ],
           "slider_color": "#ffd479",
           "gate": false
         },
         "ask": "当 180°−θ 的终边与 θ 的终边关于 y 轴对称时，sin(180°−θ) 与 sinθ 的关系是？",
-        "opts": ["sin(180°−θ)=cosθ", "sin(180°−θ)=sinθ", "sin(180°−θ)=−sinθ", "sin(180°−θ)=−cosθ"],
+        "opts": [
+          "sin(180°−θ)=cosθ",
+          "sin(180°−θ)=sinθ",
+          "sin(180°−θ)=−sinθ",
+          "sin(180°−θ)=−cosθ"
+        ],
         "ans": 1,
         "hint": "关于 y 轴对称：纵坐标不变，横坐标变号。",
         "explain": "sin 对应纵坐标，关于 y 轴对称时纵坐标不变，所以 sin(180°−θ)=sinθ。",
@@ -33,11 +72,27 @@
         "type": "choice",
         "q": "根据单位圆，cos(180°+θ) 等于？",
         "scene": {
-          "x": [-1.8, 1.8],
-          "y": [-1.4, 1.4],
-          "unit_circle": { "angle": 210, "label": "P", "show_sin": true, "show_cos": true }
+          "x": [
+            -1.8,
+            1.8
+          ],
+          "y": [
+            -1.4,
+            1.4
+          ],
+          "unit_circle": {
+            "angle": 210,
+            "label": "P",
+            "show_sin": true,
+            "show_cos": true
+          }
         },
-        "opts": ["−sinθ", "−cosθ", "sinθ", "cosθ"],
+        "opts": [
+          "−sinθ",
+          "−cosθ",
+          "sinθ",
+          "cosθ"
+        ],
         "ans": 1,
         "hint": "180°+θ 的终边与 θ 的终边关于原点对称。",
         "explain": "关于原点对称：cos(180°+θ)=−cosθ，sin(180°+θ)=−sinθ。"
@@ -47,9 +102,20 @@
         "type": "input",
         "q": "已知 sinα=3/5，α∈(π/2, π)，则 sin(π+α)=？（填数值）",
         "scene": {
-          "x": [-1.8, 1.8],
-          "y": [-1.4, 1.4],
-          "unit_circle": { "angle": 143, "label": "P", "show_sin": true, "show_cos": true }
+          "x": [
+            -1.8,
+            1.8
+          ],
+          "y": [
+            -1.4,
+            1.4
+          ],
+          "unit_circle": {
+            "angle": 143,
+            "label": "P",
+            "show_sin": true,
+            "show_cos": true
+          }
         },
         "ans": -0.6,
         "tol": 0.01,
@@ -69,15 +135,40 @@
         "type": "explore",
         "q": "拖动 θ，观察单位圆上点 P(x, y) 的横、纵坐标——它们的平方和恒等于多少？",
         "scene": {
-          "x": [-1.8, 1.8],
-          "y": [-1.4, 1.4],
-          "unit_circle": { "angle": "theta", "label": "P", "show_sin": true, "show_cos": true },
-          "sliders": [{ "name": "theta", "label": "θ°", "min": 0, "max": 360, "value": 50, "step": 1 }],
+          "x": [
+            -1.8,
+            1.8
+          ],
+          "y": [
+            -1.4,
+            1.4
+          ],
+          "unit_circle": {
+            "angle": "theta",
+            "label": "P",
+            "show_sin": true,
+            "show_cos": true
+          },
+          "sliders": [
+            {
+              "name": "theta",
+              "label": "θ°",
+              "min": 0,
+              "max": 360,
+              "value": 50,
+              "step": 1
+            }
+          ],
           "slider_color": "#ffd479",
           "gate": false
         },
         "ask": "无论 θ 怎样变化，cos²θ+sin²θ 的值恒等于？",
-        "opts": ["随 θ 变化", "2", "0", "1"],
+        "opts": [
+          "随 θ 变化",
+          "2",
+          "0",
+          "1"
+        ],
         "ans": 3,
         "hint": "P 在单位圆上，故 x²+y²=1。",
         "explain": "P 在单位圆上：x²+y²=1，即 cos²θ+sin²θ=1。",
@@ -114,19 +205,52 @@
         "type": "explore",
         "q": "拖动滑块改变 A、ω，观察曲线 y=A·sin(ωx) 的高低与疏密——振幅和最小正周期 T 分别由哪个参数决定？",
         "scene": {
-          "x": [-6.5, 6.5],
-          "y": [-3.5, 3.5],
+          "x": [
+            -6.5,
+            6.5
+          ],
+          "y": [
+            -3.5,
+            3.5
+          ],
           "pi_ticks": true,
-          "curves": [{ "fn": "sin", "a": "A", "b": "W", "color": "#FF9D4D", "label": "y=A·sin(ωx)" }],
+          "curves": [
+            {
+              "fn": "sin",
+              "a": "A",
+              "b": "W",
+              "color": "#FF9D4D",
+              "label": "y=A·sin(ωx)"
+            }
+          ],
           "sliders": [
-            { "name": "A", "label": "A", "min": 0.2, "max": 3, "value": 1, "step": 0.1 },
-            { "name": "W", "label": "ω", "min": 0.5, "max": 3, "value": 1, "step": 0.1 }
+            {
+              "name": "A",
+              "label": "A",
+              "min": 0.2,
+              "max": 3,
+              "value": 1,
+              "step": 0.1
+            },
+            {
+              "name": "W",
+              "label": "ω",
+              "min": 0.5,
+              "max": 3,
+              "value": 1,
+              "step": 0.1
+            }
           ],
           "slider_color": "#ffd479",
           "gate": false
         },
         "ask": "y=A·sin(ωx) 的最小正周期 T 等于？",
-        "opts": ["π/ω", "2π/ω", "2π/A", "2π·ω"],
+        "opts": [
+          "π/ω",
+          "2π/ω",
+          "2π/A",
+          "2π·ω"
+        ],
         "ans": 1,
         "hint": "周期只与 ω 有关，A 只决定振幅。",
         "explain": "T=2π/ω；A 决定振幅，ω 决定周期，二者互不影响。",
@@ -137,12 +261,31 @@
         "type": "choice",
         "q": "函数 y=2sin(3x) 的振幅与最小正周期分别是？",
         "scene": {
-          "x": [-6.5, 6.5],
-          "y": [-3.5, 3.5],
+          "x": [
+            -6.5,
+            6.5
+          ],
+          "y": [
+            -3.5,
+            3.5
+          ],
           "pi_ticks": true,
-          "curves": [{ "fn": "sin", "a": 2, "b": 3, "color": "#FF9D4D", "label": "y=2sin(3x)" }]
+          "curves": [
+            {
+              "fn": "sin",
+              "a": 2,
+              "b": 3,
+              "color": "#FF9D4D",
+              "label": "y=2sin(3x)"
+            }
+          ]
         },
-        "opts": ["振幅 3，周期 2π/2", "振幅 1/2，周期 2π/3", "振幅 2，周期 2π/3", "振幅 2，周期 3"],
+        "opts": [
+          "振幅 3，周期 2π/2",
+          "振幅 1/2，周期 2π/3",
+          "振幅 2，周期 2π/3",
+          "振幅 2，周期 3"
+        ],
         "ans": 2,
         "explain": "振幅 |A|=2，最小正周期 T=2π/ω=2π/3。"
       },
@@ -150,7 +293,12 @@
         "name": "3-3 迁移：图像变换",
         "type": "choice",
         "q": "把 y=sinx 图像上每点横坐标缩短为原来的 1/2（纵坐标不变），所得函数是？",
-        "opts": ["y=sin2x", "y=sin(x/2)", "y=2sinx", "y=sinx+2"],
+        "opts": [
+          "y=sin2x",
+          "y=sin(x/2)",
+          "y=2sinx",
+          "y=sinx+2"
+        ],
         "ans": 0,
         "hint": "横坐标缩短为 1/2 ⇒ 周期减半。",
         "explain": "横坐标缩短为 1/2 即周期变为 π，故 y=sin2x。"
@@ -168,21 +316,96 @@
         "type": "choice",
         "q": "在△ABC中，a=3，b=4，C=60°，则 c=?",
         "scene": {
-          "x": [-1.0, 4.4],
-          "y": [-1.0, 4.4],
+          "x": [
+            -1.0,
+            4.4
+          ],
+          "y": [
+            -1.0,
+            4.4
+          ],
           "segments": [
-            { "p1": [0, 0], "p2": [3, 0], "color": "#5ee6ff", "label": "a=3" },
-            { "p1": [0, 0], "p2": [2, 3.464], "color": "#5ee6ff", "label": "b=4" },
-            { "p1": [3, 0], "p2": [2, 3.464], "color": "#ffd479", "label": "c=?" }
+            {
+              "p1": [
+                0,
+                0
+              ],
+              "p2": [
+                3,
+                0
+              ],
+              "color": "#5ee6ff",
+              "label": "a=3"
+            },
+            {
+              "p1": [
+                0,
+                0
+              ],
+              "p2": [
+                2,
+                3.464
+              ],
+              "color": "#5ee6ff",
+              "label": "b=4"
+            },
+            {
+              "p1": [
+                3,
+                0
+              ],
+              "p2": [
+                2,
+                3.464
+              ],
+              "color": "#ffd479",
+              "label": "c=?"
+            }
           ],
           "points": [
-            { "p": [0, 0], "color": "#5ee6ff", "label": "C" },
-            { "p": [3, 0], "color": "#5ee6ff", "label": "B" },
-            { "p": [2, 3.464], "color": "#5ee6ff", "label": "A" }
+            {
+              "p": [
+                0,
+                0
+              ],
+              "color": "#5ee6ff",
+              "label": "C"
+            },
+            {
+              "p": [
+                3,
+                0
+              ],
+              "color": "#5ee6ff",
+              "label": "B"
+            },
+            {
+              "p": [
+                2,
+                3.464
+              ],
+              "color": "#5ee6ff",
+              "label": "A"
+            }
           ],
-          "labels": [{ "p": [0.6, 0.35], "text": "60°", "color": "#ffd479", "size": 14 }]
+          "labels": [
+            {
+              "p": [
+                0.6,
+                0.35
+              ],
+              "text": "60°",
+              "color": "#ffd479",
+              "size": 14
+            }
+          ]
         },
-        "opts": ["7", "5", "√37", "√13"],
+        "opts": [
+          "7",
+          "5",
+          "√37",
+          "√13"
+        ],
         "ans": 3,
         "hint": "用余弦定理 c²=a²+b²−2ab·cosC。",
         "explain": "c²=9+16−2·3·4·cos60°=25−12=13，故 c=√13。"
@@ -191,7 +414,12 @@
         "name": "4-2 建构：正弦定理",
         "type": "choice",
         "q": "在△ABC中，A=60°，a=√3，b=1，则 B=?",
-        "opts": ["45°", "90°", "60°", "30°"],
+        "opts": [
+          "45°",
+          "90°",
+          "60°",
+          "30°"
+        ],
         "ans": 3,
         "hint": "a/sinA=b/sinB；再由 b<a 判断 B<A。",
         "explain": "sinB=(b·sinA)/a=(1·(√3/2))/√3=1/2，又 b<a 故 B<A=60°，所以 B=30°。"
@@ -200,7 +428,12 @@
         "name": "4-3 迁移：面积",
         "type": "choice",
         "q": "在△ABC中，a=2，b=2，C=60°，则△ABC 的面积是？",
-        "opts": ["2√3", "3/2", "√3", "1"],
+        "opts": [
+          "2√3",
+          "3/2",
+          "√3",
+          "1"
+        ],
         "ans": 2,
         "hint": "面积公式 S=½ab·sinC。",
         "explain": "S=½×2×2×sin60°=√3。"
@@ -218,12 +451,32 @@
         "type": "choice",
         "q": "简谐运动位移 y=3sin(2t+π/6) 的初相是？",
         "scene": {
-          "x": [-6.5, 6.5],
-          "y": [-4.0, 4.0],
+          "x": [
+            -6.5,
+            6.5
+          ],
+          "y": [
+            -4.0,
+            4.0
+          ],
           "pi_ticks": true,
-          "curves": [{ "fn": "sin", "a": 3, "b": 2, "c": 0.5236, "color": "#FF9D4D", "label": "y=3sin(2t+π/6)" }]
+          "curves": [
+            {
+              "fn": "sin",
+              "a": 3,
+              "b": 2,
+              "c": 0.5236,
+              "color": "#FF9D4D",
+              "label": "y=3sin(2t+π/6)"
+            }
+          ]
         },
-        "opts": ["2", "π/3", "3", "π/6"],
+        "opts": [
+          "2",
+          "π/3",
+          "3",
+          "π/6"
+        ],
         "ans": 3,
         "explain": "y=A·sin(ωt+φ) 中 φ=π/6 为初相，A=3 为振幅，ω=2 决定周期。"
       },
@@ -232,19 +485,53 @@
         "type": "explore",
         "q": "拖动滑块改变 A、b，观察 y=A·sinx+b 的波峰、波谷高度——最大值、最小值与 A、b 之间是什么关系？",
         "scene": {
-          "x": [-6.5, 6.5],
-          "y": [-4.0, 6.0],
+          "x": [
+            -6.5,
+            6.5
+          ],
+          "y": [
+            -4.0,
+            6.0
+          ],
           "pi_ticks": true,
-          "curves": [{ "fn": "sin", "a": "A", "b": 1, "d": "b", "color": "#FF9D4D", "label": "y=A·sinx+b" }],
+          "curves": [
+            {
+              "fn": "sin",
+              "a": "A",
+              "b": 1,
+              "d": "b",
+              "color": "#FF9D4D",
+              "label": "y=A·sinx+b"
+            }
+          ],
           "sliders": [
-            { "name": "A", "label": "A", "min": 0.2, "max": 4, "value": 1, "step": 0.1 },
-            { "name": "b", "label": "b", "min": -2, "max": 3, "value": 0, "step": 0.1 }
+            {
+              "name": "A",
+              "label": "A",
+              "min": 0.2,
+              "max": 4,
+              "value": 1,
+              "step": 0.1
+            },
+            {
+              "name": "b",
+              "label": "b",
+              "min": -2,
+              "max": 3,
+              "value": 0,
+              "step": 0.1
+            }
           ],
           "slider_color": "#ffd479",
           "gate": false
         },
         "ask": "若 y=A·sinx+b 的最大值为 5、最小值为 1，则 A、b 分别是？",
-        "opts": ["A=4，b=1", "A=3，b=2", "A=2，b=3", "A=2，b=4"],
+        "opts": [
+          "A=4，b=1",
+          "A=3，b=2",
+          "A=2，b=3",
+          "A=2，b=4"
+        ],
         "ans": 2,
         "hint": "最大值=A+b，最小值=−A+b。",
         "explain": "由 A+b=5、−A+b=1 解得 A=2，b=3。",
@@ -254,7 +541,12 @@
         "name": "5-3 迁移：合成最值",
         "type": "choice",
         "q": "函数 y=sinx+cosx 的最大值是？",
-        "opts": ["2", "1", "√2", "√3"],
+        "opts": [
+          "2",
+          "1",
+          "√2",
+          "√3"
+        ],
         "ans": 2,
         "hint": "用辅助角公式：sinx+cosx=√2·sin(x+π/4)。",
         "explain": "y=√2·sin(x+π/4)，最大值为 √2。"
@@ -272,15 +564,40 @@
         "type": "explore",
         "q": "拖动 θ，观察点 P 在单位圆上旋转时弧长的变化——弧长与半径之比表示什么？",
         "scene": {
-          "x": [-1.8, 1.8],
-          "y": [-1.4, 1.4],
-          "unit_circle": { "angle": "theta", "label": "P", "show_sin": false, "show_cos": false },
-          "sliders": [{ "name": "theta", "label": "θ°", "min": 0, "max": 360, "value": 180, "step": 1 }],
+          "x": [
+            -1.8,
+            1.8
+          ],
+          "y": [
+            -1.4,
+            1.4
+          ],
+          "unit_circle": {
+            "angle": "theta",
+            "label": "P",
+            "show_sin": false,
+            "show_cos": false
+          },
+          "sliders": [
+            {
+              "name": "theta",
+              "label": "θ°",
+              "min": 0,
+              "max": 360,
+              "value": 180,
+              "step": 1
+            }
+          ],
           "slider_color": "#ffd479",
           "gate": false
         },
         "ask": "在半径为 r 的圆中，弧长等于半径的弧所对的圆心角是？",
-        "opts": ["1 弧度", "1 度", "2π 弧度", "π 弧度"],
+        "opts": [
+          "1 弧度",
+          "1 度",
+          "2π 弧度",
+          "π 弧度"
+        ],
         "ans": 0,
         "hint": "弧长与半径之比等于 1。",
         "explain": "弧长 l=r 时，α=l/r=1，称为 1 弧度的角。",
@@ -290,7 +607,12 @@
         "name": "6-2 建构：角度与弧度互化",
         "type": "choice",
         "q": "180° 等于多少弧度？",
-        "opts": ["π", "π/2", "360", "2π"],
+        "opts": [
+          "π",
+          "π/2",
+          "360",
+          "2π"
+        ],
         "ans": 0,
         "hint": "π 弧度 = 180°。",
         "explain": "π 弧度与 180° 相等，故 180°=π。"
@@ -299,7 +621,12 @@
         "name": "6-3 迁移：弧长公式",
         "type": "choice",
         "q": "半径 r=6、圆心角 α=π/3 的扇形，其弧长 l =?",
-        "opts": ["π", "3π", "2π", "6π"],
+        "opts": [
+          "π",
+          "3π",
+          "2π",
+          "6π"
+        ],
         "ans": 2,
         "hint": "弧长 l=αr（α 用弧度）。",
         "explain": "l=αr=(π/3)×6=2π。"
@@ -317,13 +644,32 @@
         "type": "explore",
         "q": "观察 y=tanx 的图象中一段段上升的曲线——它每隔多少重复一次？",
         "scene": {
-          "x": [-6.5, 6.5],
-          "y": [-3.5, 3.5],
+          "x": [
+            -6.5,
+            6.5
+          ],
+          "y": [
+            -3.5,
+            3.5
+          ],
           "pi_ticks": true,
-          "curves": [{ "fn": "tan", "a": 1, "b": 1, "color": "#FF9D4D", "label": "y=tanx" }]
+          "curves": [
+            {
+              "fn": "tan",
+              "a": 1,
+              "b": 1,
+              "color": "#FF9D4D",
+              "label": "y=tanx"
+            }
+          ]
         },
         "ask": "正切函数 y=tanx 的最小正周期是？",
-        "opts": ["4π", "2π", "π/2", "π"],
+        "opts": [
+          "4π",
+          "2π",
+          "π/2",
+          "π"
+        ],
         "ans": 3,
         "hint": "π/2 到 3π/2 图像重复出现。",
         "explain": "y=tanx 的最小正周期为 π（正弦、余弦是 2π）。",
@@ -333,7 +679,12 @@
         "name": "7-2 建构：定义域与奇偶性",
         "type": "choice",
         "q": "正切函数 y=tanx 是？",
-        "opts": ["非奇非偶", "既奇又偶", "奇函数", "偶函数"],
+        "opts": [
+          "非奇非偶",
+          "既奇又偶",
+          "奇函数",
+          "偶函数"
+        ],
         "ans": 2,
         "hint": "tan(−x)=−tanx。",
         "explain": "tan(−x)=−tanx，且定义域关于原点对称，故为奇函数。"
@@ -342,7 +693,12 @@
         "name": "7-3 迁移：定义域",
         "type": "choice",
         "q": "正切函数 y=tanx 的定义域是？",
-        "opts": ["全体实数", "x>0", "x≠kπ (k∈Z)", "x≠π/2+kπ (k∈Z)"],
+        "opts": [
+          "全体实数",
+          "x>0",
+          "x≠kπ (k∈Z)",
+          "x≠π/2+kπ (k∈Z)"
+        ],
         "ans": 3,
         "hint": "在 x=π/2+kπ 处无定义。",
         "explain": "正切函数在 x=π/2+kπ 处无意义，定义域为 {x|x≠π/2+kπ, k∈Z}。"
@@ -360,15 +716,40 @@
         "type": "explore",
         "q": "拖动 θ，观察角 θ 的终边与单位圆的交点 P——点 P 的横坐标、纵坐标分别对应哪个三角函数值？",
         "scene": {
-          "x": [-1.6, 1.6],
-          "y": [-1.6, 1.6],
-          "unit_circle": { "angle": "theta", "label": "P", "show_sin": true, "show_cos": true },
-          "sliders": [{ "name": "theta", "label": "θ°", "min": 0, "max": 360, "value": 50, "step": 1 }],
+          "x": [
+            -1.6,
+            1.6
+          ],
+          "y": [
+            -1.6,
+            1.6
+          ],
+          "unit_circle": {
+            "angle": "theta",
+            "label": "P",
+            "show_sin": true,
+            "show_cos": true
+          },
+          "sliders": [
+            {
+              "name": "theta",
+              "label": "θ°",
+              "min": 0,
+              "max": 360,
+              "value": 50,
+              "step": 1
+            }
+          ],
           "slider_color": "#FF9D4D",
           "gate": false
         },
         "ask": "单位圆上角 θ 的终边与圆的交点 P 的坐标是？",
-        "opts": ["(cosθ, −sinθ)", "(tanθ, 1)", "(cosθ, sinθ)", "(sinθ, cosθ)"],
+        "opts": [
+          "(cosθ, −sinθ)",
+          "(tanθ, 1)",
+          "(cosθ, sinθ)",
+          "(sinθ, cosθ)"
+        ],
         "ans": 2,
         "hint": "横坐标是余弦，纵坐标是正弦。",
         "explain": "单位圆上点 P 的坐标为 (cosθ, sinθ)，即 cosθ 是横坐标、sinθ 是纵坐标。",
@@ -387,7 +768,12 @@
         "name": "8-3 迁移：各象限符号",
         "type": "choice",
         "q": "若 α 是第二象限角，则 sinα 与 cosα 的符号是？",
-        "opts": ["sinα>0, cosα<0", "sinα<0, cosα>0", "都为负", "都为正"],
+        "opts": [
+          "sinα>0, cosα<0",
+          "sinα<0, cosα>0",
+          "都为负",
+          "都为正"
+        ],
         "ans": 0,
         "hint": "第二象限的点横坐标为负、纵坐标为正。",
         "explain": "第二象限 x<0、y>0，故 cosα<0、sinα>0。"
@@ -405,16 +791,39 @@
         "type": "explore",
         "q": "观察 y=sinx 与 y=cosx 的波浪形图象——它每隔多长向左右重复一次？",
         "scene": {
-          "x": [-6.5, 6.5],
-          "y": [-1.6, 1.6],
+          "x": [
+            -6.5,
+            6.5
+          ],
+          "y": [
+            -1.6,
+            1.6
+          ],
           "pi_ticks": true,
           "curves": [
-            { "fn": "sin", "a": 1, "b": 1, "color": "#5ee6ff", "label": "y=sinx" },
-            { "fn": "cos", "a": 1, "b": 1, "color": "#ffd479", "label": "y=cosx" }
+            {
+              "fn": "sin",
+              "a": 1,
+              "b": 1,
+              "color": "#5ee6ff",
+              "label": "y=sinx"
+            },
+            {
+              "fn": "cos",
+              "a": 1,
+              "b": 1,
+              "color": "#ffd479",
+              "label": "y=cosx"
+            }
           ]
         },
         "ask": "正弦函数 y=sinx 的最小正周期是？",
-        "opts": ["π/2", "4π", "2π", "π"],
+        "opts": [
+          "π/2",
+          "4π",
+          "2π",
+          "π"
+        ],
         "ans": 2,
         "hint": "图象每隔 2π 重复出现。",
         "explain": "y=sinx 的图象每隔 2π 重复一次，最小正周期为 2π（余弦也是 2π）。",
@@ -424,7 +833,12 @@
         "name": "9-2 建构：图象平移",
         "type": "choice",
         "q": "y=cosx 的图象可由 y=sinx 的图象向左平移多少个单位得到？",
-        "opts": ["2π", "π/4", "π/2", "π"],
+        "opts": [
+          "2π",
+          "π/4",
+          "π/2",
+          "π"
+        ],
         "ans": 2,
         "hint": "用诱导公式把 cosx 写成 sin(x+φ) 的形式，φ 就是图象平移的量。",
         "explain": "因为 cosx=sin(x+π/2)，把 y=sinx 向左平移 π/2 即得 y=cosx。"
@@ -433,7 +847,12 @@
         "name": "9-3 迁移：值域",
         "type": "choice",
         "q": "正弦函数 y=sinx 的值域是？",
-        "opts": ["[−1,1]", "R", "[0,2π]", "[0,1]"],
+        "opts": [
+          "[−1,1]",
+          "R",
+          "[0,2π]",
+          "[0,1]"
+        ],
         "ans": 0,
         "hint": "图象在 y=−1 与 y=1 之间上下波动。",
         "explain": "y=sinx 的最大值为 1、最小值为 −1，故值域为 [−1,1]。"
@@ -451,27 +870,110 @@
         "type": "explore",
         "q": "拖动 α、β 两个滑块，观察右侧两行读数的变化——两行读数之间是什么关系？",
         "scene": {
-          "x": [-1.9, 1.9],
-          "y": [-1.55, 1.55],
+          "x": [
+            -1.9,
+            1.9
+          ],
+          "y": [
+            -1.55,
+            1.55
+          ],
           "sliders": [
-            { "name": "alpha", "label": "α°", "min": 0, "max": 180, "value": 60, "step": 1 },
-            { "name": "beta", "label": "β°", "min": 0, "max": 180, "value": 30, "step": 1 }
+            {
+              "name": "alpha",
+              "label": "α°",
+              "min": 0,
+              "max": 180,
+              "value": 60,
+              "step": 1
+            },
+            {
+              "name": "beta",
+              "label": "β°",
+              "min": 0,
+              "max": 180,
+              "value": 30,
+              "step": 1
+            }
           ],
           "slider_color": "#ffd479",
           "points": [
-            { "p": ["cos(alpha)", "sin(alpha)"], "label": "A", "color": "#FF9D4D" },
-            { "p": ["cos(beta)", "sin(beta)"], "label": "B", "color": "#5ee6ff" }
+            {
+              "p": [
+                "cos(alpha)",
+                "sin(alpha)"
+              ],
+              "label": "A",
+              "color": "#FF9D4D"
+            },
+            {
+              "p": [
+                "cos(beta)",
+                "sin(beta)"
+              ],
+              "label": "B",
+              "color": "#5ee6ff"
+            }
           ],
           "segments": [
-            { "p1": [0, 0], "p2": ["cos(alpha)", "sin(alpha)"], "color": "#FF9D4D" },
-            { "p1": [0, 0], "p2": ["cos(beta)", "sin(beta)"], "color": "#5ee6ff" },
-            { "p1": ["cos(alpha)", "sin(alpha)"], "p2": ["cos(beta)", "sin(beta)"], "color": "#ffd479", "label": "AB" }
+            {
+              "p1": [
+                0,
+                0
+              ],
+              "p2": [
+                "cos(alpha)",
+                "sin(alpha)"
+              ],
+              "color": "#FF9D4D"
+            },
+            {
+              "p1": [
+                0,
+                0
+              ],
+              "p2": [
+                "cos(beta)",
+                "sin(beta)"
+              ],
+              "color": "#5ee6ff"
+            },
+            {
+              "p1": [
+                "cos(alpha)",
+                "sin(alpha)"
+              ],
+              "p2": [
+                "cos(beta)",
+                "sin(beta)"
+              ],
+              "color": "#ffd479",
+              "label": "AB"
+            }
           ],
           "readouts": [
-            { "label": "cosα·cosβ+sinα·sinβ", "expr": "cos(alpha)*cos(beta)+sin(alpha)*sin(beta)", "color": "#5ee6ff" },
-            { "label": "cos(α−β)", "expr": "cos(alpha-beta)", "color": "#ffd479" }
+            {
+              "label": "cosα·cosβ+sinα·sinβ",
+              "expr": "cos(alpha)*cos(beta)+sin(alpha)*sin(beta)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "cos(α−β)",
+              "expr": "cos(alpha-beta)",
+              "color": "#ffd479"
+            }
           ],
-          "labels": [{ "p": [1.1, 1.32], "text": "A、B 在单位圆上", "color": "#8fa3c8", "size": 13 }],
+          "labels": [
+            {
+              "p": [
+                1.1,
+                1.32
+              ],
+              "text": "A、B 在单位圆上",
+              "color": "#8fa3c8",
+              "size": 13
+            }
+          ],
           "gate": false
         },
         "goal": "在单位圆上取两个角 α、β，比较两角差的余弦与展开式的读数",
@@ -483,7 +985,12 @@
         "tip": "每换一次角度就对比两行读数，不要只看一组数据",
         "confirm": "完成观察",
         "ask": "把 α 调到 90°、β 调到 30°，此时两行读数都显示多少？",
-        "opts": ["0.87", "−0.5", "1", "0.5"],
+        "opts": [
+          "0.87",
+          "−0.5",
+          "1",
+          "0.5"
+        ],
         "ans": 3,
         "hint": "此时 cos(α−β) 就是 cos60°。",
         "explain": "α=90°、β=30° 时 cos(α−β)=cos60°=0.5，展开式 0·(√3/2)+1·(1/2)=0.5，两行读数一致。换任意角度两行都相等，即 cos(α−β)=cosαcosβ+sinαsinβ。",
@@ -493,7 +1000,12 @@
         "name": "10-2 建构：两角和的正弦",
         "type": "choice",
         "q": "由两角差的余弦公式可以推出 sin(α+β) 等于？",
-        "opts": ["sinαcosβ−cosαsinβ", "sinαcosβ+cosαsinβ", "cosαcosβ+sinαsinβ", "cosαcosβ−sinαsinβ"],
+        "opts": [
+          "sinαcosβ−cosαsinβ",
+          "sinαcosβ+cosαsinβ",
+          "cosαcosβ+sinαsinβ",
+          "cosαcosβ−sinαsinβ"
+        ],
         "ans": 1,
         "hint": "把 sin(α+β) 写成 cos(90°−α−β)，再用两角差的余弦展开。",
         "explain": "sin(α+β)=cos[(90°−α)−β]=sinαcosβ+cosαsinβ。其余三项分别是 cos(α−β)、sin(α−β)、cos(α+β)——函数名与符号之差正是常见错误。"
@@ -511,7 +1023,12 @@
         "name": "10-4 巩固：象限角求值",
         "type": "choice",
         "q": "已知 sinα=4/5，α∈(90°,180°)，cosβ=5/13，β 为第一象限角，则 sin(α+β)=？",
-        "opts": ["56/65", "16/65", "−16/65", "−63/65"],
+        "opts": [
+          "56/65",
+          "16/65",
+          "−16/65",
+          "−63/65"
+        ],
         "ans": 2,
         "hint": "第二象限角 cosα<0：先由平方关系定出 cosα、sinβ 及其符号。",
         "explain": "cosα=−3/5，sinβ=12/13，sin(α+β)=sinαcosβ+cosαsinβ=(4/5)(5/13)+(−3/5)(12/13)=(20−36)/65=−16/65。选 −63/65 是误用了余弦公式，选 56/65 是把 cosα 当成了正数。"
@@ -520,7 +1037,12 @@
         "name": "10-5 综合：两角和的正切",
         "type": "choice",
         "q": "已知 tanα=2，tanβ=3，则 tan(α+β)=？",
-        "opts": ["5", "−5", "−1", "1/5"],
+        "opts": [
+          "5",
+          "−5",
+          "−1",
+          "1/5"
+        ],
         "ans": 2,
         "hint": "tan(α+β)=(tanα+tanβ)/(1−tanαtanβ)，先算分母 1−2×3。",
         "explain": "tan(α+β)=(2+3)/(1−2×3)=5/(−5)=−1。分母是 1−6=−5；漏掉负号会误选 5，只取倒数会误选 1/5。"
@@ -538,14 +1060,42 @@
         "type": "explore",
         "q": "拖动 α 滑块，观察右侧两行读数的变化——两行读数之间是什么关系？",
         "scene": {
-          "x": [-1.9, 1.9],
-          "y": [-1.55, 1.55],
-          "unit_circle": { "angle": "alpha", "label": "P", "show_sin": true, "show_cos": true },
-          "sliders": [{ "name": "alpha", "label": "α°", "min": 0, "max": 180, "value": 50, "step": 1 }],
+          "x": [
+            -1.9,
+            1.9
+          ],
+          "y": [
+            -1.55,
+            1.55
+          ],
+          "unit_circle": {
+            "angle": "alpha",
+            "label": "P",
+            "show_sin": true,
+            "show_cos": true
+          },
+          "sliders": [
+            {
+              "name": "alpha",
+              "label": "α°",
+              "min": 0,
+              "max": 180,
+              "value": 50,
+              "step": 1
+            }
+          ],
           "slider_color": "#ffd479",
           "readouts": [
-            { "label": "2·sinα·cosα", "expr": "2*sin(alpha)*cos(alpha)", "color": "#5ee6ff" },
-            { "label": "sin(2α)", "expr": "sin(2*alpha)", "color": "#ffd479" }
+            {
+              "label": "2·sinα·cosα",
+              "expr": "2*sin(alpha)*cos(alpha)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "sin(2α)",
+              "expr": "sin(2*alpha)",
+              "color": "#ffd479"
+            }
           ],
           "gate": false
         },
@@ -558,7 +1108,12 @@
         "tip": "每换一次角度都对比两行读数，注意谁跟着谁变",
         "confirm": "完成观察",
         "ask": "把 α 调到 30°，第二行读数 sin2α=sin60° 显示约为多少？",
-        "opts": ["1.73", "0.87", "0", "0.5"],
+        "opts": [
+          "1.73",
+          "0.87",
+          "0",
+          "0.5"
+        ],
         "ans": 1,
         "hint": "先把 α 翻倍得到 $$2\\alpha$$ 的度数，再回忆该特殊角的正弦值（可用计算器核对）。",
         "explain": "α=30° 时 2α=60°，sin60°=√3/2≈0.87，与第二行读数一致；两行始终相等说明 sin2α=2sinαcosα。",
@@ -568,7 +1123,12 @@
         "name": "11-2 建构：降幂公式",
         "type": "choice",
         "q": "由二倍角公式 cos2α=2cos²α−1 变形，sin²α 等于？",
-        "opts": ["(1+cos2α)/4", "(1+cos2α)/2", "(1−cos2α)/2", "(cos2α−1)/2"],
+        "opts": [
+          "(1+cos2α)/4",
+          "(1+cos2α)/2",
+          "(1−cos2α)/2",
+          "(cos2α−1)/2"
+        ],
         "ans": 2,
         "hint": "先由 2cos²α−1 解出 cos²α=(1+cos2α)/2，再用 sin²α=1−cos²α。",
         "explain": "sin²α=1−(1+cos2α)/2=(1−cos2α)/2。选 (1+cos2α)/2 的同学是把它当成了 cos²α——两个公式只差一个符号，务必分清。"
@@ -586,7 +1146,12 @@
         "name": "11-4 巩固：已知 sinα 求 cos2α",
         "type": "choice",
         "q": "已知 sinα=3/5，α∈(90°,180°)，则 cos2α=？",
-        "opts": ["7/25", "−7/25", "−24/25", "24/25"],
+        "opts": [
+          "7/25",
+          "−7/25",
+          "−24/25",
+          "24/25"
+        ],
         "ans": 0,
         "hint": "用 cos2α=1−2sin²α，只用到 sinα，不用求 cosα。",
         "explain": "cos2α=1−2×(3/5)²=1−18/25=7/25。选 −7/25 是把公式写成了 2sin²α−1；选 −24/25 是算成了 sin2α=2×(3/5)×(−4/5)。"
@@ -613,18 +1178,57 @@
         "type": "explore",
         "q": "拖动 A、B、x 三个滑块，观察右侧三行读数——第三行读数始终落在什么范围内？",
         "scene": {
-          "x": [-1.8, 1.8],
-          "y": [-1.5, 1.5],
+          "x": [
+            -1.8,
+            1.8
+          ],
+          "y": [
+            -1.5,
+            1.5
+          ],
           "sliders": [
-            { "name": "A", "label": "A", "min": -5, "max": 5, "value": 3, "step": 0.5 },
-            { "name": "B", "label": "B", "min": -5, "max": 5, "value": 4, "step": 0.5 },
-            { "name": "x", "label": "x°", "min": 0, "max": 360, "value": 60, "step": 1 }
+            {
+              "name": "A",
+              "label": "A",
+              "min": -5,
+              "max": 5,
+              "value": 3,
+              "step": 0.5
+            },
+            {
+              "name": "B",
+              "label": "B",
+              "min": -5,
+              "max": 5,
+              "value": 4,
+              "step": 0.5
+            },
+            {
+              "name": "x",
+              "label": "x°",
+              "min": 0,
+              "max": 360,
+              "value": 60,
+              "step": 1
+            }
           ],
           "slider_color": "#ffd479",
           "readouts": [
-            { "label": "A·sinx+B·cosx", "expr": "A*sin(x)+B*cos(x)", "color": "#FF9D4D" },
-            { "label": "√(A²+B²)", "expr": "sqrt(A*A+B*B)", "color": "#5ee6ff" },
-            { "label": "比值（应∈[−1,1]）", "expr": "(A*sin(x)+B*cos(x))/sqrt(A*A+B*B)", "color": "#ffd479" }
+            {
+              "label": "A·sinx+B·cosx",
+              "expr": "A*sin(x)+B*cos(x)",
+              "color": "#FF9D4D"
+            },
+            {
+              "label": "√(A²+B²)",
+              "expr": "sqrt(A*A+B*B)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "比值（应∈[−1,1]）",
+              "expr": "(A*sin(x)+B*cos(x))/sqrt(A*A+B*B)",
+              "color": "#ffd479"
+            }
           ],
           "gate": false
         },
@@ -637,7 +1241,12 @@
         "tip": "第三行 = 第一行 ÷ 第二行，重点盯住它的取值范围",
         "confirm": "完成观察",
         "ask": "把 A 调到 3、B 调到 4，第二行读数 √(A²+B²) 显示多少？（这正是 3sinx+4cosx 的最大值）",
-        "opts": ["√7", "7", "25", "5"],
+        "opts": [
+          "√7",
+          "7",
+          "25",
+          "5"
+        ],
         "ans": 3,
         "hint": "A²+B²=9+16=25。",
         "explain": "√(3²+4²)=√25=5。第三行读数恒在 [−1,1] 说明 A·sinx+B·cosx=√(A²+B²)·sin(x+φ)，其最大值就是 √(A²+B²)。",
@@ -647,7 +1256,12 @@
         "name": "12-2 建构：合并成一个正弦",
         "type": "choice",
         "q": "函数 y=3sinx+4cosx 的最大值是？",
-        "opts": ["12", "25", "5", "7"],
+        "opts": [
+          "12",
+          "25",
+          "5",
+          "7"
+        ],
         "ans": 2,
         "hint": "化为 √(A²+B²)·sin(x+φ) 的形式再读最大值。",
         "explain": "最大值 √(3²+4²)=5（辅助角公式）。选 7 是把系数直接相加，选 12、25 是做了乘法——最大值只与平方和有关。"
@@ -665,7 +1279,12 @@
         "name": "12-4 巩固：单调递增区间",
         "type": "choice",
         "q": "把 y=sinx+√3·cosx 化为 y=2sin(x+60°)，它的一个单调递增区间是？",
-        "opts": ["[150°,330°]", "[−30°,150°]", "[30°,210°]", "[−150°,30°]"],
+        "opts": [
+          "[150°,330°]",
+          "[−30°,150°]",
+          "[30°,210°]",
+          "[−150°,30°]"
+        ],
         "ans": 3,
         "hint": "sin t 在 t∈[−90°,90°] 上递增，令 t=x+60° 解出 x 的范围。",
         "explain": "由 −90°≤x+60°≤90° 得 −150°≤x≤30°，即 [−150°,30°] 是一个递增区间。其余三个选项对应的 t 范围都跨出了 [−90°,90°]（或其平移），其上 sin t 有减有增。"
@@ -692,27 +1311,141 @@
         "type": "explore",
         "q": "观察测量示意图：水平线、视线 AC 与铅垂的塔身各是哪条？读出图中的 AB、BC 两个读数和标出的角 α，再回答下方追问。",
         "scene": {
-          "x": [-6.5, 5.5],
-          "y": [-3.5, 3.5],
+          "x": [
+            -6.5,
+            5.5
+          ],
+          "y": [
+            -3.5,
+            3.5
+          ],
           "points": [
-            { "p": [-4, -2], "label": "A", "color": "#5ee6ff" },
-            { "p": [3, -2], "label": "B", "color": "#8fa3c8" },
-            { "p": [3, 1.5], "label": "C", "color": "#fb7185" }
+            {
+              "p": [
+                -4,
+                -2
+              ],
+              "label": "A",
+              "color": "#5ee6ff"
+            },
+            {
+              "p": [
+                3,
+                -2
+              ],
+              "label": "B",
+              "color": "#8fa3c8"
+            },
+            {
+              "p": [
+                3,
+                1.5
+              ],
+              "label": "C",
+              "color": "#fb7185"
+            }
           ],
           "segments": [
-            { "p1": [-6, -2], "p2": [4.5, -2], "color": "#8fa3c8" },
-            { "p1": [3, -2], "p2": [3, 1.5], "color": "#fb7185", "width": 3 },
-            { "p1": [-4, -2], "p2": [3, 1.5], "color": "#ffd479" }
+            {
+              "p1": [
+                -6,
+                -2
+              ],
+              "p2": [
+                4.5,
+                -2
+              ],
+              "color": "#8fa3c8"
+            },
+            {
+              "p1": [
+                3,
+                -2
+              ],
+              "p2": [
+                3,
+                1.5
+              ],
+              "color": "#fb7185",
+              "width": 3
+            },
+            {
+              "p1": [
+                -4,
+                -2
+              ],
+              "p2": [
+                3,
+                1.5
+              ],
+              "color": "#ffd479"
+            }
           ],
-          "arcs": [ { "at": [-4, -2], "a": [1, 0], "b": [7, 3.5], "r": 1.1, "color": "#ffd479", "label": "α" } ],
-          "right_angles": [ { "at": [3, -2], "a": [-1, 0], "b": [0, 1], "color": "#8fa3c8" } ],
+          "arcs": [
+            {
+              "at": [
+                -4,
+                -2
+              ],
+              "a": [
+                1,
+                0
+              ],
+              "b": [
+                7,
+                3.5
+              ],
+              "r": 1.1,
+              "color": "#ffd479",
+              "label": "α"
+            }
+          ],
+          "right_angles": [
+            {
+              "at": [
+                3,
+                -2
+              ],
+              "a": [
+                -1,
+                0
+              ],
+              "b": [
+                0,
+                1
+              ],
+              "color": "#8fa3c8"
+            }
+          ],
           "readouts": [
-            { "label": "AB", "expr": "7", "color": "#5ee6ff" },
-            { "label": "BC", "expr": "3.5", "color": "#fb7185" }
+            {
+              "label": "AB",
+              "expr": "7",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "BC",
+              "expr": "3.5",
+              "color": "#fb7185"
+            }
           ],
           "labels": [
-            { "p": [-5.9, -1.55], "text": "水平线", "color": "#8fa3c8" },
-            { "p": [-2.0, -0.75], "text": "视线 AC", "color": "#ffd479" }
+            {
+              "p": [
+                -5.9,
+                -1.55
+              ],
+              "text": "水平线",
+              "color": "#8fa3c8"
+            },
+            {
+              "p": [
+                -2.0,
+                -0.75
+              ],
+              "text": "视线 AC",
+              "color": "#ffd479"
+            }
           ]
         },
         "goal": "认清测高示意图的三条线：水平线、视线 AC、铅垂的塔身，并读出已知数据。",
@@ -724,7 +1457,12 @@
         "tip": "视线在水平线上方时形成的角叫仰角；在水平线下方时叫俯角。",
         "confirm": "观察完成，进入追问",
         "ask": "图中标出的仰角 α 满足 tanα = ？",
-        "opts": ["7", "3.5", "0.5", "2"],
+        "opts": [
+          "7",
+          "3.5",
+          "0.5",
+          "2"
+        ],
         "ans": 2,
         "hint": "在直角三角形 ABC 中，找出 α 的对边与邻边再取比值。",
         "explain": "tanα = BC/AB = 3.5/7 = 0.5。测高公式 BC = AB·tanα 就来自这个比值。",
@@ -735,23 +1473,129 @@
         "type": "choice",
         "q": "观测者在 A 处测得塔顶 C 的仰角为 α，水平距离 AB 可测，塔身 CB⊥地面——塔高 BC 可表示为？",
         "scene": {
-          "x": [-6.5, 5.5],
-          "y": [-3.5, 3.5],
+          "x": [
+            -6.5,
+            5.5
+          ],
+          "y": [
+            -3.5,
+            3.5
+          ],
           "points": [
-            { "p": [-4, -2], "label": "A", "color": "#5ee6ff" },
-            { "p": [3, -2], "label": "B", "color": "#8fa3c8" },
-            { "p": [3, 1.5], "label": "C", "color": "#fb7185" }
+            {
+              "p": [
+                -4,
+                -2
+              ],
+              "label": "A",
+              "color": "#5ee6ff"
+            },
+            {
+              "p": [
+                3,
+                -2
+              ],
+              "label": "B",
+              "color": "#8fa3c8"
+            },
+            {
+              "p": [
+                3,
+                1.5
+              ],
+              "label": "C",
+              "color": "#fb7185"
+            }
           ],
           "segments": [
-            { "p1": [-6, -2], "p2": [4.5, -2], "color": "#8fa3c8" },
-            { "p1": [3, -2], "p2": [3, 1.5], "color": "#fb7185", "width": 3 },
-            { "p1": [-4, -2], "p2": [3, 1.5], "color": "#ffd479" }
+            {
+              "p1": [
+                -6,
+                -2
+              ],
+              "p2": [
+                4.5,
+                -2
+              ],
+              "color": "#8fa3c8"
+            },
+            {
+              "p1": [
+                3,
+                -2
+              ],
+              "p2": [
+                3,
+                1.5
+              ],
+              "color": "#fb7185",
+              "width": 3
+            },
+            {
+              "p1": [
+                -4,
+                -2
+              ],
+              "p2": [
+                3,
+                1.5
+              ],
+              "color": "#ffd479"
+            }
           ],
-          "arcs": [ { "at": [-4, -2], "a": [1, 0], "b": [7, 3.5], "r": 1.1, "color": "#ffd479", "label": "α" } ],
-          "right_angles": [ { "at": [3, -2], "a": [-1, 0], "b": [0, 1], "color": "#8fa3c8" } ],
-          "labels": [ { "p": [-5.9, -1.55], "text": "水平线", "color": "#8fa3c8" } ]
+          "arcs": [
+            {
+              "at": [
+                -4,
+                -2
+              ],
+              "a": [
+                1,
+                0
+              ],
+              "b": [
+                7,
+                3.5
+              ],
+              "r": 1.1,
+              "color": "#ffd479",
+              "label": "α"
+            }
+          ],
+          "right_angles": [
+            {
+              "at": [
+                3,
+                -2
+              ],
+              "a": [
+                -1,
+                0
+              ],
+              "b": [
+                0,
+                1
+              ],
+              "color": "#8fa3c8"
+            }
+          ],
+          "labels": [
+            {
+              "p": [
+                -5.9,
+                -1.55
+              ],
+              "text": "水平线",
+              "color": "#8fa3c8"
+            }
+          ]
         },
-        "opts": ["AB·tanα", "AB÷sinα", "AB·cosα", "AB·sinα"],
+        "opts": [
+          "AB·tanα",
+          "AB÷sinα",
+          "AB·cosα",
+          "AB·sinα"
+        ],
         "ans": 0,
         "hint": "把 α 的对边与邻边用同一个三角函数联系起来。",
         "explain": "tanα = BC/AB，故 BC = AB·tanα。只要测出水平距离与仰角，不必登塔就能算出高度。"
@@ -761,22 +1605,114 @@
         "type": "choice",
         "q": "如图，目标位于观测点 O 的北偏东 30° 方向上（图中标出 30°）——目标方向与正东方向的夹角是？",
         "scene": {
-          "x": [-4.5, 5],
-          "y": [-2.5, 4],
-          "points": [ { "p": [0, -0.5], "label": "O", "color": "#8fa3c8" } ],
-          "segments": [
-            { "p1": [0, -0.5], "p2": [0, 3], "color": "#5ee6ff", "dash": true },
-            { "p1": [0, -0.5], "p2": [4, -0.5], "color": "#5ee6ff", "dash": true },
-            { "p1": [0, -0.5], "p2": [1.7, 2.44], "color": "#ffd479", "width": 3 }
+          "x": [
+            -4.5,
+            5
           ],
-          "arcs": [ { "at": [0, -0.5], "a": [0, 1], "b": [0.5, 0.866], "r": 1.1, "color": "#ffd479", "label": "30°" } ],
+          "y": [
+            -2.5,
+            4
+          ],
+          "points": [
+            {
+              "p": [
+                0,
+                -0.5
+              ],
+              "label": "O",
+              "color": "#8fa3c8"
+            }
+          ],
+          "segments": [
+            {
+              "p1": [
+                0,
+                -0.5
+              ],
+              "p2": [
+                0,
+                3
+              ],
+              "color": "#5ee6ff",
+              "dash": true
+            },
+            {
+              "p1": [
+                0,
+                -0.5
+              ],
+              "p2": [
+                4,
+                -0.5
+              ],
+              "color": "#5ee6ff",
+              "dash": true
+            },
+            {
+              "p1": [
+                0,
+                -0.5
+              ],
+              "p2": [
+                1.7,
+                2.44
+              ],
+              "color": "#ffd479",
+              "width": 3
+            }
+          ],
+          "arcs": [
+            {
+              "at": [
+                0,
+                -0.5
+              ],
+              "a": [
+                0,
+                1
+              ],
+              "b": [
+                0.5,
+                0.866
+              ],
+              "r": 1.1,
+              "color": "#ffd479",
+              "label": "30°"
+            }
+          ],
           "labels": [
-            { "p": [0.15, 3.35], "text": "北", "color": "#5ee6ff" },
-            { "p": [4.2, -0.25], "text": "东", "color": "#5ee6ff" },
-            { "p": [2.0, 2.6], "text": "目标方向", "color": "#ffd479" }
+            {
+              "p": [
+                0.15,
+                3.35
+              ],
+              "text": "北",
+              "color": "#5ee6ff"
+            },
+            {
+              "p": [
+                4.2,
+                -0.25
+              ],
+              "text": "东",
+              "color": "#5ee6ff"
+            },
+            {
+              "p": [
+                2.0,
+                2.6
+              ],
+              "text": "目标方向",
+              "color": "#ffd479"
+            }
           ]
         },
-        "opts": ["120°", "15°", "30°", "60°"],
+        "opts": [
+          "120°",
+          "15°",
+          "30°",
+          "60°"
+        ],
         "ans": 3,
         "hint": "北偏东 30° 是从正北向东量出 30°；正北与正东互相垂直。",
         "explain": "90° − 30° = 60°：目标方向与正东方向夹 60°（等价于东偏北 30°）。"
@@ -786,25 +1722,142 @@
         "type": "input",
         "q": "为测塔高，在塔底同一水平线上选点 M，测得塔顶 C 的仰角为 30°；沿直线后退 20 m 到 N，测得仰角为 15°（如图）。塔高 BC = ？（填数值，单位 m）",
         "scene": {
-          "x": [-7, 6],
-          "y": [-3.5, 3.5],
+          "x": [
+            -7,
+            6
+          ],
+          "y": [
+            -3.5,
+            3.5
+          ],
           "points": [
-            { "p": [4, -2], "label": "B", "color": "#8fa3c8" },
-            { "p": [4, 0.7], "label": "C", "color": "#fb7185" },
-            { "p": [-0.68, -2], "label": "M", "color": "#ffd479" },
-            { "p": [-6.08, -2], "label": "N", "color": "#5ee6ff" }
+            {
+              "p": [
+                4,
+                -2
+              ],
+              "label": "B",
+              "color": "#8fa3c8"
+            },
+            {
+              "p": [
+                4,
+                0.7
+              ],
+              "label": "C",
+              "color": "#fb7185"
+            },
+            {
+              "p": [
+                -0.68,
+                -2
+              ],
+              "label": "M",
+              "color": "#ffd479"
+            },
+            {
+              "p": [
+                -6.08,
+                -2
+              ],
+              "label": "N",
+              "color": "#5ee6ff"
+            }
           ],
           "segments": [
-            { "p1": [-6.08, -2], "p2": [4, -2], "color": "#8fa3c8" },
-            { "p1": [4, -2], "p2": [4, 0.7], "color": "#fb7185", "width": 3 },
-            { "p1": [-0.68, -2], "p2": [4, 0.7], "color": "#ffd479" },
-            { "p1": [-6.08, -2], "p2": [4, 0.7], "color": "#5ee6ff", "dash": true }
+            {
+              "p1": [
+                -6.08,
+                -2
+              ],
+              "p2": [
+                4,
+                -2
+              ],
+              "color": "#8fa3c8"
+            },
+            {
+              "p1": [
+                4,
+                -2
+              ],
+              "p2": [
+                4,
+                0.7
+              ],
+              "color": "#fb7185",
+              "width": 3
+            },
+            {
+              "p1": [
+                -0.68,
+                -2
+              ],
+              "p2": [
+                4,
+                0.7
+              ],
+              "color": "#ffd479"
+            },
+            {
+              "p1": [
+                -6.08,
+                -2
+              ],
+              "p2": [
+                4,
+                0.7
+              ],
+              "color": "#5ee6ff",
+              "dash": true
+            }
           ],
           "arcs": [
-            { "at": [-0.68, -2], "a": [1, 0], "b": [4.68, 2.7], "r": 0.9, "color": "#ffd479", "label": "30°" },
-            { "at": [-6.08, -2], "a": [1, 0], "b": [10.08, 2.7], "r": 0.9, "color": "#5ee6ff", "label": "15°" }
+            {
+              "at": [
+                -0.68,
+                -2
+              ],
+              "a": [
+                1,
+                0
+              ],
+              "b": [
+                4.68,
+                2.7
+              ],
+              "r": 0.9,
+              "color": "#ffd479",
+              "label": "30°"
+            },
+            {
+              "at": [
+                -6.08,
+                -2
+              ],
+              "a": [
+                1,
+                0
+              ],
+              "b": [
+                10.08,
+                2.7
+              ],
+              "r": 0.9,
+              "color": "#5ee6ff",
+              "label": "15°"
+            }
           ],
-          "labels": [ { "p": [-4.6, -2.85], "text": "MN = 20 m", "color": "#8fa3c8" } ]
+          "labels": [
+            {
+              "p": [
+                -4.6,
+                -2.85
+              ],
+              "text": "MN = 20 m",
+              "color": "#8fa3c8"
+            }
+          ]
         },
         "ans": 10,
         "tol": 0.1,
@@ -816,29 +1869,219 @@
         "type": "input",
         "q": "河对岸有目标 A。在本岸沿河取 C、D 两点，使 AC⊥CD，量得 CD = 80 m、∠ADC = 60°（如图）。A、D 两点的距离 AD = ？（填数值，单位 m）",
         "scene": {
-          "x": [-4.5, 4.5],
-          "y": [-4, 4.5],
+          "x": [
+            -4.5,
+            4.5
+          ],
+          "y": [
+            -4,
+            4.5
+          ],
           "points": [
-            { "p": [-3, -2], "label": "C", "color": "#8fa3c8" },
-            { "p": [0.2, -2], "label": "D", "color": "#5ee6ff" },
-            { "p": [-3, 3.54], "label": "A", "color": "#fb7185" }
+            {
+              "p": [
+                -3,
+                -2
+              ],
+              "label": "C",
+              "color": "#8fa3c8"
+            },
+            {
+              "p": [
+                0.2,
+                -2
+              ],
+              "label": "D",
+              "color": "#5ee6ff"
+            },
+            {
+              "p": [
+                -3,
+                3.54
+              ],
+              "label": "A",
+              "color": "#fb7185"
+            }
           ],
           "segments": [
-            { "p1": [-3, -2], "p2": [0.2, -2], "color": "#8fa3c8", "width": 3 },
-            { "p1": [-3, -2], "p2": [-3, 3.54], "color": "#fb7185" },
-            { "p1": [0.2, -2], "p2": [-3, 3.54], "color": "#ffd479" }
+            {
+              "p1": [
+                -3,
+                -2
+              ],
+              "p2": [
+                0.2,
+                -2
+              ],
+              "color": "#8fa3c8",
+              "width": 3
+            },
+            {
+              "p1": [
+                -3,
+                -2
+              ],
+              "p2": [
+                -3,
+                3.54
+              ],
+              "color": "#fb7185"
+            },
+            {
+              "p1": [
+                0.2,
+                -2
+              ],
+              "p2": [
+                -3,
+                3.54
+              ],
+              "color": "#ffd479"
+            }
           ],
-          "arcs": [ { "at": [0.2, -2], "a": [-1, 0], "b": [-3.2, 5.54], "r": 0.9, "color": "#ffd479", "label": "60°" } ],
-          "right_angles": [ { "at": [-3, -2], "a": [1, 0], "b": [0, 1], "color": "#8fa3c8" } ],
+          "arcs": [
+            {
+              "at": [
+                0.2,
+                -2
+              ],
+              "a": [
+                -1,
+                0
+              ],
+              "b": [
+                -3.2,
+                5.54
+              ],
+              "r": 0.9,
+              "color": "#ffd479",
+              "label": "60°"
+            }
+          ],
+          "right_angles": [
+            {
+              "at": [
+                -3,
+                -2
+              ],
+              "a": [
+                1,
+                0
+              ],
+              "b": [
+                0,
+                1
+              ],
+              "color": "#8fa3c8"
+            }
+          ],
           "labels": [
-            { "p": [-2.2, -2.85], "text": "CD = 80 m", "color": "#8fa3c8" },
-            { "p": [-2.7, 0.9], "text": "河", "color": "#5ee6ff" }
+            {
+              "p": [
+                -2.2,
+                -2.85
+              ],
+              "text": "CD = 80 m",
+              "color": "#8fa3c8"
+            },
+            {
+              "p": [
+                -2.7,
+                0.9
+              ],
+              "text": "河",
+              "color": "#5ee6ff"
+            }
           ]
         },
         "ans": 160,
         "tol": 0.1,
         "hint": "△ACD 中 ∠C = 90°：cos∠D 等于邻边 CD 除以斜边 AD。",
         "explain": "AD = CD/cos60° = 80/0.5 = 160（m）。也可先算 AC = CD·tan60° = 80√3，再用勾股定理验证 AD = √(80² + (80√3)²) = 160。"
+      }
+    ]
+  },
+  "param_auto_trig_induce": {
+    "title": "参数调参师 · 自动生成 · 三角函数",
+    "method": "批量转换 · 智能目标检测",
+    "color": "#9C27B0",
+    "summary": "从原有 explore 关卡自动转换生成的参数调参师题目，共 1 道。",
+    "levels": [
+      {
+        "name": "PM-TRIG_1-1 实验：单位圆上的对称",
+        "type": "explore",
+        "q": "拖动滑块改变角 θ，观察终边绕原点旋转时点 P 的坐标如何变化——点 P 的坐标与角 θ 之间是什么关系？",
+        "scene": {
+          "anim": [
+            {
+              "a": "vars",
+              "to": {
+                "theta": 210
+              },
+              "dur": 2.6,
+              "hold": 0.6
+            },
+            {
+              "a": "vars",
+              "to": {
+                "theta": 330
+              },
+              "dur": 2.2,
+              "hold": 0.4
+            }
+          ],
+          "x": [
+            -1.8,
+            1.8
+          ],
+          "y": [
+            -1.4,
+            1.4
+          ],
+          "unit_circle": {
+            "angle": "theta",
+            "label": "P",
+            "show_sin": true,
+            "show_cos": true
+          },
+          "sliders": [
+            {
+              "name": "theta",
+              "label": "θ°",
+              "min": 0,
+              "max": 360,
+              "value": 30,
+              "step": 1
+            }
+          ],
+          "slider_color": "#ffd479",
+          "gate": false
+        },
+        "ask": "拖动滑块使参数达到目标值的操作要点是？",
+        "opts": [
+          "逐一调整各参数直到读数显示「✓」",
+          "随机拖动直到图像符合预期",
+          "只调整一个参数即可",
+          "不需要调整"
+        ],
+        "ans": 0,
+        "hint": "关于 y 轴对称：纵坐标不变，横坐标变号。",
+        "explain": "sin 对应纵坐标，关于 y 轴对称时纵坐标不变，所以 sin(180°−θ)=sinθ。",
+        "success": "太棒了！你找到的参数组合 theta=180.0 满足条件。",
+        "goal": "拖动滑块使theta=180.0",
+        "steps": [
+          "③ 把参数调到目标值：theta=180.0",
+          "④ 达到目标时左上角显示「✓」"
+        ],
+        "confirm": "参数已经调到目标值",
+        "gate": true,
+        "answers": {
+          "theta": 180.0
+        },
+        "tol": {
+          "theta": 9.1
+        },
+        "retry": "参数还未完全对准目标：\n  • theta 当前={{theta}}，需要 theta=180.0"
       }
     ]
   }

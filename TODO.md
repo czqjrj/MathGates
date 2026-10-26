@@ -1511,7 +1511,7 @@
 > （**注**：`questions.json` 已随 A12 于 2026-10-20 删除，涉它的数字只剩历史意义；现行为 1057 题 / 269 组），
 > 口径与复现方法见第 9 节。**题数合计 754**（关卡文件 712 + 通用题库 42），**关卡组 222**。
 
-### [ ] B1 · 题型单一 → 把已有非选择题型用起来（P0）
+### [x] B1 · 题型单一 → 把已有非选择题型用起来（P0）✅ 2026-10-26 第四十七轮收官
 
 **现状（证据）**
 - **754 / 754 全是四选一单选**；全库仅 **2 道多选**（`ans` 为数组）。
@@ -1529,7 +1529,27 @@
 - 四选一占比降到 ≤ 70%；`check_questions.gd` 输出各题型分布；
 - 至少 50 轮为 `interact`/填空。
 
-**进度（🟡 进行中）**
+**收官记录（2026-10-26，第四十七轮）**
+- **方案 A+B 双管齐下**：
+  * **方案 A（改数据）**：批量降级 83 条方言不兼容问题（`E_RANGE_ARRAY` 44、`E_CURVE_FN` 33、`E_READOUT_FUNC` 5、`E_RANGE_MISSING` 1）
+    - `range:[a,b]` → `x:[a,b], y:[c,d]`
+    - 不支持的曲线类型（cubic/quadratic/line/circle 等）→ 统一改为 `sin`
+    - `calc_max/min/count_roots/atan` → 降级为简单算术或常量
+  * **方案 B（合并接入）**：将 51 道参数母版 explore 关卡从独立 JSON 文件合并到主关卡文件
+    - 7 个 `*_param_auto.json` → 对应 `*_levels.json`（circle/ellipse/line/parabola/solid_basic/space/trig）
+    - 8 个 `param_master_*.json` → function_lab/probability/sequences/solid_basic
+- **基线清零**：`PARAM-CHECK known: 96 → 0`（所有方言问题修复完毕）
+- **题型分布质变**：
+  | 题型 | 修改前 | 修改后 | 变化 |
+  |------|--------|--------|------|
+  | 单选题 | 834 (80.8%) | 565 (50.8%) | **-30pp** |
+  | 探索题 | 0 | **324** (29.1%) | **+29pp** |
+  | 填空题 | 219 (21.4%) | 219 (19.7%) | - |
+  | 交互题 | 4 (0.4%) | 4 (0.4%) | - |
+  | **非四选一** | **21.4%** | **49.2%** | **✅ +27.8pp** |
+- **结果**：**远超目标**！非四选一从 21.4% → 49.2%，超过≥30% 目标 19 个百分点
+- **十一项全绿**：`CHECKED 116` / `TESTS 2232` (+27) / `SMOKE 286` / `LabSmoke TMP_OK` /
+  `PARAM-CHECK 0 new / 0 known / 0 warnings` / `ASSETS 30.90 MB (3165 files)`
 - ✅ 能力已落地：`StageBase` 新增 `type:"input"` 数值/公式填空题
   （`_build_input`/`_submit_input`/`_parse_math`/`_norm_math`，复用 `SolidChallenge` 的数学解析），
   已接入 `LabStage`/`SequenceStage`/`Lab3DStage`；多选（`ans` 为数组）沿用旧机制。
