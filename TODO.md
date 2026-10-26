@@ -37,7 +37,7 @@
 | **A12** | `questions.json` 变成第二份权威题库（与现行数据冲突） | **P1** | ✅ 已完成（2026-10-20 随 A3 删除：`questions.json` 42 题 + `questions_for()`；跨文件重名 5→0，校验器已兜底） |
 | **A13** | 资源体积治理（`.xcf` 入库、13.8MB 字体、未排除） | **P1** | 🟡 部分完成（`.xcf` 出库 + 图标降采样：46.8→29.6MB；残留：字体替换/背景压缩） |
 | **A14** | `export_presets.cfg` 残留第三方机器路径 | **P1** | ✅ 已完成（统一 `build/…`） |
-| **A15** | 元游戏内容硬编码在 `GameData.gd` | **P2** | 与「改内容只改 JSON」相悖 |
+| **A15** | 元游戏内容硬编码在 `GameData.gd` | **P2** | ✅ 已完成（2026-10-26 第四十三轮）：6 组常量迁 `data/meta.json`（7 组，含萌宠形态名）；勋章达成规则改数据驱动，文案与阈值同源；GameData 1597 → 1582 行 |
 | **A16** | 立几方法关内容在 GDScript（两套内容管线） | **P2** | 🟡 前提部分失效：题目已迁至 `data/solid_methods.json`；`scripts/modules/solid/topics/*.gd`（6 文件 3568 行）现为**纯几何/标注逻辑**（问号 0~1 处、无题干）→ 降级为「3D 场景代码与数据的分层整理」 |
 | **A17** | 数据文件命名易混（`conic`/`conics`、`vector`/`vectors`） | **P2** | 🟡 两步已落一（2026-10-21）：`463d06e` 校验器自检（孤儿/近名对半引用即红灯+反向验证）、`43a11f9` README 对照表；余「真重命名」为可选决策（两对文件均在用，重命名收益低） |
 | **A18** | 内容数据异常时缺用户可见兜底 | **P1** | ✅ 已完成（2026-10-21 第三十五轮 `rules/ContentHealth.gd` 体检 + `ui/ContentFallback.gd` 兜底卡/横幅 + `tools/check_content_health.gd` CI 闸门；顺带修真 bug：关卡 id `solid_angle` 被两章共用） |
@@ -133,11 +133,41 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`afe05af`（fix run_checks 仓库根兜底）→ `0e742e4`（chore 换机交接基建，本轮）→ 上一提交链：
-  `7f8aaa5`（docs 第四十一轮）→ `aad3f41`（feat B1 方言修正）→ `caf5901`（docs 第四十轮）→
-  `0a0a0c5`（feat B1 方言闸门）→ `ed965a2`（feat B1 脚手架）→ …，
+- **最后提交**：`2f92964`（feat A15 元内容出代码，本轮）→ 上一提交链：
+  `e5a670c`（docs 第四十二轮）→ `afe05af`（fix run_checks）→ `0e742e4`（chore 换机交接基建）→
+  `7f8aaa5`（docs 第四十一轮）→ `aad3f41`（feat B1 方言修正）→ …，
   已 push（`main` 与 `origin/main` 同步）。
-- **本轮交付（2026-10-22，第四十二轮）**：**换机交接基建**（`0e742e4`，不是功能轮，为「换台机器继续干」服务）。
+- **本轮交付（2026-10-26，第四十三轮）**：**A15 元游戏内容出代码**（`data/meta.json`，feat `2f92964`）。
+  - **7 组常量迁出**：`AVATARS` / `RANKS` / `MEDALS` / `DAILY_MISSIONS` / `DOMAINS` /
+    `PET_FORMS` / `LORE` → `data/meta.json`（415 行）。`PET_FORMS` 是原计划外的一组，
+    但它同样是纯展示文案，留着就还是「改内容要改代码」。
+  - **零手抄**：JSON 由一次性导出脚本**直接从代码常量生成**（6/7/19/4/7/8/7 项），
+    避免搬迁时手打改数值；导出器用完即删（重构后常量已不存在，留着是死代码）。
+  - **零调用点改动**：`const` → 同名 `var`（GameData）/ `static var`（PlayerRules），
+    `Achievements` / `DailyMissions` / `Shop` / `Login` / `UserProfile` / `Pet` 等 20+ 处引用一行未改。
+    rules 层仍不做 IO，由 `GameData._load_meta()` 读文件后**注入**静态表。
+  - **勋章规则也进数据（本轮关键改进）**：原 `medal_met()` 是 `match id:` 硬编码阈值、
+    而 `desc` 是另一处文案——两处各写一遍必然出现「文案改成通关 50 关、逻辑仍按 30 判」。
+    现在每条勋章带 `kind`/`metric`/`value`（accuracy 类用 `min_questions`+`ratio`），
+    `medal_met()` 改成**按 kind 求值**，文案与阈值同源。
+  - **装载顺序有坑**：`_load_meta()` 必须排在 `_load_curriculum()` **之后**——后者整体覆写
+    `content_problems`，先装载的话 meta 的报错会被冲掉。
+  - **空表守卫**：`rank_index`/`rank_title`/`rank_progress` 空表安全返回；`medal_met` 未知 id 返回 false；
+    `pet_form_name()` 补 `is_empty()` 守卫（原实现会索引 `size()-1` 即 -1）。
+  - **校验进闸门**：`check_content_health` 新增 `_meta_problems()`——七组齐全、组内 id 唯一、
+    勋章规则字段合法、任务 metric 合法且 goal>0、称号 ratio 单调且首档为 0、领域↔碑文一一对应。
+    反向验证：注入「重复 id / 缺 kind / 领域缺碑文 / 首档 ratio≠0」→ 报 5 条并 `exit 1`。
+  - **测试**：新增 `Tests._test_meta_defs()`（95 条断言，含**存档契约 id 保持**与 `PET_FORMS` 空表降级路径）。
+    TESTS 2094 → **2189**。
+  - 行数：`GameData.gd` 1597 → **1582**（≤1600 红线内腾出空间）、`PlayerRules.gd` 179（≤200）。
+  - 兼容性：所有 id 与数值未变，老存档的 `medals{}` / `pet_parts{}` 无缝；原有 `rank_index` /
+    `medal_met` 测试全部原样通过。
+  - 十一项全绿：`CHECKED 114` / `TESTS 2189` / `SMOKE 286` / `UI-SMOKE 422` / `LabSmoke TMP_OK` /
+    `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new（7 known）` / `KNOWLEDGE hard-gaps=0` /
+    `CONTENT-HEALTH 0 problems` / `ASSETS 30.56 MB（3157 files）` / `PARAM-CHECK 0 new / 96 known`。
+  - **下一项建议**：B1 仍卡在「改数据 vs 扩 LabPlane」；其余可自动推进的还有 **B8**（正确项 92.7%
+    在第 1 位，机械洗牌但要连带核对解析里的「选项A」类指代）与 **B12**（提示语泄露答案）。
+- **上一轮（2026-10-22，第四十二轮）**：**换机交接基建**（`0e742e4`，不是功能轮，为「换台机器继续干」服务）。
   - **新增 `tools/run_checks.ps1`**：一条命令跑完全部 11 项。自动找 Godot 4.7.2
     （`-Godot` 参数 → `$env:GODOT472` → 常见安装路径 → PATH），自动先 `--import`
     并校验 `.godot/global_script_class_cache.cfg` 是否生成，逐项打印**期望行命中值 + 耗时**，
@@ -1160,9 +1190,41 @@
 
 ---
 
-### [ ] A15 · 元游戏内容硬编码在 `GameData.gd`（P2）
+### [x] A15 · 元游戏内容硬编码在 `GameData.gd`（P2）✅ 已完成（2026-10-26 第四十三轮）
 
-**现状（证据）**
+**完成记录（2026-10-26 第四十三轮）**
+- **迁移范围（比原计划多一组）**：`AVATARS` / `RANKS` / `MEDALS` / `DAILY_MISSIONS` / `DOMAINS` /
+  `PET_FORMS` / `LORE` 共 7 组 → 新建 `data/meta.json`（415 行）。
+  `PET_FORMS` 原计划没列，但它同样是纯展示文案（萌宠形态名），留着就还是「改内容要改代码」。
+- **零手抄**：JSON 由一次性导出脚本**直接从代码常量生成**（6/7/19/4/7/8/7 项），
+  避免搬迁时手打改数值；导出器用完即删（重构后常量已不存在，留着是死代码）。
+- **运行期变量做注入位**：`GameData.AVATARS` 等从 `const` 改为同名 `var`，
+  `PlayerRules.RANKS` / `MEDALS` 改为 `static var`——**所有既有调用点一行未改**
+  （`Achievements` / `DailyMissions` / `Shop` / `Login` / `UserProfile` / `Pet` 等 20+ 处）。
+  rules 层仍不做 IO：由 `GameData._load_meta()` 读取 JSON 后**注入**静态表。
+- **勋章达成规则也进数据**（关键改进）：原 `medal_met()` 是 `match id:` 硬编码阈值，
+  而 `desc` 是文案——两处各写一遍就会出现「文案改成通关 50 关、逻辑仍按 30 判」的双份真相。
+  现在每条勋章带 `kind` / `metric` / `value`（accuracy 类用 `min_questions` + `ratio`），
+  `medal_met()` 改成**按 kind 求值**，文案与阈值同源。
+- **装载顺序有坑**：`_load_meta()` 必须排在 `_load_curriculum()` **之后**——后者会整体覆写
+  `content_problems`，先装载的话 meta 的报错记录会被冲掉。
+- **空表守卫（内容损坏时不崩）**：`rank_index` / `rank_title` / `rank_progress` 空表安全返回；
+  `medal_met` 未知 id 返回 false；`pet_form_name()` 补 `PET_FORMS.is_empty()` 守卫
+  （原实现会 `PET_FORMS[size()-1]` 索引 -1）。
+- **校验进闸门**：`tools/check_content_health.gd` 新增 `_meta_problems()`——文件可解析、
+  七组齐全、组内 **id 唯一**、勋章展示字段与规则字段齐、`kind` 合法、任务 `metric` 在四种内、
+  `goal > 0`、称号 `ratio` 单调不减且首档为 0、**领域 ↔ 碑文一一对应**。
+  反向验证：注入「重复 id / 缺 kind / 领域缺碑文 / 首档 ratio≠0」四类错误 → 报 5 条问题并 `exit 1`。
+- **测试**：新增 `Tests._test_meta_defs()`（95 条断言：装载成功、七组数量、头像/勋章 id 唯一、
+  称号单调、勋章规则字段齐全、**存档契约 id 保持**（`first_clear`/`stars_50`/`boss_all`/`pet_10`）、
+  任务 metric 合法、领域↔碑文对应、`PET_FORMS` 空表降级路径）。TESTS 2094 → **2189**。
+- 行数：`GameData.gd` 1597 → **1582**（≤1600 红线内腾出空间）、`PlayerRules.gd` 179（≤200）、
+  `tools/check_content_health.gd` 209（tools/ 不受 200 红线约束）。
+- 十项全绿（`TESTS 2189` / `ASSETS 30.56 MB / 3157 files`，其余不变）。
+- **兼容性**：所有 id 未变 → 老存档的 `medals{}` / `pet_parts{}` 无缝；所有数值未变
+  （`rank_index` / `medal_met` 的原测试全部原样通过）。
+
+**原现状（证据）**
 - `scripts/autoload/GameData.gd` 里以常量硬编码了全部元游戏内容：
   `AVATARS`（可选头像）、`RANKS`（7 级称号阶梯）、`MEDALS`（19 个勋章）、
   `DAILY_MISSIONS`（4 条每日任务）、`DOMAINS`（7 个知识领域）、`LORE`（7 段碑文）。
@@ -1171,13 +1233,12 @@
 - 后果：内容迭代需要开发者参与；也无法给非技术编辑做校验（A5 的校验器目前覆盖不到这些）。
 
 **做法**
-- 把这 6 组常量迁到 `data/meta.json`（或按主题拆 `data/medals.json`、`data/domains.json` 等），
-  `GameData` 启动时加载，保持现有访问器签名不变（`MEDALS` → `medals_def()` 或保留常量名做转发）。
-- 注意**存档兼容**：`medals{}` / `pet_parts{}` 按 id 存储，id 不变即可无缝。
+- ✅ 迁到 `data/meta.json`，`GameData` 启动时加载，既有访问器签名不变。
+- ✅ 注意**存档兼容**：`medals{}` / `pet_parts{}` 按 id 存储，id 不变即无缝（已用测试锁住）。
 
 **验收**
-- 不改变任何数值的情况下搬迁完成；四件套全绿；A5 校验器能校验 id 唯一性。
-- `README.md`「改内容」小节补上这些文件的位置。
+- ✅ 不改变任何数值的情况下搬迁完成；四件套全绿；校验器能校验 id 唯一性。
+- ✅ `README.md`「改内容」小节补上这些文件的位置。
 
 ---
 
@@ -2889,14 +2950,14 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
 > `Parse Error: Could not find type "BossHud"`。用编辑器打开一次，或跑
 > `& "<godot472.exe>" --headless --path . --import`（新增 `class_name` 文件后同样要跑一次）。
 
-**当前回归基线**（改完请对照，数字只能升不能降；2026-10-22 第四十一轮 B1 方言修正后）：
-`CHECKED 113 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 2094 passed, 0 failed` / `SMOKE: 286 ok, 0 fail` /
+**当前回归基线**（改完请对照，数字只能升不能降；2026-10-26 第四十三轮 A15 元内容出代码后）：
+`CHECKED 114 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 2189 passed, 0 failed` / `SMOKE: 286 ok, 0 fail` /
 `UI-SMOKE: 422 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
 `LEVEL-PREVIEW-SMOKE: 7474 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
 `QUESTION-CHECK: 26 files / 269 levels / 1057 questions / 0 new / 7 known / 3 warnings`
 （A5 校验器，存量问题见下方基线；看板另有「干扰项黑名单命中 0 处」见 B5、「anim 演示覆盖 **13/26 文件**」见 D2）/
 `PERF idle 171 / lab_plane 259 / lab3d 251`（µs，headless CPU 处理耗时，见 `tools/perf_probe.tscn`）/
-`ASSETS: ≈30.55 MB over 3156 files … banned=0, oversize=0`（A13 护栏；末位随测试产物/内容批次微漂移，
+`ASSETS: ≈30.56 MB over 3157 files … banned=0, oversize=0`（A13 护栏；末位随测试产物/内容批次微漂移，
 看 `banned` / `oversize` 即可）/
 `KNOWLEDGE: 27 chapters / 275 points / 275 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `CONTENT-HEALTH: 27 chapters / 275 levels / 0 problems (orphans=0)`（A18 内容体检，见下方注）/
@@ -2954,9 +3015,9 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
   `CONTENT-HEALTH: 27 chapters / 275 levels / 0 problems (orphans=0)`——
   27 章 / 275 关全部有名字与场景、场景文件都存在、内容引用（lab/sequence/conic/method）都能定位到组键、
   关卡 id 全局唯一、无孤儿组。运行时只做轻量版（课程表结构），深度版在 CI 与发版前。见 A18。
-- 代码结构红线（A4，2026-10-22 第三十九轮 F6 后）：`scripts/rules/*.gd` 每文件 ≤200（当前最大 **PlayerRules 194**，
-  本轮新增 `GuideRules 102` / `StageText 34`；`UserStore 179` / `SrsStore 176` / `ReportRules 167` / `SpeechRules 165`）、
-  `GameData.gd` ≤1600（当前 **1597**，存档层已拆到 `rules/UserStore.gd` + `save/SaveIO.gd`）、
+- 代码结构红线（A4，2026-10-26 第四十三轮 A15 后）：`scripts/rules/*.gd` 每文件 ≤200（当前最大 **PlayerRules 179**
+  与 `UserStore 179` 并列，次之 `SrsStore 176` / `ReportRules 167` / `SpeechRules 165`）、
+  `GameData.gd` ≤1600（当前 **1582**，元游戏内容已迁 `data/meta.json`）、
   `TheoremTree.gd` ≤1550（**1548**）、`StageBase.gd` ≤1200（**1193**）。
   `tools/check_all.gd` 超限即红灯。
 
