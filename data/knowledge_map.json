@@ -125,7 +125,8 @@
         { "name": "1-10 两角和与差公式", "levels": ["trig_sumdiff"] },
         { "name": "1-11 二倍角公式", "levels": ["trig_double"] },
         { "name": "1-12 辅助角公式", "levels": ["trig_aux"] },
-        { "name": "1-13 解三角形测量应用", "levels": ["trig_measure"] }
+        { "name": "1-13 解三角形测量应用", "levels": ["trig_measure"] },
+        { "name": "14-1 参数实验：单位圆上的角与坐标", "levels": ["param_auto_trig_induce"] }
       ],
       "gaps": [
         { "name": "积化和差与和差化积", "note": "选学/拓展", "optional": true }
@@ -347,7 +348,8 @@
         { "name": "6-1 点对称与轴对称", "levels": ["line_6_1"] },
         { "name": "6-2 距离和最小", "levels": ["line_6_2"] },
         { "name": "6-3 距离差最大", "levels": ["line_6_3"] },
-        { "name": "隐藏Boss · 对称与最值压轴", "levels": ["line_boss"] }
+        { "name": "隐藏Boss · 对称与最值压轴", "levels": ["line_boss"] },
+        { "name": "19-1 参数实验：转动直线看倾斜角与斜率", "levels": ["param_auto_line_1_1"] }
       ],
       "gaps": []
     },
@@ -375,7 +377,8 @@
         { "name": "6-1 空间最值模型", "levels": ["space_6_1"] },
         { "name": "6-2 外接球四模型", "levels": ["space_6_2"] },
         { "name": "6-3 内切球与球截面", "levels": ["space_6_3"] },
-        { "name": "隐藏Boss · 空间向量真题试炼", "levels": ["space_boss"] }
+        { "name": "隐藏Boss · 空间向量真题试炼", "levels": ["space_boss"] },
+        { "name": "20-1 参数实验：空间向量与它的模", "levels": ["param_auto_space_1_1"] }
       ],
       "gaps": []
     },
@@ -428,7 +431,8 @@
         { "name": "5-1 直线与椭圆 · 弦长", "levels": ["ellipse_5_1"] },
         { "name": "5-2 弦长与中点", "levels": ["ellipse_5_2"] },
         { "name": "5-3 位置关系与最值", "levels": ["ellipse_5_3"] },
-        { "name": "隐藏Boss · 椭圆综合试炼", "levels": ["ellipse_boss"] }
+        { "name": "隐藏Boss · 椭圆综合试炼", "levels": ["ellipse_boss"] },
+        { "name": "17-1 参数实验：椭圆上点到两焦点距离之和", "levels": ["param_auto_ellipse_1_1"] }
       ],
       "gaps": []
     },
@@ -456,7 +460,8 @@
         { "name": "6-1 与圆有关的最值 I", "levels": ["circle_6_1"] },
         { "name": "6-2 与圆有关的最值 II", "levels": ["circle_6_2"] },
         { "name": "6-3 轨迹与阿波罗尼斯圆", "levels": ["circle_6_3"] },
-        { "name": "隐藏Boss · 圆综合试炼", "levels": ["circle_boss"] }
+        { "name": "隐藏Boss · 圆综合试炼", "levels": ["circle_boss"] },
+        { "name": "20-1 参数实验：圆心与半径如何决定圆", "levels": ["param_auto_circle_1_1"] }
       ],
       "gaps": []
     },
@@ -496,7 +501,8 @@
         { "name": "8-1 点差法 · 中点弦", "levels": ["para_pointdiff"] },
         { "name": "9-1 直线与抛物线", "levels": ["para_line"] },
         { "name": "10-1 定点定值", "levels": ["para_fixed"] },
-        { "name": "11-1 最值与距离", "levels": ["para_maxmin"] }
+        { "name": "11-1 最值与距离", "levels": ["para_maxmin"] },
+        { "name": "12-1 参数实验：参数 p 与抛物线开口", "levels": ["param_auto_para_def"] }
       ],
       "gaps": []
     },
@@ -517,7 +523,8 @@
         { "name": "9-1 平行关系", "levels": ["solid_parallel"] },
         { "name": "10-1 垂直关系", "levels": ["solid_perp_prop"] },
         { "name": "11-1 空间角（几何法）", "levels": ["solid_basic_angle"] },
-        { "name": "12-1 空间距离（几何法）", "levels": ["solid_distance"] }
+        { "name": "12-1 空间距离（几何法）", "levels": ["solid_distance"] },
+        { "name": "13-1 参数实验：底面边数决定多面体", "levels": ["param_auto_solid_kinds"] }
       ],
       "gaps": []
     },

@@ -576,6 +576,15 @@
           "name": "1-13 解三角形测量应用",
           "scene": "res://scenes/LabStage.tscn",
           "technique": "仰角 · 方位角 · 不可达距离"
+        },
+        {
+          "id": "param_auto_trig_induce",
+          "name": "14-1 参数实验：单位圆上的角与坐标",
+          "technique": "拖动 θ 观察 P 的坐标",
+          "archetype": "LAB",
+          "lab": "trig",
+          "lab_ref": "param_auto_trig_induce",
+          "scene": "res://scenes/LabStage.tscn"
         }
       ]
     },
@@ -1608,6 +1617,15 @@
           "scene": "res://scenes/LabStage.tscn"
         },
         {
+          "id": "param_auto_line_1_1",
+          "name": "19-1 参数实验：转动直线看倾斜角与斜率",
+          "technique": "拖动 α 观察 k=tanα",
+          "archetype": "LAB",
+          "lab": "line",
+          "lab_ref": "param_auto_line_1_1",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
           "id": "line_boss",
           "gate": { "need_stars": 15 },
           "name": "隐藏Boss · 对称与最值压轴",
@@ -1808,6 +1826,15 @@
           "lab": "space",
           "lab_ref": "space_6_3",
           "space": "space_6_3",
+          "scene": "res://scenes/Lab3DStage.tscn"
+        },
+        {
+          "id": "param_auto_space_1_1",
+          "name": "20-1 参数实验：空间向量与它的模",
+          "technique": "拖三分量观察 |v|",
+          "archetype": "LAB",
+          "lab": "space",
+          "lab_ref": "param_auto_space_1_1",
           "scene": "res://scenes/Lab3DStage.tscn"
         },
         {
@@ -2155,6 +2182,15 @@
           "scene": "res://scenes/LabStage.tscn"
         },
         {
+          "id": "param_auto_ellipse_1_1",
+          "name": "17-1 参数实验：椭圆上点到两焦点距离之和",
+          "technique": "拖动 t 观察 |PF₁|+|PF₂|",
+          "archetype": "LAB",
+          "lab": "ellipse",
+          "lab_ref": "param_auto_ellipse_1_1",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
           "id": "ellipse_boss",
           "gate": { "need_stars": 12 },
           "name": "隐藏Boss · 椭圆综合试炼",
@@ -2337,6 +2373,15 @@
           "archetype": "LAB",
           "lab": "circle",
           "lab_ref": "circle_6_3",
+          "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "param_auto_circle_1_1",
+          "name": "20-1 参数实验：圆心与半径如何决定圆",
+          "technique": "拖动 a、b、r 观察方程",
+          "archetype": "LAB",
+          "lab": "circle",
+          "lab_ref": "param_auto_circle_1_1",
           "scene": "res://scenes/LabStage.tscn"
         },
         {
@@ -2566,6 +2611,15 @@
           "lab": "parabola",
           "lab_ref": "para_maxmin",
           "scene": "res://scenes/LabStage.tscn"
+        },
+        {
+          "id": "param_auto_para_def",
+          "name": "12-1 参数实验：参数 p 与抛物线开口",
+          "technique": "拖动 p 观察 y²=2px",
+          "archetype": "LAB",
+          "lab": "parabola",
+          "lab_ref": "param_auto_para_def",
+          "scene": "res://scenes/LabStage.tscn"
         }
       ]
     },
@@ -2683,6 +2737,15 @@
           "archetype": "LAB",
           "lab": "solid_basic",
           "lab_ref": "solid_distance",
+          "scene": "res://scenes/Lab3DStage.tscn"
+        },
+        {
+          "id": "param_auto_solid_kinds",
+          "name": "13-1 参数实验：底面边数决定多面体",
+          "technique": "拖动 n 观察棱柱/棱锥/棱台",
+          "archetype": "LAB",
+          "lab": "solid_basic",
+          "lab_ref": "param_auto_solid_kinds",
           "scene": "res://scenes/Lab3DStage.tscn"
         }
       ]

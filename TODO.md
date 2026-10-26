@@ -156,11 +156,9 @@
       - 删除 15 个独立 JSON 文件
   - **基线清零**：`PARAM-CHECK known: 96 → 0`
   - **❗指标纠错**：曾按「explore 算非四选一」统计得 49.2%，**口径错误**（explore 收尾仍是四选一）。
-    官方看板：单选 885 / 多选 4 / interact 4 / 填空 219 → **非四选一 20.4%**（目标 ≥30%，**未达标**）。
-  - **遗留问题（79 new + 15 orphans）**：轮次标签未按 B9 重编号 51+ 处、合并后 `param_auto_*` 与既有探究轮同题若干、
-    15 个新组未映射教材章节。详见 B1 条目「合并引入的 79 条新问题」。
-  - 全量测试通过：`TESTS 2232 passed (+27)` / `PARAM-CHECK 0 new / 0 known / 0 warnings`；
-    但 `QUESTION-CHECK 79 new`。
+    官方看板（清理后）：单选 841 / 多选 4 / interact 4 / 填空 219 → **非四选一 21.3%**
+  - **遗留已清零**：79 new → 0、orphans 15 → 0、轮次标签 51 → 0（详见 B1 条目「遗留清零」）。
+  - 全量测试通过：`TESTS 2232 passed (+27)` / `QUESTION-CHECK 0 new` / `PARAM-CHECK 0 new / 0 known`。
 - **本轮工作 III**：**B3「探究→建构→迁移」改写标准确立 + 按「复习优先」修订**（docs `32f9f4a`）。
   - **产品定位对齐（2026-10-26 用户明确）**：题目要**相对容易、以复习知识点为主**；
     教学交互动画要**以解释知识点为主**（不是让学生自主发现规律）。
@@ -175,14 +173,9 @@
     迁移轮连续性 ≥80%；探究轮可视化对齐率 ≥90%（与 B4 联合验收）。抽检 20 关合格率 ≥75%。
   - **试点计划（待启动）**：circle_levels.json `circle_1_1/1_2/2_1` 三组（约 9 轮）按新标准改写，
     保证**难度不升**；评估后再决定是否扩到 line/vector。
-  - **❗当前最高优先级遗留（B1 合并副作用）**：`QUESTION-CHECK 79 new` + `CONTENT-HEALTH orphans=15`
-    * 51+ 处轮次标签未按 B9 重编号（`PM-*` 原名）
-    * `param_auto_circle_1_1` / `param_auto_ellipse_1_1` 与既有探究轮同题；
-      `function_master` 第 2/4/6 轮同题；`param_demos` 第 1 轮与 `function_lab_master` 第 1 轮同题
-    * 15 个新组未映射教材章节
-    * 且 B1 指标仍 **20.4% < 30%**：需把 explore 收尾四选一改成纯 gate 或填空
-  - **下一项建议**：先清 B1 遗留（机械可做），再 B4（实验与追问闭环，与 B3 新标准同源）；
-    B11（模块间质量方差）、E5（教材版本核对）次之。
+  - **B1 遗留已清零（2026-10-26）**：`QUESTION-CHECK 79 new → 0` / `orphans 15 → 0` / 轮次标签错位 `51 → 0`；
+    保留 7 个参数实验关并接入课程表 + 知识点，丢弃 44 道场景不可用的 explore（曲线键引擎不读）。
+  - **下一项建议**：B4（实验与追问闭环，与 B3 新标准同源）→ B11（模块间质量方差）→ E5（教材核对）；
 - **上轮补记（第四十六轮 B7 图片选项转 LaTeX，保留备查）**：
   - **总量修正**：清单写 180 处（114 关卡 + 66 已删的 `questions.json`），但 `data/solid_methods.json`
     的 **74 处**从没统计过 → 实际 **188 处**。
@@ -1546,7 +1539,7 @@
 > （**注**：`questions.json` 已随 A12 于 2026-10-20 删除，涉它的数字只剩历史意义；现行为 1057 题 / 269 组），
 > 口径与复现方法见第 9 节。**题数合计 754**（关卡文件 712 + 通用题库 42），**关卡组 222**。
 
-### [ ] B1 · 题型单一 → 把已有非选择题型用起来（P0）🟡 方言已清零/51 关已接入；**指标未达标（非四选一 20.4%）**
+### [ ] B1 · 题型单一 → 把已有非选择题型用起来（P0）🟡 7 关参数实验已接入且闸门清零；**指标仍 21.3%（目标 ≥30%）**
 
 **现状（证据）**
 - **754 / 754 全是四选一单选**；全库仅 **2 道多选**（`ans` 为数组）。
@@ -1575,27 +1568,34 @@
     - 8 个 `param_master_*.json` → function_lab/probability/sequences/solid_basic
 - **基线清零**：`PARAM-CHECK known: 96 → 0`（所有方言问题修复完毕）
 - **题型分布（⚠️ 按 `check_questions.gd` 官方口径修正）**：
-  | 题型 | 合并前 | 合并后 | 说明 |
+  | 题型 | 合并前 | 清理后 | 说明 |
   |------|--------|--------|------|
-  | 单选（含 explore 的 4 选项追问） | 834 | **885** | explore 关卡收尾仍是四选一，**官方计入单选** |
+  | 单选（含 explore 的 4 选项追问） | 834 | **841** | explore 收尾仍是四选一，**官方计入单选** |
   | 多选 | 4 | 4 | - |
   | interact（纯门控） | 4 | 4 | - |
   | 填空 | 219 | 219 | - |
-  | **非四选一占比** | **21.4%** | **20.4%** | ❗**未达标**（目标 ≥30%） |
-- **❗纠错（2026-10-26 复核）**：合并时曾按「explore 一律算非四选一」统计得 49.2%，**该口径错误**——
+  | 题目总数 | 1061 | **1064** | 净增 3（+7 保留、-44 丢弃、其余原样） |
+  | **非四选一占比** | **21.4%** | **21.3%** | ❗**未达标**（目标 ≥30%） |
   `explore` 关卡结构是 `gate + answers + 4 个 opts`，收尾仍要四选一，`check_questions.gd` 计入单选。
-  官方看板实测：**单选 885 / 多选 4 / interact 4 / 填空 219 → 非四选一 20.4%**。
-  即 B1 的合并把总题量从 1061 抬到 1112，**分母变大反而把占比拉低 1pp**。
-- **合并引入的 79 条新问题（`QUESTION-CHECK 79 new`，未清零）**：
-  * **轮次标签无编号前缀 51+ 处**：合并后 name 仍是 `PM-CIRCLE_1-1 …` / `PM-1 …`，未按 B9 的 `N-x` 规范重编号；
-  * **题干重复若干**：`param_auto_circle_1_1` 与 `circle_1_1` 探究轮同题、`param_auto_ellipse_1_1` 与 `ellipse_1_1` 同题、
-    `function_master` 第 2/4/6 轮同题（`$$f(x)=x³+kx$$` 拖动）、`param_demos` 第 1 轮与 `function_lab_master` 第 1 轮同题；
-  * **知识图谱未映射 15 个组**（`CONTENT-HEALTH orphans=15`）：15 个新组未挂到教材章节/知识点。
-- **结论**：B1「模型能力接入」已完成（方言清零、51 关可跑），但**题型指标未达标**；
-  真正提升非四选一需把 explore 的收尾四选一**改为纯 gate 交互或数值填空**（属内容改写，非机械合并）。
-- **十一项全绿（但 QUESTION-CHECK 为 79 new）**：`CHECKED 116` / `TESTS 2232` (+27) / `SMOKE 286` / `LabSmoke TMP_OK` /
-  `PARAM-CHECK 0 new / 0 known / 0 warnings` / `ASSETS 30.90 MB (3165 files)`
-- ✅ 能力已落地：`StageBase` 新增 `type:"input"` 数值/公式填空题
+  官方看板实测（清理后）：**单选 841 / 多选 4 / interact 4 / 填空 219 → 非四选一 21.3%**。
+  合并当时总题量 1061 → 1112（占比被摊薄）；清理掉 44 道不可用/重复的 explore 后为 1064。
+- **✅ 2026-10-26 遗留清零（feat 待提交）**：合并引入的 `79 new` → **0 new**，`orphans 15` → **0**。
+  * **删掉 8 个「画面会画错/空白」的合并组**（曲线用了引擎不读的键：`coeffs/slope/center/radius/eccentricity/roots`，
+    以及引擎没有的 `points_scatter/bar_chart`）：`function_lab_param`、`function_lab_master`、`function_master`、
+    `param_demos`、`param_all_comprehensive`、`geometry_param`、`sequence_param`、`probability_param`。
+  * **保留并修好 7 个 `param_auto` 关**（场景只用引擎原生图元：`circles/ellipses/lines/arcs/solids/vectors/unit_circle`）：
+    - 抛物线：曲线 `fn:"sin"` → `fn:"parr"`（`y²=2px` 上半支）+ `mirror` 下半支
+    - 多面体：gate 目标 `n=4.5` 但滑块 step=1、tol=0.325 **永远调不到** → 改 `n=4`
+    - 7 条题干与既有探究轮同题 → 全部改写为「带明确终点的任务句」（并让终点与 gate 目标一致）
+    - 轮次标签统一重编号为 `<组序号>-<轮次>`
+  * **接入课程表 + 知识点矩阵**：7 关分别挂到 `circle_eq/ellipse/line_eq/parabola/solid_basic/space/trig`，
+    插入位置在 BOSS 之前；`knowledge_map` 各挂到对应知识点。
+- **结论**：B1「接入链路」已打通（7 关可玩、闸门全清），但**题型指标仍未达标（21.3%）**；
+  真正提升非四选一需把 explore 的收尾四选一**改为纯 gate 交互或数值填空**（内容改写，非机械合并）；
+  其余 44 道参数母版关卡的场景需逐关手工移植（引擎不支持的键太多），留作后续专项。
+- **九项全绿**：`CHECKED 116` / `TESTS 2232` (+27) / `SMOKE 293` / `LabSmoke TMP_OK` /
+  `QUESTION-CHECK 0 new / 0 known` / `CONTENT-HEALTH orphans=0` / `KNOWLEDGE 282 levels mapped` /
+  `PARAM-CHECK 0 new / 0 known / 0 warnings` / `ASSETS 30.64 MB (3148 files)`
   （`_build_input`/`_submit_input`/`_parse_math`/`_norm_math`，复用 `SolidChallenge` 的数学解析），
   已接入 `LabStage`/`SequenceStage`/`Lab3DStage`；多选（`ans` 为数组）沿用旧机制。
 - ✅ `check_questions.gd` 看板新增「题型：单选/多选/interact/填空」与「非四选一占比」。
@@ -1881,7 +1881,7 @@ EXPLORE_ALIGN_CHECK = {'has_sliders': True, 'question_values_match': True}
 ```
 
 **验收目标（修订后）**：
-1. ✅ 探究轮陈述句占比：< 20%（**当前 10.5% = 34/324**）
+1. ✅ 探究轮陈述句占比：< 20%（**当前 0.7% = 2/280**）
 2. ⏳ 建构轮可复习回答率：≥ 80%（不超纲、不挖坑）
 3. ⏳ 迁移轮连续性：≥ 80%（与前两轮同考点，只变条件）
 4. ⏳ 探究轮可视化对齐率：≥ 90%（与 B4 联合验收）
@@ -1891,7 +1891,7 @@ EXPLORE_ALIGN_CHECK = {'has_sliders': True, 'question_values_match': True}
 
 **进度（🟡 核心验收达标；深化按「复习优先」口径推进）**
 
-- ✅ **验收①达标**：探究轮陈述句 **34/324（10.5%）**（目标 <20%；合并 51 道参数母版 explore 后基数 256→324、陈述句 0→34，仍达标）
+- ✅ **验收①达标**：探究轮陈述句 **2/280（0.7%）**（目标 <20%；B1 清理后基数 324→280）
 - ✅ `check_questions.gd` 已新增自动校验口径
 - ✅ **2026-10-26 标准修订**：按产品定位（**题目相对容易、以复习知识点为主、教学交互动画以解释知识点为主**）
   下调难度预期——建构轮由「辨错因」改为「巩固理解」，迁移轮由「跨情境综合」改为「熟练应用」，
@@ -3315,16 +3315,16 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
 > `& "<godot472.exe>" --headless --path . --import`（新增 `class_name` 文件后同样要跑一次）。
 
 **当前回归基线**（改完请对照，数字只能升不能降；2026-10-26 第四十七轮 B10 题干套路化清零后）：
-`CHECKED 116 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 2232 passed, 0 failed` / `SMOKE: 286 ok, 0 fail` /
+`CHECKED 116 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 2232 passed, 0 failed` / `SMOKE: 293 ok, 0 fail` /
 `UI-SMOKE: 422 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
 `LEVEL-PREVIEW-SMOKE: 7474 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
-`QUESTION-CHECK: 26 files / 284 levels / 1108 questions / 79 new / 0 known / 2 warnings`
-（⚠️ 79 new = B1 合并参数母版遗留：轮次标签未重编号 + 题干重复，见 B1 条目）/
+`QUESTION-CHECK: 26 files / 276 levels / 1064 questions / 0 new / 0 known / 1 warning`
+（A5 校验器：B1 遗留已清零；看板另有「干扰项黑名单命中 0 处」见 B5、「anim 演示覆盖 13/26 文件」见 D2）
 `PERF idle 171 / lab_plane 259 / lab3d 251`（µs，headless CPU 处理耗时，见 `tools/perf_probe.tscn`）/
-`ASSETS: ≈30.90 MB over 3165 files … banned=0, oversize=0`（A13 护栏；末位随测试产物/内容批次微漂移，
+`ASSETS: ≈30.64 MB over 3148 files … banned=0, oversize=0`（A13 护栏；末位随测试产物/内容批次微漂移，
 看 `banned` / `oversize` 即可）/
-`KNOWLEDGE: 27 chapters / 275 points / 275 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
-`CONTENT-HEALTH: 27 chapters / 275 levels / 0 problems (orphans=15)`（A18 内容体检；15 个未映射组来自 B1 合并）/
+`KNOWLEDGE: 27 chapters / 282 points / 282 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
+`CONTENT-HEALTH: 27 chapters / 282 levels / 0 problems (orphans=0)`（A18 内容体检；B1 清理后未映射组已归零）/
 `PARAM-CHECK: 0 files / 0 levels / 0 scenes / 0 new / 0 known / 0 warnings`（B1 参数母版已并入 `*_levels.json`，
 脚手架文件清零、基线清零）/
 `LATEX-PROBE: conic C4 68 / C5 76 / C6 68 段 / 0 失败`（E2 收官）、
@@ -3345,14 +3345,14 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
 
 ### 9.2 本文件基线数字（改完请同步更新）
 
-- 题目总数 **1108**（全仓唯一权威题库 `data/*_levels.json`；原 `questions.json` 42 题已随 A12 于 2026-10-20 删除）；关卡组 **284**
-  平均 **3.90 题/关**（`check_questions` 口径：1108 = 单选 885 + 多选 4 + 填空 219；无选项 `interact` 4 另计）。
-- 题型分布（`check_questions.gd` 看板，2026-10-26 B1 合并后）：单选 **885**，多选 **4**，`interact` **4**，填空 **219**；
-  非四选一占比 **20.4%**（B1 目标 ≥30%，**未达标**；合并的 51 道 explore 收尾仍是四选一，官方计入单选）。
+- 题目总数 **1064**（全仓唯一权威题库 `data/*_levels.json`；原 `questions.json` 42 题已随 A12 于 2026-10-20 删除）；关卡组 **276**
+  平均 **3.86 题/关**（`check_questions` 口径：1064 = 单选 841 + 多选 4 + 填空 219；无选项 `interact` 4 另计）。
+- 题型分布（`check_questions.gd` 看板，2026-10-26 B1 清理后）：单选 **841**，多选 **4**，`interact` **4**，填空 **219**；
+  非四选一占比 **21.3%**（B1 目标 ≥30%，**未达标**；explore 关收尾仍是四选一，官方计入单选）。
   > 若要让 explore 真正计入「非四选一」，须把收尾四选一改成纯 `gate` 交互或数值填空（内容改写，非机械合并）。
 - 选项：图片选项 **0 处**（B7 收官：`conic`/`ellipse`/`recurrence`/`vector` 114 处 +
   立几方法 74 处，共 **188 处**全改 `$$LaTeX$$`；`data/` 下 `opts` 已无 `res://art/**` 引用。
-  `formula` 字段另剩 12 张 `fq_*.png` 插图，不属选项）；`ans==0` **260/885（29.4%）**（B8 已用
+  `formula` 字段另剩 12 张 `fq_*.png` 插图，不属选项）；`ans==0` **246/841（29.3%）**（B8 已用
   `tools/shuffle_options.py` 按内容哈希定序；**>35% 即硬失败**。「解析按位置指代选项」归零，
   「第 N 项/最后一项/依次是」这类模糊措辞 **3 处**只在看板，需人读）；分布 0=209 / 1=187 / 2=220 / 3=218
   （第四十五轮修 `conic C1/5` 答案键后 1↔2 各挪一，总数与比例不变）。
@@ -3360,11 +3360,11 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
   `hint_leaks_num` 答案数值 ≥2 位带数字边界）；「换说法复述」软重合 ≥70% **1 题**
   （`trig_double/1`，共用记号误报）。改内容后用
   `godot --headless --path . --script res://tools/sample_hints.gd -- 30` 人读最高的 30 条。
-- 探究轮 **324**（B1 并入 51 道参数母版 explore 后新增；题面为陈述句 **34（10.5%）**（`check_questions.gd` 口径；B3 目标 <20%；原 0%）
-- 轮次标签编号错位 **51 处 / 10 文件**（❗B1 合并参数母版后新增，name 仍是 `PM-*`，未按 B9 规范 `<关卡序号>-<轮次> <阶段名>` 重编号；合并前为 0）
+- 探究轮 **280**（B1 清理后并入 7 道参数实验 explore 关；题面为陈述句 **2（0.7%）**（`check_questions.gd` 口径；B3 目标 <20%）
+- 轮次标签编号错位 **0 处**（B9 规范 `<关卡序号>-<轮次> <阶段名>`；参数实验关已重编号）
 - 资源体积（A13 已治理）：仓库 tracked 合计 **29.6MB**（治理前 48.4MB；`art/` 已无 `.xcf`，源文件移至 `assets_src/`，
   标题字体 13.5MB 待替换）；APK（debug）旧基线 **60.9MB**（新基线待重新导出）。见 A13。
-- 知识点矩阵（E1 已建立，E2/E3 已补齐）：`data/knowledge_map.json` 27 章 / **275 个知识点**（每关一挂）；
+- 知识点矩阵（E1 已建立，E2/E3 已补齐）：`data/knowledge_map.json` 27 章 / **282 个知识点**（每关一挂；B1 新增 7 个参数实验点）
   **硬缺口 0**、选学/旧课标 8（基线 `tools/knowledge_gaps_baseline.txt`；2026-10-19 两角和差/二倍角清零）；
   关卡 id 跨章重名 **0 处**（2026-10-21 A18 体检发现 `solid_angle` 被两章共用，后者改名 `solid_basic_angle`）。见 E1/E2/E3。
 - 数据一致性：`curriculum` 关卡 275 / 关卡数据组 269，`lab_ref` 动态映射覆盖其余；
@@ -3386,8 +3386,8 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
   载入即用、无需迁移；报告窗口「本周 7 天 / 本月 30 天」，导出 CSV/JSON **只含日期与计数**，
   家长视图**只含汇总量与领域级薄弱点名**（无题目原文 / 关卡名）。见 G3。
 - 内容数据体检（A18 已建立）：`tools/check_content_health.gd` 输出
-  `CONTENT-HEALTH: 27 chapters / 275 levels / 0 problems (orphans=0)`——
-  27 章 / 275 关全部有名字与场景、场景文件都存在、内容引用（lab/sequence/conic/method）都能定位到组键、
+  `CONTENT-HEALTH: 27 chapters / 282 levels / 0 problems (orphans=0)`——
+  27 章 / 282 关全部有名字与场景、场景文件都存在、内容引用（lab/sequence/conic/method）都能定位到组键、
   关卡 id 全局唯一、无孤儿组。运行时只做轻量版（课程表结构），深度版在 CI 与发版前。见 A18。
 - 代码结构红线（A4，2026-10-26 第四十三轮 A15 后）：`scripts/rules/*.gd` 每文件 ≤200（当前最大 **PlayerRules 179**
   与 `UserStore 179` 并列，次之 `SrsStore 176` / `ReportRules 167` / `SpeechRules 165`）、
