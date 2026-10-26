@@ -1020,12 +1020,12 @@
       {
         "name": "19-3 迁移应用 · 最值",
         "type": "input",
-        "q": "点 P 在圆 (x−3)²+(y−4)²=1 上，则 x²+y² 的最大值是？（填数值）",
-        "ans": 36,
+        "q": "点 P 在圆 (x−4)²+(y−3)²=4 上，则 x²+y² 的最大值是？（填数值）",
+        "ans": 49,
         "tol": 0.01,
         "hint": "x²+y² 表示 |OP|²，最大时为 (|OC|+r)²。",
-        "explain": "|OC|=√(9+16)=5，|OP|_max=5+1=6，x²+y²=36。",
-        "scene": { "range": 8, "circles": [ { "c": [3, 4], "r": 1, "color": "#FFB35C" } ], "points": [ { "p": [0, 0], "label": "O" } ], "segments": [ { "p1": [0, 0], "p2": [3, 4], "color": "#ffd479", "label": "|OC|=5" } ] }
+        "explain": "|OC|=√(16+9)=5，|OP|_max=5+2=7，x²+y²=49。",
+        "scene": { "range": 10, "circles": [ { "c": [4, 3], "r": 2, "color": "#FFB35C" } ], "points": [ { "p": [0, 0], "label": "O" } ], "segments": [ { "p1": [0, 0], "p2": [4, 3], "color": "#ffd479", "dash": true, "label": "|OC|=5" } ] }
       }
     ]
   }
