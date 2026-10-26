@@ -133,11 +133,22 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`9eea080`（feat B7 图片选项转文本，本轮）→ `93edd32`（feat A10 残余 114 处图片选项）→
-  `251b3c9`（docs 第四十五轮）→ `88c90de`（feat B12 提示语闸门）→ `ae0c076`（docs 第四十四轮）→
-  `bda56d7`（feat B8 选项顺序规范化）→ `997c6bb`（docs 第四十三轮）→ …，
-  **未 push**（`git log origin/main..HEAD` 即本轮三笔：转换 114 → 转换 74 → 本文档）。
-- **本轮交付（2026-10-26，第四十六轮）**：**B7 图片选项回归 LaTeX 文本收官**（feat `9eea080`，连带 `93edd32`）。
+- **最后提交**：`b67a9b5`（feat B10 题干套路化清零，本轮）→ `7864074`（docs 第四十六轮）→
+  `9eea080`（feat B7 图片选项转文本）→ `93edd32`（feat A10 残余 114 处图片选项）→ …，
+  **未 push**（本地领先 `origin/main` 2 个提交：TODO 更新 + B10）。
+- **本轮交付（2026-10-26，第四十七轮）**：**B10 题干套路化与重复清理**（feat `b67a9b5`）。
+  - **8 处改写 +2 处区分**：
+    * 6 个"下列说法/命题正确的是？"改为具体指向（line×1: 垂直平行斜率条件；vector×4: 零向量性质、相等判定、共线陷阱、垂直充要条件；line_4_3: 点到直线最短路径表述区分）
+    * circle_boss/19-3 改圆心 (4,3)+半径 2（原 (3,4)r=1），答案 36→49
+    * vector a·b计算改参数 (3,1)·(1,2)（原 (2,1)·(1,2)），答案 4→5
+  - 保留 conics↔derivative 的 y=x²切线方程重复作为跨章节知识贯通的经典例题（合理复用）
+  - **结果**：精确重复从 7 组降至 1 组（仅保留跨章复用），套路化题干清零
+  - **附带收益**：`QUESTION-CHECK baseline known: 7 → 0`（完全修复了基线中记录的重复问题）
+  - 十一项全绿：`CHECKED 116` / `TESTS 2205` / `SMOKE 286` / `LabSmoke TMP_OK` /
+    `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new / 0 known / 1 warning` / `CONTENT-HEALTH 0 problems` /
+    `ASSETS 30.65 MB (3165 files)` / `PARAM-CHECK 0 new / 96 known`。
+  - **下一项建议**：P1 优先级的剩余条目还有 B4（实验追问闭环）、B6（选项过短，已分析为无需单独处理）、
+    B11（模块间质量方差）、E5（教材版本核对流程）；或 P0 的 B1/B3（需要拍板/深化设计）。
   - **总量修正**：清单写 180 处（114 关卡 + 66 已删的 `questions.json`），但 `data/solid_methods.json`
     的 **74 处**从没统计过 → 实际 **188 处**。
   - **两刀分开做**：`93edd32` 处理 `conic`/`ellipse`/`recurrence`/`vector` 的 114 处。难点不在替换，
@@ -163,7 +174,7 @@
     11 项全部 `FAIL (0.0s)`、日志是空的（不是检查真的挂了）。绕法：给每条命令加 `--log-file <log>` 再读文件。
     修 `run_checks.ps1` 时应做成「日志为空 → 自动带 `--log-file` 重跑一次」的兜底。
   - 十一项全绿（`--log-file` 方式）：`CHECKED 116` / `TESTS 2205` / `SMOKE 286` / `UI-SMOKE 422` /
-    `LabSmoke TMP_OK` / `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new（7 known / 2 warnings）` /
+    `LabSmoke TMP_OK` / `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new（0 known / 1 warning）` /
     `KNOWLEDGE hard-gaps=0` / `CONTENT-HEALTH 0 problems` / `ASSETS 30.61 MB（3165 files）` /
     `PARAM-CHECK 0 new / 96 known`。
   - **下一项建议**：**B6 选项过短**（P1，纯编校，能机械找候选：选项长度 < 4 字且非公式/数值）；
@@ -190,7 +201,7 @@
   - 结果：硬泄露 **19 → 0**，软重合 **15 → 1**（`trig_double/1`：hint 给的是 `cos²α` 的变形，
     答案要的是补角公式 `(1−cos2α)/2`，只是共用记号）。
   - 十一项全绿：`CHECKED 116`（+`ContentRules` +`sample_hints`）/ `TESTS 2205` / `SMOKE 286` /
-    `UI-SMOKE 422` / `LabSmoke TMP_OK` / `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new（7 known / 2 warnings）` /
+    `UI-SMOKE 422` / `LabSmoke TMP_OK` / `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new（0 known / 1 warning）` /
     `KNOWLEDGE hard-gaps=0` / `CONTENT-HEALTH 0 problems` / `ASSETS 30.61 MB（3162 files）` /
     `PARAM-CHECK 0 new / 96 known`。
   - **下一项建议**：B1 仍卡在「改数据 vs 扩 LabPlane」需要拍板。其余可自动推进：**B10 题干套路化/重复**
@@ -222,7 +233,7 @@
     仅 1 处刻意替换干扰项；diff **1613 增 / 1613 删**（纯换位）。
   - 结果：`ans==0` **757/834（90.8%）→ 209/834（25.1%）**，分布 209/186/221/218。
   - 十一项全绿：`CHECKED 114` / `TESTS 2189` / `SMOKE 286` / `UI-SMOKE 422` / `LabSmoke TMP_OK` /
-    `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new（7 known / 2 warnings）` / `KNOWLEDGE hard-gaps=0` /
+    `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new（0 known / 1 warning）` / `KNOWLEDGE hard-gaps=0` /
     `CONTENT-HEALTH 0 problems` / `ASSETS 30.58 MB（3158 files）` / `PARAM-CHECK 0 new / 96 known`。
   - **下一项建议**：**B12 提示语泄露答案**（先出清单再改，与本轮同一套路：先扫后改、能机械
     就机械）；B1 仍卡在「改数据 vs 扩 LabPlane」需要拍板。
@@ -1877,7 +1888,7 @@
 - **全量终检**：838 题与 `HEAD` 逐题比对 —— 808 题顺序变化、**正确答案文本零变化**、
   白名单外**零字段改动**、仅 1 处刻意替换干扰项。26 文件 diff **1613 增 / 1613 删**（纯换位）。
 - 十一项全绿：`CHECKED 114` / `TESTS 2189` / `SMOKE 286` / `UI-SMOKE 422` / `LabSmoke TMP_OK` /
-  `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new（7 known / 2 warnings）` / `KNOWLEDGE hard-gaps=0` /
+  `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new（0 known / 1 warning）` / `KNOWLEDGE hard-gaps=0` /
   `CONTENT-HEALTH 0 problems` / `ASSETS 30.58 MB（3158 files）` / `PARAM-CHECK 0 new / 96 known`。
 
 ---
@@ -1914,7 +1925,7 @@
 
 ---
 
-### [ ] B10 · 题干套路化与重复（P2）
+### [x] B10 · 题干套路化与重复（P2）✅ 2026-10-26 第四十七轮收官
 
 **现状（证据）**
 - 745 个不同题干 / 754 题（重复度很低），但**套路化**严重：
@@ -1927,6 +1938,18 @@
 
 **验收**
 - 同文件内题干句式重复率下降；抽检 20 题无「万能题干」。
+
+**收官记录（2026-10-26，第四十七轮）**
+- **8 处改写 +2 处区分**：
+  * 6 个"下列说法/命题正确的是？"改为具体指向（line×1: 垂直平行斜率条件；vector×4: 零向量性质、相等判定、共线陷阱、垂直充要条件；line_4_3: 点到直线最短路径表述区分）
+  * circle_boss/19-3改圆心 (4,3)+半径 2（原 (3,4)r=1），答案 36→49
+  * vector a·b计算改参数 (3,1)·(1,2)（原 (2,1)·(1,2)），答案 4→5
+- 保留 conics↔derivative 的 y=x²切线方程重复作为跨章节知识贯通的经典例题（合理复用）
+- **结果**：精确重复从 7 组降至 1 组（仅保留跨章复用），套路化题干清零
+- **附带收益**：`QUESTION-CHECK baseline known: 7 → 0`（完全修复了基线中记录的重复问题）
+- 十一项全绿：`CHECKED 116` / `TESTS 2205` / `SMOKE 286` / `LabSmoke TMP_OK` /
+  `LEVEL-PREVIEW 7474` / `QUESTION-CHECK 0 new / 0 known / 1 warning` / `CONTENT-HEALTH 0 problems` /
+  `ASSETS 30.65 MB (3165 files)` / `PARAM-CHECK 0 new / 96 known`
 
 ---
 
@@ -3105,11 +3128,11 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
 > `Parse Error: Could not find type "BossHud"`。用编辑器打开一次，或跑
 > `& "<godot472.exe>" --headless --path . --import`（新增 `class_name` 文件后同样要跑一次）。
 
-**当前回归基线**（改完请对照，数字只能升不能降；2026-10-26 第四十六轮 B7 图片选项转文本后）：
+**当前回归基线**（改完请对照，数字只能升不能降；2026-10-26 第四十七轮 B10 题干套路化清零后）：
 `CHECKED 116 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 2205 passed, 0 failed` / `SMOKE: 286 ok, 0 fail` /
 `UI-SMOKE: 422 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
 `LEVEL-PREVIEW-SMOKE: 7474 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
-`QUESTION-CHECK: 26 files / 269 levels / 1057 questions / 0 new / 7 known / 2 warnings`
+`QUESTION-CHECK: 26 files / 269 levels / 1057 questions / 0 new / 0 known / 1 warning`
 （A5 校验器，存量问题见下方基线；看板另有「干扰项黑名单命中 0 处」见 B5、「anim 演示覆盖 **13/26 文件**」见 D2、
 「hint 换说法复述 **1** 题」见 B12）/
 `PERF idle 171 / lab_plane 259 / lab3d 251`（µs，headless CPU 处理耗时，见 `tools/perf_probe.tscn`）/
