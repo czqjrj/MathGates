@@ -178,7 +178,8 @@
   - 十一项全绿：`CHECKED 117`（+1 新脚本）/ `TESTS 2232` / `SMOKE 293` / `UI-SMOKE 422` /
     `LabSmoke TMP_OK` / `LEVEL-PREVIEW 7544` / `QUESTION-CHECK 0 new / 0 known / 1 warning` /
     `KNOWLEDGE hard-gaps=0` / `CONTENT-HEALTH 0 problems` / `ASSETS 30.68 MB` / `PARAM-CHECK 0 new`。
-  - **B4 余下（人工）**：C 类抽 10 关 + D 类抽 10 关，判「示意图对答题有帮助」合格率 ≥75%，结论写回 B4 节。
+  - **B4 余下（人工）**：C/D 类各抽 10 关，判「示意图对答题有帮助」合格率 ≥75%。
+    已生成抽检清单 `docs/B4_人工抽检清单.md`（C=66 / D=45，各取前 10），待人工填写并回填结论。
   - **下一项建议**：B6（选项过短 / 理由选项）——**已顺手做了度量校准**：选项字数中位数 8.0，
     全数值/≤6 字选项 105 题（12.4%，`trig 17/37`、`counting 8/18`、`parabola 11/31` 最集中），
     概念轮「理由选项」59/103 = 57.3%，**已超 30% 验收线**；所以 B6 的真问题收窄成
@@ -2113,6 +2114,7 @@ EXPLORE_ALIGN_CHECK = {'has_sliders': True, 'question_values_match': True}
   剩下 3 条是探究轮——`q` 是实验引导语、真正判分的是 `ask`（如 `cplx_mod`：`q` 问「几何意义」，
   `ask` 问「距离最大值」），也是误判。**「按章整改 105 题」这个口径作废**；
 - 真问题只剩：② `err_reason` 错因标签尚未落地（改 schema + 错题本聚合，属引擎侧改动）。
+  需要产品决策（字段名/白名单/UI 展示方式）。
 
 ---
 
