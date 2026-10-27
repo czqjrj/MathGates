@@ -43,13 +43,24 @@ var _q_edit: TextEdit
 var _ask_edit: TextEdit
 var _opts_edit: TextEdit
 var _ans_spin: SpinBox
+var _ans_multi: LineEdit
+var _ans_text: TextEdit
 var _hint_edit: TextEdit
 var _explain_edit: TextEdit
+var _goal_edit: TextEdit
+var _steps_edit: TextEdit
+var _tip_edit: TextEdit
+var _success_edit: TextEdit
 var _scene_edit: TextEdit
 var _save_btn: Button
 var _ask_row: Control
 var _opts_row: Control
 var _ans_row: Control
+var _ans_text_row: Control
+var _goal_row: Control
+var _steps_row: Control
+var _tip_row: Control
+var _success_row: Control
 var _scene_row: Control
 
 const COL_ERR := Color("#ff6b6b")
@@ -151,8 +162,22 @@ func _build_ui() -> void:
 	_opts_row = _add_field_row(left, "选项 opts（每行一个）", 74)
 	_opts_edit = _opts_row.get_child(1)
 	_ans_row = _add_ans_row(left)
+	# 填空轮（input，219 轮）的答案是数值/文本，不是选项下标：给一个原样写入的框，
+	# 否则这类题的答案在编辑器里根本没有可改的控件（旧版最多写坏成 0）。
+	_ans_text_row = _add_field_row(left, "答案 ans（填空轮：数值或文本，原样写入）", 40)
+	_ans_text = _ans_text_row.get_child(1)
 	_hint_edit = _add_field(left, "提示 hint（只给方法，不给答案）", 44)
 	_explain_edit = _add_field(left, "解析 explain", 64)
+	# 探究轮的实验文案（B4）：以前只能手改 JSON，改错「拖动…」也没人拦；
+	# 这些字段现在进表单，写完立刻能在右边看效果 + 跑校验。
+	_goal_row = _add_field_row(left, "实验目标 goal（探究轮）", 44)
+	_goal_edit = _goal_row.get_child(1)
+	_steps_row = _add_field_row(left, "实验步骤 steps（每行一条）", 64)
+	_steps_edit = _steps_row.get_child(1)
+	_tip_row = _add_field_row(left, "引导 tip（只给方法，不给答案）", 44)
+	_tip_edit = _tip_row.get_child(1)
+	_success_row = _add_field_row(left, "答对反馈 success", 44)
+	_success_edit = _success_row.get_child(1)
 	_scene_row = _add_field_row(left, "scene（JSON，改滑块/曲线参数）", 120)
 	_scene_edit = _scene_row.get_child(1)
 
@@ -224,6 +249,18 @@ func _add_ans_row(parent: Control) -> Control:
 	sp.custom_minimum_size = Vector2(100, 34)
 	sp.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	box.add_child(sp)
+	# 多选（D2 的多选辨析轮）ans 是数组，SpinBox 放不下：非空时以这里为准。
+	var le := LineEdit.new()
+	le.placeholder_text = "多选: 0,2（留空=单选）"
+	le.custom_minimum_size = Vector2(150, 34)
+	le.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	le.add_theme_font_size_override("font_size", 13)
+	box.add_child(le)
+	# 2026-10-26 修：这两个控件以前**从来没被赋过值**（_ans_spin 恒为 null），
+	# 于是 `_fill_form()` 一进来就在 `_ans_spin.editable = ...` 上运行时报错——
+	# 编辑态等于打不开。headless 自检不碰表单，所以一直没人发现。
+	_ans_spin = sp
+	_ans_multi = le
 	return box
 
 # ================================================================ 数据定位
@@ -376,16 +413,24 @@ func _fill_form() -> void:
 	var rounds: Array = g.get("levels", [])
 	var ri := _round_btn.selected
 	var editable := not bool(_res.get("ro", false)) and ri >= 0 and ri < rounds.size()
+	var edits := [_q_edit, _ask_edit, _opts_edit, _hint_edit, _explain_edit,
+		_goal_edit, _steps_edit, _tip_edit, _success_edit, _ans_text, _scene_edit]
 	_initial = {}
 	if not editable:
-		for te in [_q_edit, _ask_edit, _opts_edit, _hint_edit, _explain_edit, _scene_edit]:
+		for te in edits:
 			te.text = ""
 			te.editable = false
 		_ans_spin.editable = false
+		_ans_multi.editable = false
+		# 只读组（代码驱动的遗留模块）不该留上一轮的可见文案行
+		for row in [_goal_row, _steps_row, _tip_row, _success_row, _ans_text_row]:
+			row.visible = false
 		return
 	var s: Dictionary = rounds[ri]
-	_q_edit.editable = true
+	for te in edits:
+		te.editable = true
 	_ans_spin.editable = true
+	_ans_multi.editable = true
 	_q_edit.text = str(s.get("q", ""))
 	_ask_edit.text = str(s.get("ask", ""))
 	var opts: Array = s.get("opts", [])
@@ -393,23 +438,58 @@ func _fill_form() -> void:
 	for o in opts:
 		opt_lines.append(str(o))
 	_opts_edit.text = "\n".join(opt_lines)
+	var ans = s.get("ans", null)
 	_ans_spin.max_value = maxi(0, opts.size() - 1)
-	_ans_spin.value = float(s["ans"]) if typeof(s.get("ans", null)) == TYPE_INT else 0.0
+	if typeof(ans) == TYPE_ARRAY:
+		var parts: Array[String] = []
+		for a in (ans as Array):
+			parts.append(str(int(a)))
+		_ans_multi.text = ",".join(parts)
+		_ans_spin.value = 0.0
+	else:
+		_ans_multi.text = ""
+		_ans_spin.value = float(ans) if _is_num(ans) else 0.0
+	_ans_text.text = ""
+	if _is_num(ans):
+		_ans_text.text = str(int(ans)) if _is_int_val(ans) else str(ans)
+	elif typeof(ans) == TYPE_STRING:
+		_ans_text.text = str(ans)
+	elif ans != null:
+		_ans_text.text = JSON.stringify(ans)
 	_hint_edit.text = str(s.get("hint", ""))
 	_explain_edit.text = str(s.get("explain", ""))
+	_goal_edit.text = str(s.get("goal", ""))
+	_tip_edit.text = str(s.get("tip", ""))
+	_success_edit.text = str(s.get("success", ""))
+	var steps: Array = s.get("steps", [])
+	var step_lines: Array[String] = []
+	for st in steps:
+		step_lines.append(str(st))
+	_steps_edit.text = "\n".join(step_lines)
 	_scene_edit.text = JSON.stringify(s["scene"], "  ") if s.has("scene") else ""
 	var t := str(s.get("type", "choice"))
 	_ask_row.visible = s.has("ask") or t == "explore"
 	_opts_row.visible = s.has("opts") or t in ["choice", "explore"]
-	_ans_row.visible = _opts_row.visible or t == "input"
+	# ans 是**选项下标**，只有四选一/多选才有；input 轮的答案是字符串，SpinBox 表达不了，
+	# 以前把这一行也显示出来，改了要么写不进去、要么写成 0（旧行为）。
+	_ans_row.visible = _opts_row.visible
+	_ans_text_row.visible = not _opts_row.visible and s.has("ans")
+	_goal_row.visible = s.has("goal") or t == "explore"
+	_steps_row.visible = s.has("steps") or t == "explore"
+	_tip_row.visible = s.has("tip") or t in ["choice", "explore"]
+	_success_row.visible = s.has("success") or t in ["choice", "explore"]
 	_scene_row.visible = s.has("scene")
 	_initial = _form_snapshot()
 
 func _form_snapshot() -> Dictionary:
 	return {
 		"q": _q_edit.text, "ask": _ask_edit.text, "opts": _opts_edit.text,
-		"ans": int(_ans_spin.value), "hint": _hint_edit.text,
-		"explain": _explain_edit.text, "scene": _scene_edit.text,
+		"ans": int(_ans_spin.value), "ans_multi": _ans_multi.text,
+		"ans_text": _ans_text.text,
+		"hint": _hint_edit.text, "explain": _explain_edit.text,
+		"goal": _goal_edit.text, "steps": _steps_edit.text,
+		"tip": _tip_edit.text, "success": _success_edit.text,
+		"scene": _scene_edit.text,
 	}
 
 # ================================================================ 写回
@@ -425,12 +505,17 @@ func _on_save() -> void:
 	if typeof(data) != TYPE_DICTIONARY or not data.has(key):
 		_set_status("写回失败：数据组 %s 不在 %s" % [key, path], COL_ERR)
 		return
+	var all_rounds: Array = data[key].get("levels", [])
+	if ri < 0 or ri >= all_rounds.size():
+		_set_status("写回失败：没有选中轮次（%d）" % ri, COL_ERR)
+		return
 	# 选项：按行拆分并预检
 	var new_opts: Array[String] = []
 	for line in _opts_edit.text.split("\n"):
 		var t := line.strip_edges()
 		if t != "":
 			new_opts.append(t)
+	var cur_round: Dictionary = (data[key].get("levels", []) as Array)[ri]
 	var snap := _form_snapshot()
 	var new_raw := raw
 	# 逐字段文本级替换（每次重新定位，span 随文本变化）
@@ -443,16 +528,75 @@ func _on_save() -> void:
 			_set_status("写回失败：选项至少 2 个（当前 %d）" % new_opts.size(), COL_ERR)
 			return
 		new_raw = _edit_value(new_raw, ri, "opts", new_opts)
-	if _ans_row.visible and int(snap["ans"]) != int(_initial.get("ans", 0)):
+	if _ans_row.visible:
 		var lim := new_opts.size() if _opts_row.visible else _current_ans_limit()
-		if int(snap["ans"]) < 0 or int(snap["ans"]) >= maxi(lim, 1):
-			_set_status("写回失败：ans=%d 超出选项范围（0..%d）" % [int(snap["ans"]), maxi(lim, 1) - 1], COL_ERR)
+		var multi := str(snap["ans_multi"]).strip_edges()
+		if multi != "":
+			# 多选：逗号分隔的选项下标（D2 的多选辨析轮）
+			var arr: Array[int] = []
+			var bad := ""
+			for part in multi.replace("，", ",").split(","):
+				var p := part.strip_edges()
+				if p == "":
+					continue
+				if not p.is_valid_int():
+					bad = p
+					break
+				arr.append(int(p))
+			if bad != "" or arr.is_empty():
+				_set_status("写回失败：多选 ans 只能是逗号分隔的整数（坏值「%s」）" % bad, COL_ERR)
+				return
+			arr.sort()
+			for i in range(1, arr.size()):
+				if arr[i] == arr[i - 1]:
+					_set_status("写回失败：多选 ans 有重复下标 %d" % arr[i], COL_ERR)
+					return
+			for v in arr:
+				if v < 0 or v >= maxi(lim, 1):
+					_set_status("写回失败：多选 ans=%d 超出选项范围（0..%d）" % [v, maxi(lim, 1) - 1], COL_ERR)
+					return
+			if typeof(cur_round.get("ans", null)) != TYPE_ARRAY or JSON.stringify(arr) != JSON.stringify(cur_round.get("ans", null)):
+				new_raw = _edit_value(new_raw, ri, "ans", arr)
+		else:
+			var a := int(snap["ans"])
+			if a < 0 or a >= maxi(lim, 1):
+				_set_status("写回失败：ans=%d 超出选项范围（0..%d）" % [a, maxi(lim, 1) - 1], COL_ERR)
+				return
+			var cur_ans = cur_round.get("ans", null)
+			if not _is_num(cur_ans) or a != int(cur_ans):
+				new_raw = _edit_value(new_raw, ri, "ans", a)
+	if _ans_text_row.visible:
+		# 填空轮：原样写入（整数写整数、小数写小数、其余写字符串），别把 `68` 写成 `68.0`
+		var txt := str(snap["ans_text"]).strip_edges()
+		if txt == "":
+			_set_status("写回失败：填空轮答案不能为空", COL_ERR)
 			return
-		new_raw = _edit_value(new_raw, ri, "ans", int(snap["ans"]))
-	if snap["hint"] != _initial.get("hint", ""):
-		new_raw = _edit_str(new_raw, ri, "hint", snap["hint"])
-	if snap["explain"] != _initial.get("explain", ""):
-		new_raw = _edit_str(new_raw, ri, "explain", snap["explain"])
+		var cur_a = cur_round.get("ans", null)
+		var same := false
+		if _is_num(cur_a) and (txt.is_valid_int() or txt.is_valid_float()):
+			same = float(txt) == float(cur_a)
+		else:
+			same = txt == str(cur_a)
+		if not same:
+			var val: Variant = txt
+			if txt.is_valid_int():
+				val = int(txt)
+			elif txt.is_valid_float():
+				val = float(txt)
+			new_raw = _edit_value(new_raw, ri, "ans", val)
+	if _steps_row.visible and snap["steps"] != _initial.get("steps", ""):
+		var step_list: Array[String] = []
+		for line in str(snap["steps"]).split("\n"):
+			var st := line.strip_edges()
+			if st != "":
+				step_list.append(st)
+		if step_list.is_empty():
+			_set_status("写回失败：实验步骤 steps 至少 1 条", COL_ERR)
+			return
+		new_raw = _edit_value(new_raw, ri, "steps", step_list)
+	for field in ["hint", "explain", "goal", "tip", "success"]:
+		if snap[field] != _initial.get(field, ""):
+			new_raw = _edit_str(new_raw, ri, field, str(snap[field]))
 	if _scene_row.visible and snap["scene"] != _initial.get("scene", ""):
 		var sc = JSON.parse_string(str(snap["scene"]))
 		if typeof(sc) != TYPE_DICTIONARY:
@@ -539,7 +683,8 @@ func _validate_group() -> Array[String]:
 			out.append("数据组未找到：%s : %s" % [str(_res.get("file", "?")), str(_res.get("key", "?"))])
 		return out
 	var path := str(_res["file"])
-	var data = JSON.parse_string(FileAccess.get_file_as_string(path))
+	var raw_text := FileAccess.get_file_as_string(path)
+	var data = JSON.parse_string(raw_text)
 	var gno := 0
 	var idx := 0
 	for k in (data as Dictionary).keys():
@@ -551,7 +696,9 @@ func _validate_group() -> Array[String]:
 	var stems := {}
 	for ri in rounds.size():
 		var s: Dictionary = rounds[ri]
-		var tag := "轮%d「%s」" % [ri + 1, str(s.get("name", "?"))]
+		# 报错带行号：作者可以直接跳到编辑器对应行改（G2「报错定位到行」）
+		var rline := _round_line(raw_text, ri)
+		var tag := "轮%d「%s」(L%d)" % [ri + 1, str(s.get("name", "?")), rline]
 		var nm := str(s.get("name", ""))
 		if gno > 0 and not nm.begins_with("%d-%d " % [gno, ri + 1]):
 			out.append("%s 标签编号应为 %d-%d（B9）" % [tag, gno, ri + 1])
@@ -566,8 +713,24 @@ func _validate_group() -> Array[String]:
 					out.append("%s 选项重复：%s" % [tag, str(o).left(16)])
 				seen[str(o)] = true
 			var ans = s.get("ans", null)
-			if typeof(ans) == TYPE_INT and (ans < 0 or ans >= opts.size()):
-				out.append("%s ans=%d 超出范围（0..%d）" % [tag, ans, opts.size() - 1])
+			if _is_num(ans):
+				if not _is_int_val(ans):
+					out.append("%s ans 不是整数：%s%s" % [tag, str(ans), _field_line(raw_text, ri, "ans")])
+				elif ans < 0 or ans >= opts.size():
+					out.append("%s ans=%d 超出范围（0..%d）%s" % [tag, int(ans), opts.size() - 1,
+						_field_line(raw_text, ri, "ans")])
+			elif typeof(ans) == TYPE_ARRAY:
+				var aline := _field_line(raw_text, ri, "ans")
+				var got := {}
+				for a in (ans as Array):
+					if not _is_int_val(a):
+						out.append("%s 多选 ans 含非整数项 %s%s" % [tag, str(a), aline])
+						continue
+					if a < 0 or a >= opts.size():
+						out.append("%s 多选 ans 含越界下标 %d（0..%d）%s" % [tag, int(a), opts.size() - 1, aline])
+					if got.has(int(a)):
+						out.append("%s 多选 ans 下标重复：%d%s" % [tag, int(a), aline])
+					got[int(a)] = true
 		if t != "interact" and str(s.get("q", "")).strip_edges() == "" and not s.has("ask"):
 			out.append("%s 缺题干 q" % tag)
 		var q := str(s.get("q", "")).strip_edges()
@@ -576,6 +739,25 @@ func _validate_group() -> Array[String]:
 				out.append("%s 题干与轮%d重复" % [tag, int(stems[q]) + 1])
 			stems[q] = ri
 	return out
+
+func _line_no(raw: String, pos: int) -> int:
+	return raw.substr(0, clampi(pos, 0, raw.length())).count("\n") + 1
+
+func _round_line(raw: String, ri: int) -> int:
+	var span := _round_span(raw, ri)
+	if span.is_empty():
+		return 0
+	return _line_no(raw, int(span["start"]))
+
+## 字段键所在行；找不到返回空串（让上层决定怎么拼）
+func _field_line(raw: String, ri: int, field: String) -> String:
+	var span := _round_span(raw, ri)
+	if span.is_empty():
+		return ""
+	var f := JsonText.find_key(raw, field, int(span["start"]), int(span["end"]))
+	if f.is_empty():
+		return ""
+	return "（L%d）" % _line_no(raw, int(f["v"]))
 
 # ================================================================ 热重载
 
@@ -611,6 +793,44 @@ func _set_status(text: String, col: Color) -> void:
 	_status.text = text
 
 # ================================================================ headless 自检（CI）
+
+## Godot 4 的 JSON 把**所有**数字都解析成 float（`1` → `1.0`，typeof 是 TYPE_FLOAT）。
+## 所以判断 JSON 里的数值时只认 TYPE_INT 等于「这段检查永远不跑」——
+## 2026-10-26 之前本工具的 ans 范围检查就是这么变成死代码的（编辑器里改坏 ans 也不会报）。
+func _is_num(v: Variant) -> bool:
+	return typeof(v) == TYPE_INT or typeof(v) == TYPE_FLOAT
+
+func _is_int_val(v: Variant) -> bool:
+	return _is_num(v) and float(v) == floorf(float(v))
+
+
+## 从整段 JSON 文本里取「某组第 0 轮」的字段（自检用，不依赖 _res 状态）
+func _round_field(raw: String, key: String, field: String) -> Variant:
+	var d = JSON.parse_string(raw)
+	if typeof(d) != TYPE_DICTIONARY:
+		return null
+	var g = (d as Dictionary).get(key, null)
+	if typeof(g) != TYPE_DICTIONARY:
+		return null
+	var rounds: Array = (g as Dictionary).get("levels", [])
+	if rounds.is_empty():
+		return null
+	return (rounds[0] as Dictionary).get(field, null)
+
+func _join_str(v: Variant) -> String:
+	if typeof(v) != TYPE_ARRAY:
+		return str(v)
+	var parts: Array[String] = []
+	for x in (v as Array):
+		parts.append(str(x))
+	return "|".join(parts)
+
+func _as_int_list(v: Variant) -> Array:
+	var out: Array = []
+	if typeof(v) == TYPE_ARRAY:
+		for x in (v as Array):
+			out.append(int(x))
+	return out
 
 func _run_smoke() -> void:
 	var ok := 0
@@ -658,7 +878,7 @@ func _run_smoke() -> void:
 				var s: Dictionary = rounds[ri]
 				var st := int(span["start"])
 				var en := int(span["end"])
-				for field in ["name", "q", "ask", "hint", "explain"]:
+				for field in ["name", "q", "ask", "hint", "explain", "goal", "tip", "success"]:
 					if s.has(field):
 						var got := JsonText.key_string(raw, field, st, en)
 						if got != str(s[field]):
@@ -666,16 +886,16 @@ func _run_smoke() -> void:
 							print("  [FAIL] 字段定位失败 ", path, " ", key, " #", ri, " ", field)
 						else:
 							ok += 1
-				for field in ["opts", "scene"]:
+				for field in ["opts", "scene", "steps"]:
 					if s.has(field):
 						var fv2 := JsonText.find_key(raw, field, st, en)
-						var want := "[" if field == "opts" else "{"
+						var want := "{" if field == "scene" else "["
 						if fv2.is_empty() or raw[int(fv2["v"])] != want:
 							fail += 1
 							print("  [FAIL] ", field, " 定位失败 ", path, " ", key, " #", ri)
 						else:
 							ok += 1
-				if typeof(s.get("ans", null)) == TYPE_INT:
+				if _is_num(s.get("ans", null)):
 					var fv3 := JsonText.find_key(raw, "ans", st, en)
 					if fv3.is_empty():
 						fail += 1
@@ -715,6 +935,163 @@ func _run_smoke() -> void:
 	else:
 		fail += 1
 		print("  [FAIL] 内存编辑往返")
+	# ---- B2. 编辑态自检：表单控件必须都建出来
+	#     2026-10-26 修的坑：`_ans_spin` / `_ans_multi` 以前从没被赋过值（恒 null），
+	#     `_fill_form()` 一进来就在 `_ans_spin.editable = ...` 运行时报错 —— 编辑态等于打不开。
+	#     headless 自检原来不碰表单，所以这个 bug 一直没人发现；这次把它变成断言。
+	var widgets = [_q_edit, _ask_edit, _opts_edit, _ans_spin, _ans_multi, _ans_text, _hint_edit,
+		_explain_edit, _goal_edit, _steps_edit, _tip_edit, _success_edit, _scene_edit]
+	var missing := ""
+	for w in widgets:
+		if w == null or not is_instance_valid(w):
+			missing = str(w)
+	if missing == "":
+		ok += 1
+	else:
+		fail += 1
+		print("  [FAIL] 编辑态控件缺失 ", missing)
+	# 找一个**可编辑**的数据组再断言回填：代码驱动的遗留关没有 JSON，表单本来就是空的
+	var probe := {}
+	for ci in GameData.chapters.size():
+		var lvs: Array = GameData.chapters[ci].get("levels", [])
+		for li in lvs.size():
+			var r := _resolve(lvs[li])
+			if r.is_empty() or bool(r.get("ro", false)):
+				continue
+			if not FileAccess.file_exists(str(r["file"])):
+				continue
+			probe = {"ci": ci, "li": li, "res": r}
+			break
+		if not probe.is_empty():
+			break
+	var fill_ok := false
+	var bak_ci := _ci
+	var bak_li := _li
+	var bak_res := _res
+	if not probe.is_empty():
+		_ci = int(probe["ci"])
+		_li = int(probe["li"])
+		_res = probe["res"]
+		_fill_rounds()
+		_fill_form()
+		var pg := _disk_group()
+		var pr: Array = pg.get("levels", [])
+		var ri0 := _round_btn.selected
+		if ri0 >= 0 and ri0 < pr.size():
+			var want_q := str((pr[ri0] as Dictionary).get("q", ""))
+			fill_ok = _q_edit.text == want_q
+			if not fill_ok:
+				print("  [DEBUG] 回填 want=", want_q.left(30), "｜got=", _q_edit.text.left(30))
+		_ci = bak_ci
+		_li = bak_li
+		_res = bak_res
+		_fill_rounds()
+		_fill_form()
+	if fill_ok:
+		ok += 1
+	else:
+		fail += 1
+		print("  [FAIL] 表单回填（选中轮后 q 没进输入框）")
+	# 校验器不能「扫不到东西就报通过」：造一个 ans 越界 + 多选重复下标的临时组，
+	# 必须两条都报出来、并且带正确行号（L4 / L5）。
+	var tmp_path := "user://__lp_probe.json"
+	var probe_txt := "{\n  \"zz_probe\": {\n    \"levels\": [\n"\
+		+ "      { \"name\": \"1-1 探针\", \"type\": \"choice\", \"q\": \"题\", \"opts\": [\"a\", \"b\"], \"ans\": 99 },\n"\
+		+ "      { \"name\": \"1-2 探针\", \"type\": \"choice\", \"q\": \"题二\", \"opts\": [\"a\", \"b\"], \"ans\": [0, 0] }\n"\
+		+ "    ]\n  }\n}\n"
+	var pf := FileAccess.open(tmp_path, FileAccess.WRITE)
+	if pf == null:
+		fail += 1
+		print("  [FAIL] 探针文件写不出来")
+	else:
+		pf.store_string(probe_txt)
+		pf.close()
+		var bak3 := _res
+		_res = {"file": tmp_path, "key": "zz_probe"}
+		var msgs := _validate_group()
+		_res = bak3
+		var hit_range := false
+		var hit_dup := false
+		for m in msgs:
+			if str(m).contains("ans=99") and str(m).contains("（L4）"):
+				hit_range = true
+			if str(m).contains("下标重复") and str(m).contains("（L5）"):
+				hit_dup = true
+		if hit_range and hit_dup:
+			ok += 1
+		else:
+			fail += 1
+			print("  [FAIL] 校验器漏报/行号不对：", msgs)
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(tmp_path))
+	# 填空轮（input）：答案必须真的回填进「答案 ans」框——以前这类题（219 轮）没有可编辑控件
+	var inp := {}
+	for path4 in files:
+		var d4 = JSON.parse_string(FileAccess.get_file_as_string(path4))
+		if typeof(d4) != TYPE_DICTIONARY:
+			continue
+		for k4 in (d4 as Dictionary).keys():
+			var rs4: Array = d4[k4].get("levels", [])
+			for i4 in rs4.size():
+				if str((rs4[i4] as Dictionary).get("type", "")) == "input":
+					inp = {"file": path4, "key": str(k4), "ri": i4}
+					break
+			if not inp.is_empty():
+				break
+		if not inp.is_empty():
+			break
+	if inp.is_empty():
+		fail += 1
+		print("  [FAIL] 找不到填空轮（应有 219 轮，找不到说明扫描口径坏了）")
+	else:
+		var bak5 := _res
+		_res = {"file": inp["file"], "key": inp["key"]}
+		var rs5: Array = _disk_group().get("levels", [])
+		_round_btn.clear()
+		for i5 in rs5.size():
+			_round_btn.add_item("轮%d" % (i5 + 1))
+		_round_btn.selected = int(inp["ri"])
+		_fill_form()
+		var wa = (rs5[int(inp["ri"])] as Dictionary).get("ans", null)
+		var want_ans := str(int(wa)) if _is_int_val(wa) else str(wa)
+		if _ans_text_row.visible and _ans_text.text == want_ans:
+			ok += 1
+		else:
+			fail += 1
+			print("  [FAIL] 填空轮答案回填 want=", want_ans, "｜got=", _ans_text.text)
+		_res = bak5
+		_fill_rounds()
+		_fill_form()
+	# 新增字段的文本级往返：steps（数组）/ goal（字符串）/ ans（数组）
+	var tgt_key := str(data2.keys()[0])
+	var r0: Dictionary = data2[tgt_key]["levels"][0]
+	var saved2 := _res
+	_res = {"file": test_file, "key": tgt_key}
+	var e_steps := _edit_value(raw2, 0, "steps", ["第一步：拖动滑块", "第二步：记录读数"])
+	var e_goal := _edit_str(raw2, 0, "goal", "【smoke】目标")
+	var e_ans := _edit_value(raw2, 0, "ans", [0, 2])
+	_res = saved2
+	var steps_back = _round_field(e_steps, tgt_key, "steps")
+	if _join_str(steps_back) == "第一步：拖动滑块|第二步：记录读数":
+		ok += 1
+	else:
+		fail += 1
+		print("  [FAIL] steps 往返 ", _join_str(steps_back))
+	if str(_round_field(e_goal, tgt_key, "goal")) == "【smoke】目标":
+		ok += 1
+	else:
+		fail += 1
+		print("  [FAIL] goal 往返")
+	if _as_int_list(_round_field(e_ans, tgt_key, "ans")) == [0, 2]:
+		ok += 1
+	else:
+		fail += 1
+		print("  [FAIL] 多选 ans 往返 ", str(_round_field(e_ans, tgt_key, "ans")))
+	# 改 ans 不能碰坏别的字段
+	if str(_round_field(e_ans, tgt_key, "q")) == str(r0.get("q", "")):
+		ok += 1
+	else:
+		fail += 1
+		print("  [FAIL] 字段往返破坏了 q")
 	# ---- C. 校验器自身：对26 个文件逐组跑 _validate_group 的纯数据版
 	for path in files:
 		var data3 = JSON.parse_string(FileAccess.get_file_as_string(path))
@@ -722,13 +1099,24 @@ func _run_smoke() -> void:
 			var rounds3: Array = data3[key].get("levels", [])
 			for ri in rounds3.size():
 				var s3: Dictionary = rounds3[ri]
-				if typeof(s3.get("ans", null)) == TYPE_INT and s3.has("opts"):
+				if _is_num(s3.get("ans", null)) and s3.has("opts"):
 					var n: int = (s3["opts"] as Array).size()
-					if int(s3["ans"]) >= 0 and int(s3["ans"]) < n:
+					if _is_int_val(s3["ans"]) and int(s3["ans"]) >= 0 and int(s3["ans"]) < n:
 						ok += 1
 					else:
 						fail += 1
 						print("  [FAIL] ans 越界（存量）", path, " ", key, " #", ri)
+				elif typeof(s3.get("ans", null)) == TYPE_ARRAY and s3.has("opts"):
+					var n2: int = (s3["opts"] as Array).size()
+					var arr_ok := true
+					for a in (s3["ans"] as Array):
+						if not _is_int_val(a) or int(a) < 0 or int(a) >= n2:
+							arr_ok = false
+					if arr_ok:
+						ok += 1
+					else:
+						fail += 1
+						print("  [FAIL] 多选 ans 越界（存量）", path, " ", key, " #", ri)
 	# ---- D. 舞台构建：每类场景抽样 spawn
 	var picks := {}
 	for ci in GameData.chapters.size():
