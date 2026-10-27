@@ -32,6 +32,15 @@ const MATH_CHARS := "²³¹⁰⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉�
 ## （如在计数题里写「错位相减」）按章逐条整改，不进黑名单。
 const BAD_DISTRACTOR := ["画折线图", "求概率密度", "无法判断", "无法确定", "无法比较", "不能确定", "说不清"]
 
+## B4 · 探究轮「说能拖，但没得拖」。可拖方言一共四种，少认一种就出假阳性：
+##   LabPlane `sliders`（滑块组）/ `drag`（拖点）/ `break`（可拖竖线/分界点），
+##   SequencePlane `slider`（单个，带 range/value/answer，递推章用）。
+## 3D 场景里「拖动」= 旋转视角（Lab3DView 支持），只有明说「滑块/滑动」才算缺 UI。
+const UI_KEYS := ["sliders", "slider", "drag", "break"]
+const D3_KEYS := ["solids", "faces", "planes", "spheres", "view"]
+const DRAG_WORDS := ["拖动", "拉动", "拖一下", "调节"]
+const SLIDER_WORDS := ["滑块", "滑动"]
+
 var _issues: Array[String] = []          ## "file|key|detail"
 var _known := {}                         ## 基线签名集合
 var _label_re: RegEx
@@ -53,6 +62,8 @@ var _n_interact := 0
 var _n_input := 0
 var _n_explore := 0
 var _n_explore_stmt := 0
+## B4：探究轮的「实验要件」——场景里有没有可拖方言。说法与能力不符的走 _add 硬规则。
+var _n_explore_ui := 0
 var _ans_hist := {}
 var _img_opt_count := 0
 var _img_opt_questions := 0
@@ -169,6 +180,7 @@ func _check_stage(path: String, key: String, group_no: int, idx: int, s: Variant
 		_n_explore += 1
 		if q.find("？") < 0 and q.find("?") < 0:
 			_n_explore_stmt += 1
+		_check_explore_ui(path, key, where, st)
 	if q.strip_edges() == "" and not is_interact:
 		_add(path, key, "%s 缺少 q（且非 interact/gate 轮）" % where)
 	elif q.strip_edges() != "":
@@ -271,6 +283,49 @@ func _check_stage(path: String, key: String, group_no: int, idx: int, s: Variant
 	_check_hint_leak(path, key, where, st)
 	_check_label(path, key, group_no, where, st)
 	_check_anim(path, st)
+
+## B4：探究轮的「实验 → 追问」闭环，先兜最硬的一条——**文案承诺了可拖，场景里却没有可拖的东西**。
+## 学生照着「拖动滑块」去找，结果只有一张静态图：这不是设计取舍，是文案与能力脱节。
+## （其余闭环维度如「追问是否只需看画面」机器判不准，见 tools/sample_explore.gd 的人工抽检口径。）
+func _check_explore_ui(path: String, key: String, where: String, st: Dictionary) -> void:
+	var sc = st.get("scene", null)
+	if typeof(sc) != TYPE_DICTIONARY:
+		return
+	var s: Dictionary = sc
+	var has_ui := false
+	for k in UI_KEYS:
+		var v = s.get(k, null)
+		if v == null:
+			continue
+		if v is Array and (v as Array).is_empty():
+			continue
+		if v is Dictionary and (v as Dictionary).is_empty():
+			continue
+		has_ui = true
+	var is_3d := false
+	for k in D3_KEYS:
+		if s.has(k):
+			is_3d = true
+	if has_ui:
+		_n_explore_ui += 1
+		return
+	var text := "%s %s %s" % [str(st.get("q", "")), str(st.get("goal", "")), str(st.get("tip", ""))]
+	var steps = st.get("steps", null)
+	if steps is Array:
+		for x in steps:
+			text += " " + str(x)
+	var claim_slider := false
+	for w in SLIDER_WORDS:
+		if text.find(w) >= 0:
+			claim_slider = true
+	var claim_drag := false
+	for w in DRAG_WORDS:
+		if text.find(w) >= 0:
+			claim_drag = true
+	if claim_slider:
+		_add(path, key, "%s 探究轮文案说「滑块/滑动」，但场景没有 sliders/slider/drag/break —— 学生找不到可拖的东西" % where)
+	elif claim_drag and not is_3d:
+		_add(path, key, "%s 探究轮文案说「拖动/调节」，但场景没有可拖方言（且不是 3D 可旋转视角）" % where)
 
 ## B8：解析/提示里**按位置指代选项**是隐性错误——`StageBase` 按**显示位置**标 A/B/C/D，
 ## 而选项默认会被打乱（`StageRules.order_for`），所以「选项2 混淆了 ∈ 与 ⊆」这类写法
@@ -707,6 +762,8 @@ func _report() -> void:
 	if _n_explore > 0:
 		print("[看板] 探究轮题面陈述句(无「？」): %d/%d（%.1f%%，B3 目标 <20%%）"
 			% [_n_explore_stmt, _n_explore, 100.0 * float(_n_explore_stmt) / float(_n_explore)])
+		print("[看板] 探究轮可拖实验: %d/%d（%.1f%%，B4；其余为静态示意图，配套追问须能直接看图作答）"
+			% [_n_explore_ui, _n_explore, 100.0 * float(_n_explore_ui) / float(_n_explore)])
 	print("[看板] 选项: 图片 %d 处（%d 题）" % [_img_opt_count, _img_opt_questions])
 	print("[看板] ans 原始分布: 0=%d(%.1f%%) 1=%d 2=%d 3=%d"
 		% [a0, (100.0 * float(a0) / float(maxi(1, _n_choice))),
