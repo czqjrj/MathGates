@@ -1,8 +1,2 @@
-# B1 参数母版脚手架 → 引擎方言兼容基线（TODO B1）
-# 状态：✅ 2026-10-26 第四十七轮 B1 方案 A+B 完全修复
-# - 方案 A: 批量降级 83 条方言不兼容（range_array/curve_fn/readout_func/range_missing）
-# - 方案 B: 合并 51 道 explore 关卡到主关卡文件（7 个 param_auto + 8 个 param_master）
-# - 结果：PARAM-CHECK known 从 96 → 0，非四选一题型大幅增加
-# 
-# 本文件已清空，所有已知问题已在以下提交中修复：
-# [待填入 commit hash]
+# scene 方言基线（TODO B1）：每行一条已知问题签名，修完请删行。
+# 生成：godot --headless --path . --script res://tools/check_param_masters.gd -- --write-baseline

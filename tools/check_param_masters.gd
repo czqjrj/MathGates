@@ -1,40 +1,48 @@
 ﻿extends SceneTree
-## B1「参数母版」脚手架 → 引擎方言兼容性闸门（TODO B1 接入前置）。
+## 关卡 scene 方言闸门：**引擎不认识的键 = 静默坏给学生看**。
 ##
 ## 用法：godot --headless --path . --script res://tools/check_param_masters.gd
 ##       godot --headless --path . --script res://tools/check_param_masters.gd -- --write-baseline
-## 输出：PARAM-CHECK: <files> files / <levels> levels / <scenes> scenes / <new> new / <known> known / <warn> warnings
+## 输出：PARAM-CHECK: <files> files / <levels> levels / <curves> curves / <new> new / <known> known / <warn> warnings
 ##       有新增问题时打印 PARAM-CHECK-FAIL 并以非零码退出。
 ##
-## 为什么需要它：`data/param_master_*.json` / `data/*_param_auto.json` 这批内容**不以
-## `_levels.json` 结尾**，所以 `check_questions` / `check_content_health` 的扫描口径都不覆盖它们
-## ——写错引擎不认识的字段时不会有任何红灯，接进关卡后是**静默坏给学生看**：
-##   · `scene.range` 写成数组 → `LabPlane.set_scene()` 里 `float(Array)` 直接报运行时错误，视野停在旧值；
-##   · `curves[].fn` 写了引擎没有的类型 → `_f_y()` 的 match 落回默认分支，**曲线全画成正弦波**；
-##   · `readouts[].expr` 写比较式（`abs(a-1)<0.15`）→ 表达式解析器只支持算术，**读数恒等于兜底值**；
-##   · `gate:true` 但 `answers` 的键对不上滑块名 → `is_sliders_correct()` 恒 false，**学生永远提交不过**。
-## 上面四条都由本工具穷举，且都在 Godot 4.7.2 上实测复现过。
+## **重定位（2026-10-26 第四十八轮）**：本工具原扫 `data/param_master_*.json` /
+## `*_param_auto.json` / `*_levels_param.json` 这批**不以 `_levels.json` 结尾**的脚手架文件。
+## B1 把内容并入关卡文件、删掉 15 个脚手架后，扫描目标变成 0 个，闸门却仍然报
+## `PARAM-CHECK: 0 files` + `OK`——**扫不到东西的检查器必须失败，不能绿**。
+## 现在改扫 `data/*_levels.json` 里**带 `curves` 的场景**，这正是当初 44 关坏掉的那一类方言：
+##   · `curves[].fn` 写了引擎没有的类型 → `_f_y()` 落回默认分支，曲线全画成正弦波；
+##   · `curves[]` 写了 `_draw_curve()` / `_range_intervals()` 不读的键 → 静默忽略，语义丢失；
+##   · `scene.range` 写成数组 → `float(Array)` 运行时错误，视野停在旧值；
+##   · `readouts[].expr` 用比较式或引擎没有的函数 → 读数恒等于兜底值；
+##   · `gate:true` 但 `answers`/`tol` 的键对不上滑块名 → 学生永远提交不过。
+## 不含 `curves` 的场景（LabStage 模块 / lab3d）由各自模块解释，本工具**不判**——用 LabPlane
+## 的规则去判别的方言只会制造假阳性（`line`/`ellipse` 的拖点 gate、`solid_*` 的 3D 读数都是这类）。
+##
+## 白名单不手抄：`_f_y()` 的曲线类型、`_ex_func()` 的表达式函数、`curve` 字典真正被读取的键，
+## 全部**从 LabPlane 源码回扫**，双向核对（多抄 = 假阴性，少抄 = 假阳性）。
 ##
 ## 口径：hard（E_*）= 接进关卡一定会坏；warn（W_*）= 语义丢失/文案口径问题，不挡闸门。
 
 const DATA_DIR := "res://data"
 const BASELINE_PATH := "res://tools/param_master_baseline.txt"
 
-## 脚手架文件的识别方式（与 check_questions 的 `*_levels.json` 口径互补，不重叠）。
-const GROUP_PREFIX := "param_master"
-const SUFFIXES := ["_param_auto.json", "_param_master.json", "_levels_param.json"]
+## 扫描目标：B1 之后参数内容全部住在 `*_levels.json` 里。
+const SUFFIX := "_levels.json"
 
-## LabPlane._f_y() 的 match 分支——曲线类型的唯一真源。
+## LabPlane._f_y() 的 match 分支——曲线类型的唯一真源（由 _self_check 双向核对）。
 const CURVE_FN := ["sin", "cos", "tan", "exp", "log", "ln", "pow", "sqrt", "recip", "quad",
 	"linear", "linrecip", "abs", "const", "hyp", "hypv", "parr", "parl", "paru"]
 ## LabPlane._ex_func() 支持的表达式函数——超出的一律返回 0.0。
 const EXPR_FN := ["sqrt", "abs", "sin", "cos", "tan"]
-## LabPlane._draw_curve() 真正读取的曲线键；其它键被静默忽略（写了等于没写）。
-const CURVE_KEYS := ["fn", "a", "b", "c", "d", "mirror", "color", "width", "from", "to", "dash", "label"]
+## `curve` 字典真正被读的键。注意 `cover`/`range_label` 只被 `_range_intervals()` 读
+## （`range_bands` 功能），漏掉它们就会把**能用的**内容报成「写了等于没写」。
+const CURVE_KEYS := ["fn", "a", "b", "c", "d", "mirror", "from", "to", "cover",
+	"color", "label", "range_label", "width", "dash"]
 
 var _files := 0
 var _levels := 0
-var _scenes := 0
+var _curves := 0
 var _issues: Array = []
 var _warns: Array = []
 var _known := {}
@@ -58,8 +66,8 @@ func _initialize() -> void:
 		print("  [FAIL] ", s)
 	for w in _warns:
 		print("  [warn] ", w)
-	print("PARAM-CHECK: %d files / %d levels / %d scenes / %d new / %d known / %d warnings"
-		% [_files, _levels, _scenes, new_issues.size(), known_hits, _warns.size()])
+	print("PARAM-CHECK: %d files / %d levels / %d curves / %d new / %d known / %d warnings"
+		% [_files, _levels, _curves, new_issues.size(), known_hits, _warns.size()])
 	if new_issues.is_empty():
 		print("OK: 无新增方言不兼容问题（已知 %d 条在基线内）" % known_hits)
 		quit(0)
@@ -79,7 +87,7 @@ func _scan() -> void:
 	d.list_dir_begin()
 	var n := d.get_next()
 	while n != "":
-		if not d.current_is_dir() and n.ends_with(".json") and _is_scaffold(n):
+		if not d.current_is_dir() and n.ends_with(SUFFIX):
 			names.append(n)
 		n = d.get_next()
 	d.list_dir_end()
@@ -87,10 +95,15 @@ func _scan() -> void:
 	for f in names:
 		_files += 1
 		_scan_file(DATA_DIR + "/" + f, f)
+	# 反空转：目标不存在时**必须**失败。B1 合并后这里曾长期是 0 files + OK。
+	if _files == 0:
+		_add("check_param_masters.gd", "*", "E_SELF|data/ 下没扫到任何 %s，闸门目标已失效" % SUFFIX)
+	if _curves == 0:
+		_add("check_param_masters.gd", "*",
+			"E_SELF|扫了 %d 个文件 / %d 关，但没有一个 curves 场景——闸门实际什么都没查" % [_files, _levels])
 
-## 白名单自查：本文件的 CURVE_FN / EXPR_FN 是从 LabPlane 抄来的，抄漏就会把**能跑的**内容
-## 判成不兼容（假阳性），抄多则放过**跑不了的**（假阴性）。这里直接回读 LabPlane 源码核对，
-## 让闸门自己守住「口径与引擎一致」这条命门。
+## 白名单自查：本文件的 CURVE_FN / EXPR_FN / CURVE_KEYS 是从 LabPlane 抄来的，抄漏会把**能跑的**
+## 内容判成不兼容（假阳性），抄多则放过**跑不了的**（假阴性）。这里直接回读 LabPlane 源码核对。
 const LAB_PLANE := "res://scripts/modules/lab/LabPlane.gd"
 
 func _self_check() -> void:
@@ -103,10 +116,13 @@ func _self_check() -> void:
 	# 反过来把能跑的内容判成不兼容（假阳性）。
 	var engine_fns := _match_labels(_slice(src, "func _f_y(", "func _draw_curve("))
 	var ex_fns := _match_labels(_slice(src, "func _ex_func(", "func _ex_var("))
+	var cu_keys := _cu_keys(src)
 	if engine_fns.is_empty():
 		_add("check_param_masters.gd", "CURVE_FN", "E_SELF|没从 _f_y() 里扫出任何分支，切片标记已失效")
 	if ex_fns.is_empty():
 		_add("check_param_masters.gd", "EXPR_FN", "E_SELF|没从 _ex_func() 里扫出任何分支，切片标记已失效")
+	if cu_keys.is_empty():
+		_add("check_param_masters.gd", "CURVE_KEYS", "E_SELF|没从 LabPlane 里扫出任何 cu.get()，白名单无从核对")
 	for fn in CURVE_FN:
 		if not engine_fns.has(fn):
 			_add("check_param_masters.gd", "CURVE_FN",
@@ -119,8 +135,16 @@ func _self_check() -> void:
 		if not fn in CURVE_FN:
 			_add("check_param_masters.gd", "CURVE_FN",
 				"E_SELF_DRIFT|LabPlane._f_y 有 %s 但白名单没有 → 假阴性，须补进白名单" % fn)
-	print("SELF-CHECK: LabPlane._f_y 实有 %d 个曲线类型 / _ex_func 实有 %d 个表达式函数；白名单 %d / %d"
-		% [engine_fns.size(), ex_fns.size(), CURVE_FN.size(), EXPR_FN.size()])
+	for ck in CURVE_KEYS:
+		if not cu_keys.has(ck):
+			_add("check_param_masters.gd", "CURVE_KEYS",
+				"E_SELF_DRIFT|白名单里的曲线键 %s 在 LabPlane 已不被读取 → 假阳性，须同步" % ck)
+	for ck in cu_keys:
+		if not ck in CURVE_KEYS:
+			_add("check_param_masters.gd", "CURVE_KEYS",
+				"E_SELF_DRIFT|LabPlane 读了曲线键 %s 但白名单没有 → 假阴性，须补进白名单" % ck)
+	print("SELF-CHECK: LabPlane._f_y %d 类 / _ex_func %d 函数 / 曲线键 %d 个；白名单 %d / %d / %d"
+		% [engine_fns.size(), ex_fns.size(), cu_keys.size(), CURVE_FN.size(), EXPR_FN.size(), CURVE_KEYS.size()])
 
 ## 收集 match 分支标签：形如 `\t\t"sin":` 的行，返回 {名字: true}。
 func _match_labels(body: String) -> Dictionary:
@@ -132,6 +156,15 @@ func _match_labels(body: String) -> Dictionary:
 			out[m.get_string(1)] = true
 	return out
 
+## LabPlane 里真正被读取的曲线键：`cu.get("x")` / `cu.has("x")` 的 x 集合。
+## 注意只认 `cu` 这个变量名——同一文件里 `uc.get(...)`（单位圆配置）是另一套方言。
+func _cu_keys(src: String) -> Dictionary:
+	var out := {}
+	var re := RegEx.create_from_string("cu\\.(?:get|has)\\(\"([A-Za-z_]+)\"")
+	for m in re.search_all(src):
+		out[m.get_string(1)] = true
+	return out
+
 ## 取 src 中 [起始标记, 结束标记) 之间的片段（结束标记缺失时取到文件尾）。
 func _slice(src: String, a: String, b: String) -> String:
 	var i := src.find(a)
@@ -139,14 +172,6 @@ func _slice(src: String, a: String, b: String) -> String:
 		return ""
 	var j := src.find(b, i + a.length())
 	return src.substr(i, j - i) if j > i else src.substr(i)
-
-func _is_scaffold(f: String) -> bool:
-	if f.begins_with(GROUP_PREFIX) and f.ends_with(".json"):
-		return true
-	for s in SUFFIXES:
-		if f.ends_with(s):
-			return true
-	return false
 
 func _scan_file(path: String, fname: String) -> void:
 	var raw = JSON.parse_string(FileAccess.get_file_as_string(path))
@@ -167,15 +192,17 @@ func _scan_file(path: String, fname: String) -> void:
 
 func _check_level(fname: String, where: String, lv: Dictionary) -> void:
 	var sc: Dictionary = lv.get("scene", {})
+	# 只判 LabPlane 的 curves 方言；别的场景（模块自解释 / 3D）用这套规则判只会误伤。
+	if not sc.has("curves"):
+		return
+	_curves += 1
 	var names := _slider_names(sc)
-	if not sc.is_empty():
-		_scenes += 1
 	# ① 取域：LabPlane 只认 `x`/`y` 数组，或标量 `range`
 	if sc.has("range") and sc["range"] is Array:
 		_add(fname, where, "E_RANGE_ARRAY|scene.range 是数组 %s → float(Array) 运行时报错，须改写为 x/y 或标量 range" % str(sc["range"]))
 	if not sc.has("x") and not sc.has("y") and not sc.has("range"):
 		_add(fname, where, "E_RANGE_MISSING|scene 无 x/y/range，视野用引擎默认值")
-	# ② 曲线类型
+	# ② 曲线类型与曲线键
 	for cu in sc.get("curves", []):
 		if typeof(cu) != TYPE_DICTIONARY:
 			continue
@@ -195,9 +222,16 @@ func _check_level(fname: String, where: String, lv: Dictionary) -> void:
 		for fnm in _call_names(e):
 			if not fnm in EXPR_FN:
 				_add(fname, where, "E_READOUT_FUNC|expr=\"%s\" 用了函数 %s()，引擎只有 %s" % [e, fnm, str(EXPR_FN)])
-	# ④ 门控：gate 与 answers/tol 的键必须落在滑块名上
+	# ④ 门控：两种方言，判定函数不同，不能混判
+	#   · 滑块 gate：`scene.sliders` + `answers`/`tol`（`is_sliders_correct()`）
+	#   · 拖点 gate：`scene.drag.answer` + `drag.tol`（拖点自己的判定）
+	# 早先只按滑块口径判，把拖点 gate（`hypo_def` / `para_apply`）误报成「永远提交不过」。
 	var gate := bool(lv.get("gate", sc.get("gate", false)))
-	if gate:
+	if gate and sc.has("drag"):
+		var dr: Dictionary = sc.get("drag", {})
+		if not dr.has("answer") or dr["answer"] == null:
+			_add(fname, where, "E_GATE_NO_ANSWER|gate=true 且是拖点 gate，但 scene.drag.answer 缺失 → 永远提交不过")
+	elif gate:
 		var ans: Dictionary = lv.get("answers", sc.get("answers", {}))
 		if ans.is_empty():
 			_add(fname, where, "E_GATE_NO_ANSWER|gate=true 但没有 answers → is_sliders_correct() 恒 false，永远提交不过")
@@ -281,7 +315,7 @@ func _write_baseline() -> void:
 		print("PARAM-CHECK-FAIL: 无法写入 " + BASELINE_PATH)
 		quit(1)
 		return
-	f.store_string("# B1 参数母版脚手架 → 引擎方言兼容基线（TODO B1）：每行一条已知问题签名，修完请删行。\n")
+	f.store_string("# scene 方言基线（TODO B1）：每行一条已知问题签名，修完请删行。\n")
 	f.store_string("# 生成：godot --headless --path . --script res://tools/check_param_masters.gd -- --write-baseline\n")
 	for k in keys:
 		f.store_string(str(k) + "\n")
