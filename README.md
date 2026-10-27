@@ -72,9 +72,9 @@ tools/           开发/测试脚本:check_all.gd(脚本检查)、check_question
 				 json_text(G2 JSON 文本级修改工具:括号匹配定位,不重排文件)、
 				 LevelPreview.tscn + level_preview.gd(G2 关卡预览器/编辑器,见「关卡作者工具链」)、
 				 scaffold_level.gd(G2 关卡脚手架:一键生成新关卡组骨架,默认 dry-run)、
-				 check_param_masters.gd + param_master_baseline.txt(B1 参数母版→LabPlane 引擎方言闸门,
-				 存量基线,修一条删一行)、fix_param_master_dialect.py(按上述闸门修数据:比较式读数→
-				 偏差读数、pow→乘法、繁转简;行级替换不重排 JSON,默认 dry-run)
+				 check_param_masters.gd + param_master_baseline.txt(关卡 scene 方言闸门:
+				 扫 *_levels.json 里带 curves 的场景——曲线类型/曲线键/取域/读数/gate,扫不到目标即硬失败)、
+				 fix_param_master_dialect.py(B1 期一次性迁移脚本,B1 合并后已无目标,保留备查)
 tests/           回归测试(GameData 纯逻辑)
 build/           导出产物(APK,git 忽略)
 ```
@@ -354,14 +354,14 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Godot "<godot472.
 - `check_content_health.gd`：内容数据完整性闸门，输出
   `CONTENT-HEALTH: N chapters / N levels / 0 problems`；有问题是 `CONTENT-HEALTH-FAIL` + 非零退出。
   改 `curriculum.json` / `*_levels.json` 后**必跑**（改坏了的引用与重复 id 靠它兜）。
-- `check_param_masters.gd`：**B1 参数母版脚手架 → 引擎方言**闸门，输出
-  `PARAM-CHECK: N files / N levels / N scenes / 0 new / N known / N warnings`。
-  这批 `data/param_master*.json` / `data/*_param_auto.json` **不以 `_levels.json` 结尾**，
-  上面两个闸门的扫描口径都不覆盖它们——字段写成引擎不认识的样子时**不会有任何红灯**，
-  接进关卡才是静默坏给学生看（视野中断 / 曲线全画成正弦波 / 读数恒为 0 / 门控永远不过）。
-  存量 96 条记在 `tools/param_master_baseline.txt`，**改一条删一行**；删干净才谈接入。
-  其中「不需要设计决策」的两类已由 `tools/fix_param_master_dialect.py` 修掉（155 → 96）。
-  白名单（曲线类型 / 表达式函数）由 `_self_check()` 回读 `LabPlane` 源码核对，防口径漂移。
+- `check_param_masters.gd`：**关卡 scene 方言**闸门，输出
+  `PARAM-CHECK: N files / N levels / N curves / 0 new / N known / N warnings`。
+  扫 `data/*_levels.json` 里**带 `curves` 的场景**（LabPlane 曲线方言）——字段写成引擎不认识的样子时
+  其它闸门都不报，接进关卡才是静默坏给学生看（视野中断 / 曲线全画成正弦波 / 读数恒为 0 / 门控永远不过）。
+  **2026-10-26 第四十八轮重定位**：B1 把 `data/param_master*.json` / `*_param_auto.json` 并入关卡文件后，
+  旧口径实际只扫到 0 个文件却仍报 OK（假绿灯）；现在**扫不到文件或扫不到 `curves` 场景都会 `E_SELF` 硬失败**。
+  不含 `curves` 的场景（LabStage 模块 / lab3d）不判——用 LabPlane 规则判别的方言只会假阳性。
+  白名单（曲线类型 / 表达式函数 / 曲线键）全部由 `_self_check()` 回读 `LabPlane` 源码双向核对，防口径漂移。
 - 以上检查已接入 CI（`.github/workflows/check.yml`，push/PR 自动跑）：五件套 + UiSmoke + check_assets +
   check_questions + check_knowledge + check_content_health + check_param_masters +
   LevelPreview 自检（`-- --smoke`）+ scaffold dry-run。

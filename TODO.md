@@ -23,7 +23,7 @@
 | 编号 | 标题 | 优先级 | 说明 |
 |---|---|---|---|
 | **A1** | `SequenceStage` 迁移到 `StageBase` | **P0** | ✅ 已完成（763 → 185 行，双轨消除） |
-| **B1** | 题型单一：把 `interact/gate` 与填空题用起来 | **P0** | 🟡 参数母版 155 条方言已全清（第四十七轮 `PARAM-CHECK 0 known`）；**51 道 explore 中仅 7 道可用**（场景只用引擎原生图元），已修好并接入课程表/知识点，其余 44 道因场景用了引擎不读的键（`coeffs/slope/center/radius/eccentricity/roots`、`points_scatter/bar_chart`）**需逐关手工移植**。合并遗留已清零：`QUESTION-CHECK 79 new→0`、`orphans 15→0`、轮次标签 `51→0`。全库非四选一 **21.3%**（目标 ≥30%，未达标）。 |
+| **B1** | 题型单一：把 `interact/gate` 与填空题用起来 | **P0** | 🟡 参数母版 155 条方言已全清（第四十七轮 `PARAM-CHECK 0 known`）；**51 道 explore 中仅 7 道可用**（场景只用引擎原生图元），已修好并接入课程表/知识点，其余 44 道因场景用了引擎不读的键（`coeffs/slope/center/radius/eccentricity/roots`、`points_scatter/bar_chart`）**需逐关手工移植**。合并遗留已清零：`QUESTION-CHECK 79 new→0`、`orphans 15→0`、轮次标签 `51→0`。全库非四选一 **21.3%**（目标 ≥30%，未达标）。**方言闸门已重定位**（第四十八轮）：扫 `*_levels.json` 的 `curves` 场景（26 文件 / 89 场景 / 0 new），44 关移植时可先跑它确认键是否被引擎读取 |
 | **B3** | 「探究→建构→迁移」名不副实 | **P0** | 🟡 26/26 章探究轮题面已改写（陈述句 **2/280 = 0.7%**，验收①达标）；建构/迁移轮标准已按「复习优先」修订，试点待启动 |
 | **B9** | 轮次标签编号错乱（纯编校，可脚本修） | **P0** | ✅ 已完成（`fix_labels.gd`，错位归 0） |
 | **C1** | 重复通关无限刷经验/金币 | **P0** | ✅ 已完成（经验仅星升；重复奖励×0.3/日封顶） |
@@ -133,8 +133,33 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`4d7d48b`（feat B1 遗留清零）→ `f95915b`（docs B1 指标纠错）→ `870de1d`（docs B3 复习优先修订）→ `32f9f4a`（docs B3 标准）→ …
-  **已同步 `origin/main`**。
+- **最后提交**：`c8f2274`（feat PARAM-CHECK 重定位）→ `fdce5d2`（docs B1 状态）→ `4d7d48b`（feat B1 遗留清零）→
+  `f95915b`（docs B1 指标纠错）→ `870de1d`（docs B3 复习优先修订）→ … **已同步 `origin/main`**。
+
+- **本轮工作 V（2026-10-26，第四十八轮）：`PARAM-CHECK` 假绿灯 → 真闸门**（feat `c8f2274`）。
+  - **怎么发现的**：拉完 B1 那批提交后跑全量，`PARAM-CHECK: 0 files` 仍然 `OK`。查下去：
+    它扫的是 `data/param_master_*.json` / `*_param_auto.json` / `*_levels_param.json`，
+    而 B1 把这些文件全并进 `*_levels.json` 后删掉了 → **扫描目标 0 个，基线 0 条，永远绿**。
+    这正是 §0.2 里写的「假绿灯」：`PARAM-CHECK` 这项从此不提供任何信息，但看起来一切正常。
+  - **重定位**：改扫 `data/*_levels.json` 里**带 `curves` 的场景**（89 个，10 个文件）——
+    正是当初 44 关坏掉的那一类方言（`curves[].fn` 引擎没有 → 画成正弦波；曲线键引擎不读 → 语义丢失）。
+    不含 `curves` 的场景（LabStage 模块 / lab3d）不判：用 LabPlane 的规则去判别的方言只会误伤
+    （`line`/`ellipse` 的拖点 gate、`solid_*` 的 3D 读数全是这类，实测会多出 4+29 条假阳性）。
+  - **反空转（本轮的机制产出）**：`_files == 0` 或 `_curves == 0` → `E_SELF` **硬失败**。
+    「扫不到东西」必须是红灯，不能是绿——这条比补 100 条检查更能防同一类事故。
+  - **两种 gate 分开判**：滑块 gate（`sliders` + `answers`/`tol`）与拖点 gate（`drag.answer`/`drag.tol`）
+    判定函数不同，早先只按滑块口径判，把 `hypo_def` / `para_apply` 误报成「永远提交不过」。
+  - **白名单不再手抄**：曲线键加 `cover` / `range_label`（只被 `_range_intervals()` 读，`range_bands` 功能用），
+    并让 `_self_check()` 从 `LabPlane` 源码回扫 `cu.get("x")` 得到真集，**双向核对**
+    （多抄 = 假阴性，少抄 = 假阳性）。实测白名单 19 类曲线 / 5 个函数 / 14 个曲线键，与源码一致。
+  - **反向验证**：往 `data/` 丢一个探针 `zz_probe_levels.json`（`fn:"coeffs"` + `roots` 键）→
+    `1 new / 1 warning / exit 1`；删掉后回到 0。
+  - **结果**：`PARAM-CHECK: 26 files / 1068 levels / 89 curves / 0 new / 0 known / 0 warnings`，
+    基线 96 条（已失效的旧签名）清零成「0 条 + 说明头」。
+  - 十一项全绿：`CHECKED 116` / `TESTS 2232` / `SMOKE 293` / `UI-SMOKE 422` / `LabSmoke TMP_OK` /
+    `LEVEL-PREVIEW 7544` / `QUESTION-CHECK 0 new / 0 known / 1 warning` / `KNOWLEDGE hard-gaps=0` /
+    `CONTENT-HEALTH 0 problems` / `ASSETS 30.67 MB（3147 files）` / `PARAM-CHECK 0 new`。
+  - **下一项建议**：B4（实验与追问闭环，与 B3 新标准同源，可先出静态度量再改）→ B11（模块间质量方差）→ E5。
 
 - **本轮工作 I（2026-10-26，第四十七轮）：B10 题干套路化与重复清理**（feat `b67a9b5`）。
   - **8 处改写 +2 处区分**：
@@ -3323,7 +3348,7 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
 | `--headless --path . --script res://tools/check_knowledge.gd`（**新增，见 E1**） | `KNOWLEDGE: <c> chapters / <p> points / <l> levels mapped / hard-gaps=<n> (baseline <b>)`（不得出现 `KNOWLEDGE-FAIL`） |
 | `--headless --path . res://tools/LevelPreview.tscn -- --smoke`（**新增，见 G2**） | `LEVEL-PREVIEW-SMOKE: <N> ok, 0 fail`（作者工具链：数据定位回归 + 编辑往返 + 舞台抽样） |
 | `--headless --path . --script res://tools/check_content_health.gd`（**新增，见 A18**） | `CONTENT-HEALTH: <c> chapters / <l> levels / 0 problems (orphans=0)`（不得出现 `CONTENT-HEALTH-FAIL`） |
-| `--headless --path . --script res://tools/check_param_masters.gd`（**新增，见 B1**） | `PARAM-CHECK: <f> files / <l> levels / <s> scenes / <n> new / <k> known / <w> warnings`（不得出现 `PARAM-CHECK-FAIL`；存量在 `tools/param_master_baseline.txt`，修一条删一行） |
+| `--headless --path . --script res://tools/check_param_masters.gd`（**新增，见 B1**） | `PARAM-CHECK: <f> files / <l> levels / <c> curves / <n> new / <k> known / <w> warnings`（不得出现 `PARAM-CHECK-FAIL`；**扫不到文件或扫不到 curves 场景即 `E_SELF` 硬失败**——检查器不许在 0 个目标上绿） |
 
 > 引擎：Godot 4.7.2（本机 `D:\Program Files\Godot_v4.7.2-stable_win64.exe`——注意它是**可执行文件**
 > 而不是目录；且只有 GUI 子系统版本，**没有** console 变体）。
@@ -3336,19 +3361,21 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
 > `Parse Error: Could not find type "BossHud"`。用编辑器打开一次，或跑
 > `& "<godot472.exe>" --headless --path . --import`（新增 `class_name` 文件后同样要跑一次）。
 
-**当前回归基线**（改完请对照，数字只能升不能降；2026-10-26 第四十七轮 B10 题干套路化清零后）：
+**当前回归基线**（改完请对照，数字只能升不能降；2026-10-26 第四十八轮 `PARAM-CHECK` 重定位后）：
 `CHECKED 116 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 2232 passed, 0 failed` / `SMOKE: 293 ok, 0 fail` /
 `UI-SMOKE: 422 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
-`LEVEL-PREVIEW-SMOKE: 7474 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
+`LEVEL-PREVIEW-SMOKE: 7544 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
 `QUESTION-CHECK: 26 files / 276 levels / 1064 questions / 0 new / 0 known / 1 warning`
-（A5 校验器：B1 遗留已清零；看板另有「干扰项黑名单命中 0 处」见 B5、「anim 演示覆盖 13/26 文件」见 D2）
+（A5 校验器：B1 遗留已清零；看板另有「干扰项黑名单命中 0 处」见 B5、「anim 演示覆盖 13/26 文件」见 D2、
+「inline 未覆盖 264 段」见 B7/A10）/
 `PERF idle 171 / lab_plane 259 / lab3d 251`（µs，headless CPU 处理耗时，见 `tools/perf_probe.tscn`）/
-`ASSETS: ≈30.64 MB over 3148 files … banned=0, oversize=0`（A13 护栏；末位随测试产物/内容批次微漂移，
+`ASSETS: ≈30.67 MB over 3147 files … banned=0, oversize=0`（A13 护栏；末位随测试产物/内容批次微漂移，
 看 `banned` / `oversize` 即可）/
 `KNOWLEDGE: 27 chapters / 282 points / 282 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `CONTENT-HEALTH: 27 chapters / 282 levels / 0 problems (orphans=0)`（A18 内容体检；B1 清理后未映射组已归零）/
-`PARAM-CHECK: 0 files / 0 levels / 0 scenes / 0 new / 0 known / 0 warnings`（B1 参数母版已并入 `*_levels.json`，
-脚手架文件清零、基线清零）/
+`PARAM-CHECK: 26 files / 1068 levels / 89 curves / 0 new / 0 known / 0 warnings`（scene 方言闸门；
+第四十八轮重定位——B1 把参数母版并入 `*_levels.json` 后旧口径只扫到 0 个文件却仍报 OK，
+现已改扫 `curves` 场景并加反空转 `E_SELF`）/
 `LATEX-PROBE: conic C4 68 / C5 76 / C6 68 段 / 0 失败`（E2 收官）、
 `vector_physics 26 段 / 0 失败`、`prob_simulate 14 段 / 0 失败`（E3 收官；**探针需按组分进程**，
 写法见 E2 的 MicroTeX 累积崩溃注：扫 `$$([^$]+)$$` 逐段调 `InlineMath._latex_bbcode(latex,26)`，
