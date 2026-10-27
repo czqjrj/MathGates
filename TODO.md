@@ -43,7 +43,7 @@
 | **A18** | 内容数据异常时缺用户可见兜底 | **P1** | ✅ 已完成（2026-10-21 第三十五轮 `rules/ContentHealth.gd` 体检 + `ui/ContentFallback.gd` 兜底卡/横幅 + `tools/check_content_health.gd` CI 闸门；顺带修真 bug：关卡 id `solid_angle` 被两章共用） |
 | **A19** | 多用户切换的会话状态残留 | **P2** | ✅ 已完成（2026-10-22 第三十六轮 `3bd4f59`：`_reset_session()` 收口不存档会话态，login/logout/create_user/delete_user 后复位；修复「切档后不再问候萌宠」；`·登记` 约定防回退） |
 | **B2** | 每关题量 3 → 5~8 | **P1** | 🟡 下限全线达标（2026-10-20：27/27 章 ≥ 5.0 题/关，全库平均 3.93；上探 6~7 题/关中段待续）。**2026-10-20 起暂缓，先做结构收敛** |
-| **B4** | 实验与追问不闭环 | **P1** | 探究轮形同虚设 |
+| **B4** | 实验与追问不闭环 | **P1** | 🟡 已出度量与硬规则：280 探究轮中可拖实验 155（55.4%）、「文案说拖动但没得拖」清零（3 处已修）；原静态口径证伪（25 命中 21 假阳性），余 20 关人工抽检（C/D 类各 10） |
 | **B5** | 干扰项改为诊断性干扰项 | **P1** | ✅ 已完成（2026-10-20 收官：黑名单校验器 + 42 轮整改 + 抽检 30 题；`tools/sample_distractors.gd`） |
 | **B6** | 选项过短、退化为结果核对 | **P1** | 概念性误解测不出来 |
 | **B7** | 图片选项回归 LaTeX 文本 | **P1** | ✅ 已完成（2026-10-26 第四十六轮）：关卡文件 **188 处**图片选项全改 `$$LaTeX$$`（`vector` 44 / `recurrence` 42 / `ellipse` 22 / `conic` 6 + 立几方法 74），`data/` 下 `opts` 引用 `res://art/**` 归零；顺带补 22 条「选项变文本后才暴露」的 hint 泄露 |
@@ -133,8 +133,30 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`c8f2274`（feat PARAM-CHECK 重定位）→ `fdce5d2`（docs B1 状态）→ `4d7d48b`（feat B1 遗留清零）→
-  `f95915b`（docs B1 指标纠错）→ `870de1d`（docs B3 复习优先修订）→ … **已同步 `origin/main`**。
+- **最后提交**：`cc94ee6`（feat B4 探究轮实验要件）→ `cdc3468`（docs 第四十八轮）→ `c8f2274`（feat PARAM-CHECK 重定位）→
+  `fdce5d2`（docs B1 状态）→ `4d7d48b`（feat B1 遗留清零）→ … **已同步 `origin/main`**。
+
+- **本轮工作 VI（2026-10-26，第四十九轮）：B4 实验与追问闭环 —— 先证伪口径，再落地能判准的那一条**（feat `cc94ee6`）。
+  - **先量后改**：写了 `tools/sample_explore.gd`，把 280 个探究轮摊开——可拖实验 **155**、
+    静态示意图 125；追问数值与滑块当前值完全无关 16；答案直接印在画面文字上 46。
+  - **口径证伪（本轮最重要的产出）**：B4 原验收写的「静态近似：追问数值是否在 `scene.sliders`
+    值域/取值上」**跑不通**。实测 25 个命中里 21 个假阳性——题干方程里的常数（`(x−2)²+(y+1)²=9`
+    的 9）被当作「学生够不到的参数」；反过来，B4 自己举的反例 `seq_ap/1` 因为 `a₁=1、d=2`
+    恰是滑块当前值，会被判成「闭环」。**这条路不能做成闸门**，已在 B4 节写明「别再按这个口径写检查器」。
+  - **只留下机器能判准的一条**：文案承诺「滑块/滑动/拖动/调节」，场景却没有任何可拖方言
+    （`sliders` / `slider` / `drag` / `break`）→ `check_questions` 硬报。
+    可拖方言共 4 种：`break`（可拖竖线，函数章）、`slider`（递推章）以前都没被认出来，
+    少认一种就会把**能拖的**判成不能拖——第一次扫描的 14 条候选里有 12 条是这种假阳性。
+  - **修了 3 处真问题**：`vectors/vec_collinear`、`vectors/vec_basis`（文案说「拖动滑块」，场景是静态向量图）、
+    `space/space_5_3`（说「拖动滑块用平面去截正方体」，3D 场景没有滑块）。顺手把 `vec_basis`
+    图里直接印着答案的标签 `a/|a|=(1,0)` 改成 `a/|a|`。
+  - **结果**：`QUESTION-CHECK 0 new`，新增看板 `探究轮可拖实验: 155/280（55.4%）`；
+    `sample_explore` 四张清单 A=0 / B=16 / C=97 / D=46。
+  - 十一项全绿：`CHECKED 117`（+1 新脚本）/ `TESTS 2232` / `SMOKE 293` / `UI-SMOKE 422` /
+    `LabSmoke TMP_OK` / `LEVEL-PREVIEW 7544` / `QUESTION-CHECK 0 new / 0 known / 1 warning` /
+    `KNOWLEDGE hard-gaps=0` / `CONTENT-HEALTH 0 problems` / `ASSETS 30.68 MB` / `PARAM-CHECK 0 new`。
+  - **B4 余下（人工）**：C 类抽 10 关 + D 类抽 10 关，判「示意图对答题有帮助」合格率 ≥75%，结论写回 B4 节。
+  - **下一项建议**：B6（选项过短 / 理由选项）或 B11（模块质量方差），两者都能先出清单再改。
 
 - **本轮工作 V（2026-10-26，第四十八轮）：`PARAM-CHECK` 假绿灯 → 真闸门**（feat `c8f2274`）。
   - **怎么发现的**：拉完 B1 那批提交后跑全量，`PARAM-CHECK: 0 files` 仍然 `OK`。查下去：
@@ -1964,13 +1986,32 @@ EXPLORE_ALIGN_CHECK = {'has_sliders': True, 'question_values_match': True}
 - 反例 `sequences_levels.json` `seq_ap.levels[0]`：让「拖动滑块改变首项 a₁ 与公差 d，观察散点 aₙ」，
   追问却是「a₁=1，d=2 时，a₅ 是多少？」——拖滑块对答题毫无帮助。
 - 正例 `circle_levels.json` `circle_1_1`：滑块 `a=2,b=-1,r=3`，追问正是「(x−2)²+(y+1)²=9 的圆心与半径」。
+- **全库实测**（第四十九轮，`tools/sample_explore.gd`）：280 个探究轮里 **155 轮有可拖实验**
+  （滑块 / 拖点 / 可拖分界点 / 序列滑块），其余 125 轮是静态示意图；追问数值与滑块当前值
+  **完全无关** 16 轮；正确答案**直接印在画面文字上** 46 轮（这些不需要算，看图即可）。
 
 **做法**
 - 每个探究轮建立「实验 → 追问」闭环：追问的条件 = 实验给出的初始/最终状态；
 - 或让 `gate` 承接实验（调到满足条件）后再追问结论。
+- **原定的静态口径已证伪**：把「追问数值是否落在 `scene.sliders` 值域内」当验收是错的——
+  实测 25 个命中里 **21 个假阳性**（题干方程里的常数，如 `(x−2)²+(y+1)²=9` 的 9，被当成
+  「学生够不到的参数」）；而本节自己的反例 `seq_ap/1`（`a₁=1、d=2` 恰是滑块当前值）
+  反而会被判成「闭环」。**别再按这个口径写检查器。**
+- **落地了两件**
+  * `check_questions` 硬规则（机器能判准的唯一一条）：探究轮文案说「滑块/滑动/拖动/调节」，
+    场景却没有 `sliders`/`slider`/`drag`/`break`（且不是 3D 可旋转视角）→ 直接报错。
+    可拖方言共 4 种，少认一种就出假阳性（递推章用 `slider`，函数章用 `break`）。
+    存量 3 处已修：`vectors/vec_collinear`、`vectors/vec_basis`（改为看图作答）、
+    `space/space_5_3`（改为「观察图中……截面」），并顺手去掉 `vec_basis` 图里直接印答案的标签。
+  * `tools/sample_explore.gd`：人工抽检器，四张清单——A 说能拖没得拖 / B 追问与当前状态无关 /
+    C 静态图 + 追问要另算 / D 答案直接印在图上；`-- N` 控制每张清单条数。
 
-**验收**
-- 抽检全部探究轮，闭环率 ≥ 90%（可用 A5 的校验器做静态近似：追问中的数值是否出现在 `scene.sliders` 的值域/取值上）。
+**验收（修订）**
+- 硬指标：**A 类 = 0**（`check_questions` 兜住，当前已达成）。
+- 人工抽检：从 C 类随机 10 关 + D 类随机 10 关，判「实验/示意图对答题有帮助、追问与画面一致」
+  合格率 ≥75%；结论写在本节末尾（**待人工**）。
+- 看板：`[看板] 探究轮可拖实验: 155/280（55.4%）`。这个数**不设目标值**——B3 修订后
+  「探究轮 = 可视化解释」，静态示意图是合法形态；关键是追问能不能直接看图作答（→ C 类抽检）。
 
 ---
 
@@ -3362,14 +3403,14 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
 > `& "<godot472.exe>" --headless --path . --import`（新增 `class_name` 文件后同样要跑一次）。
 
 **当前回归基线**（改完请对照，数字只能升不能降；2026-10-26 第四十八轮 `PARAM-CHECK` 重定位后）：
-`CHECKED 116 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 2232 passed, 0 failed` / `SMOKE: 293 ok, 0 fail` /
+`CHECKED 117 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 2232 passed, 0 failed` / `SMOKE: 293 ok, 0 fail` /
 `UI-SMOKE: 422 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
 `LEVEL-PREVIEW-SMOKE: 7544 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
 `QUESTION-CHECK: 26 files / 276 levels / 1064 questions / 0 new / 0 known / 1 warning`
 （A5 校验器：B1 遗留已清零；看板另有「干扰项黑名单命中 0 处」见 B5、「anim 演示覆盖 13/26 文件」见 D2、
-「inline 未覆盖 264 段」见 B7/A10）/
+「inline 未覆盖 264 段」见 B7/A10、「探究轮可拖实验 155/280」见 B4）/
 `PERF idle 171 / lab_plane 259 / lab3d 251`（µs，headless CPU 处理耗时，见 `tools/perf_probe.tscn`）/
-`ASSETS: ≈30.67 MB over 3147 files … banned=0, oversize=0`（A13 护栏；末位随测试产物/内容批次微漂移，
+`ASSETS: ≈30.68 MB over 3147 files … banned=0, oversize=0`（A13 护栏；末位随测试产物/内容批次微漂移，
 看 `banned` / `oversize` 即可）/
 `KNOWLEDGE: 27 chapters / 282 points / 282 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `CONTENT-HEALTH: 27 chapters / 282 levels / 0 problems (orphans=0)`（A18 内容体检；B1 清理后未映射组已归零）/

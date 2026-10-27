@@ -74,6 +74,7 @@ tools/           开发/测试脚本:check_all.gd(脚本检查)、check_question
 				 scaffold_level.gd(G2 关卡脚手架:一键生成新关卡组骨架,默认 dry-run)、
 				 check_param_masters.gd + param_master_baseline.txt(关卡 scene 方言闸门:
 				 扫 *_levels.json 里带 curves 的场景——曲线类型/曲线键/取域/读数/gate,扫不到目标即硬失败)、
+				 sample_explore.gd(B4 探究轮人工抽检器:说能拖没得拖/追问与实验无关/静态图要另算/答案印在图上)、
 				 fix_param_master_dialect.py(B1 期一次性迁移脚本,B1 合并后已无目标,保留备查)
 tests/           回归测试(GameData 纯逻辑)
 build/           导出产物(APK,git 忽略)
