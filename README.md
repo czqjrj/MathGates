@@ -384,7 +384,9 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Godot "<godot472.
    ```
    - 右侧用**真实舞台**渲染（LabStage/Lab3DStage/SequenceStage 等），所见即学生所见；
    - 数据文件被外部修改后 ~0.7s **自动热重载**；
-   - 内置 A5 轻量校验（轮次编号/ans 范围/选项重复/题干缺失），写回后自动复检；
+   - 编辑态覆盖：`q` / `ask` / `opts` / `ans`（单选、`0,2` 多选、填空轮原样数值/文本）/ `hint` / `explain` /
+     探究轮的 `goal` / `steps` / `tip` / `success` / `scene`；
+   - 内置 A5 轻量校验（轮次编号/ans 范围/选项重复/多选下标/题干缺失），**报错带行号 `L123`**，写回后自动复检；
    - 写回走 `tools/json_text.gd` **文本级修改**，只动目标字段、不重排文件（diff 最小）；
    - 代码驱动的官方收编关（SolidChallenge 方法关 / ConicStage C1~C3，TODO A2 收编）只读预览。
 3. 填完内容后按「自检与 CI」一节跑全量校验，别忘了 `fix_labels --apply` 规范轮次标签。

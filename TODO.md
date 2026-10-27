@@ -45,7 +45,7 @@
 | **B2** | 每关题量 3 → 5~8 | **P1** | 🟡 下限全线达标（2026-10-20：27/27 章 ≥ 5.0 题/关，全库平均 3.93；上探 6~7 题/关中段待续）。**2026-10-20 起暂缓，先做结构收敛** |
 | **B4** | 实验与追问不闭环 | **P1** | 🟡 已出度量与硬规则：280 探究轮中可拖实验 155（55.4%）、「文案说拖动但没得拖」清零（3 处已修）；原静态口径证伪（25 命中 21 假阳性），余 20 关人工抽检（C/D 类各 10） |
 | **B5** | 干扰项改为诊断性干扰项 | **P1** | ✅ 已完成（2026-10-20 收官：黑名单校验器 + 42 轮整改 + 抽检 30 题；`tools/sample_distractors.gd`） |
-| **B6** | 选项过短、退化为结果核对 | **P1** | 🟡 度量校准（第五十轮）：选项字数中位数 8.0；全数值/≤6 字选项 105 题（12.4%，`trig 46%`/`counting 44%`/`parabola 35%` 最集中）；概念轮「理由选项」已 57.3%（≥30% 达标）。余：105 题按章整改 + `err_reason` 错因标签（引擎侧） |
+| **B6** | 选项过短、退化为结果核对 | **P1** | 🟡 度量校准（第五十轮）：选项字数中位数 8.0；概念轮「理由选项」已 57.3%（≥30% 达标）。**「105 题全数值选项」经第五十一轮复核作废**（102 条是正经计算题、3 条是探究轮误判）。余：仅 `err_reason` 错因标签（引擎侧） |
 | **B7** | 图片选项回归 LaTeX 文本 | **P1** | ✅ 已完成（2026-10-26 第四十六轮）：关卡文件 **188 处**图片选项全改 `$$LaTeX$$`（`vector` 44 / `recurrence` 42 / `ellipse` 22 / `conic` 6 + 立几方法 74），`data/` 下 `opts` 引用 `res://art/**` 归零；顺带补 22 条「选项变文本后才暴露」的 hint 泄露 |
 | **B11** | 模块间质量方差过大 | **P1** | 同一品牌下深度差 3 倍 |
 | **A4** | 上帝对象拆分（`GameData`/`StageBase`/`TheoremTree`） | **P2** | ✅ 已收口（2026-10-21 第二十五轮 `7b4f8be`）：九刀拆出规则层七文件 696 行，三文件 4725→4311 行；行数红线进 `check_all`（超限即红灯）+ README「代码结构红线」；全程无行为变化、九件套绿 |
@@ -73,7 +73,7 @@
 | **F6** | 首次引导与机制说明 | **P2** | ✅ 已完成（2026-10-22 第三十九轮：一次性引导气泡 + 地图图例 + 「? 帮助/图例」随时回看 + 设置页「重置引导」；全新学生仅凭引导过第一关留人工验收） |
 | **F7** | 授权与第三方声明缺失（LICENSE / 素材来源 / 教材改编） | **P0** | ✅ LICENSE+第三方声明齐备、排除 GPLv3 字体；残留：标题字体替换/素材签字 |
 | **G1** | 错题间隔重复（SRS 遗忘曲线排程） | **P1** | ✅ 已完成（2026-10-21 第三十三轮）：Leitner 阶梯 1/3/7/16/35 + 日序号到期 + 连对 4 次毕业 + 今日待复习入口（首页「复习 N」/错题本卡片）；旧档无排程视为立即到期 |
-| **G2** | 关卡作者工具链（编辑器 + 实时预览） | **P1** | 🟡 预览器 + 脚手架已落地（`LevelPreview.tscn` + `scaffold_level.gd`，入 CI）；编辑态仅覆盖 q/ask/opts/ans/hint/explain/scene |
+| **G2** | 关卡作者工具链（编辑器 + 实时预览） | **P1** | 🟡 预览器 + 脚手架已落地（`LevelPreview.tscn` + `scaffold_level.gd`，入 CI）；编辑态已覆盖 q/ask/opts/ans（含多选）/hint/explain/goal/steps/tip/success/scene，校验报错带行号 |
 | **G3** | 学习报告 / 家长视图（可导出、含趋势） | **P2** | ✅ 已完成（2026-10-21 第三十四轮）：活动日志按天累积（保留 120 天）+ 逐日趋势柱状 + 周报/月报文本 + CSV/JSON 本地导出 + 家长只读摘要（**不含题目原文**，默认不联网）；同轮拆存档层 `rules/UserStore.gd`，GameData 1593 → 1558 行 |
 | **G4** | 云同步（**决策项：暂不实施**，需先做隐私评估） | **P2** | 先由 F5 覆盖大部分场景 |
 | **G5** | 音效与配乐（**决策项：先确认是否刻意不做**） | **P2** | 无 BGM，音效已完整 |
@@ -133,8 +133,31 @@
 
 ### 0.3 续接点（每次收工更新）
 
-- **最后提交**：`cc94ee6`（feat B4 探究轮实验要件）→ `cdc3468`（docs 第四十八轮）→ `c8f2274`（feat PARAM-CHECK 重定位）→
+- **最后提交**：`de22cad`（feat G2 编辑态补全 + bug 修复）→ `e2509fb`（docs B6 度量校准，上一轮）→ `c8f2274`（feat PARAM-CHECK 重定位）→
   `fdce5d2`（docs B1 状态）→ `4d7d48b`（feat B1 遗留清零）→ … **已同步 `origin/main`**。
+
+- **本轮工作 VII（2026-10-27，第五十一轮）：G2 编辑态补全 —— 顺手抓出两个「从来没跑过」的检查**（feat `de22cad`）。
+  - **先证伪再动手**：B6 的「105 题全数值选项按章整改」是错的。按题干分类，105 条里 102 条是**正经计算题**
+    （问值、选项给值，数值选项就是正确形态），另 3 条是探究轮（`q` 是实验引导、判分走 `ask`）。
+    → 口径作废（已写回 B6），改做 G2 残留。
+  - **编辑态补全**：`goal` / `steps`（每行一条）/ `tip` / `success` 进表单，多选 `ans` 用 `0,2` 输入；
+    `input` 轮（219 轮）改成「答案 ans 原样写入」框——旧版显示的下标 SpinBox 表达不了字符串答案。
+    这几项正是 B4 刚证明最容易写错的东西（文案说能拖、场景没得拖），以前只能手改 JSON。
+  - **bug 1（编辑态打不开）**：`_ans_spin` / `_ans_multi` 声明后**从未赋值**，
+    `_fill_form()` 第一行 `_ans_spin.editable = ...` 就运行时报错 → 选关即失败。
+    headless 自检原来不碰表单，所以 bug 一直绿着。修 + 加断言（控件必须建出来、选中轮后 q 必须回填）。
+  - **bug 2（又一个假绿灯）**：Godot 4 的 JSON 把**所有**数字解析成 `float`，
+    而这里用 `typeof(ans) == TYPE_INT` 判下标 → ans 范围检查**从上线起就是死代码**。
+    新增 `_is_num()` / `_is_int_val()`（接受 float、要求整数），顺带修掉 ans 恒显示 0、ans 恒被重写。
+  - **反空转 + 行号**：造临时组（`ans:99` / `ans:[0,0]`）必须报两条且 `（L4）`/`（L5）` 正确，
+    清单为空即 FAIL；平时每条报错也带 `(L123)`，ans 类精确到 `ans` 键所在行。
+  - **结果**：`LEVEL-PREVIEW-SMOKE 7544 → 10129`（+2585 条主要是**第一次真正执行**的 ans 定位检查）；
+    存量数据 0 条越界——说明坏的不是数据，是那条检查。
+  - 十一项全绿：`CHECKED 117` / `TESTS 2232` / `SMOKE 293` / `UI-SMOKE 422` / `LabSmoke TMP_OK` /
+    `LEVEL-PREVIEW 10129` / `QUESTION-CHECK 0 new / 0 known / 1 warning` / `KNOWLEDGE hard-gaps=0` /
+    `CONTENT-HEALTH 0 problems` / `ASSETS 30.71 MB（3149 files）` / `PARAM-CHECK 0 new`。
+  - **下一项建议**：B6 只剩引擎侧 `err_reason`（schema + 错题本聚合）；或 B11（模块质量方差，但会扩题，
+    与「暂停扩题」冲突，需先定政策）。
 
 - **本轮工作 VI（2026-10-26，第四十九轮）：B4 实验与追问闭环 —— 先证伪口径，再落地能判准的那一条**（feat `cc94ee6`）。
   - **先量后改**：写了 `tools/sample_explore.gd`，把 280 个探究轮摊开——可拖实验 **155**、
@@ -2085,8 +2108,11 @@ EXPLORE_ALIGN_CHECK = {'has_sliders': True, 'question_values_match': True}
 
 **验收（修订）**
 - ~~概念轮中「理由选项」型占比 ≥ 30%~~ → **按关键词口径已达标（57.3%）**，剩余是抽检确认；
-- 真问题收窄为：① 105 道「全数值选项」（12.4%）按章整改，优先 `trig` / `counting` / `parabola`；
-  ② `err_reason` 错因标签尚未落地（改 schema + 错题本聚合，属引擎侧改动）。
+- **第五十一轮复核：105 条「全数值选项」里没有一条该改**。按题干把 105 条分成「概念 / 计算」，
+  102 条是正经计算题（问值、选项给值，数值选项是**正确形态**，改成理由选项反而错）；
+  剩下 3 条是探究轮——`q` 是实验引导语、真正判分的是 `ask`（如 `cplx_mod`：`q` 问「几何意义」，
+  `ask` 问「距离最大值」），也是误判。**「按章整改 105 题」这个口径作废**；
+- 真问题只剩：② `err_reason` 错因标签尚未落地（改 schema + 错题本聚合，属引擎侧改动）。
 
 ---
 
@@ -3214,8 +3240,8 @@ EXPLORE_ALIGN_CHECK = {'has_sliders': True, 'question_values_match': True}
     → 「写回 JSON」（文本级，写前做「可解析 + 组数/轮数不变」终检，失败不落盘）；
   - **内置 A5 轻量校验**：轮次编号（B9）/ ans 范围 / 选项重复 / 题干缺失与文件内重复，选关即显示；
   - 代码驱动遗留关（SolidChallenge 方法关 / ConicStage C1~C3）**只读预览**；
-  - headless 自检 `-- --smoke`：**6313 断言 / 0 fail**——覆盖 26 个数据文件全量「组/轮/字段定位回归」、
-    内存编辑往返（不写盘）、校验器存量扫描、每类舞台抽样构建。已入 CI。
+  - headless 自检 `-- --smoke`：**10129 断言 / 0 fail**——覆盖 26 个数据文件全量「组/轮/字段定位回归」、
+    内存编辑往返（不写盘）、校验器存量扫描 + 反空转探针、每类舞台抽样构建、编辑态控件与回填。已入 CI。
 - 新增 **`tools/scaffold_level.gd`**（关卡脚手架，做法 3/4）：
   - `-- --file=<*_levels> --key=<新组> [--chapter=<章>] [--name=…] [--rounds=5] [--apply]`，默认 dry-run；
   - 生成 5 轮骨架（探究 explore→建构 choice→迁移 choice→巩固 input→综合 choice，`ans=0`，
@@ -3227,10 +3253,31 @@ EXPLORE_ALIGN_CHECK = {'has_sliders': True, 'question_values_match': True}
 - CI：`check.yml` 新增 `LevelPreview 自检` 与 `scaffold dry-run` 两步。
 - README 新增「关卡作者工具链（G2）」一节（推荐创作流程）。
 
+**第五十一轮（2026-10-27）：编辑态补全 + 两个「检查器从来没跑过」的真 bug**
+- **编辑态补全**：新增 `goal` / `steps`（每行一条）/ `tip` / `success` 四个表单字段（探究轮实验文案），
+  多选 `ans` 用 `0,2` 逗号输入（留空 = 单选）；`input` 轮（219 轮）改用「答案 ans 原样写入」框，
+  不再显示表达不了字符串答案的下标控件（旧版改了也写不进去）。写回仍走 `json_text.gd` 文本级原语，不重排文件。
+- **bug 1 · 编辑态根本打不开**：`_ans_spin` / `_ans_multi` 只声明、**从未赋值**，
+  `_fill_form()` 第一行 `_ans_spin.editable = ...` 就运行时报错——选关即失败。
+  headless 自检以前不碰表单，所以一直没人发现。
+- **bug 2 · ans 范围检查是死代码（同类「假绿灯」第 2 例）**：Godot 4 的 JSON 把**所有**数字
+  解析成 `float`（`1` → `1.0`，`typeof` 是 `TYPE_FLOAT`），而这里用 `typeof(ans) == TYPE_INT`
+  判「是不是选项下标」→ 分支永远不成立。新增 `_is_num()` / `_is_int_val()`（接受 float、要求整数），
+  同时修掉 `_fill_form` 里 ans 恒显示 0、`_on_save` 里 ans 恒被重写。
+- **校验器加反空转 + 行号**：造临时组（`ans:99` 与 `ans:[0,0]`）→ 必须两条都报、`（L4）`/`（L5）`
+  正确；清单为空即 FAIL。平时每条报错也带行号（ans 类精确到 `ans` 键所在行），
+  作者可直接跳到编辑器对应行。
+- `LEVEL-PREVIEW-SMOKE` 7544 → **10128 ok / 0 fail**（多出的 2585 条主要是**真正开始执行**的
+  ans 定位检查 + `goal/tip/success/steps` 字段定位 + 新增 5 条编辑态断言）。
+
 **残留**
 - ⚠️ 预览器的 GUI 观感/操作手感**未经人眼验收**（本机 headless 无法目视）；
-- ⚠️ 编辑态暂不覆盖 `steps`/`goal`/`success`（explore 轮的实验文案）与多选 `ans` 数组；
-- ⚠️ 「校验报错直接定位到行号并高亮」未做（当前为文字清单）；
+- ✅ ~~编辑态暂不覆盖 `steps`/`goal`/`success`（explore 轮的实验文案）与多选 `ans` 数组~~
+  （第五十轮补齐，另加 `tip`）；
+- ✅ ~~「校验报错直接定位到行号并高亮」未做（当前为文字清单）~~
+  （第五十轮：报错带 `(L123)`；「高亮」不做了——跳回编辑器改更实际）；
+- ⚠️ `_on_save` 的**整体**路径（写盘 + 结构终检）没有 headless 断言，只测了字段级往返；
+  要测就得真写 `data/`（污染工作区），`user://` 探针目前只覆盖校验器；
 - ⚠️ 「E 类补内容平均单关耗时前后对比」待实际使用后记录。
 
 ---
@@ -3412,15 +3459,16 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
 > `Parse Error: Could not find type "BossHud"`。用编辑器打开一次，或跑
 > `& "<godot472.exe>" --headless --path . --import`（新增 `class_name` 文件后同样要跑一次）。
 
-**当前回归基线**（改完请对照，数字只能升不能降；2026-10-26 第四十八轮 `PARAM-CHECK` 重定位后）：
+**当前回归基线**（改完请对照，数字只能升不能降；2026-10-27 第五十一轮 `G2 编辑态` 后）：
 `CHECKED 117 scripts, 0 failures`（含 D4 裸时长拦截）/ `TESTS: 2232 passed, 0 failed` / `SMOKE: 293 ok, 0 fail` /
 `UI-SMOKE: 422 ok, 0 fail`（取样漂移，见下方注）/ `LabSmoke` 末尾 `TMP_OK` /
-`LEVEL-PREVIEW-SMOKE: 7544 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 舞台抽样）/
+`LEVEL-PREVIEW-SMOKE: 10129 ok, 0 fail`（G2 预览器自检：数据定位回归 + 编辑往返 + 校验器反空转探针 +
+编辑态控件/回填 + 舞台抽样）/
 `QUESTION-CHECK: 26 files / 276 levels / 1064 questions / 0 new / 0 known / 1 warning`
 （A5 校验器：B1 遗留已清零；看板另有「干扰项黑名单命中 0 处」见 B5、「anim 演示覆盖 13/26 文件」见 D2、
 「inline 未覆盖 264 段」见 B7/A10、「探究轮可拖实验 155/280」见 B4）/
 `PERF idle 171 / lab_plane 259 / lab3d 251`（µs，headless CPU 处理耗时，见 `tools/perf_probe.tscn`）/
-`ASSETS: ≈30.68 MB over 3147 files … banned=0, oversize=0`（A13 护栏；末位随测试产物/内容批次微漂移，
+`ASSETS: ≈30.71 MB over 3149 files … banned=0, oversize=0`（A13 护栏；末位随测试产物/内容批次微漂移，
 看 `banned` / `oversize` 即可）/
 `KNOWLEDGE: 27 chapters / 282 points / 282 levels mapped / hard-gaps=0 (baseline 0) / optional=8`（E1 矩阵，E3#4/#5/#6 起硬缺口清零）/
 `CONTENT-HEALTH: 27 chapters / 282 levels / 0 problems (orphans=0)`（A18 内容体检；B1 清理后未映射组已归零）/
