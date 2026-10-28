@@ -68,9 +68,9 @@
         "success": "观察到位！下面用坐标关系总结诱导公式。"
       },
       {
-        "name": "1-2 建构：诱导公式",
+        "name": "1-2 建构：单位圆观察",
         "type": "choice",
-        "q": "根据单位圆，cos(180°+θ) 等于？",
+        "q": "在单位圆中，角 $180^\\circ+\\theta$ 的终边关于原点对称。$\\cos(180^\\circ+\\theta)$ 等于？",
         "scene": {
           "x": [
             -1.8,
@@ -88,14 +88,14 @@
           }
         },
         "opts": [
-          "−sinθ",
-          "−cosθ",
-          "sinθ",
-          "cosθ"
+          "$\\cos\\theta$",
+          "$-\\cos\\theta$",
+          "$\\sin\\theta$",
+          "$-\\sin\\theta$"
         ],
         "ans": 1,
         "hint": "180°+θ 的终边与 θ 的终边关于原点对称。",
-        "explain": "关于原点对称：cos(180°+θ)=−cosθ，sin(180°+θ)=−sinθ。"
+        "explain": "$\\cos(180^\\circ+\\theta)=-\\cos\\theta$。"
       },
       {
         "name": "1-3 迁移：化简求值",
@@ -997,18 +997,18 @@
         "success": "两行读数始终相等——这就是两角差的余弦公式，下面用它推出正弦的和角公式。"
       },
       {
-        "name": "10-2 建构：两角和的正弦",
+        "name": "10-2 建构：和的正弦推导",
         "type": "choice",
-        "q": "由两角差的余弦公式可以推出 sin(α+β) 等于？",
+        "q": "要得到 $\\sin(\\alpha+\\beta)$ 的展开式，利用诱导或和差公式变形后应选？",
         "opts": [
-          "sinαcosβ−cosαsinβ",
-          "sinαcosβ+cosαsinβ",
-          "cosαcosβ+sinαsinβ",
-          "cosαcosβ−sinαsinβ"
+          "$\\sin\\alpha\\cos\\beta+\\cos\\alpha\\sin\\beta$",
+          "$\\sin\\alpha\\cos\\beta-\\cos\\alpha\\sin\\beta$",
+          "$\\cos\\alpha\\cos\\beta-\\sin\\alpha\\sin\\beta$",
+          "$\\cos\\alpha\\cos\\beta+\\sin\\alpha\\sin\\beta$"
         ],
-        "ans": 1,
+        "ans": 0,
         "hint": "把 sin(α+β) 写成 cos(90°−α−β)，再用两角差的余弦展开。",
-        "explain": "sin(α+β)=cos[(90°−α)−β]=sinαcosβ+cosαsinβ。其余三项分别是 cos(α−β)、sin(α−β)、cos(α+β)——函数名与符号之差正是常见错误。"
+        "explain": "$\\sin(\\alpha+\\beta)=\\cos(\\frac{\\pi}{2}-(\\alpha+\\beta))$ 等方式均可导出，最常用的是直接记忆和用法。"
       },
       {
         "name": "10-3 迁移：sin75°",
@@ -1120,18 +1120,18 @@
         "success": "读数始终相等——下面系统学习倍角公式的三种形式。"
       },
       {
-        "name": "11-2 建构：降幂公式",
+        "name": "11-2 建构：降幂换元",
         "type": "choice",
-        "q": "由二倍角公式 cos2α=2cos²α−1 变形，sin²α 等于？",
+        "q": "化简 $\\sin^2\\alpha$ 时，应从哪一个公式出发？",
         "opts": [
-          "(1+cos2α)/4",
-          "(1+cos2α)/2",
-          "(1−cos2α)/2",
-          "(cos2α−1)/2"
+          "$\\cos2\\alpha=1-2\\sin^2\\alpha$",
+          "$\\sin2\\alpha=2\\sin\\alpha\\cos\\alpha$",
+          "$\\cos2\\alpha=\\cos^2\\alpha-\\sin^2\\alpha$",
+          "$\\cos2\\alpha=2\\cos^2\\alpha-1$"
         ],
-        "ans": 2,
+        "ans": 0,
         "hint": "先由 2cos²α−1 解出 cos²α=(1+cos2α)/2，再用 sin²α=1−cos²α。",
-        "explain": "sin²α=1−(1+cos2α)/2=(1−cos2α)/2。选 (1+cos2α)/2 的同学是把它当成了 cos²α——两个公式只差一个符号，务必分清。"
+        "explain": "解出 $\\sin^2\\alpha=\frac{1-\\cos2\\alpha}{2}$。"
       },
       {
         "name": "11-3 迁移：cos²15°−sin²15°",
