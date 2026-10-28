@@ -70,7 +70,7 @@
       {
         "name": "1-2 建构：单位圆观察",
         "type": "choice",
-        "q": "在单位圆中，角 $180^\\circ+\\theta$ 的终边关于原点对称。$\\cos(180^\\circ+\\theta)$ 等于？",
+        "q": "在单位圆中，角 $$180^\\circ+\\theta$$ 的终边关于原点对称。$$\\cos(180^\\circ+\\theta)$$ 等于？",
         "scene": {
           "x": [
             -1.8,
@@ -88,10 +88,10 @@
           }
         },
         "opts": [
-          "$\\cos\\theta$",
-          "$-\\cos\\theta$",
-          "$\\sin\\theta$",
-          "$-\\sin\\theta$"
+          "$$\\cos\\theta$$",
+          "$$-\\cos\\theta$$",
+          "$$\\sin\\theta$$",
+          "$$-\\sin\\theta$$"
         ],
         "ans": 1,
         "hint": "180°+θ 的终边与 θ 的终边关于原点对称。",
