@@ -177,11 +177,11 @@
       {
         "name": "2-2 建构：sinθcosθ",
         "type": "input",
-        "q": "已知 sinθ+cosθ=1/2，则 sinθcosθ=？（填数值）",
+        "q": "已知 $$\\sin\\theta+\\cos\\theta=\\frac{1}{2}$$，则 $$\\sin\\theta\\cos\\theta=$$？（填数值）",
         "ans": -0.375,
         "tol": 0.01,
         "hint": "把 sinθ+cosθ=1/2 两边平方。",
-        "explain": "(sinθ+cosθ)²=1+2sinθcosθ=1/4，解得 sinθcosθ=−3/8。"
+        "explain": "由 $$(\\sin\\theta+\\cos\\theta)^2=1+2\\sin\\theta\\cos\\theta=\\left(\\frac{1}{2}\\right)^2=\\frac{1}{4}$$，\n得 $$2\\sin\\theta\\cos\\theta=\\frac{1}{4}-1=-\\frac{3}{4}$$，\n所以 $$\\sin\\theta\\cos\\theta=-\\frac{3}{8}$$。"
       },
       {
         "name": "2-3 迁移：齐次式",
