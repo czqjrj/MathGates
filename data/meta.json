@@ -194,7 +194,7 @@
     {
       "id": "accuracy_80",
       "name": "精准推演",
-      "desc": "作答满 50 题且正确率 ≥ 80%",
+      "desc": "作答满 50 题且正确率$$\\ge 80%$$",
       "symbol": "准",
       "color": "#34d399",
       "kind": "accuracy",

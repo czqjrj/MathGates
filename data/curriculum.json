@@ -2597,7 +2597,7 @@
         {
           "id": "para_fixed",
           "name": "10-1 定点定值",
-          "technique": "OA⊥OB ⇒ 过 (2p,0)",
+          "technique": "OA⊥OB ⇒ 过$$(2p,0)$$",
           "archetype": "LAB",
           "lab": "parabola",
           "lab_ref": "para_fixed",
