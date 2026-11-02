@@ -45,6 +45,17 @@ func _ok(cond: bool, name: String) -> void:
 func _eq(a: Variant, b: Variant, name: String) -> void:
 	_ok(a == b, "%s (got %s, want %s)" % [name, str(a), str(b)])
 
+## 选项轮才校验 opts/ans；填空/互动/点选轮常带着批量脚本补出的 `"opts": []`，
+## 不能因为「有 opts 字段」就当选项轮，否则会误报「选项数≥2」。
+func _is_choice_round(s: Dictionary) -> bool:
+	var t := str(s.get("type", "choice"))
+	if t in ["input", "interact", "pick"]:
+		return false
+	if t in ["choice", "explore"]:
+		return true
+	var o: Variant = s.get("opts", null)
+	return typeof(o) == TYPE_ARRAY and not (o as Array).is_empty()
+
 func _ready() -> void:
 	GameData.create_user("uismoke", "player")
 	GameData.login("uismoke")
@@ -182,7 +193,7 @@ func _expect_rounds(st: Node, tag: String) -> void:
 	var shuffle_candidate := -1
 	for i in stages.size():
 		var s: Dictionary = stages[i]
-		if s.has("opts"):
+		if _is_choice_round(s):
 			var opts: Array = s.get("opts", [])
 			_ok(opts.size() >= 2, "%s 轮%d 选项数≥2" % [tag, i])
 			var ans: Variant = s.get("ans")

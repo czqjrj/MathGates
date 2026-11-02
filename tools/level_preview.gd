@@ -469,7 +469,7 @@ func _fill_form() -> void:
 	_scene_edit.text = JSON.stringify(s["scene"], "  ") if s.has("scene") else ""
 	var t := str(s.get("type", "choice"))
 	_ask_row.visible = s.has("ask") or t == "explore"
-	_opts_row.visible = s.has("opts") or t in ["choice", "explore"]
+	_opts_row.visible = _is_choice_round(s)
 	# ans 是**选项下标**，只有四选一/多选才有；input 轮的答案是字符串，SpinBox 表达不了，
 	# 以前把这一行也显示出来，改了要么写不进去、要么写成 0（旧行为）。
 	_ans_row.visible = _opts_row.visible
@@ -703,7 +703,7 @@ func _validate_group() -> Array[String]:
 		if gno > 0 and not nm.begins_with("%d-%d " % [gno, ri + 1]):
 			out.append("%s 标签编号应为 %d-%d（B9）" % [tag, gno, ri + 1])
 		var t := str(s.get("type", "choice"))
-		if s.has("opts") or t in ["choice", "explore"]:
+		if _is_choice_round(s):
 			var opts: Array = s.get("opts", [])
 			if opts.size() < 2:
 				out.append("%s 选项数 <2" % tag)
@@ -802,6 +802,18 @@ func _is_num(v: Variant) -> bool:
 
 func _is_int_val(v: Variant) -> bool:
 	return _is_num(v) and float(v) == floorf(float(v))
+
+## 是否「选项轮」（ans 是选项下标）。填空/互动/点选轮即使带着批量脚本补出来的
+## `"opts": []`，也不能当选项轮：否则会把空的 opts 当选项列表，误报「选项数<2」，
+## 还会让编辑器的答案文本框被选项行挤掉（input 轮的 ans 是字符串，SpinBox 表达不了）。
+func _is_choice_round(s: Dictionary) -> bool:
+	var t := str(s.get("type", "choice"))
+	if t in ["input", "interact", "pick"]:
+		return false
+	if t in ["choice", "explore"]:
+		return true
+	var o: Variant = s.get("opts", null)
+	return typeof(o) == TYPE_ARRAY and not (o as Array).is_empty()
 
 
 ## 从整段 JSON 文本里取「某组第 0 轮」的字段（自检用，不依赖 _res 状态）
@@ -1099,14 +1111,14 @@ func _run_smoke() -> void:
 			var rounds3: Array = data3[key].get("levels", [])
 			for ri in rounds3.size():
 				var s3: Dictionary = rounds3[ri]
-				if _is_num(s3.get("ans", null)) and s3.has("opts"):
+				if _is_num(s3.get("ans", null)) and _is_choice_round(s3):
 					var n: int = (s3["opts"] as Array).size()
 					if _is_int_val(s3["ans"]) and int(s3["ans"]) >= 0 and int(s3["ans"]) < n:
 						ok += 1
 					else:
 						fail += 1
 						print("  [FAIL] ans 越界（存量）", path, " ", key, " #", ri)
-				elif typeof(s3.get("ans", null)) == TYPE_ARRAY and s3.has("opts"):
+				elif typeof(s3.get("ans", null)) == TYPE_ARRAY and _is_choice_round(s3):
 					var n2: int = (s3["opts"] as Array).size()
 					var arr_ok := true
 					for a in (s3["ans"] as Array):

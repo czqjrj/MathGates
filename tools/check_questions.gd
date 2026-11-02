@@ -193,14 +193,22 @@ func _check_stage(path: String, key: String, group_no: int, idx: int, s: Variant
 			stem_seen[h] = "%s/%s" % [key, where]
 
 	# ---- 选项 / 答案
+	# 填空轮以 type 为准，不看 opts 是否存在：批量脚本可能补出 "opts": []，
+	# 旧逻辑会把它当成「0 选项的选择题」→ 全库 136 轮填空被误报。
 	var opts = st.get("opts", null)
-	if opts == null:
-		if is_input:
-			_n_input += 1
-			_n_questions += 1
-			if not st.has("ans"):
-				_add(path, key, "%s 填空轮缺少 ans" % where)
-		elif is_interact:
+	if is_input:
+		_n_input += 1
+		_n_questions += 1
+		if not st.has("ans"):
+			_add(path, key, "%s 填空轮缺少 ans" % where)
+		_check_inline(path, key, where + ".q", q)
+		_check_inline(path, key, where + ".ask", str(st.get("ask", "")))
+		_check_hint_leak(path, key, where, st)
+		_check_label(path, key, group_no, where, st)
+		_check_anim(path, st)
+		return
+	if opts == null or (typeof(opts) == TYPE_ARRAY and (opts as Array).is_empty()):
+		if is_interact:
 			_n_interact += 1
 		_check_inline(path, key, where + ".q", q)
 		_check_inline(path, key, where + ".ask", str(st.get("ask", "")))

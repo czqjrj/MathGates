@@ -89,7 +89,7 @@ $checks = @(
     @{ n = "SMOKE";            a = @("res://tools/smoke_scene.tscn");                          must = "SMOKE: \d+ ok, 0 fail";                  deny = "" },
     @{ n = "UI-SMOKE";         a = @("res://tests/UiSmoke.tscn");                              must = "UI-SMOKE: \d+ ok, 0 fail";               deny = "" },
     @{ n = "LabSmoke";         a = @("res://tests/LabSmoke.tscn");                             must = "TMP_OK";                                 deny = "" },
-    @{ n = "QUESTION-CHECK";   a = @("--script", "res://tools/check_questions.gd");            must = "QUESTION-CHECK: [0-9]+ files";           deny = "QUESTION-CHECK-FAIL" },
+    @{ n = "QUESTION-CHECK";   a = @("--script", "res://tools/check_questions.gd");            must = "QUESTION-CHECK: [0-9]+ files.* 0 new";   deny = "QUESTION-CHECK-FAIL" },
     @{ n = "CONTENT-HEALTH";   a = @("--script", "res://tools/check_content_health.gd");       must = "CONTENT-HEALTH: .* 0 problems";          deny = "CONTENT-HEALTH-FAIL" },
     @{ n = "KNOWLEDGE";        a = @("--script", "res://tools/check_knowledge.gd");            must = "KNOWLEDGE: [0-9]+ chapters";             deny = "KNOWLEDGE-FAIL" },
     @{ n = "ASSETS";           a = @("--script", "res://tools/check_assets.gd");               must = "ASSETS: [0-9.]+ MB";                     deny = "ASSETS-FAIL" },
