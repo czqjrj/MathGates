@@ -332,6 +332,11 @@ func _test_srs_review_entry() -> void:
 			if absf((c as Control).size.y - h0) > 0.5:
 				same = false
 		_ok(same, "hub ui: 五张卡等高（实测 %.1f）" % h0)
+	# 内容不得超出屏幕底部（顶栏 64 + 内容底边 <= 视口高）
+	var box: Control = hub.call("center_box")
+	var vp: Vector2 = (hub as Control).get_viewport_rect().size
+	var bottom: float = box.global_position.y + box.size.y
+	_ok(bottom <= vp.y + 0.5, "hub ui: 中央内容不出屏（底边 %.1f / 视口 %.1f）" % [bottom, vp.y])
 	hub.queue_free()
 	await get_tree().process_frame
 

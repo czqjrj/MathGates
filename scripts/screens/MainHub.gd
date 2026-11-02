@@ -9,6 +9,7 @@ var _prog_line: ProgressLine
 var _daily_btn: Button
 var _review_btn: Button
 var _card_holders: Array = []
+var _center_box: VBoxContainer
 var _bar: PanelContainer
 var _brand_lbl: Label
 var _user_lbl: Label
@@ -227,15 +228,16 @@ func _build_center() -> void:
 	add_child(center)
 
 	var vb := VBoxContainer.new()
-	vb.add_theme_constant_override("separation", 12)
+	vb.add_theme_constant_override("separation", 10)
 	center.add_child(vb)
+	_center_box = vb
 
 	# A18：内容数据异常时先给一句明确提示，别让学生一头雾水。
 	if not GameData.content_ok():
 		vb.add_child(ContentFallback.banner())
 
 	var mark := BrandMark.new()
-	mark.custom_minimum_size = Vector2(118, 118)
+	mark.custom_minimum_size = Vector2(96, 96)
 	mark.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	vb.add_child(mark)
 
@@ -272,7 +274,7 @@ func _build_center() -> void:
 	pbox.add_child(_prog_line)
 
 	var gap := Control.new()
-	gap.custom_minimum_size = Vector2(0, 22)
+	gap.custom_minimum_size = Vector2(0, 10)
 	vb.add_child(gap)
 
 	var row := HBoxContainer.new()
@@ -307,6 +309,10 @@ func _build_center() -> void:
 func card_holders() -> Array:
 	return _card_holders
 
+## 供 UiSmoke 断言「内容不出屏」用。
+func center_box() -> Control:
+	return _center_box
+
 # ---------------------------------------------------------------- 功能卡片
 func _card(title: String, desc: String, color: Color, icon_name: String, on_press: Callable, primary: bool, available: bool = false, badge: String = "") -> Control:
 	var holder := Control.new()
@@ -319,20 +325,20 @@ func _card(title: String, desc: String, color: Color, icon_name: String, on_pres
 		border = Color(color, 0.6)
 	var p := PanelContainer.new()
 	var glow := Color(UI.COL_ACCENT, 0.18) if primary else Color(color, 0.15)
-	p.add_theme_stylebox_override("panel", UI.glass_box(Color(0.05, 0.07, 0.12, 0.72), 14, border, 1, 16, glow, 14))
+	p.add_theme_stylebox_override("panel", UI.glass_box(Color(0.05, 0.07, 0.12, 0.72), 14, border, 1, 14, glow, 14))
 	UI.full_rect(p)
 	holder.add_child(p)
 
 	var vb := VBoxContainer.new()
-	vb.add_theme_constant_override("separation", 8)
+	vb.add_theme_constant_override("separation", 6)
 	p.add_child(vb)
 
 	var tint := UI.COL_ACCENT if primary else color.lightened(0.35)
 	var iv := TextureRect.new()
-	iv.texture = UI.icon(icon_name, 76, tint)
+	iv.texture = UI.icon(icon_name, 70, tint)
 	iv.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	iv.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	iv.custom_minimum_size = Vector2(76, 76)
+	iv.custom_minimum_size = Vector2(70, 70)
 	iv.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	iv.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	iv.mouse_filter = Control.MOUSE_FILTER_IGNORE
