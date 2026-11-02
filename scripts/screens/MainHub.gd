@@ -8,6 +8,7 @@ var _prog_lbl: Label
 var _prog_line: ProgressLine
 var _daily_btn: Button
 var _review_btn: Button
+var _card_holders: Array = []
 var _bar: PanelContainer
 var _brand_lbl: Label
 var _user_lbl: Label
@@ -205,7 +206,6 @@ func _refresh_status() -> void:
 	var bl: Variant = _badges.get("错题笔记", null)
 	if bl is Label and is_instance_valid(bl):
 		(bl as Label).text = _wrong_badge()
-		(bl as Label).visible = _wrong_badge() != ""
 	var rp := GameData.rank_progress()
 	if str(rp["next_title"]) == "":
 		_prog_line.set_ratio(1.0)
@@ -279,14 +279,33 @@ func _build_center() -> void:
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
 	row.add_theme_constant_override("separation", 20)
 	vb.add_child(row)
-	row.add_child(_card("知识体系", "思维导图统整知识，逐点点亮", Color("#a878ff"), "icon_tree", _on_theorem_tree, true))
-	row.add_child(_card("方法推演", "按教材分册，逐章攻克方法与题型", Color("#5b8cff"), "icon_map", _on_adventure, false, true))
-	row.add_child(_card("档案库", "用户档案与学情诊断", Color("#ffa64d"), "icon_book", _on_archive, false, true))
-	row.add_child(_card("错题笔记", "逐题回看错题，一键重练", Color("#4dd6a8"), "icon_train", _on_wrong_notebook, false, true, _wrong_badge()))
-	row.add_child(_card("星辉市集", "金币兑换头像与道具", Color("#ffd479"), "icon_star_full", _on_shop, false, true))
+	_card_holders.clear()
+	for c in [
+		_card("知识体系", "思维导图统整知识，逐点点亮", Color("#a878ff"), "icon_tree", _on_theorem_tree, true),
+		_card("方法推演", "按教材分册，逐章攻克方法与题型", Color("#5b8cff"), "icon_map", _on_adventure, false, true),
+		_card("档案库", "用户档案与学情诊断", Color("#ffa64d"), "icon_book", _on_archive, false, true),
+		_card("错题笔记", "逐题回看错题，一键重练", Color("#4dd6a8"), "icon_train", _on_wrong_notebook, false, true, _wrong_badge()),
+		_card("星辉市集", "金币兑换头像与道具", Color("#ffd479"), "icon_star_full", _on_shop, false, true),
+	]:
+		# 五张卡等高：取内容最小高度的最大值统一写回。
+		# 卡根是普通 Control（为叠加热区按钮），不会把内部 PanelContainer 的最小高度
+		# 传上来，所以必须显式统一，否则描述 1 行 / 2 行、角标有无会让卡片看着大小不一。
+		_card_holders.append(c)
+		row.add_child(c)
+	var card_h := 244.0
+	for c in _card_holders:
+		var panel := (c as Control).get_child(0) as Control
+		if panel != null:
+			card_h = maxf(card_h, panel.get_combined_minimum_size().y + 2.0)
+	for c in _card_holders:
+		(c as Control).custom_minimum_size = Vector2(226, card_h)
 
 	UI.fade_in(vb, 0.42)
 	UI.card_deal_in(row, 0.09, 0.55)
+
+## 供 UiSmoke 断言「五张卡等高」用。
+func card_holders() -> Array:
+	return _card_holders
 
 # ---------------------------------------------------------------- 功能卡片
 func _card(title: String, desc: String, color: Color, icon_name: String, on_press: Callable, primary: bool, available: bool = false, badge: String = "") -> Control:
@@ -327,13 +346,16 @@ func _card(title: String, desc: String, color: Color, icon_name: String, on_pres
 
 	var t_lbl := UI.make_label(title, 21, UI.COL_TEXT, HORIZONTAL_ALIGNMENT_CENTER)
 	vb.add_child(t_lbl)
-	# 角标（可为空）：始终建标签，便于 _refresh_status 动态刷新；空则不占位。
+	# 角标（可为空）：始终占一行高度——空串时留白，避免「错题笔记」后出现角标把这张卡撑高。
 	var bl := UI.mono_label(badge, 13, Color("#ffd479"), HORIZONTAL_ALIGNMENT_CENTER)
-	bl.visible = badge != ""
+	bl.custom_minimum_size = Vector2(0, float(UI.fs(13)) * 1.3)
 	vb.add_child(bl)
 	_badges[title] = bl
 	var d_lbl := UI.make_label(desc, 14, UI.COL_TEXT_DIM, HORIZONTAL_ALIGNMENT_CENTER)
 	d_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	d_lbl.max_lines_visible = 2
+	# 描述固定占两行：1 行的文案也留出第二行空白，五张卡的文字块高度才对得齐。
+	d_lbl.custom_minimum_size = Vector2(0, float(UI.fs(14)) * 1.45 * 2.0)
 	vb.add_child(d_lbl)
 
 	var sp := Control.new()

@@ -218,7 +218,11 @@ func _load_q() -> void:
 		_sliders.append(rec)
 		_vars[rec["name"]] = rec["value"]
 	_answers = s.get("answers", sc.get("answers", {}))
-	_tol = s.get("tol", sc.get("tol", {}))
+	# `tol` 有两种写法：滑块闸门用字典 {name: tol}；填空轮是标量（如 0.01）。
+	# 直接赋给 Dictionary 会在运行期报错并中断 _load_q —— space_levels 的 5 个填空轮
+	# （space_1_3#2 / space_4_3#2,#3 / space_6_3#3 / space_boss#2）因此加载不全。
+	var tol_raw: Variant = s.get("tol", sc.get("tol", {}))
+	_tol = tol_raw if tol_raw is Dictionary else {}
 
 	_view3d.set_scene(sc, _vars)
 	var has_anim := s.has("anim") or sc.has("anim")

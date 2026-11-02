@@ -322,6 +322,16 @@ func _test_srs_review_entry() -> void:
 			break
 	_ok(more_btn != null, "hub ui: 顶栏有「更多」入口")
 	_ok(hub.get("_brand_lbl") != null and hub.get("_user_lbl") != null, "hub ui: 顶栏可自适应收起品牌/用户名")
+	# 五张功能卡必须等高：描述 1 行/2 行、角标有无都不能把某张卡撑高
+	var holders: Array = hub.call("card_holders")
+	_ok(holders.size() == 5, "hub ui: 五张功能卡")
+	if holders.size() == 5:
+		var h0 := (holders[0] as Control).size.y
+		var same := h0 > 100.0
+		for c in holders:
+			if absf((c as Control).size.y - h0) > 0.5:
+				same = false
+		_ok(same, "hub ui: 五张卡等高（实测 %.1f）" % h0)
 	hub.queue_free()
 	await get_tree().process_frame
 

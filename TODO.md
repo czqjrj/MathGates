@@ -150,6 +150,25 @@
   - 测试：`tests/UiSmoke.gd` 新增 2 条断言（顶栏必须有「更多」入口、`_brand_lbl`/`_user_lbl` 存在），
     防回退成「一长排按钮」。复跑：`UI-SMOKE 424 ok, 0 fail`。
 
+- **补充（2026-11-02，同日）：首页 5 张功能卡等高**
+  - 现象：底部五张卡「大小不同」——根因是卡根为普通 `Control`（为叠加热区按钮），
+    内部 `PanelContainer` 的最小高度不会上抛，卡片被固定成 244 高；
+    而描述「1 行 vs 2 行」、角标「有 vs 无」会让内部内容超出面板，看起来高低不一。
+  - 改法：①卡根高度 = 五张卡 `PanelContainer.get_combined_minimum_size().y` 的最大值（+2 余量）；
+    ②描述固定占两行（`max_lines_visible = 2` + 最小高度），1 行文案也留白对齐；
+    ③角标行**恒定占位**（空串时留白），避免「错题笔记」later 出现角标把这张卡撑高；
+    `_refresh_status` 不再切换角标 visible，只改文字。
+  - 测试：`UiSmoke` 新增 2 条断言（`card_holders()` 必须 5 张、五张 `size.y` 差值 ≤ 0.5），
+    实测 `UI-SMOKE 426 ok, 0 fail`。
+
+- **补充（2026-11-02，同日）：顺手修 `Lab3DStage` 的 `tol` 类型 bug（真 bug）**
+  - `_tol = s.get("tol", …)` 直接赋给 `Dictionary` 变量；而**填空轮的 `tol` 是标量**（如 `0.01`），
+    命中时运行期报 `Trying to assign value of type 'float' to a variable of type 'Dictionary'`
+    并**中断 `_load_q`**，导致 `space_levels` 的 5 个填空轮
+    （`space_1_3#2` / `space_4_3#2,#3` / `space_6_3#3` / `space_boss#2`）加载不完整。
+  - 修法：`_tol = tol_raw if tol_raw is Dictionary else {}`（闸门仍走字典；填空容差由 `StageBase` 从关卡字典读）。
+    修后该 SCRIPT ERROR 消失。
+
 - **收工点（2026-11-02 晚）· 明日从这里接**
   - **总进度 40/55（72.7%）**；未完成 10 项进行中 + 5 项未开工。
   - **四类卡点**：
