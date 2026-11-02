@@ -226,6 +226,19 @@ func _build_interact(s: Dictionary) -> void:
 	_live = UI.mono_label("", 16, Color("#ffd479"))
 	box.add_child(_live)
 	_refresh_live()
+	# 纯闸门 interact 也允许带实验脚手架：由 explore 改写而来时保留 goal/steps。
+	var goal := str(s.get("goal", ""))
+	if goal != "":
+		var gl := UI.make_label("目标：" + goal, 15, Color(UI.COL_ACCENT, 0.95))
+		gl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		box.add_child(gl)
+	var steps: Array = s.get("steps", [])
+	if not steps.is_empty():
+		box.add_child(UI.mono_label("操作提示", 13, Color(UI.COL_ACCENT, 0.9)))
+		for i in steps.size():
+			var step := UI.make_label(str(steps[i]), 14, Color(UI.COL_TEXT_DIM, 0.95))
+			step.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			box.add_child(step)
 	var tip := UI.make_label(str(s.get("tip", "调整到目标状态后点击确认。")), 15, UI.COL_TEXT_DIM)
 	tip.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(tip)
