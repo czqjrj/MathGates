@@ -314,6 +314,14 @@ func _test_srs_review_entry() -> void:
 		var bl: Variant = (badge as Dictionary)["错题笔记"]
 		_ok(bl is Label and (bl as Label).visible, "srs ui: 角标可见")
 		_ok(bl is Label and (bl as Label).text.find("待复习") >= 0, "srs ui: 角标显示待复习数")
+	# 顶栏拥挤治理：低频动作必须收在「更多」里，且保留自适应可收起的字段
+	var more_btn: Button = null
+	for n in _walk(hub):
+		if n is Button and (n as Button).text.find("更多") >= 0:
+			more_btn = n
+			break
+	_ok(more_btn != null, "hub ui: 顶栏有「更多」入口")
+	_ok(hub.get("_brand_lbl") != null and hub.get("_user_lbl") != null, "hub ui: 顶栏可自适应收起品牌/用户名")
 	hub.queue_free()
 	await get_tree().process_frame
 

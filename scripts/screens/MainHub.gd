@@ -8,6 +8,9 @@ var _prog_lbl: Label
 var _prog_line: ProgressLine
 var _daily_btn: Button
 var _review_btn: Button
+var _bar: PanelContainer
+var _brand_lbl: Label
+var _user_lbl: Label
 var _badges: Dictionary = {}   # 卡片角标标签（按卡片标题索引），供 _refresh_status 动态刷新
 
 func _ready() -> void:
@@ -68,8 +71,12 @@ func _pet_comment() -> String:
 	return "你最近在「%s · %s」错得比较多，重点复习一下哦～" % [str(info.get("chapter", "")), str(info.get("name", ""))]
 
 # ---------------------------------------------------------------- 顶栏
+## 拥挤治理：左簇=身份与进度；右簇=用户 + 高频入口（每日任务/复习）+「更多」。
+## 低频动作（报告/设置/退出登录/重置/退出）全部收进「更多」弹层；
+## 窗口不够宽时先隐去「推演档案」前缀、再隐去用户名，避免挤成一坨。
 func _build_topbar() -> void:
 	var bar := PanelContainer.new()
+	_bar = bar
 	bar.add_theme_stylebox_override("panel", UI.topbar_box())
 	bar.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	bar.custom_minimum_size = Vector2(0, 64)
@@ -77,10 +84,11 @@ func _build_topbar() -> void:
 	add_child(bar)
 
 	var hb := HBoxContainer.new()
-	hb.add_theme_constant_override("separation", 16)
+	hb.add_theme_constant_override("separation", 14)
 	bar.add_child(hb)
 
-	hb.add_child(UI.make_label("推演档案", 15, UI.COL_TEXT_DIM))
+	_brand_lbl = UI.make_label("推演档案", 15, UI.COL_TEXT_DIM)
+	hb.add_child(_brand_lbl)
 
 	_name_lbl = UI.make_label("", 17)
 	hb.add_child(_name_lbl)
@@ -95,7 +103,7 @@ func _build_topbar() -> void:
 	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hb.add_child(sp)
 
-	# 当前用户 + 头像 + 退出
+	# 当前用户 + 头像
 	var info: Dictionary = GameData.avatar_info(GameData.avatar)
 	var av := TextureRect.new()
 	av.texture = UI.icon(str(info["icon"]), 34, Color(str(info["color"])))
@@ -105,12 +113,16 @@ func _build_topbar() -> void:
 	av.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	av.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hb.add_child(av)
-	hb.add_child(UI.make_label(GameData.current_user, 17))
+
+	_user_lbl = UI.make_label(GameData.current_user, 17)
+	hb.add_child(_user_lbl)
+
 	_daily_btn = UI.ghost_button(_daily_text(), func() -> void:
 		Sound.play("select")
 		Scene.goto("res://scenes/DailyMissions.tscn")
 	, 14)
 	hb.add_child(_daily_btn)
+
 	# G1 复习入口：今日有到期的错题时才出现，一键进入复习队列。
 	_review_btn = UI.ghost_button("", func() -> void:
 		Sound.play("select")
@@ -118,31 +130,65 @@ func _build_topbar() -> void:
 	, 14)
 	_review_btn.visible = false
 	hb.add_child(_review_btn)
-	hb.add_child(UI.ghost_button("报告", func() -> void:
-		Sound.play("select")
-		Scene.goto("res://scenes/LearningReport.tscn")
-	, 14))
-	hb.add_child(UI.ghost_button("退出登录", func() -> void:
-		GameData.logout()
-		Sound.play("select")
-		Scene.goto("res://scenes/Login.tscn")
-	, 14))
 
-	hb.add_child(UI.ghost_button("重置推演", func() -> void:
-		UI.confirm(self, "重置推演", "将清空全部推演进度(星数、错题、萌宠成长等)，且无法撤销。确定吗？", func() -> void:
-			GameData.reset_progress()
-			Toast.show_toast("推演档案已重置")
-		)
-	, 14))
+	var more := UI.ghost_button("⋯ 更多", _open_more, 14)
+	more.tooltip_text = "学习报告 / 设置 / 退出登录 / 重置推演 / 退出游戏"
+	hb.add_child(more)
 
-	hb.add_child(UI.ghost_button("设置", func() -> void:
-		Sound.play("select")
-		Scene.goto("res://scenes/Settings.tscn")
-	, 14))
+	bar.resized.connect(_topbar_responsive)
+	_topbar_responsive.call_deferred()
 
-	hb.add_child(UI.ghost_button("退出", func() -> void:
-		UI.confirm(self, "退出游戏", "确定要退出吗？", func() -> void: get_tree().quit())
-	, 14))
+## 顶栏「更多」：把低频动作收进一个弹层，主栏只留高频入口。
+func _open_more() -> void:
+	Sound.play("select")
+	UI.menu_sheet(self, "更多", [
+		{"text": "学习报告", "on_press": func() -> void: Scene.goto("res://scenes/LearningReport.tscn")},
+		{"text": "设置", "on_press": func() -> void: Scene.goto("res://scenes/Settings.tscn")},
+		{"text": "退出登录", "on_press": func() -> void: GameData.logout(); Scene.goto("res://scenes/Login.tscn")},
+		{"text": "重置推演", "on_press": _confirm_reset, "danger": true},
+		{"text": "退出游戏", "on_press": _confirm_quit, "danger": true},
+	])
+
+func _confirm_reset() -> void:
+	UI.confirm(self, "重置推演", "将清空全部推演进度(星数、错题、萌宠成长等)，且无法撤销。确定吗？", func() -> void:
+		GameData.reset_progress()
+		Toast.show_toast("推演档案已重置")
+	)
+
+func _confirm_quit() -> void:
+	UI.confirm(self, "退出游戏", "确定要退出吗？", func() -> void: get_tree().quit())
+
+## 按实测最小宽度分三档：全量 → 去「推演档案」→ 再去用户名。宽度恢复时自动还原。
+func _topbar_responsive() -> void:
+	if _bar == null or _brand_lbl == null or _user_lbl == null:
+		return
+	_brand_lbl.visible = true
+	_user_lbl.visible = true
+	var w := _bar.size.x
+	if w <= 0.0:
+		return
+	if w >= _topbar_min_width():
+		return
+	_brand_lbl.visible = false
+	if w >= _topbar_min_width():
+		return
+	_user_lbl.visible = false
+
+func _topbar_min_width() -> float:
+	if _bar == null or _bar.get_child_count() == 0:
+		return 0.0
+	var row := _bar.get_child(0) as HBoxContainer
+	if row == null:
+		return 0.0
+	var total := 0.0
+	var n := 0
+	for c in row.get_children():
+		if c is Control and (c as Control).visible:
+			total += (c as Control).get_combined_minimum_size().x
+			n += 1
+	total += float(maxi(0, n - 1)) * float(row.get_theme_constant("separation"))
+	total += 52.0   # topbar_box 左右内边距各 26
+	return total
 
 func _refresh_status() -> void:
 	if _name_lbl == null:

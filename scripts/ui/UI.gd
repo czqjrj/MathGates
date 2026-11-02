@@ -947,6 +947,64 @@ static func input_dialog(root: Node, title: String, msg: String, placeholder: St
 	popup_in(center)
 	edit.grab_focus()
 
+## 通用「操作菜单」弹层：标题 + 纵向按钮列表 + 取消。点遮罩/取消关闭。
+## items: [{ "text": String, "on_press": Callable, "danger": bool }]
+## 用途：把顶栏里的低频动作（报告/设置/退出登录/重置/退出）收进一个入口，避免导航栏拥挤。
+static func menu_sheet(root: Node, title: String, items: Array) -> void:
+	var dim := ColorRect.new()
+	dim.color = Color(0, 0, 0, 0.55)
+	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	dim.mouse_filter = Control.MOUSE_FILTER_STOP
+	dim.gui_input.connect(func(e: InputEvent) -> void:
+		if e is InputEventMouseButton and (e as InputEventMouseButton).pressed:
+			dim.queue_free()
+	)
+	root.add_child(dim)
+	_active_confirm = dim
+	dim.tree_exiting.connect(func() -> void:
+		if _active_confirm == dim:
+			_active_confirm = null
+	)
+
+	var center := CenterContainer.new()
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	dim.add_child(center)
+
+	var pan := card(true, COL_ACCENT, COL_GLASS, Color(COL_ACCENT, 0.35), 14, 20, Color(COL_ACCENT, 0.22))
+	pan.custom_minimum_size = Vector2(380.0 * S, 0)
+	center.add_child(pan)
+
+	var vb := VBoxContainer.new()
+	vb.add_theme_constant_override("separation", 10)
+	pan.add_child(vb)
+	vb.add_child(make_label(title, 21, COL_TEXT, HORIZONTAL_ALIGNMENT_CENTER))
+	vb.add_child(hairline(Vector2(0, 1)))
+	for it in items:
+		if not (it is Dictionary):
+			continue
+		var label := str(it.get("text", ""))
+		var cb := Callable()
+		var raw: Variant = it.get("on_press", null)
+		if raw is Callable:
+			cb = raw
+		var danger := bool(it.get("danger", false))
+		var b := ghost_button(label, func() -> void:
+			dim.queue_free()
+			if cb.is_valid():
+				cb.call()
+		, 16)
+		b.custom_minimum_size = Vector2(0, 46)
+		if danger:
+			b.add_theme_color_override("font_color", COL_DANGER)
+			b.add_theme_color_override("font_hover_color", COL_DANGER)
+			b.add_theme_color_override("font_pressed_color", COL_DANGER)
+		vb.add_child(b)
+	var cancel := ghost_button("取消", func() -> void: dim.queue_free(), 15)
+	cancel.custom_minimum_size = Vector2(0, 42)
+	vb.add_child(cancel)
+	popup_in(center)
+
 # ---------------------------------------------------------------- 语音朗读(TTS，实现见 Tts)
 static func tts_available() -> bool:
 	return Tts.available()
