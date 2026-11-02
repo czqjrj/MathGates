@@ -23,7 +23,7 @@
 | 编号 | 标题 | 优先级 | 说明 |
 |---|---|---|---|
 | **A1** | `SequenceStage` 迁移到 `StageBase` | **P0** | ✅ 已完成（763 → 185 行，双轨消除） |
-| **B1** | 题型单一：把 `interact/gate` 与填空题用起来 | **P0** | 🟡 参数母版 155 条方言已全清（第四十七轮 `PARAM-CHECK 0 known`）；**51 道 explore 中仅 7 道可用**（场景只用引擎原生图元），已修好并接入课程表/知识点，其余 44 道因场景用了引擎不读的键（`coeffs/slope/center/radius/eccentricity/roots`、`points_scatter/bar_chart`）**需逐关手工移植**。合并遗留已清零：`QUESTION-CHECK 79 new→0`、`orphans 15→0`、轮次标签 `51→0`。全库非四选一 **22.0%**（目标 ≥30%，未达标；第五十三轮把 7 个参数实验关的收尾四选一改为纯闸门 `interact`，+7 轮）。**方言闸门已重定位**（第四十八轮）：扫 `*_levels.json` 的 `curves` 场景（26 文件 / 89 场景 / 0 new），44 关移植时可先跑它确认键是否被引擎读取。**第五十二轮修正看板口径**：此前批量脚本给 136 个填空轮补的 `"opts": []` 被 3 个校验器误当成「0 选项选择题」，已修（详见 §0.3）。**第五十四/五十七轮**：9 道「答案为纯数值」的四选一 → `type:input`（`trig_aux/12-2`、`deriv_extrema/7-3`、`count_misc/9-2`、`conic_fixed/5-5`、`ineq_basic/2-5`、`fm_quad_interval/5-5`、`trig_double/11-4`、`line_2_1/4-2`、`line_2_2/5-2`），单选 −9；本地按 `data/*_levels.json` 统计 input+explore = **502/930 ≈ 54%**（与 `check_questions` 口径可能不同，本环境无 Godot 未复跑） |
+| **B1** | 题型单一：把 `interact/gate` 与填空题用起来 | **P0** | 🟡 参数母版 155 条方言已全清（第四十七轮 `PARAM-CHECK 0 known`）；**51 道 explore 中仅 7 道可用**（场景只用引擎原生图元），已修好并接入课程表/知识点，其余 44 道因场景用了引擎不读的键（`coeffs/slope/center/radius/eccentricity/roots`、`points_scatter/bar_chart`）**需逐关手工移植**。合并遗留已清零：`QUESTION-CHECK 79 new→0`、`orphans 15→0`、轮次标签 `51→0`。全库非四选一 **22.0%**（目标 ≥30%，未达标；第五十三轮把 7 个参数实验关的收尾四选一改为纯闸门 `interact`，+7 轮）。**方言闸门已重定位**（第四十八轮）：扫 `*_levels.json` 的 `curves` 场景（26 文件 / 89 场景 / 0 new），44 关移植时可先跑它确认键是否被引擎读取。**第五十二轮修正看板口径**：此前批量脚本给 136 个填空轮补的 `"opts": []` 被 3 个校验器误当成「0 选项选择题」，已修（详见 §0.3）。**第五十四/五十七轮**：9 道「答案为纯数值」的四选一 → `type:input`（`trig_aux/12-2`、`deriv_extrema/7-3`、`count_misc/9-2`、`conic_fixed/5-5`、`ineq_basic/2-5`、`fm_quad_interval/5-5`、`trig_double/11-4`、`line_2_1/4-2`、`line_2_2/5-2`），单选 −9；`check_questions` 看板非四选一 **22.0% → 22.9%**（口径：多选 4 + interact 11 + 填空 231 = 246 / 1076；explore 不计入分母，走 B3 独立指标），距 30% 目标仍差 7.1pp |
 | **B3** | 「探究→建构→迁移」名不副实 | **P0** | 🟡 26/26 章探究轮题面已改写（陈述句 **1/273 = 0.4%**，验收①达标；第五十三轮 7 关 explore→interact 后基数 280→273）；建构/迁移轮标准已按「复习优先」修订；**`circle_1_1/1_2/2_1` 三组 9 轮试点已改写**（追问改读当前图、建构/迁移给具体数值），难度未升，待人工可读性/耗时评估后再扩到 `line`/`vector`。**第五十七轮已扩到 `line` 章 2 轮**：`line_2_1/4-2`、`line_2_2/5-2` 由四选一转数值填空（读图作答，图上的答案标签同步去掉）；`line_2_2/5-1` 追问改为「图中过 A、B 两点」。`vector` 章的追问多为描述性文本（如「从 a 的起点指向 b 的终点」），**保留四选一、不强行转 input**（input 只支持数值判定） |
 | **B9** | 轮次标签编号错乱（纯编校，可脚本修） | **P0** | ✅ 已完成（`fix_labels.gd`，错位归 0） |
 | **C1** | 重复通关无限刷经验/金币 | **P0** | ✅ 已完成（经验仅星升；重复奖励×0.3/日封顶） |
@@ -35,7 +35,7 @@
 | **A6** | CI（headless 四件套自动化） | **P1** | ✅ 已完成（`.github/workflows/check.yml`） |
 | **A11** | UI/交互层缺自动化断言（测试只盖纯逻辑） | **P1** | ✅ 已完成（`tests/UiSmoke`：342 断言 + 反向验证 + 入 CI） |
 | **A12** | `questions.json` 变成第二份权威题库（与现行数据冲突） | **P1** | ✅ 已完成（2026-10-20 随 A3 删除：`questions.json` 42 题 + `questions_for()`；跨文件重名 5→0，校验器已兜底） |
-| **A13** | 资源体积治理（`.xcf` 入库、13.8MB 字体、未排除） | **P1** | 🟡 已完成/待决策（`.xcf` 出库 + 图标降采样：46.8→29.6MB；**背景压缩完成**（2026-11-02）：`bg_worldmap` 4.93 MB → WebP 0.15 MB、`bg_mainhub` 2.32 MB → WebP 0.10 MB（q85，PSNR 39.9/41.3 dB），原 PNG 已删，共省 **7.0 MB**；**字体授权待人工确认**：`aidianqianfengxingshu.ttf` 13.49 MB 需决定保留/替换开源字体/改用系统字体） |
+| **A13** | 资源体积治理（`.xcf` 入库、13.8MB 字体、未排除） | **P1** | 🟡 已完成/待决策（`.xcf` 出库 + 图标降采样：46.8→29.6MB；**背景压缩完成**（2026-11-02）：`bg_worldmap` 4.93 MB → WebP 0.15 MB、`bg_mainhub` 2.32 MB → WebP 0.10 MB（q85，PSNR 39.9/41.3 dB），原 PNG 已删，共省 **7.0 MB**；`ASSETS` 实测 **24.04 MB**；**字体授权待人工确认**：`aidianqianfengxingshu.ttf` 13.49 MB 需决定保留/替换开源字体/改用系统字体） |
 | **A14** | `export_presets.cfg` 残留第三方机器路径 | **P1** | ✅ 已完成（统一 `build/…`） |
 | **A15** | 元游戏内容硬编码在 `GameData.gd` | **P2** | ✅ 已完成（2026-10-26 第四十三轮）：6 组常量迁 `data/meta.json`（7 组，含萌宠形态名）；勋章达成规则改数据驱动，文案与阈值同源；GameData 1597 → 1582 行 |
 | **A16** | 立几方法关内容在 GDScript（两套内容管线） | **P2** | 🟡 前提部分失效：题目已迁至 `data/solid_methods.json`；`scripts/modules/solid/topics/*.gd`（6 文件 3568 行）现为**纯几何/标注逻辑**（问号 0~1 处、无题干）→ 降级为「3D 场景代码与数据的分层整理」 |
@@ -136,7 +136,8 @@
 - **最后提交**：`de22cad`（feat G2 编辑态补全 + bug 修复）→ `e2509fb`（docs B6 度量校准，上一轮）→ `c8f2274`（feat PARAM-CHECK 重定位）→
   `fdce5d2`（docs B1 状态）→ `4d7d48b`（feat B1 遗留清零）→ … → `af3fb00`（fix formula）→
   `a086d8b`（fix 校验器）+ `ecec9e8`（feat B3 circle 试点）→
-  **本轮（第五十三轮）**：`901c981`（feat B1 参数实验纯闸门）+ docs（本文件）。
+  **本轮（第五十三轮）**：`901c981`（feat B1 参数实验纯闸门）+ docs（本文件）→
+  **第五十四~五十七轮**：`779c89c`（feat B1/B3/A13/E4/UI）+ docs（本文件，含 11/11 实跑结果）。
 
 - **本轮工作 X（2026-11-02，第五十四~五十七轮）：B1 数值填空 + A13 背景 WebP + B3 line 扩展 + E4 引用 + UI 按钮手感**
   - **B1（9 轮）**：把「答案为纯数值」的四选一改为 `type:input`（数值填空）——
@@ -160,6 +161,14 @@
       `"y = 2x - 1"`、`"3, 2"` 会导致**永远判错**，已改数值题面；
     * `explore` 追问靠 `_build_choices` 渲染，**必须带 `opts`**——初稿删掉 opts 会软锁，已恢复四选一；
     * 空白/无效脚本 `UIEnhanced.gd`（含 `sp._draw = func()` 等非法语法）已删，改动并入 `UI.gd`。
+  - **校验（2026-11-02 实跑）**：`tools/run_checks.ps1` **11/11 绿** —
+    `CHECKED 117 scripts, 0 failures` / `TESTS 2232 passed` / `SMOKE 293 ok` /
+    `UI-SMOKE 422 ok` / `LabSmoke TMP_OK` / `QUESTION-CHECK 26 files / 276 levels / 1065 questions / 0 new` /
+    `CONTENT-HEALTH 0 problems` / `KNOWLEDGE 27 chapters` / `ASSETS 24.04 MB`（A13 后备注基线）/
+    `PARAM-CHECK 26 files` / `LEVEL-PREVIEW 10283 ok`。
+    看板：非四选一 **22.0% → 22.9%**、探究轮陈述句 1/273（0.4%）、
+    探究轮可拖实验 148/273（54.2%）、`ans` 首项 26.6%。
+    ⚠️ 唯一 warning 是**存量** inline 公式未覆盖片段 6 个（B7/A10 历史遗留，非本轮引入）。
 
 - **本轮工作 IX（2026-11-02，第五十三轮）：B1 参数实验关改纯闸门 —— 顺带修掉 4 处「调不到/文案对不上」**
   - **改动**：7 个 `param_auto_*` 关（circle / ellipse / line / parabola / solid_basic / space / trig）
