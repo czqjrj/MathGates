@@ -327,17 +327,39 @@ static func ghost_button(text: String, on_press: Callable, font_size: int = 15) 
 	var b := Button.new()
 	b.text = text
 	b.add_theme_font_size_override("font_size", fs(font_size))
-	b.add_theme_stylebox_override("normal", stylebox(Color(0, 0, 0, 0), 10, COL_LINE, 1, 14))
-	b.add_theme_stylebox_override("hover", glass_box(Color(1, 1, 1, 0.07), 10, Color(COL_ACCENT, 0.5), 1, 14))
-	b.add_theme_stylebox_override("pressed", glass_box(Color(0, 0, 0, 0.25), 10, COL_ACCENT, 1, 14))
-	b.add_theme_stylebox_override("disabled", stylebox(Color(0, 0, 0, 0), 10, Color(1, 1, 1, 0.06), 1, 14))
-	b.add_theme_stylebox_override("focus", stylebox(Color(0, 0, 0, 0), 10, Color(COL_ACCENT, 0.3), 1, 14))
+	
+	# Normal: 极淡边框
+	b.add_theme_stylebox_override("normal", stylebox(Color(0, 0, 0, 0), 10, Color(1, 1, 1, 0.08), 1, 14))
+	
+	# Hover: 青色光晕 + 轻微背景（增强版）
+	var hover_box := glass_box(Color(1, 1, 1, 0.06), 10, Color(COL_ACCENT, 0.6), 1, 14)
+	hover_box.shadow_color = Color(COL_ACCENT, 0.25)
+	hover_box.shadow_size = 8
+	hover_box.shadow_offset = Vector2.ZERO
+	b.add_theme_stylebox_override("hover", hover_box)
+	
+	# Pressed: 深色背景 + 内发光（增强版）
+	var pressed_box := glass_box(Color(0, 0, 0, 0.3), 10, COL_ACCENT, 1, 14)
+	pressed_box.shadow_color = Color(COL_ACCENT, 0.4)
+	pressed_box.shadow_size = 6
+	pressed_box.shadow_offset = Vector2.ZERO
+	b.add_theme_stylebox_override("pressed", pressed_box)
+	
+	b.add_theme_stylebox_override("disabled", stylebox(Color(0, 0, 0, 0), 10, Color(1, 1, 1, 0.04), 1, 14))
+	
+	# Focus: 脉冲光环（增强版）
+	var focus_box := stylebox(Color(0, 0, 0, 0), 10, Color(COL_ACCENT, 0.4), 2, 14)
+	focus_box.shadow_color = Color(COL_ACCENT, 0.2)
+	focus_box.shadow_size = 10
+	focus_box.shadow_offset = Vector2.ZERO
+	b.add_theme_stylebox_override("focus", focus_box)
+	
 	b.add_theme_color_override("font_color", COL_TEXT_DIM)
 	b.add_theme_color_override("font_hover_color", COL_TEXT)
 	b.add_theme_color_override("font_pressed_color", COL_ACCENT)
 	b.add_theme_color_override("font_disabled_color", Color(1, 1, 1, 0.25))
 	b.pressed.connect(on_press)
-	press_fx(b, 0.96)
+	enhanced_press_fx(b, 0.94)
 	return b
 
 ## 语音朗读按钮：点击时调用 provider(通常重播当前题干)。设备无语音引擎时禁用。
@@ -348,17 +370,29 @@ static func voice_button(provider: Callable, font_size: int = 15) -> Button:
 		b.tooltip_text = "当前设备无可用的语音引擎"
 	return b
 
-## 青色荧光 CTA 按钮
+## 青色荧光 CTA 按钮（增强版）
 static func primary_button(b: Button) -> Button:
-	b.add_theme_stylebox_override("normal", glass_box(Color(COL_ACCENT, 0.14), 12, COL_ACCENT, 1, 18, Color(COL_ACCENT, 0.30), 14))
-	b.add_theme_stylebox_override("hover", glass_box(Color(COL_ACCENT, 0.26), 12, COL_ACCENT, 1, 18, Color(COL_ACCENT, 0.5), 18))
-	b.add_theme_stylebox_override("pressed", glass_box(Color(COL_ACCENT, 0.4), 12, Color(COL_ACCENT, 0.8), 1, 18, Color(COL_ACCENT, 0.2), 10))
-	b.add_theme_stylebox_override("focus", glass_box(Color(COL_ACCENT, 0.2), 12, COL_ACCENT, 1, 18, Color(COL_ACCENT, 0.4), 16))
+	# Normal: 更强的光晕
+	var normal_box := glass_box(Color(COL_ACCENT, 0.18), 12, COL_ACCENT, 2, 18, Color(COL_ACCENT, 0.35), 16)
+	b.add_theme_stylebox_override("normal", normal_box)
+	
+	# Hover: 更亮 + 更强光晕
+	var hover_box := glass_box(Color(COL_ACCENT, 0.32), 12, COL_ACCENT, 2, 18, Color(COL_ACCENT, 0.6), 20)
+	b.add_theme_stylebox_override("hover", hover_box)
+	
+	# Pressed: 深色 + 内收光晕
+	var pressed_box := glass_box(Color(COL_ACCENT, 0.5), 12, Color(COL_ACCENT, 0.9), 2, 18, Color(COL_ACCENT, 0.25), 12)
+	b.add_theme_stylebox_override("pressed", pressed_box)
+	
+	# Focus: 脉冲外环
+	var focus_box := glass_box(Color(COL_ACCENT, 0.25), 12, COL_ACCENT, 2, 18, Color(COL_ACCENT, 0.45), 18)
+	b.add_theme_stylebox_override("focus", focus_box)
+	
 	b.add_theme_color_override("font_color", COL_ACCENT)
 	b.add_theme_color_override("font_hover_color", Color.WHITE)
 	b.add_theme_color_override("font_pressed_color", Color.WHITE)
-	b.add_theme_color_override("font_disabled_color", Color(1, 1, 1, 0.3))
-	press_fx(b, 0.95)
+	b.add_theme_color_override("font_disabled_color", Color(1, 1, 1, 0.35))
+	enhanced_press_fx(b, 0.93)
 	return b
 
 # ---------------------------------------------------------------- 动效反馈
@@ -376,6 +410,14 @@ static func _scale_to(b: Control, s: float, dur: float, trans: int, ease_type: i
 	tw.tween_property(b, "scale", Vector2(s, s), dur).set_trans(trans).set_ease(ease_type)
 
 static func press_fx(b: Button, amount: float = 0.95) -> void:
+	if not fx_on():
+		return
+	b.button_down.connect(func() -> void: _scale_to(b, amount, UI.DUR_TINY, Tween.TRANS_QUAD, Tween.EASE_OUT))
+	b.button_up.connect(func() -> void: _scale_to(b, 1.0, UI.DUR_FAST, Tween.TRANS_BACK, Tween.EASE_OUT))
+	b.mouse_exited.connect(func() -> void: _scale_to(b, 1.0, UI.DUR_FAST, Tween.TRANS_BACK, Tween.EASE_OUT))
+
+## 增强的按压反馈：更明显的缩放回弹（只动 scale，避免与容器布局抢 position）
+static func enhanced_press_fx(b: Button, amount: float = 0.95) -> void:
 	if not fx_on():
 		return
 	b.button_down.connect(func() -> void: _scale_to(b, amount, UI.DUR_TINY, Tween.TRANS_QUAD, Tween.EASE_OUT))

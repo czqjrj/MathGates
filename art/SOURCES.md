@@ -15,8 +15,8 @@
 
 | 路径 | 内容 | 生成方式 / 来源 | 授权 | 状态 |
 |---|---|---|---|---|
-| `art/bg_mainhub.png` | 主界面背景 | 自制（源文件 `assets_src/art/bg_mainhub.xcf`） | © 项目组 | ⚠️ 待确认 |
-| `art/bg_worldmap.png` | 世界地图背景 | 自制（源文件 `assets_src/art/bg_worldmap.xcf`） | © 项目组 | ⚠️ 待确认 |
+| `art/bg_mainhub.webp` | 主界面背景（由 `bg_mainhub.png` 转 WebP q85） | 自制（源文件 `assets_src/art/bg_mainhub.xcf`） | © 项目组 | ⚠️ 待确认 |
+| `art/bg_worldmap.webp` | 世界地图背景（由 `bg_worldmap.png` 转 WebP q85） | 自制（源文件 `assets_src/art/bg_worldmap.xcf`） | © 项目组 | ⚠️ 待确认 |
 | `art/island_locked.png` / `island_unlocked.png` | 岛屿节点 | 自制（`.xcf` 见 `assets_src/art/`） | © 项目组 | ⚠️ 待确认 |
 | `art/icon_book.png` / `icon_lock.png` / `icon_map.png` / `icon_train.png` | 图标 | 自制（`.xcf` 见 `assets_src/art/`） | © 项目组 | ⚠️ 待确认 |
 | `art/ui_panel.png` | 通用面板九宫格 | 自制（`assets_src/art/ui_panel.xcf`） | © 项目组 | ⚠️ 待确认 |

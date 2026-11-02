@@ -4,6 +4,14 @@
     "method": "函数与方程思想",
     "color": "#9ED0A0",
     "summary": "把方程的根看作两条曲线交点的横坐标。",
+    "references": {
+      "chapters": ["functions", "derivative", "equations"],
+      "points": [
+        "func_concept", "func_domain", "func_range", 
+        "deriv_zero", "deriv_extrema"
+      ],
+      "description": "本章内容在「函数」章（func_concept, func_domain, func_range）、「导数」章（deriv_zero, deriv_extrema）中有具体应用实例。"
+    },
     "levels": [
       {
         "name": "1-1 实验：交点的横坐标",
@@ -71,6 +79,15 @@
     "method": "数形结合思想",
     "color": "#9ED0A0",
     "summary": "把代数式转化为图像上的长度、距离与面积。",
+    "references": {
+      "chapters": ["functions", "conics", "circles", "lines"],
+      "points": [
+        "func_graph", "deriv_geom", 
+        "circle_std", "circle_general",
+        "line_eq", "conic_geom"
+      ],
+      "description": "本章内容在「函数」章（func_graph）、「圆锥曲线」章（conic_geom）、「圆」章（circle_std, circle_general）、「直线」章（line_eq）中有具体应用实例。"
+    },
     "levels": [
       {
         "name": "2-1 实验：绝对值的距离",
@@ -137,6 +154,14 @@
     "method": "分类讨论思想",
     "color": "#9ED0A0",
     "summary": "对参数不同取值分类，做到不重不漏。",
+    "references": {
+      "chapters": ["inequalities", "quadratics", "absolute_values"],
+      "points": [
+        "ineq_param", "quad_discussion", 
+        "abs_ineq", "func_parity"
+      ],
+      "description": "本章内容在「不等式」章（ineq_param）、「二次函数」章（quad_discussion）、「绝对值」相关章节中有具体应用实例。"
+    },
     "levels": [
       {
         "name": "3-1 实验：参数决定形状",
@@ -204,6 +229,14 @@
     "method": "转化与化归",
     "color": "#9ED0A0",
     "summary": "把陌生问题转化为已熟悉的模型。",
+    "references": {
+      "chapters": ["trigonometry", "algebra", "geometry"],
+      "points": [
+        "trig_identities", "algebra_transform",
+        "geom_conversion"
+      ],
+      "description": "本章内容在「三角函数」章（trig_identities）、「代数变换」相关章节、几何转换相关内容中有具体应用实例。"
+    },
     "levels": [
       {
         "name": "4-1 实验：陌生化熟悉",
@@ -269,6 +302,14 @@
     "method": "整体思想 · 换元与代换",
     "color": "#9ED0A0",
     "summary": "不单独求各个量，把一个式子当作整体处理。",
+    "references": {
+      "chapters": ["algebra", "functions", "equations"],
+      "points": [
+        "algebra_substitution", "func_composite", 
+        "system_eq"
+      ],
+      "description": "本章内容在「代数变换」相关章节、「函数复合」（func_composite）、「方程组」（system_eq）中有具体应用实例。"
+    },
     "levels": [
       {
         "name": "5-1 实验：方程组的整体加减",
@@ -359,6 +400,14 @@
     "method": "构造思想 · 模型与反例",
     "color": "#9ED0A0",
     "summary": "构造共轭对、函数、反例，把问题嵌入熟悉模型。",
+    "references": {
+      "chapters": ["sequences", "functions", "vectors"],
+      "points": [
+        "recur_construct", "func_concept", 
+        "vector_basis", "vector_project"
+      ],
+      "description": "本章内容在「数列」章（recur_construct）、「函数」章（func_concept）、「向量」章（vector_basis, vector_project）中有具体应用实例。"
+    },
     "levels": [
       {
         "name": "6-1 实验：构造共轭对",
