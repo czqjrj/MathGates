@@ -47,7 +47,7 @@
 | **B5** | 干扰项改为诊断性干扰项 | **P1** | ✅ 已完成（2026-10-20 收官：黑名单校验器 + 42 轮整改 + 抽检 30 题；`tools/sample_distractors.gd`） |
 | **B6** | 选项过短、退化为结果核对 | **P1** | 🟡 度量校准（第五十轮）：选项字数中位数 8.0；概念轮「理由选项」已 57.3%（≥30% 达标）。**「105 题全数值选项」经第五十一轮复核作废**（102 条是正经计算题、3 条是探究轮误判）。余：仅 `err_reason` 错因标签（引擎侧） |
 | **B7** | 图片选项回归 LaTeX 文本 | **P1** | ✅ 已完成（2026-10-26 第四十六轮）：关卡文件 **188 处**图片选项全改 `$$LaTeX$$`（`vector` 44 / `recurrence` 42 / `ellipse` 22 / `conic` 6 + 立几方法 74），`data/` 下 `opts` 引用 `res://art/**` 归零；顺带补 22 条「选项变文本后才暴露」的 hint 泄露 |
-| **B11** | 模块间质量方差过大 | **P1** | 同一品牌下深度差 3 倍 |
+| **B11** | 模块间质量方差过大 | **P1** | 🟡 第一阶段完成（口径校准三处 + 符号化试点）：①修正 coverage(22→27 章)/题型判定/字段落地，solid 排除 n/a；②vector 符号化统一（41 条题干纯文本→LaTeX，0.337→0.626，说明公式密度对记号写法敏感）；实测均值 0.467，std 0.080，11 章<0.45。docs/B11_模块质量方差整改方案.md v2.0
 | **A4** | 上帝对象拆分（`GameData`/`StageBase`/`TheoremTree`） | **P2** | ✅ 已收口（2026-10-21 第二十五轮 `7b4f8be`）：九刀拆出规则层七文件 696 行，三文件 4725→4311 行；行数红线进 `check_all`（超限即红灯）+ README「代码结构红线」；全程无行为变化、九件套绿 |
 | **A7** | 版本声明漂移（文档 vs `project.godot` vs GDExtension） | **P2** | ✅ 已完成（文档基线 + 版本策略已记录） |
 | **A8** | 「地图」隐喻套在清单结构上 | **P2** | 产品层，长期方向 |
@@ -3740,3 +3740,20 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
 4. 统计项：题量、选项数、`ans` 取值分布、选项是否图片（`res://*.png`）、
    题干长度/选项长度均值、`type` 取值、`hint/explain/success/ask` 覆盖率、
    轮次标签编号 vs 关卡序号、图片选项计数、题干重复。
+
+### 9.4 第 XI 轮（2026-11-03，B11 口径校准 + thinking 误删修复）
+
+**完成工作**：
+- **B11 口径校准三处**：	ools/analyze_depth.py (v3) ①覆盖面 22→27 章（通过课程表 lab+lab_ref/sequence/conic/method 指针取数）；②题型判定与 check_questions.gd 统一（有 opts 即选择，choice 不再误为非选）；③字段是否真的显示（ConicStage/SolidChallenge 不渲染 explain/steps → solid 排除 n/a）。实测：26 章参与、mean 0.467、std 0.080、11 章<0.45。
+- **vector 符号化试点**：41 条题干纯文本向量记号（a,b,|a|等）统一改为 $（\vec{a}, \cdot, \perp），公式密度 0.12→2.62，深度分 0.337→0.626。收益：渲染一致性好；代价：指标对「是否用 」敏感，**不应把 0.626 解读为内容变深**。见 docs/B11_模块质量方差整改方案.md §1.3。
+- **修 main 上 6 红**：①	hinking_levels.json 被 E4 提交误删 24 轮（30→6）→已恢复 6×5=30 轮并保留 E4 的 references（tests≥3 轮/≥3 explore 通过）；②	hink_whole 选项「无法确定f(-2)的值」撞黑名单 B5 →换真实错误路径「误当偶函数得f(-2)=f(2)=10」。run_checks 14/14 全绿（2232 passed）。
+- **run_checks.ps1 空日志兜底**：非 console Godot (Godot_v4.7.2-stable_win64.exe) stdout 重定向到文件时直接退出→日志 0 字节（14 项全 FAIL (0.0s)）。已加兜底：空日志自动用 --log-file 重跑一次。符合 TODO §11 换机坑的推荐做法。
+- **docs 更新**：B11 文档 v2.0（完整表 + 发现说明）、知识点覆盖矩阵/专题章 references 报告/教材对齐核对自动更新。
+
+**变更统计**：
+- 修改文件 5：data/thinking_levels.json (+401/-122)、data/vector_levels.json (+27/-55)、	ools/analyze_depth.py (+216/-133)、	ools/run_checks.ps1 (+14/-0)、docs/B11_模块质量方差整改方案.md (重写)
+- 新增 .uid 文件 4：scripts/rules/ErrReasonRules.gd.uid、scripts/rules/ThinkingRules.gd.uid、	ools/check_err_reason.gd.uid、	ools/check_thinking_refs.gd.uid（上游脚本漏带）
+- 总进度：**43/55**（B11 第一阶段完成）
+
+**下一项建议**：B11 第二阶段——补 statistics/probability/parabola/counting/space 五薄的公式密度与步骤（不扩题、不强转 input）；或继续 B1 剩余 44 道参数实验关的手工移植（coeffs/slope/... → LabPlane 方言）。优先前者（可机械改、不碰场景代码）。
+

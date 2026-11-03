@@ -114,9 +114,21 @@ foreach ($c in $checks) {
     $log = Join-Path $logDir ("{0:D2}_{1}.log" -f $i, $c.n)
     $sw = [Diagnostics.Stopwatch]::StartNew()
     & $exe --headless --path $repo @($c.a) *> $log
-    $sw.Stop()
     $text = ""
     if (Test-Path $log) { $text = Get-Content $log -Raw -Encoding UTF8 }
+    # 非 console 版 Godot（Godot_v4.x-stable_win64.exe）在 **stdout 被重定向到文件**时
+    # 会直接退出、不写任何输出（14 项全 FAIL (0.0s)、日志 0 字节——不是检查真的挂了）。
+    # 兜底：空日志 → 用引擎自己的 --log-file 重跑一次；管道（2>&1 |）不受影响，
+    # 所以把过程输出丢给 Out-Null 而不是再重定向到文件。
+    if ([string]::IsNullOrWhiteSpace($text)) {
+        $alt = Join-Path $logDir ("{0:D2}_{1}.engine.log" -f $i, $c.n)
+        & $exe --headless --log-file $alt --path $repo @($c.a) 2>&1 | Out-Null
+        if (Test-Path $alt) {
+            $text = Get-Content $alt -Raw -Encoding UTF8
+            if (-not [string]::IsNullOrWhiteSpace($text)) { $log = $alt }
+        }
+    }
+    $sw.Stop()
     $ok = ($text -match $c.must) -and ($c.deny -eq "" -or -not ($text -match $c.deny))
     if ($ok) {
         $pass++
