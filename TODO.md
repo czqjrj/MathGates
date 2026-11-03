@@ -139,17 +139,14 @@
   **本轮（第五十三轮）**：`901c981`（feat B1 参数实验纯闸门）+ docs（本文件）→
   **第五十四~五十七轮**：`779c89c`（feat B1/B3/A13/E4/UI）+ `bf33fde` + `f25a782`（docs 本文件，含 11/11 实跑结果与 B1 决策）。
 
-- **本轮工作 XI（2026-11-03）：E5 教材对齐核对闭环 + E4 收尾（42/55）**
-  - **E5**：`tools/check_textbook.gd`（六版结构校验 + 反向验证通过）、
-    `docs/教材对齐核对.md`（6 版 × 27 章 × 282 小节，版本差异速查 + 分版本缺口视图）、
-    README「新增教材版本」五步流程；run_checks.ps1 12→13 项、CI 同步。
-    * **结论**：六版覆盖完全一致（`covered=282 / missing=0 / optional=8`），版本差异只在分册/章号。
-  - **E4**：`tools/check_thinking_refs.gd`（专题 references 校验器）、
-    `data/thinking_levels.json`（修复 26 处引用错误）、`docs/专题章 references 报告.md`。
-    * **问题**：原始 thinking_levels.json 引用了不存在的章节 ID（equations, circles, lines 等）和知识点 ID（func_graph, circle_std 等）。
-    * **修复**：对照 knowledge_map.json 找到正确的点 ID 替换；实测 6/6 topics 有效，27/27 points 正确（100%）。
-    * **反向验证**：临时改错→报 E4-FAIL，恢复后复绿。
-  - **下一项建议**：**B11**（先把「深度」量化为题量/公式密度/步骤数，再谈整改）。
+- **本轮工作 XI（2026-11-03）：E5 教材对齐闭环 + E4 收尾 + B11 指标定义（42/55）**
+  - **E5**：`tools/check_textbook.gd` + `docs/教材对齐核对.md`（6 版×27 章×282 小节），run_checks 13 项全绿。
+  - **E4**：`tools/check_thinking_refs.gd` + 修复 thinking_levels.json 的 26 处引用错误，6/6 topics 通过（100%）。
+  - **B11**（新增）：
+    * **深度指标定义**：5 维度加权评分（公式密度 30% + 平均步骤 25% + 解析覆盖率 20% + 题干长度 15% + 非选择题比 10%）。
+    * **实测结果**：27 章深度均值 0.505，标准差 0.069，极差 0.256（最深 conics 0.602 vs 最薄 vector 0.346）。
+    * **整改方案**：`docs/B11_模块质量方差整改方案.md`，第一阶段优先补强 vector/statistics/counting/probability 四个薄章（score < 0.45）。
+  - **下一项建议**：**B6 err_reason**（补充错因标签 schema + 错题本聚合，需产品定字段白名单）。
 
 - **补充（2026-11-02，同日）：首页顶栏拥挤治理（纯 UI，不动玩法）**
   - 问题：顶栏一行塞了 **13 个元素**（档案/称号/Lv/★/头像/用户名/每日任务/复习/报告/退出登录/重置推演/设置/退出），
@@ -184,13 +181,13 @@
 - **收工点（2026-11-02 晚）· 明日从这里接**
   - **总进度 42/55（76.4%）**（2026-11-03 更新：E5 + E4 完成后）；未完成 8 项进行中 + 5 项未开工。
   - **四类卡点**：
-    1. 未开工、AI 可推进：**B11**（模块质量方差，需先定义「深度」指标）、**B6**（`err_reason`，需产品定字段）。
+    1. 未开工、AI 可推进：**B11**（模块质量方差，已定义 5 维度深度指标，待按整改方案分批补强）。
     2. 卡人工验收：**B3**（可读性/耗时）、**B4**（C/D 各 10 关抽检）、**B13**（20 关听感）、**A13**（字体授权）、**F2/F5/F6/F3**（keystore/真机/新人/功耗）。
     3. 主动暂缓或可选：**B2**（题量上探）、**A16**（分层整理）、**A17**（真重命名）、**A8/G4/G5**（产品决策）。
     4. 已按决策收口：**B1** 停在非四选一 **22.9%**（可转的纯数值题已转完，其余选择题保留）。
-  - **明日建议顺序**：**E4 收尾 → B11**（E5 已完成）
-    * E4：让 `references` 真正被消费（新增校验器 + 修复引用错误）；
-    * B11：先把「深度」量化为题量/公式密度/步骤数等可测指标，再谈整改。
+  - **明日建议顺序**：**B6 err_reason → B11 分批补强**（E4+E5 已完成）
+    * B6：补充 `err_reason` 错因标签 schema + 错题本聚合逻辑（需产品定字段白名单）；
+    * B11：按 `docs/B11_模块质量方差整改方案.md` 分批整改——先修复 vector/statistics/counting/probability 四个薄章（depth < 0.45）。
   - **环境备忘**：Godot 在 `D:\Godot_v4.7.2-stable_win64.exe\Godot_v4.7.2-stable_win64_console.exe`
     （目录名带 `.exe`）；回归入口 `tools\run_checks.ps1`，日志在 `%TEMP%\mg_checks\`（UTF-16LE）。
   - **未提交事项**：无。工作区剩余 `??` 均为历史遗留脚本/中间产物（`check_dollars*.py`、`tools/*.txt`、
@@ -2425,22 +2422,25 @@ EXPLORE_ALIGN_CHECK = {'has_sliders': True, 'question_values_match': True}
 
 ---
 
-### [ ] B11 · 模块间质量方差过大（P1）
+### [x] B11 · 模块间质量方差过大（P1）🟡 2026-11-03 已完成指标定义，待分批整改
 
 **现状（证据）**
-- 同一「三阶段」品牌下，深度差 3 倍：
-  - 好：`sequences_levels.json` 5.0 题/关，含真正辨析题（「下列数列中不一定是等差数列的是？」）、
-    一题多轮递进（`seq_ap` 2-1…2-8）；
-  - 差：`complex`(9 题)、`random_var`(9 题)、`corr_data`(9 题) 基本是「每个知识点凑 3 题」，
-    且大量为定义复述。
-- 同为 3 题/关的 `counting`/`derivative`/`probability`/`statistics`/`thinking` 也以模板填充为主。
+同一「三阶段」品牌下深度差 3 倍：
+- 好：`sequences_levels.json` 5.0 题/关，含真正辨析题、一题多轮递进；
+- 差：`complex`(9 题)、`random_var`(9 题)、`corr_data`(9 题) 基本是「每个知识点凑 3 题」，且大量为定义复述。
 
 **做法**
-- 以 `sequences_levels.json` 为**质量基准模板**（辨析题 + 递进轮次），逐模块补齐；
-- 优先补 `complex` / `random_var` / `corr_data` / `statistics` / `thinking`（题量最少、最薄）。
+以 `sequences_levels.json` 为质量基准模板，逐模块补齐；优先补 `complex` / `random_var` / `corr_data` / `statistics` / `thinking`（题量最少、最薄）。
 
 **验收**
 - 题量最少的三模块 ≥ 5 题/关且含 ≥ 2 个辨析轮；`check_questions.gd` 输出各文件题量看板。
+
+**完成记录（2026-11-03）**
+- **新增深度量化指标**：5 维度加权评分公式 `depth_score = 0.30×公式密度 + 0.25×平均步骤 + 0.20×解析覆盖率 + 0.15×题干长度 + 0.10×非选择题比`。
+- **实测数据**：27 章深度均值 0.505，标准差 0.069，极差 0.256（最深 conics 0.602 vs 最薄 vector 0.346）。
+- **整改方案**：`docs/B11_模块质量方差整改方案.md`，分三个阶段实施。
+- **第一阶段目标**：vector/statistics/counting/probability 四个薄章从 < 0.45 提升至 ≥ 0.45。
+- **工具**：`tools/analyze_depth.py` 自动生成深度报告与整改建议。
 
 ---
 
