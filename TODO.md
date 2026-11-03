@@ -47,7 +47,7 @@
 | **B5** | 干扰项改为诊断性干扰项 | **P1** | ✅ 已完成（2026-10-20 收官：黑名单校验器 + 42 轮整改 + 抽检 30 题；`tools/sample_distractors.gd`） |
 | **B6** | 选项过短、退化为结果核对 | **P1** | 🟡 度量校准（第五十轮）：选项字数中位数 8.0；概念轮「理由选项」已 57.3%（≥30% 达标）。**「105 题全数值选项」经第五十一轮复核作废**（102 条是正经计算题、3 条是探究轮误判）。余：仅 `err_reason` 错因标签（引擎侧） |
 | **B7** | 图片选项回归 LaTeX 文本 | **P1** | ✅ 已完成（2026-10-26 第四十六轮）：关卡文件 **188 处**图片选项全改 `$$LaTeX$$`（`vector` 44 / `recurrence` 42 / `ellipse` 22 / `conic` 6 + 立几方法 74），`data/` 下 `opts` 引用 `res://art/**` 归零；顺带补 22 条「选项变文本后才暴露」的 hint 泄露 |
-| **B11** | 模块间质量方差过大 | **P1** | 🟡 第一阶段完成（口径校准三处 + 符号化试点）：①修正 coverage(22→27 章)/题型判定/字段落地，solid 排除 n/a；②vector 符号化统一（41 条题干纯文本→LaTeX，0.337→0.626，说明公式密度对记号写法敏感）；实测均值 0.467，std 0.080，11 章<0.45。docs/B11_模块质量方差整改方案.md v2.0
+| **B11** | 模块间质量方差过大 | **P1** | 🟡 第一阶段完成（口径校准三处 + 第一批符号化）：①修正覆盖面 22→27 章 / 题型判定（`choice` 不再误为非选）/ 字段落地（`solid` 排除 n/a）；②符号化四章：vector 41 题（0.337→0.626）、parabola 27 题（0.370→0.564）、probability 16 题（0.361→0.477）、statistics 9 题（0.288→0.341）；实测 **均值 0.481、std 0.072、9 章<0.45**（校准前 0.467/0.080/11 章）。**关键结论：分数上涨主要来自「是否用 `$$LaTeX$$`」，不等于内容变深**；statistics/counting 等章的 `steps=0` 是结构短板（无交互轮），补文案无用。详见 `docs/B11_模块质量方差整改方案.md` v2.1 |
 | **A4** | 上帝对象拆分（`GameData`/`StageBase`/`TheoremTree`） | **P2** | ✅ 已收口（2026-10-21 第二十五轮 `7b4f8be`）：九刀拆出规则层七文件 696 行，三文件 4725→4311 行；行数红线进 `check_all`（超限即红灯）+ README「代码结构红线」；全程无行为变化、九件套绿 |
 | **A7** | 版本声明漂移（文档 vs `project.godot` vs GDExtension） | **P2** | ✅ 已完成（文档基线 + 版本策略已记录） |
 | **A8** | 「地图」隐喻套在清单结构上 | **P2** | 产品层，长期方向 |
@@ -3757,3 +3757,30 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
 
 **下一项建议**：B11 第二阶段——补 statistics/probability/parabola/counting/space 五薄的公式密度与步骤（不扩题、不强转 input）；或继续 B1 剩余 44 道参数实验关的手工移植（coeffs/slope/... → LabPlane 方言）。优先前者（可机械改、不碰场景代码）。
 
+### 9.5 第 XII 轮（2026-11-03，B11 第一阶段·第一批符号化）
+
+**完成工作**（只做「不扩题、不强转 input」的机械符号化）：
+
+| 章节 | 改动题数 | 深度分 | 公式/题 |
+|---|---:|---|---|
+| statistics | 9 | 0.288 → **0.341** | 0.06 → 0.56 |
+| probability | 16 | 0.361 → **0.477** | 0.71 → 1.79 |
+| parabola | 27 | 0.370 → **0.564** | 0.91 → 2.71 |
+| （上轮）vector | 41 | 0.337 → **0.626** | 0.12 → 2.62 |
+
+- 全库：**均值 0.467 → 0.481，std 0.080 → 0.072，<0.45 章 11 → 9**。
+- 改动内容：把 Unicode/纯文本记号（`y²=4x`、`x₁x₂`、`|PF|`、`$60\%$`、`P(3|B)`、`\vec{a}`）
+  统一改成 `$$LaTeX$$`；只动题干，不动答案、选项语义、场景。
+- 校验：`QUESTION-CHECK 0 new`；`run_checks 14/14`（check_all/Tests/SMOKE/UI-SMOKE/LabSmoke/
+  QUESTION/CONTENT/KNOWLEDGE/TEXTBOOK/THINKING-REFS/ERR-REASON/ASSETS/PARAM/LEVEL-PREVIEW 全绿）。
+
+**本轮暴露的口径问题（已写进 B11 文档 §1.3）**：
+1. 「公式密度」对「有没有写 `$$`」极度敏感——同样的信息，包一层就涨分，
+   所以**不能只看深度分判断内容质量**，必须同时看 explain/步骤/题型三列。
+2. `steps` 是结构维度：只有交互/探究轮（且 StageBase 渲染）才有。
+   statistics/counting/complex/corr_data/recurrence_methods 的 `steps` 恒为 0，
+   25% 权重注定拿不到——这不是内容差，是这些章没有交互轮。
+
+**下一项建议**：先做 **space**（Unicode 记号最多：`n₁/n₂/u·v/√`，符号化收益最大且纯机械），
+再做 **line_eq / solid_basic / complex / random_var / corr_data**；
+`counting` 的组合数记法需先确认（`C_n^m` vs `\binom`）再动手。
