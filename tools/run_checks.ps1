@@ -70,7 +70,7 @@ Write-Host "仓库：$repo" -ForegroundColor DarkGray
 # 换机首次、或新增 class_name 文件后必做：否则会连锁报
 # Parse Error: Could not find type "XXX"（第三方 res://third_party/ 的 Parse Error 是历史噪音，忽略）。
 if (-not $SkipImport) {
-    Write-Host "`n[0/13] --import（生成全局类缓存，首次/换机必做）" -ForegroundColor Cyan
+    Write-Host "`n[0/14] --import（生成全局类缓存，首次/换机必做）" -ForegroundColor Cyan
     & $exe --headless --path $repo --import *> (Join-Path $logDir "00_import.log")
     $cache = Join-Path $repo ".godot\global_script_class_cache.cfg"
     if (Test-Path $cache) {
@@ -94,6 +94,7 @@ $checks = @(
     @{ n = "KNOWLEDGE";        a = @("--script", "res://tools/check_knowledge.gd");            must = "KNOWLEDGE: [0-9]+ chapters";             deny = "KNOWLEDGE-FAIL" },
     @{ n = "TEXTBOOK";         a = @("--script", "res://tools/check_textbook.gd");             must = "TEXTBOOK: [0-9]+ versions";              deny = "TEXTBOOK-FAIL" },
     @{ n = "THINKING-REFS";    a = @("--script", "res://tools/check_thinking_refs.gd");        must = "E4:";                                      deny = "E4-FAIL" },
+    @{ n = "ERR-REASON";       a = @("--script", "res://tools/check_err_reason.gd");           must = "B6:";                                      deny = "B6-FAIL" },
     @{ n = "ASSETS";           a = @("--script", "res://tools/check_assets.gd");               must = "ASSETS: [0-9.]+ MB";                     deny = "ASSETS-FAIL" },
     @{ n = "PARAM-CHECK";      a = @("--script", "res://tools/check_param_masters.gd");        must = "PARAM-CHECK: [0-9]+ files";              deny = "PARAM-CHECK-FAIL" },
     @{ n = "LEVEL-PREVIEW";    a = @("res://tools/LevelPreview.tscn", "--", "--smoke");        must = "LEVEL-PREVIEW-SMOKE: \d+ ok, 0 fail";    deny = "" }

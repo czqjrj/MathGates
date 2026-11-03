@@ -103,6 +103,13 @@ jobs:
           grep -Eq "E4:" out.log
           ! grep -Eq "E4-FAIL" out.log
 
+      - name: check_err_reason（错因标签校验，B6）
+        run: |
+          set -euo pipefail
+          ./godot --headless --path . --script res://tools/check_err_reason.gd 2>&1 | tee out.log
+          grep -Eq "B6:" out.log
+          ! grep -Eq "B6-FAIL" out.log
+
       - name: check_content_health（内容数据完整性闸门，A18）
         run: |
           set -euo pipefail
