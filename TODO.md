@@ -139,7 +139,7 @@
   **本轮（第五十三轮）**：`901c981`（feat B1 参数实验纯闸门）+ docs（本文件）→
   **第五十四~五十七轮**：`779c89c`（feat B1/B3/A13/E4/UI）+ `bf33fde` + `f25a782`（docs 本文件，含 11/11 实跑结果与 B1 决策）。
 
-- **本轮工作 XI（2026-11-03）：E5 教材对齐闭环 + E4 收尾 + B11 指标定义 + B6 err_reason schema（43/55）**
+- **本轮工作 XI（2026-11-03）：E5 教材对齐闭环 + E4 收尾 + B11 指标定义 + B6 err_reason schema（进度见下方「收工点」）**
   - **E5**：`tools/check_textbook.gd` + `docs/教材对齐核对.md`（6 版×27 章×282 小节），run_checks 14 项全绿。
   - **E4**：`tools/check_thinking_refs.gd` + 修复 thinking_levels.json 的 26 处引用错误，6/6 topics 通过（100%）。
   - **B11**：深度指标 5 维度公式 + 实测 27 章数据（均值 0.505,标准差 0.069）+ `docs/B11_模块质量方差整改方案.md`。
@@ -183,9 +183,12 @@
     修后该 SCRIPT ERROR 消失。
 
 - **收工点（2026-11-02 晚）· 明日从这里接**
-  - **总进度 43/55（78.2%）**（2026-11-03 更新：E5+E4+B11+B6 schema 完成后）；未完成 7 项进行中 + 5 项未开工。
+  - **总进度：40/55 完成（72.7%）+ 12 项进行中（21.8%）+ 3 项未开工（5.5%）**；按工作量折算 ≈ 83.6%。
+    > 口径说明：此数字由 `## 0.1` 表格逐行统计得来（✅=完成、🟡=进行中、无标记=未开工）。
+    > 此前写的「43/55」把 **A13（字体授权未决）/ A16（已降级为分层整理）/ A17（两步只落一步）**
+    > 三个 🟡 当成完成，已按表格口径纠正；这 3 项有真实残留，仍保持 🟡。
   - **四类卡点**：
-    1. 未开工、AI 可推进：**B11**（模块质量方差，已定义深度指标+schema，待按整改方案分批补强）。
+    1. 进行中、AI 可推进：**B11**（口径已校准 + vector/parabola/probability/statistics 符号化完成；余 space/line_eq/complex 等可机械推进）。
     2. 卡人工验收：**B3**（可读性/耗时）、**B4**（C/D 各 10 关抽检）、**B13**（20 关听感）、**A13**（字体授权）、**F2/F5/F6/F3**（keystore/真机/新人/功耗）。
     3. 主动暂缓或可选：**B2**（题量上探）、**A16**（分层整理）、**A17**（真重命名）、**A8/G4/G5**（产品决策）。
     4. 已按决策收口：**B1** 停在非四选一 **22.9%**（可转的纯数值题已转完，其余选择题保留）。
@@ -2269,7 +2272,7 @@ EXPLORE_ALIGN_CHECK = {'has_sliders': True, 'question_values_match': True}
 - ✅ **Schema 文档**：`docs/B6_错因标签 Schema.md`（7 类核心错因白名单 + 数据 Schema + 自动推断规则 + 实施路线图）；
 - ✅ **规则层实现**：`scripts/rules/ErrReasonRules.gd`（validate_err_reason / group_by_reason / reason_stats，≤200 行符合 A4 红线）；
 - ✅ **校验器**：`tools/check_err_reason.gd` 集成到 run_checks.ps1（第 11 项 ERR-REASON）和 CI workflow，实测通过率 100%；
-- ✅ TODO.md 总进度更新至 43/55 (78.2%)；
+- ✅ TODO.md 总进度更新至 40/55 完成 + 12 进行中（表格口径）；
 - ⏸️ **下一步**：UI 整合（错题本错因标注入口 + 错因饼图）→ 自动推断落地 → 个性化复习包生成。
 
 ---
@@ -3753,7 +3756,7 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
 **变更统计**：
 - 修改文件 5：data/thinking_levels.json (+401/-122)、data/vector_levels.json (+27/-55)、	ools/analyze_depth.py (+216/-133)、	ools/run_checks.ps1 (+14/-0)、docs/B11_模块质量方差整改方案.md (重写)
 - 新增 .uid 文件 4：scripts/rules/ErrReasonRules.gd.uid、scripts/rules/ThinkingRules.gd.uid、	ools/check_err_reason.gd.uid、	ools/check_thinking_refs.gd.uid（上游脚本漏带）
-- 总进度：**43/55**（B11 第一阶段完成）
+- 总进度：**40/55 完成 + 12 进行中**（B11 第一阶段完成）
 
 **下一项建议**：B11 第二阶段——补 statistics/probability/parabola/counting/space 五薄的公式密度与步骤（不扩题、不强转 input）；或继续 B1 剩余 44 道参数实验关的手工移植（coeffs/slope/... → LabPlane 方言）。优先前者（可机械改、不碰场景代码）。
 
