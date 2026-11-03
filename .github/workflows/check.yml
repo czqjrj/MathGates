@@ -89,6 +89,13 @@ jobs:
           grep -Eq "KNOWLEDGE: [0-9]+ chapters" out.log
           ! grep -Eq "KNOWLEDGE-FAIL" out.log
 
+      - name: check_textbook（六版教材对齐核对，E5）
+        run: |
+          set -euo pipefail
+          ./godot --headless --path . --script res://tools/check_textbook.gd 2>&1 | tee out.log
+          grep -Eq "TEXTBOOK: [0-9]+ versions" out.log
+          ! grep -Eq "TEXTBOOK-FAIL" out.log
+
       - name: check_content_health（内容数据完整性闸门，A18）
         run: |
           set -euo pipefail

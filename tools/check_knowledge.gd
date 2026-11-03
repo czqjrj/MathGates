@@ -60,8 +60,8 @@ func _initialize() -> void:
 	doc.append("# 知识点覆盖矩阵（E1）\n")
 	doc.append("> 本文件由 `data/knowledge_map.json` + `data/curriculum.json` **自动生成**，请勿手改；")
 	doc.append("> 改数据后运行 `godot --headless --path . --script res://tools/check_knowledge.gd` 重新生成。\n")
-	doc.append("教材口径：**苏教2019 + 人教A2019** 为主（章节级对齐），其余版本差异另注。\n")
-	doc.append("> 其余四版（北师大 / 人教B / 湘教 / 沪教）的差异以 `data/textbooks.json` 的章号与顺序为准，尚**未拆到小节级**（残留）。\n")
+	doc.append("教材口径：本章节/知识点矩阵以**苏教2019 + 人教A2019**为主。\n")
+	doc.append("> **六个版本**的分册 / 章号 / 小节展开见 `docs/教材对齐核对.md`（E5，由 `tools/check_textbook.gd` 生成并校验）。\n")
 
 	for ci in cur_ch.size():
 		var c: Dictionary = cur_ch[ci]

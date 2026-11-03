@@ -64,7 +64,7 @@
 | **E2** | 补齐薄弱章节题量（8 章 ≤4 关，最少仅 6 题） | **P0** | ✅ 已完成（2026-10-19）：27 章全部 ≥6 关（知识章 9 章 + 方法章 `function_methods`、`conic` 各补齐到 6 关）；薄弱章节 **11 → 0** |
 | **E3** | 补全 15 个整块缺失的教材必学知识点 | **P1** | ✅ 已完成（13 条落成关卡，#1/#11 用户判定教材已删跳过；末两条 `vector_physics`/`prob_simulate` 2026-10-20 收官） |
 | **E4** | 方法章/专题章过薄且与知识章脱节 | **P2** | 🟡 function_methods、conic 均已 1→6（2026-10）；thinking 6 个专题组全部补 `references`（关联章节 + 知识点）。⚠️ **字段目前无代码消费**（加载器/UI 都不读），属纯文档性质——真正生效还需：①加载 `thinking_levels.json` 时读取并挂到知识树上；②知识点页加「相关思想方法」入口；③校验引用的 chapter/point 必须存在 |
-| **E5** | 与 6 版教材对齐的持续核对流程 | **P1** | 换版本只改排序不改覆盖 |
+| **E5** | 与 6 版教材对齐的持续核对流程 | **P1** | ✅ 已完成（2026-11-03）：`tools/check_textbook.gd` + `docs/教材对齐核对.md`——6 版 × 27 章 × 282 小节全部展开；结构校验（版本/分册 id 唯一、排序不重不漏、chapter_book/chapter_no 齐全、unit_titles 有指向）+ 版本级 `excluded_chapters`；README 补「新增教材版本」五步流程；已入 `run_checks` / CI |
 | **F1** | 在线 TTS 的合规与稳定性（外发题目文本） | **P0** | ✅ 客户端策略完成（默认关闭+明示同意+隐私政策）；官方 API/商店表单并入 F2 |
 | **F2** | 发布准备（包名/版本/签名/targetSdk） | **P0** | ✅ 包名=cn.edu.mathgates、版本脚本、targetSdk35、签名位就绪；残留 keystore/真机 |
 | **F3** | 性能与耗电（3D 视口与背景常驻开销） | **P1** | ✅ 已完成（2026-10-21）：3D 空闲 8s 停自转/10s 停渲染、后台停帧；2D 改按需重绘；`perf_probe` 基线（静止 73ms → 0.26ms/帧）；真机功耗仍需实机 |
@@ -139,6 +139,16 @@
   **本轮（第五十三轮）**：`901c981`（feat B1 参数实验纯闸门）+ docs（本文件）→
   **第五十四~五十七轮**：`779c89c`（feat B1/B3/A13/E4/UI）+ `bf33fde` + `f25a782`（docs 本文件，含 11/11 实跑结果与 B1 决策）。
 
+- **本轮工作 XI（2026-11-03）：E5 教材对齐核对闭环（41/55）**
+  - **交付**：`tools/check_textbook.gd`（六版结构校验 + 反向验证通过）、
+    `docs/教材对齐核对.md`（6 版 × 27 章 × 282 小节，版本差异速查 + 分版本缺口视图）、
+    README「新增教材版本（E5）」五步流程；`run_checks.ps1` 12 项、CI 同步。
+  - **结论**：六版覆盖完全一致（`covered=282 / missing=0 / optional=8`）——
+    版本差异只在分册/章号；新增 `excluded_chapters` 供未来「某版不学某章」显式标注。
+  - **下一项建议**：**E4 收尾**（让 `thinking_levels.json` 的 `references` 真正被消费：
+    加载器读字段 → 知识点页「相关思想方法」入口 → 校验引用存在）→ 再转 **B11**
+    （先把「深度」量化为题量/公式密度/步骤数，再谈整改）。
+
 - **补充（2026-11-02，同日）：首页顶栏拥挤治理（纯 UI，不动玩法）**
   - 问题：顶栏一行塞了 **13 个元素**（档案/称号/Lv/★/头像/用户名/每日任务/复习/报告/退出登录/重置推演/设置/退出），
     1280 画布 + `S=1.4` 字号下几乎没有留白。
@@ -170,7 +180,7 @@
     修后该 SCRIPT ERROR 消失。
 
 - **收工点（2026-11-02 晚）· 明日从这里接**
-  - **总进度 40/55（72.7%）**；未完成 10 项进行中 + 5 项未开工。
+  - **总进度 40/55（72.7%）**（2026-11-03 更新：E5 完成后 **41/55，74.5%**）；未完成 10 项进行中 + 5 项未开工。
   - **四类卡点**：
     1. 未开工、AI 可推进：**E5**（教材对齐核对流程）、**B11**（模块质量方差，需先定义「深度」指标）、**B6**（`err_reason`，需产品定字段）。
     2. 卡人工验收：**B3**（可读性/耗时）、**B4**（C/D 各 10 关抽检）、**B13**（20 关听感）、**A13**（字体授权）、**F2/F5/F6/F3**（keystore/真机/新人/功耗）。
@@ -2942,7 +2952,7 @@ EXPLORE_ALIGN_CHECK = {'has_sliders': True, 'question_values_match': True}
 
 ---
 
-### [ ] E5 · 与教材对齐的持续核对流程（P1）
+### [x] E5 · 与教材对齐的持续核对流程（P1）✅ 2026-11-03（`check_textbook.gd` + 六版核对文档）
 
 **现状（证据）**
 - `data/textbooks.json` 声明支持 **6 个版本**，但每个版本只定义了
@@ -2961,6 +2971,27 @@ EXPLORE_ALIGN_CHECK = {'has_sliders': True, 'question_values_match': True}
 - 矩阵含 6 个版本的教材小节行；
 - `README.md` 有"新增教材版本"的分步流程；
 - 任选一个版本，能一眼看出该版本还缺哪些小节。
+
+**完成记录（2026-11-03）**
+- **新增 `tools/check_textbook.gd`**（headless）：
+  * 校验 6 个版本定义——版本 / 分册 id 唯一、`default` 存在；`method_order + knowledge_order`
+    **不重不漏**（27 章全覆盖、无未知章）；`chapter_book` 指向存在的分册；`chapter_no` 齐全
+    （方法章允许无章号，文档显示「方法拓展」）；`unit_titles` 的 `分册|章号` 必须有指向；
+  * 新增可选字段 `excluded_chapters: { "章 id": "原因" }`：版本确实不学某章时显式登记，
+    该章在文档中整章标「○ 不适用」，且不再要求排序 / 分册 / 章号；
+  * 生成 `docs/教材对齐核对.md`：六版总览 + **版本差异速查**（同一章的分册/章号横向对照）+
+    **分版本核对**（每版 27 章 × 282 小节行，逐行含关卡 id 与状态）+ 缺口/不适用清单。
+- **文档口径**：小节行直接复用 E1 `data/knowledge_map.json` 的知识点（不再另造一套小节名，
+  避免两份数据分叉）；版本差异只由 `textbooks.json` 的分册/章号承载。重跑 `check_knowledge`
+  与 `check_textbook` 的 `covered/missing/optional` 必须同为 `282/0/8`。
+- **README**：`改内容` 新增「新增教材版本（E5）」五步流程（登记版本 → 先补矩阵 → 再看缺口 →
+  再补关卡 → 跑回归），并说明 `excluded_chapters` 用法。
+- **CI / 回归**：`tools/run_checks.ps1` 增加第 12 项 `TEXTBOOK`（`0 new` 口径同源）；
+  `.github/workflows/check.yml` 增加 `check_textbook` 步骤。
+- **反向验证**：临时删掉 `sujiao.chapter_no.set_logic` → 输出
+  `TB-ERROR: [sujiao] chapter_no 缺章节：set_logic` + `TEXTBOOK-FAIL`（退出码 1）；恢复后复绿。
+- **实测**：`TEXTBOOK: 6 versions / 27 chapters / 282 sections / covered=282 / missing=0 / optional=8`；
+  `docs/教材对齐核对.md` 1857 行；`KNOWLEDGE` 同步为 `covered=282 / hard-gaps=0 / optional=8`。
 
 ---
 
@@ -3667,6 +3698,9 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
 - 知识点矩阵（E1 已建立，E2/E3 已补齐）：`data/knowledge_map.json` 27 章 / **282 个知识点**（每关一挂；B1 新增 7 个参数实验点）
   **硬缺口 0**、选学/旧课标 8（基线 `tools/knowledge_gaps_baseline.txt`；2026-10-19 两角和差/二倍角清零）；
   关卡 id 跨章重名 **0 处**（2026-10-21 A18 体检发现 `solid_angle` 被两章共用，后者改名 `solid_basic_angle`）。见 E1/E2/E3。
+- 教材对齐（E5 已建立）：`docs/教材对齐核对.md` 覆盖 **6 版 × 27 章 × 282 小节**；
+  六版均为 `covered=282 / missing=0 / optional=8`（版本差异只在分册/章号，不产生版本特异缺口）。
+  `tools/check_textbook.gd` 校验结构并生成文档；反向验证：删一个非方法章的 `chapter_no` 即红灯。见 E5。
 - 数据一致性：`curriculum` 关卡 275 / 关卡数据组 269，`lab_ref` 动态映射覆盖其余；
   跨文件重名关卡数据 **0 组**（原 5 组全部来自已删除的 `questions.json` ↔ `set_logic_levels.json`，随 A12 清零）。见 A12。
 - 口播字段 `speak`：**0 处**。见 B13。

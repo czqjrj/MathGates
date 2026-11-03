@@ -457,10 +457,31 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Godot "<godot472.
   `check_questions.gd` 硬报"hint 含正确项原文(≥3 字)"与"hint 含答案数值(≥2 位,数字边界)";
   "换说法复述"判不了代数等价,只进看板,用 `godot --headless --path . --script res://tools/sample_hints.gd -- 30` 人读抽检。
 
+### 新增教材版本（E5）
+
+1. **登记版本**：在 `data/textbooks.json` 的 `versions` 追加一项——
+   `id`（唯一，上架后不改）、`title` / `subtitle`、`books`（分册）、
+   `method_order` + `knowledge_order`（27 章的顺序，两组合起来必须不重不漏）、
+   `chapter_book` / `chapter_no`（每章的分册与章号）、`unit_titles`（合并章的显示名）。
+2. **先补矩阵**：运行 `godot --headless --path . --script res://tools/check_textbook.gd`。
+   它会报出该版本缺登记的章、指向不存在的分册、排序漏章等问题；按提示补齐，
+   直到输出 `TEXTBOOK: ...` 且没有 `TEXTBOOK-FAIL`。
+3. **再看缺口**：打开自动生成的 `docs/教材对齐核对.md`，在第 3 节找到该版本，
+   「❌ 未覆盖（待补）」就是该版本还缺的小节；若该版本确实不学某章，
+   在版本定义里写 `excluded_chapters: { "章 id": "原因" }`，该章会标「不适用」。
+4. **再考虑补关卡**：先补 `data/knowledge_map.json` 的知识点/关卡挂接，再写题；
+   不要为了「对齐」复制教材习题（题目均为自编，见下节）。
+5. **回归**：`powershell -ExecutionPolicy Bypass -File tools/run_checks.ps1`，
+   `TEXTBOOK` / `KNOWLEDGE` 两项必须绿。
+
+> 口径：版本差异只改**分册 / 章号 / 顺序**，不改知识点覆盖；同一知识点在六个版本共用。
+> 因此「换版本」不会凭空产生新缺口——缺的是同一批知识点，只是章节归属不同。
+
 ## 内容与教材的关系
 
 - 本项目的**课程结构**（分册、章节、顺序）对齐人教A/苏教等人教版教材的**知识点顺序**，便于按教材体系复习；
 - **逐章知识点覆盖矩阵**（教材小节 → 知识点 → 关卡 id，含未覆盖缺口清单）：`docs/知识点覆盖矩阵.md`（数据源 `data/knowledge_map.json`，由 `tools/check_knowledge.gd` 校验并生成）；
+- **六版教材对齐核对**（分册 / 章号 / 小节 → 知识点 → 关卡，含按版本的缺口视图）：`docs/教材对齐核对.md`（数据源 `data/textbooks.json` + 矩阵，由 `tools/check_textbook.gd` 校验并生成；新增版本流程见上节）；
 - **题目均为自编**（题干、选项、解析由项目组撰写），**不逐题复制教材习题**；
 - 教材名称与章节名为客观指代，相关著作权归各出版社所有，本项目与出版社无隶属关系。
   详见 `THIRD_PARTY_NOTICES.md` §5。
