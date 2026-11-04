@@ -141,13 +141,93 @@
       },
       {
         "name": "1-5 综合：加法与减法的几何",
-        "type": "input",
-        "q": "在平行四边形 ABCD 中，已知 AB=(2,1)，AD=(1,3)，则对角线 AC 对应的向量 AC = AB+AD 的横坐标是？（填数值）",
-        "ans": 3,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "1-5 综合：加法与减法的几何",
+        "archetype": "LAB",
+        "lab": "vectors",
+        "q": "在平行四边形 ABCD 中，已知 AB=(2,1)，AD=(1,3)，则对角线 AC 对应的向量 AC = AB+AD 的横坐标是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "ask": "拖动四个分量，观察平行四边形两条对角线分别是两向量之和与差",
+        "steps": [
+          "AC 是 AB 与 AD 的和向量",
+          "BD 是 AD 与 AB 的差向量",
+          "代入 (2,1)+(1,3) 得 AC=(3,4)"
+        ],
+        "goal": "理解平行四边形中 AC=AB+AD、BD=AD−AB",
+        "tip": "和向量走『同起点对角线』，差向量走『另一条对角线』",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "平行四边形中 AC=AB+AD，按坐标相加。",
         "explain": "AC=AB+AD=(2+1,1+3)=(3,4)，横坐标为 3。（另一条对角线 BD=AD−AB=(−1,2)。）",
-        "opts": []
+        "success": "对！AC=(3,4)，横坐标为 3。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "abx",
+              "min": -5,
+              "max": 5,
+              "value": 2,
+              "step": 1,
+              "label": "AB 的 x 分量"
+            },
+            {
+              "name": "aby",
+              "min": -5,
+              "max": 5,
+              "value": 1,
+              "step": 1,
+              "label": "AB 的 y 分量"
+            },
+            {
+              "name": "adx",
+              "min": -5,
+              "max": 5,
+              "value": 1,
+              "step": 1,
+              "label": "AD 的 x 分量"
+            },
+            {
+              "name": "ady",
+              "min": -5,
+              "max": 5,
+              "value": 3,
+              "step": 1,
+              "label": "AD 的 y 分量"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "AC 的 x 分量",
+              "expr": "abx+adx",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "AC 的 y 分量",
+              "expr": "aby+ady",
+              "color": "#ffd479"
+            },
+            {
+              "label": "BD 的 x 分量",
+              "expr": "adx-abx",
+              "color": "#fb7185"
+            },
+            {
+              "label": "BD 的 y 分量",
+              "expr": "ady-aby",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "opts": [
+          "理解平行四边形中 AC=AB+AD、BD=AD−AB",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0
       }
     ]
   },
@@ -231,33 +311,213 @@
       },
       {
         "name": "2-3 迁移：模长",
-        "type": "input",
-        "q": "已知$$\\vec{a}=(3,4)$$，则 |a| =?（填数值）",
-        "ans": 5,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "2-3 迁移：模长",
+        "archetype": "LAB",
+        "lab": "vectors",
+        "q": "已知$$\\vec{a}=(3,4)$$，则 |a| =\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "ask": "拖动分量，观察模长如何由勾股定理给出",
+        "steps": [
+          "模长是向量的长度",
+          "由勾股定理 |a|=√(x²+y²)",
+          "代入得 √(9+16)=5"
+        ],
+        "goal": "掌握坐标形式的向量模长公式",
+        "tip": "模长一定是非负数",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "|a|=√(x²+y²)。",
         "explain": "|a|=√(3²+4²)=5。",
-        "opts": []
+        "success": "对！|a|=5。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "ax",
+              "min": -6,
+              "max": 6,
+              "value": 3,
+              "step": 1,
+              "label": "x 分量"
+            },
+            {
+              "name": "ay",
+              "min": -6,
+              "max": 6,
+              "value": 4,
+              "step": 1,
+              "label": "y 分量"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "x² + y²",
+              "expr": "ax*ax + ay*ay",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "|a| = √(x²+y²)",
+              "expr": "sqrt(ax*ax + ay*ay)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "a=(3,4) 时",
+              "expr": "sqrt(3*3 + 4*4)",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "opts": [
+          "掌握坐标形式的向量模长公式",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0
       },
       {
         "name": "2-4 巩固：由模长反求参数",
-        "type": "input",
-        "q": "已知$$\\vec{a}=(3,m)$$，且$$|a|=5$$，则正数 m 的值是？（填数值）",
-        "ans": 4,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "2-4 巩固：由模长反求参数",
+        "archetype": "LAB",
+        "lab": "vectors",
+        "q": "已知$$\\vec{a}=(3,m)$$，且$$|a|=5$$，则正数 m 的值是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "ask": "拖动 m，找出使 |a|=5 的纵坐标",
+        "steps": [
+          "由 |a|²=x²+y² 得 9+m²=25",
+          "m²=16",
+          "取正数 m=4（另一个解 m=−4）"
+        ],
+        "goal": "掌握由模长反求未知坐标",
+        "tip": "平方后要考虑正负两个解，本题取正",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "$$|a|^{2}=x^{2}+y^{2}=25$$。",
         "explain": "$$3^{2}+m^{2} =25 \\Rightarrow m^{2} =16 \\Rightarrow m=4$$（取正）。",
-        "opts": []
+        "success": "对！m=4 时 |a|=5。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "m",
+              "min": -6,
+              "max": 6,
+              "value": 4,
+              "step": 1,
+              "label": "纵坐标 m"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "3²+m²",
+              "expr": "9+m*m",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "|a|",
+              "expr": "sqrt(9+m*m)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "m²−16（=0 时 |a|=5）",
+              "expr": "m*m-16",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "opts": [
+          "掌握由模长反求未知坐标",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0
       },
       {
         "name": "2-5 综合：中点坐标",
-        "type": "input",
-        "q": "已知 A(1,1)、B(5,3)，则线段 AB 中点 M 的横坐标是？（填数值）",
-        "ans": 3,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "2-5 综合：中点坐标",
+        "archetype": "LAB",
+        "lab": "vectors",
+        "q": "已知 A(1,1)、B(5,3)，则线段 AB 中点 M 的横坐标是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "ask": "拖动两端点，观察中点坐标始终是端点坐标的平均值",
+        "steps": [
+          "中点横坐标 = 两端横坐标之和的一半",
+          "中点纵坐标同理",
+          "代入得 M=(3,2)，横坐标 3"
+        ],
+        "goal": "掌握中点坐标公式",
+        "tip": "中点就是两个端点坐标的算术平均",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "中点坐标是两个端点坐标的平均值。",
         "explain": "M=((1+5)/2,(1+3)/2)=(3,2)，横坐标为 3。",
-        "opts": []
+        "success": "对！中点横坐标为 3。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "ax",
+              "min": -6,
+              "max": 6,
+              "value": 1,
+              "step": 1,
+              "label": "A 的 x"
+            },
+            {
+              "name": "ay",
+              "min": -6,
+              "max": 6,
+              "value": 1,
+              "step": 1,
+              "label": "A 的 y"
+            },
+            {
+              "name": "bx",
+              "min": -6,
+              "max": 6,
+              "value": 5,
+              "step": 1,
+              "label": "B 的 x"
+            },
+            {
+              "name": "by",
+              "min": -6,
+              "max": 6,
+              "value": 3,
+              "step": 1,
+              "label": "B 的 y"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "M 的横坐标",
+              "expr": "(ax+bx)/2",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "M 的纵坐标",
+              "expr": "(ay+by)/2",
+              "color": "#ffd479"
+            }
+          ]
+        },
+        "opts": [
+          "掌握中点坐标公式",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0
       }
     ]
   },
@@ -373,23 +633,120 @@
       },
       {
         "name": "3-3 迁移：垂直条件",
-        "type": "input",
-        "q": "已知$$\\vec{a}=(1,2)$$，$$\\vec{b}=(x,- 1)$$，若 a⊥b，则 x =?（填数值）",
-        "ans": 2,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "3-3 迁移：垂直条件",
+        "archetype": "LAB",
+        "lab": "vectors",
+        "q": "已知$$\\vec{a}=(1,2)$$，$$\\vec{b}=(x,- 1)$$，若 a⊥b，则 x =\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "ask": "拖动 x，观察点积何时变为 0",
+        "steps": [
+          "垂直 ⇔ a·b=0",
+          "a·b=1·x+2·(−1)=x−2",
+          "令其为 0 得 x=2"
+        ],
+        "goal": "掌握用点积为零判断垂直",
+        "tip": "垂直看数量积，不看坐标是否相反",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "垂直 ⇔ a·b=0。",
         "explain": "$$a\\cdot \\vec{b}=x- 2=0$$，得 x=2。",
-        "opts": []
+        "success": "对！x=2 时 a⊥b。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "x",
+              "min": -5,
+              "max": 5,
+              "value": 2,
+              "step": 1,
+              "label": "b 的横坐标 x"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "a·b=x−2",
+              "expr": "1*x+2*(-1)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "x（=2 时垂直）",
+              "expr": "x",
+              "color": "#ffd479"
+            }
+          ]
+        },
+        "opts": [
+          "掌握用点积为零判断垂直",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0
       },
       {
         "name": "3-4 巩固：由数量积求模长",
-        "type": "input",
-        "q": "已知$$|\\vec{a}|=3$$，则$$\\vec{a}\\cdot\\vec{a}$$=？（提示：$$\\vec{a}\\cdot\\vec{a}=|\\vec{a}|^{2}$$；填数值）",
-        "ans": 9,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "3-4 巩固：由数量积求模长",
+        "archetype": "LAB",
+        "lab": "vectors",
+        "q": "已知$$|\\vec{a}|=3$$，则$$\\vec{a}\\cdot\\vec{a}$$=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "ask": "拖动模长，观察 a·a 始终等于 |a|²",
+        "steps": [
+          "a 与自身夹角为 0",
+          "a·a=|a||a|cos0=|a|²",
+          "|a|=3 时 a·a=9"
+        ],
+        "goal": "掌握 a·a=|a|² 这一常用结论",
+        "tip": "自身点乘得到的是模长的平方，是标量",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "自身与自身的数量积等于模的平方。",
         "explain": "$$\\vec{a}\\cdot\\vec{a}=|\\vec{a}||\\vec{a}|\\cos0=|\\vec{a}|^{2}=3^{2}=9$$。",
-        "opts": []
+        "success": "对！a·a=9。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "la",
+              "min": 0,
+              "max": 8,
+              "value": 3,
+              "step": 0.5,
+              "label": "模长 |a|"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "|a|²",
+              "expr": "la*la",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "a·a",
+              "expr": "la*la",
+              "color": "#ffd479"
+            },
+            {
+              "label": "关系",
+              "expr": "a·a = |a|²",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "opts": [
+          "掌握 a·a=|a|² 这一常用结论",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0
       },
       {
         "name": "3-5 综合：模长的展开",
@@ -467,23 +824,120 @@
       },
       {
         "name": "4-2 建构：平行轨迹求参数",
-        "type": "input",
-        "q": "两条直线的方向向量分别为$$\\vec{a}=(1,2)$$，$$\\vec{b}=(2,m)$$。若这两条直线平行，则$$m=$$（填数值）",
-        "ans": 4,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "4-2 建构：平行轨迹求参数",
+        "archetype": "LAB",
+        "lab": "vectors",
+        "q": "两条直线的方向向量分别为$$\\vec{a}=(1,2)$$，$$\\vec{b}=(2,m)$$。若这两条直线平行，则$$m=$$\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "ask": "拖动 m，找出使两向量平行的取值",
+        "steps": [
+          "平行 ⇔ 叉积 x₁y₂−x₂y₁=0",
+          "即 m−4=0",
+          "得 m=4"
+        ],
+        "goal": "掌握用叉积为零判断向量平行（共线）",
+        "tip": "平行时坐标成比例：1/2=2/m",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "共线条件 x₁y₂−x₂y₁=0。",
         "explain": "$$\\vec{b}=\\lambda\\vec{a}\\Rightarrow2=\\lambda,\\ m=2\\lambda\\Rightarrow m=4$$。",
-        "opts": []
+        "success": "对！m=4 时 b=2a，两向量平行。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "m",
+              "min": -6,
+              "max": 6,
+              "value": 4,
+              "step": 1,
+              "label": "b 的纵坐标 m"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "b 的纵坐标 m",
+              "expr": "m",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "叉积 x₁y₂−x₂y₁",
+              "expr": "1*m-2*2",
+              "color": "#ffd479"
+            },
+            {
+              "label": "m−4（=0 时平行）",
+              "expr": "m-4",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "opts": [
+          "掌握用叉积为零判断向量平行（共线）",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0
       },
       {
         "name": "4-3 迁移：垂直求参",
-        "type": "input",
-        "q": "已知$$\\vec{a}=(1,2)$$，$$\\vec{b}=(2,m)$$，若 a⊥b，则 m =?（填数值）",
-        "ans": -1,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "4-3 迁移：垂直求参",
+        "archetype": "LAB",
+        "lab": "vectors",
+        "q": "已知$$\\vec{a}=(1,2)$$，$$\\vec{b}=(2,m)$$，若 a⊥b，则 m =\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "ask": "拖动 m，观察点积何时为 0",
+        "steps": [
+          "垂直 ⇔ a·b=0",
+          "a·b=1·2+2·m=2+2m",
+          "令其为 0 得 m=−1"
+        ],
+        "goal": "掌握用点积为零反求参数",
+        "tip": "先写点积表达式，再令其等于 0",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "垂直即数量积为 0。",
         "explain": "$$a\\cdot \\vec{b}=1\\times 2+2\\times m=0$$，得 m=−1。",
-        "opts": []
+        "success": "对！m=−1 时 a⊥b。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "m",
+              "min": -6,
+              "max": 6,
+              "value": -1,
+              "step": 1,
+              "label": "b 的纵坐标 m"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "a·b=2+2m",
+              "expr": "1*2+2*m",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "m+1（=0 时垂直）",
+              "expr": "m+1",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "opts": [
+          "掌握用点积为零反求参数",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0
       },
       {
         "name": "4-4 巩固：共线的充要条件",
@@ -501,13 +955,59 @@
       },
       {
         "name": "4-5 综合：三点共线",
-        "type": "input",
-        "q": "已知 A(1,1)、B(2,3)、C(3,m)，若 A、B、C 三点共线，则 m =?（填数值）",
-        "ans": 5,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "4-5 综合：三点共线",
+        "archetype": "LAB",
+        "lab": "vectors",
+        "q": "已知 A(1,1)、B(2,3)、C(3,m)，若 A、B、C 三点共线，则 m =\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "ask": "拖动 m，观察三点何时落到同一条直线上",
+        "steps": [
+          "三点共线 ⇔ AB∥AC",
+          "AB=(1,2)，AC=(2,m−1)",
+          "1·(m−1)−2·2=0 ⇒ m=5"
+        ],
+        "goal": "掌握用向量共线判断三点共线",
+        "tip": "先把点化成向量，再用叉积为零",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "三点共线$$\\Leftrightarrow AB\\parallel AC$$，用交叉相减为 0。",
         "explain": "$$AB=(1,2)$$，$$AC=(2,m- 1)$$。共线需$$1\\times (m- 1)- 2\\times 2=0 \\Rightarrow m- 1=4 \\Rightarrow m=5$$。",
-        "opts": []
+        "success": "对！m=5 时 A、B、C 三点共线。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "m",
+              "min": -6,
+              "max": 10,
+              "value": 5,
+              "step": 1,
+              "label": "C 的纵坐标 m"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "AC 的纵坐标 m−1",
+              "expr": "m-1",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "叉积 1·(m−1)−2·2",
+              "expr": "1*(m-1)-2*2",
+              "color": "#ffd479"
+            }
+          ]
+        },
+        "opts": [
+          "掌握用向量共线判断三点共线",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0
       }
     ]
   },
@@ -599,13 +1099,88 @@
       },
       {
         "name": "5-4 巩固：投影的坐标算法",
-        "type": "input",
-        "q": "已知$$\\vec{a}=(3,4)$$，$$\\vec{b}=(5,0)$$，则 b 在 a 方向上的投影长度是？（填数值）",
-        "ans": 3,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "5-4 巩固：投影的坐标算法",
+        "archetype": "LAB",
+        "lab": "vectors",
+        "q": "已知$$\\vec{a}=(3,4)$$，$$\\vec{b}=(5,0)$$，则 b 在 a 方向上的投影长度是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "ask": "拖动两向量，观察 b 在 a 方向上的投影长度",
+        "steps": [
+          "投影公式 = a·b / |a|",
+          "a·b=3·5+4·0=15，|a|=5",
+          "投影=15/5=3"
+        ],
+        "goal": "掌握投影的坐标算法",
+        "tip": "投影是数量，可正可负，分母是『被投影到』的向量模长",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "投影=$$\\dfrac{a\\cdot b}{|a|}$$。",
         "explain": "$$a\\cdot \\vec{b}=3\\times5+4\\times0=15$$，$$|a|=5$$，投影=$$\\dfrac{15}{5}=3$$。",
-        "opts": []
+        "success": "对！投影长度为 3。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "ax",
+              "min": -6,
+              "max": 6,
+              "value": 3,
+              "step": 1,
+              "label": "a 的 x"
+            },
+            {
+              "name": "ay",
+              "min": -6,
+              "max": 6,
+              "value": 4,
+              "step": 1,
+              "label": "a 的 y"
+            },
+            {
+              "name": "bx",
+              "min": -6,
+              "max": 6,
+              "value": 5,
+              "step": 1,
+              "label": "b 的 x"
+            },
+            {
+              "name": "by",
+              "min": -6,
+              "max": 6,
+              "value": 0,
+              "step": 1,
+              "label": "b 的 y"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "a·b",
+              "expr": "ax*bx + ay*by",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "|a|",
+              "expr": "sqrt(ax*ax + ay*ay)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "投影 = a·b / |a|",
+              "expr": "(ax*bx + ay*by)/sqrt(ax*ax + ay*ay)",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "opts": [
+          "掌握投影的坐标算法",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0
       },
       {
         "name": "5-5 综合：基底存在条件",
@@ -880,83 +1455,149 @@
       },
       {
         "name": "7-3 迁移：斜向拉力做功",
-        "type": "input",
-        "q": "用大小为 10 的力沿与位移成$$60^{\\circ}$$的方向拉箱，位移大小为 5，这个力做功多少？（填数值）",
-        "ans": 25,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "7-3 迁移：斜向拉力做功",
+        "archetype": "LAB",
+        "lab": "vectors",
+        "q": "用大小为 10 的力沿与位移成$$60^{\\circ}$$的方向拉箱，位移大小为 5，这个力做功多少\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "ask": "拖动 F、s、θ，观察做功如何随夹角变化",
+        "steps": [
+          "功等于力与位移的数量积",
+          "W=F·s·cosθ",
+          "10×5×cos60°=25"
+        ],
+        "goal": "掌握用数量积计算力做的功",
+        "tip": "力垂直于位移时不做功",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "代入$$W=|\\vec{F}||\\vec{s}|\\cos\\theta$$，其中$$\\cos60^{\\circ}=\\dfrac{1}{2}$$。",
         "explain": "$$W=10\\times5\\times\\cos60^{\\circ}=25$$。若算得 50，是漏乘$$\\cos\\theta$$；算得$$25\\sqrt{3}$$，是把$$\\cos$$用成了$$\\sin$$。",
-        "opts": []
-      },
-      {
-        "name": "7-4 巩固：收绳拉船的速度分解",
-        "type": "input",
-        "q": "在岸上以 2 的速度收绳拉船，绳与水面的夹角为$$60^{\\circ}$$，船靠岸的速度大小是多少？（填数值）",
+        "success": "对！W=25。",
         "scene": {
-          "x": [
-            -1,
-            7
-          ],
-          "y": [
-            -1,
-            5
-          ],
-          "segments": [
+          "range": 8,
+          "axes": false,
+          "sliders": [
             {
-              "p1": [
-                0,
-                0
-              ],
-              "p2": [
-                6,
-                0
-              ],
-              "color": "#8b95a8",
-              "width": 1.6
+              "name": "F",
+              "min": 0,
+              "max": 20,
+              "value": 10,
+              "step": 1,
+              "label": "力的大小 F"
             },
             {
-              "p1": [
-                5,
-                0
-              ],
-              "p2": [
-                3,
-                3.46
-              ],
-              "color": "#ffd479",
-              "width": 1.6
+              "name": "s",
+              "min": 0,
+              "max": 10,
+              "value": 5,
+              "step": 1,
+              "label": "位移大小 s"
+            },
+            {
+              "name": "theta",
+              "min": 0,
+              "max": 180,
+              "value": 60,
+              "step": 1,
+              "label": "夹角 θ（度）"
             }
           ],
-          "vectors": [
+          "readouts": [
             {
-              "p1": [
-                5,
-                0
-              ],
-              "p2": [
-                1,
-                0
-              ],
-              "color": "#5ee6ff",
-              "label": "v"
-            }
-          ],
-          "points": [
+              "label": "W = F·s·cosθ",
+              "expr": "F*s*cos(3.141592653589793*theta/180)",
+              "color": "#5ee6ff"
+            },
             {
-              "p": [
-                5,
-                0
-              ],
-              "color": "#f2637b",
-              "label": "船"
+              "label": "cosθ",
+              "expr": "cos(3.141592653589793*theta/180)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "漏乘 cos 的错误值",
+              "expr": "F*s",
+              "color": "#fb7185"
             }
           ]
         },
-        "ans": 4,
-        "tol": 0.01,
+        "opts": [
+          "掌握用数量积计算力做的功",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0
+      },
+      {
+        "name": "7-4 巩固：收绳拉船的速度分解",
+        "type": "explore",
+        "technique": "7-4 巩固：收绳拉船的速度分解",
+        "archetype": "LAB",
+        "lab": "vectors",
+        "q": "在岸上以 2 的速度收绳拉船，绳与水面的夹角为$$60^{\\circ}$$，船靠岸的速度大小是多少\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "ask": "拖动收绳速度与夹角，观察船速如何被『放大』",
+        "steps": [
+          "船速在绳方向的分量等于收绳速度",
+          "v·cosθ=v绳",
+          "v=2/cos60°=4"
+        ],
+        "goal": "掌握速度的分解与合成",
+        "tip": "夹角越大，同样的收绳速度对应越大的船速",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "把船速沿绳方向和垂直绳方向分解，沿绳方向的分量必须等于收绳的速度。",
         "explain": "船速 v 沿绳方向的分量是$$v\\cos60^{\\circ}$$，令它等于 2，得$$v=\\dfrac{2}{\\cos60^{\\circ}}=4$$。",
-        "opts": []
+        "success": "对！船速为 4。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "vrope",
+              "min": 0.5,
+              "max": 6,
+              "value": 2,
+              "step": 0.5,
+              "label": "收绳速度（沿绳）"
+            },
+            {
+              "name": "theta",
+              "min": 10,
+              "max": 85,
+              "value": 60,
+              "step": 1,
+              "label": "绳与水面夹角（度）"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "收绳速度",
+              "expr": "vrope",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "船速 v=v绳/cosθ",
+              "expr": "vrope/cos(theta)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "θ（度）",
+              "expr": "theta",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "opts": [
+          "掌握速度的分解与合成",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0
       },
       {
         "name": "7-5 综合：合力随夹角的变化",

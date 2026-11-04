@@ -104,7 +104,22 @@
         "archetype": "LAB",
         "lab": "trig",
         "q": "已知$$\\sin\\alpha =3/5$$，$$\\alpha \\in (\\pi /2, \\pi)$$，则$$\\sin (\\pi +\\alpha)$$=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
-        "scene_data": {
+        "ask": "拖动 sinα，观察 sin(π+α) 始终是它的相反数",
+        "steps": [
+          "用诱导公式 sin(π+α)=-sinα",
+          "代入 sinα=3/5",
+          "得 -3/5"
+        ],
+        "goal": "掌握诱导公式 sin(π+α)=-sinα",
+        "tip": "π+α 在第三象限，正弦为负",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "sin(π+α)=−sinα。",
+        "explain": "$$\\sin(\\pi+\\alpha)=-\\sin\\alpha=-\\frac{3}{5}$$。",
+        "success": "对！结果为 -3/5 = -0.6。",
+        "scene": {
           "range": 8,
           "axes": false,
           "sliders": [
@@ -119,37 +134,24 @@
           ],
           "readouts": [
             {
-              "label": "sin(π+α)=-sinα",
+              "label": "sin(π+α)=−sinα",
               "expr": "-s",
               "color": "#5ee6ff"
             },
             {
-              "label": "诱导公式",
-              "expr": "sin(π+α) = -sinα",
+              "label": "sinα",
+              "expr": "s",
               "color": "#ffd479"
-            },
-            {
-              "label": "结果",
-              "expr": "-s",
-              "color": "#40e0a8"
             }
           ]
         },
-        "ask": "拖动 sinα，观察 sin(π+α) 始终是它的相反数",
-        "steps": [
-          "用诱导公式 sin(π+α)=-sinα",
-          "代入 sinα=3/5",
-          "得 -3/5"
+        "opts": [
+          "掌握诱导公式 sin(π+α)=-sinα",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
         ],
-        "goal": "掌握诱导公式 sin(π+α)=-sinα",
-        "tip": "π+α 在第三象限，正弦为负",
-        "confirm": "看解析",
-        "gate": true,
-        "answers": {},
-        "retry": "继续调整参数，观察规律是否始终成立。",
-        "hint": "sin(π+α)=−sinα。",
-        "explain": "$$\\sin(\\pi+\\alpha)=-\\sin\\alpha=-\\frac{3}{5}$$。",
-        "success": "对！结果为 -3/5 = -0.6。"
+        "ans": 0
       }
     ]
   },
@@ -210,7 +212,22 @@
         "archetype": "LAB",
         "lab": "trig",
         "q": "已知$$\\sin\\theta+\\cos\\theta=\\frac{1}{2}$$，则$$\\sin\\theta\\cos\\theta$$=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
-        "scene_data": {
+        "ask": "拖动 sinθ+cosθ，观察它与 sinθcosθ 的关系",
+        "steps": [
+          "两边平方：1+2sinθcosθ=s²",
+          "解得 sinθcosθ=(s²-1)/2",
+          "代入 s=1/2 得 -3/8"
+        ],
+        "goal": "掌握 sinθ+cosθ 与 sinθcosθ 的平方关系",
+        "tip": "平方后会出现 1+2sinθcosθ",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "把 sinθ+cosθ=1/2 两边平方。",
+        "explain": "由$$(\\sin\\theta+\\cos\\theta)^{2}=1+2\\sin\\theta\\cos\\theta=\\left(\\frac{1}{2}\\right)^{2}=\\frac{1}{4}$$，\n得$$2\\sin\\theta\\cos\\theta=\\frac{1}{4}-1=-\\frac{3}{4}$$，\n所以$$\\sin\\theta\\cos\\theta=-\\frac{3}{8}$$。",
+        "success": "对！sinθcosθ=-3/8。",
+        "scene": {
           "range": 8,
           "axes": false,
           "sliders": [
@@ -225,37 +242,24 @@
           ],
           "readouts": [
             {
-              "label": "平方关系",
-              "expr": "(sinθ+cosθ)²=1+2sinθcosθ",
+              "label": "sinθcosθ=(s²−1)/2",
+              "expr": "(s*s-1)/2",
               "color": "#5ee6ff"
             },
             {
-              "label": "sinθcosθ=(s²-1)/2",
-              "expr": "(s*s-1)/2",
+              "label": "s²−1",
+              "expr": "s*s-1",
               "color": "#ffd479"
-            },
-            {
-              "label": "结果",
-              "expr": "(s*s-1)/2",
-              "color": "#40e0a8"
             }
           ]
         },
-        "ask": "拖动 sinθ+cosθ，观察它与 sinθcosθ 的关系",
-        "steps": [
-          "两边平方：1+2sinθcosθ=s²",
-          "解得 sinθcosθ=(s²-1)/2",
-          "代入 s=1/2 得 -3/8"
+        "opts": [
+          "掌握 sinθ+cosθ 与 sinθcosθ 的平方关系",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
         ],
-        "goal": "掌握 sinθ+cosθ 与 sinθcosθ 的平方关系",
-        "tip": "平方后会出现 1+2sinθcosθ",
-        "confirm": "看解析",
-        "gate": true,
-        "answers": {},
-        "retry": "继续调整参数，观察规律是否始终成立。",
-        "hint": "把 sinθ+cosθ=1/2 两边平方。",
-        "explain": "由$$(\\sin\\theta+\\cos\\theta)^{2}=1+2\\sin\\theta\\cos\\theta=\\left(\\frac{1}{2}\\right)^{2}=\\frac{1}{4}$$，\n得$$2\\sin\\theta\\cos\\theta=\\frac{1}{4}-1=-\\frac{3}{4}$$，\n所以$$\\sin\\theta\\cos\\theta=-\\frac{3}{8}$$。",
-        "success": "对！sinθcosθ=-3/8。"
+        "ans": 0
       },
       {
         "name": "2-3 迁移：齐次式",
@@ -264,7 +268,22 @@
         "archetype": "LAB",
         "lab": "trig",
         "q": "已知$$\\tan \\theta =2$$，则$$(\\sin \\theta +\\cos \\theta)/(\\sin \\theta - \\cos \\theta)$$=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
-        "scene_data": {
+        "ask": "拖动 tanθ，观察齐次式的值如何变化",
+        "steps": [
+          "分子分母同除以 cosθ",
+          "化为 (tanθ+1)/(tanθ-1)",
+          "代入 tanθ=2 得 3"
+        ],
+        "goal": "掌握齐次式化切求值的技巧",
+        "tip": "同除 cosθ 把正余弦化成 tan",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "分子分母同除以 cosθ。",
+        "explain": "原式=$$(\\tan \\theta +1)/(\\tan \\theta - 1)=3/1=3$$。",
+        "success": "对！结果为 3。",
+        "scene": {
           "range": 8,
           "axes": false,
           "sliders": [
@@ -279,37 +298,24 @@
           ],
           "readouts": [
             {
-              "label": "分子分母同除 cosθ",
-              "expr": "(tanθ+1)/(tanθ-1)",
+              "label": "(tanθ+1)/(tanθ−1)",
+              "expr": "(t+1)/(t-1)",
               "color": "#5ee6ff"
             },
             {
-              "label": "结果",
-              "expr": "(t+1)/(t-1)",
+              "label": "tanθ",
+              "expr": "t",
               "color": "#ffd479"
-            },
-            {
-              "label": "t=2 时",
-              "expr": "3",
-              "color": "#40e0a8"
             }
           ]
         },
-        "ask": "拖动 tanθ，观察齐次式的值如何变化",
-        "steps": [
-          "分子分母同除以 cosθ",
-          "化为 (tanθ+1)/(tanθ-1)",
-          "代入 tanθ=2 得 3"
+        "opts": [
+          "掌握齐次式化切求值的技巧",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
         ],
-        "goal": "掌握齐次式化切求值的技巧",
-        "tip": "同除 cosθ 把正余弦化成 tan",
-        "confirm": "看解析",
-        "gate": true,
-        "answers": {},
-        "retry": "继续调整参数，观察规律是否始终成立。",
-        "hint": "分子分母同除以 cosθ。",
-        "explain": "原式=$$(\\tan \\theta +1)/(\\tan \\theta - 1)=3/1=3$$。",
-        "success": "对！结果为 3。"
+        "ans": 0
       }
     ]
   },
@@ -881,7 +887,22 @@
         "archetype": "LAB",
         "lab": "trig",
         "q": "已知角$$\\alpha$$的终边经过点$$P(3,4)$$，则$$\\sin \\alpha$$=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
-        "scene_data": {
+        "ask": "拖动点 P 的坐标，观察三角函数值如何由坐标比值给出",
+        "steps": [
+          "先求 r=√(x²+y²)",
+          "sinα=y/r，cosα=x/r",
+          "P(3,4) 时 r=5，sinα=4/5"
+        ],
+        "goal": "掌握由终边上的点求三角函数值",
+        "tip": "r 是点到原点的距离",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "先求 r=√(3²+4²)，sinα=y/r。",
+        "explain": "r=√(3²+4²)=5，故$$\\sin \\alpha =y/r=4/5$$，$$\\cos \\alpha =x/r=3/5$$。",
+        "success": "对！sinα=4/5=0.8。",
+        "scene": {
           "range": 8,
           "axes": false,
           "sliders": [
@@ -920,21 +941,13 @@
             }
           ]
         },
-        "ask": "拖动点 P 的坐标，观察三角函数值如何由坐标比值给出",
-        "steps": [
-          "先求 r=√(x²+y²)",
-          "sinα=y/r，cosα=x/r",
-          "P(3,4) 时 r=5，sinα=4/5"
+        "opts": [
+          "掌握由终边上的点求三角函数值",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
         ],
-        "goal": "掌握由终边上的点求三角函数值",
-        "tip": "r 是点到原点的距离",
-        "confirm": "看解析",
-        "gate": true,
-        "answers": {},
-        "retry": "继续调整参数，观察规律是否始终成立。",
-        "hint": "先求 r=√(3²+4²)，sinα=y/r。",
-        "explain": "r=√(3²+4²)=5，故$$\\sin \\alpha =y/r=4/5$$，$$\\cos \\alpha =x/r=3/5$$。",
-        "success": "对！sinα=4/5=0.8。"
+        "ans": 0
       },
       {
         "name": "8-3 迁移：各象限符号",
@@ -1189,7 +1202,22 @@
         "archetype": "LAB",
         "lab": "trig",
         "q": "$$\\sin 75^\\circ$$=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
-        "scene_data": {
+        "ask": "拖动 A、B，验证两角和的正弦公式",
+        "steps": [
+          "把 75° 拆成 45°+30°",
+          "用 sin(A+B)=sinAcosB+cosAsinB",
+          "得 (√6+√2)/4≈0.9659"
+        ],
+        "goal": "掌握两角和的正弦公式",
+        "tip": "特殊角拆分是求非特殊角的关键",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "把$$75^\\circ$$拆成$$45^\\circ +30^\\circ$$，用两角和的正弦。",
+        "explain": "$$\\sin 75^\\circ =\\sin (45^\\circ +30^\\circ )=\\sin 45^\\circ \\cos 30^\\circ +\\cos 45^\\circ \\sin 30^\\circ =(\\sqrt{6}+\\sqrt{2})/4\\approx 0.9659$$。",
+        "success": "对！sin75°≈0.9659。",
+        "scene": {
           "range": 8,
           "axes": false,
           "sliders": [
@@ -1228,21 +1256,13 @@
             }
           ]
         },
-        "ask": "拖动 A、B，验证两角和的正弦公式",
-        "steps": [
-          "把 75° 拆成 45°+30°",
-          "用 sin(A+B)=sinAcosB+cosAsinB",
-          "得 (√6+√2)/4≈0.9659"
+        "opts": [
+          "掌握两角和的正弦公式",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
         ],
-        "goal": "掌握两角和的正弦公式",
-        "tip": "特殊角拆分是求非特殊角的关键",
-        "confirm": "看解析",
-        "gate": true,
-        "answers": {},
-        "retry": "继续调整参数，观察规律是否始终成立。",
-        "hint": "把$$75^\\circ$$拆成$$45^\\circ +30^\\circ$$，用两角和的正弦。",
-        "explain": "$$\\sin 75^\\circ =\\sin (45^\\circ +30^\\circ )=\\sin 45^\\circ \\cos 30^\\circ +\\cos 45^\\circ \\sin 30^\\circ =(\\sqrt{6}+\\sqrt{2})/4\\approx 0.9659$$。",
-        "success": "对！sin75°≈0.9659。"
+        "ans": 0
       },
       {
         "name": "10-4 巩固：象限角求值",
@@ -1365,7 +1385,22 @@
         "archetype": "LAB",
         "lab": "trig",
         "q": "$$\\cos ^{2}15^\\circ - \\sin ^{2}15^\\circ$$=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
-        "scene_data": {
+        "ask": "拖动角 a，验证 cos²a-sin²a=cos2a",
+        "steps": [
+          "识别这是 cos2a 的展开",
+          "2a=30°",
+          "结果 √3/2≈0.866"
+        ],
+        "goal": "掌握二倍角余弦公式",
+        "tip": "cos²a-sin²a 就是 cos2a",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "这正是$$\\cos 2\\alpha$$的展开，此时$$2\\alpha =30^\\circ$$。",
+        "explain": "$$\\cos ^{2}15^\\circ - \\sin ^{2}15^\\circ =\\cos (2\\times 15^\\circ )=\\cos 30^\\circ =\\sqrt{3}/2\\approx 0.866$$。",
+        "success": "对！结果 ≈0.866。",
+        "scene": {
           "range": 8,
           "axes": false,
           "sliders": [
@@ -1380,37 +1415,24 @@
           ],
           "readouts": [
             {
-              "label": "cos²a - sin²a",
-              "expr": "pow(cos(3.141592653589793*a/180),2)-pow(sin(3.141592653589793*a/180),2)",
+              "label": "cos²a−sin²a",
+              "expr": "cos(a)^2-sin(a)^2",
               "color": "#5ee6ff"
             },
             {
-              "label": "等于 cos2a",
-              "expr": "cos(2*3.141592653589793*a/180)",
+              "label": "cos2a",
+              "expr": "cos(2*a)",
               "color": "#ffd479"
-            },
-            {
-              "label": "a=15° 时",
-              "expr": "cos(3.141592653589793*30/180)",
-              "color": "#40e0a8"
             }
           ]
         },
-        "ask": "拖动角 a，验证 cos²a-sin²a=cos2a",
-        "steps": [
-          "识别这是 cos2a 的展开",
-          "2a=30°",
-          "结果 √3/2≈0.866"
+        "opts": [
+          "掌握二倍角余弦公式",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
         ],
-        "goal": "掌握二倍角余弦公式",
-        "tip": "cos²a-sin²a 就是 cos2a",
-        "confirm": "看解析",
-        "gate": true,
-        "answers": {},
-        "retry": "继续调整参数，观察规律是否始终成立。",
-        "hint": "这正是$$\\cos 2\\alpha$$的展开，此时$$2\\alpha =30^\\circ$$。",
-        "explain": "$$\\cos ^{2}15^\\circ - \\sin ^{2}15^\\circ =\\cos (2\\times 15^\\circ )=\\cos 30^\\circ =\\sqrt{3}/2\\approx 0.866$$。",
-        "success": "对！结果 ≈0.866。"
+        "ans": 0
       },
       {
         "name": "11-4 巩固：已知 sinα 求$$\\cos 2\\alpha$$",
@@ -1419,7 +1441,22 @@
         "archetype": "LAB",
         "lab": "trig",
         "q": "已知$$\\sin \\alpha =3/5$$，$$\\alpha \\in (90^\\circ ,180^\\circ )$$，则$$\\cos 2 \\alpha$$=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
-        "scene_data": {
+        "ask": "拖动 sinα，观察 cos2α 只由 sinα 决定",
+        "steps": [
+          "用 cos2α=1-2sin²α",
+          "代入 sinα=3/5",
+          "得 7/25=0.28"
+        ],
+        "goal": "掌握二倍角余弦的降幂形式",
+        "tip": "选择只含 sinα 的公式最省事",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "用$$\\cos 2\\alpha =1- 2\\sin ^{2}\\alpha$$，只用到 sinα，不用求 cosα。",
+        "explain": "$$\\cos 2 \\alpha =1- 2\\times (3/5)^{2}=1- 18/25=7/25=0.28$$。",
+        "success": "对！cos2α=0.28。",
+        "scene": {
           "range": 8,
           "axes": false,
           "sliders": [
@@ -1450,21 +1487,13 @@
             }
           ]
         },
-        "ask": "拖动 sinα，观察 cos2α 只由 sinα 决定",
-        "steps": [
-          "用 cos2α=1-2sin²α",
-          "代入 sinα=3/5",
-          "得 7/25=0.28"
+        "opts": [
+          "掌握二倍角余弦的降幂形式",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
         ],
-        "goal": "掌握二倍角余弦的降幂形式",
-        "tip": "选择只含 sinα 的公式最省事",
-        "confirm": "看解析",
-        "gate": true,
-        "answers": {},
-        "retry": "继续调整参数，观察规律是否始终成立。",
-        "hint": "用$$\\cos 2\\alpha =1- 2\\sin ^{2}\\alpha$$，只用到 sinα，不用求 cosα。",
-        "explain": "$$\\cos 2 \\alpha =1- 2\\times (3/5)^{2}=1- 18/25=7/25=0.28$$。",
-        "success": "对！cos2α=0.28。"
+        "ans": 0
       },
       {
         "name": "11-5 综合：半角求值",
@@ -1473,7 +1502,22 @@
         "archetype": "LAB",
         "lab": "trig",
         "q": "已知$$\\cos \\alpha =3/5$$，$$\\alpha \\in (0^\\circ ,90^\\circ )$$，则$$\\sin (\\alpha /2)$$=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
-        "scene_data": {
+        "ask": "拖动 cosα，观察半角正弦如何变化",
+        "steps": [
+          "用半角公式 sin²(α/2)=(1-cosα)/2",
+          "代入 cosα=3/5",
+          "得 √5/5≈0.447"
+        ],
+        "goal": "掌握半角公式",
+        "tip": "α/2 是锐角，取正根",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "半角公式$$\\sin ^{2}(\\alpha /2)=(1- \\cos \\alpha )/2$$，注意$$\\alpha /2$$是锐角取正值。",
+        "explain": "$$\\sin(\\alpha/2)=\\sqrt{(1-3/5)/2}=\\sqrt{1/5}=\\sqrt{5}/5\\approx0.447$$。",
+        "success": "对！sin(α/2)≈0.447。",
+        "scene": {
           "range": 8,
           "axes": false,
           "sliders": [
@@ -1504,21 +1548,13 @@
             }
           ]
         },
-        "ask": "拖动 cosα，观察半角正弦如何变化",
-        "steps": [
-          "用半角公式 sin²(α/2)=(1-cosα)/2",
-          "代入 cosα=3/5",
-          "得 √5/5≈0.447"
+        "opts": [
+          "掌握半角公式",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
         ],
-        "goal": "掌握半角公式",
-        "tip": "α/2 是锐角，取正根",
-        "confirm": "看解析",
-        "gate": true,
-        "answers": {},
-        "retry": "继续调整参数，观察规律是否始终成立。",
-        "hint": "半角公式$$\\sin ^{2}(\\alpha /2)=(1- \\cos \\alpha )/2$$，注意$$\\alpha /2$$是锐角取正值。",
-        "explain": "$$\\sin(\\alpha/2)=\\sqrt{(1-3/5)/2}=\\sqrt{1/5}=\\sqrt{5}/5\\approx0.447$$。",
-        "success": "对！sin(α/2)≈0.447。"
+        "ans": 0
       }
     ]
   },
@@ -1614,7 +1650,22 @@
         "archetype": "LAB",
         "lab": "trig",
         "q": "函数 y=3sinx+4cosx 的最大值=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
-        "scene_data": {
+        "ask": "拖动 A、B，观察合并后的振幅如何变化",
+        "steps": [
+          "化为 √(A²+B²)·sin(x+φ)",
+          "最大值即振幅",
+          "√(3²+4²)=5"
+        ],
+        "goal": "掌握辅助角公式合并正弦",
+        "tip": "振幅就是两个系数的平方和开根",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "化为$$\\sqrt{A^{2}+B^{2}}\\cdot\\sin(x+\\varphi)$$的形式再读最大值。",
+        "explain": "最大值$$\\sqrt{3^{2}+4^{2}}=5$$（辅助角公式）。",
+        "success": "对！最大值 5。",
+        "scene": {
           "range": 8,
           "axes": false,
           "sliders": [
@@ -1653,21 +1704,13 @@
             }
           ]
         },
-        "ask": "拖动 A、B，观察合并后的振幅如何变化",
-        "steps": [
-          "化为 √(A²+B²)·sin(x+φ)",
-          "最大值即振幅",
-          "√(3²+4²)=5"
+        "opts": [
+          "掌握辅助角公式合并正弦",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
         ],
-        "goal": "掌握辅助角公式合并正弦",
-        "tip": "振幅就是两个系数的平方和开根",
-        "confirm": "看解析",
-        "gate": true,
-        "answers": {},
-        "retry": "继续调整参数，观察规律是否始终成立。",
-        "hint": "化为$$\\sqrt{A^{2}+B^{2}}\\cdot\\sin(x+\\varphi)$$的形式再读最大值。",
-        "explain": "最大值$$\\sqrt{3^{2}+4^{2}}=5$$（辅助角公式）。",
-        "success": "对！最大值 5。"
+        "ans": 0
       },
       {
         "name": "12-3 迁移：最大值",
@@ -1676,7 +1719,22 @@
         "archetype": "LAB",
         "lab": "trig",
         "q": "函数$$y=\\sin x+\\sqrt{3}\\cdot \\cos x$$的最大值=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
-        "scene_data": {
+        "ask": "拖动 B，观察振幅如何随余弦系数增大",
+        "steps": [
+          "y=√(1+B²)sin(x+φ)",
+          "振幅 √(1+B²)",
+          "B=√3 时振幅 2"
+        ],
+        "goal": "掌握 sinx+√3cosx 型函数的振幅",
+        "tip": "最大值为 √(1²+B²)",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "振幅是$$\\sqrt{1^{2}+(\\sqrt{3})^{2}}$$。",
+        "explain": "$$y=2\\sin (x+60^\\circ )$$，振幅 2，故最大值为 2。",
+        "success": "对！最大值 2。",
+        "scene": {
           "range": 8,
           "axes": false,
           "sliders": [
@@ -1707,21 +1765,13 @@
             }
           ]
         },
-        "ask": "拖动 B，观察振幅如何随余弦系数增大",
-        "steps": [
-          "y=√(1+B²)sin(x+φ)",
-          "振幅 √(1+B²)",
-          "B=√3 时振幅 2"
+        "opts": [
+          "掌握 sinx+√3cosx 型函数的振幅",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
         ],
-        "goal": "掌握 sinx+√3cosx 型函数的振幅",
-        "tip": "最大值为 √(1²+B²)",
-        "confirm": "看解析",
-        "gate": true,
-        "answers": {},
-        "retry": "继续调整参数，观察规律是否始终成立。",
-        "hint": "振幅是$$\\sqrt{1^{2}+(\\sqrt{3})^{2}}$$。",
-        "explain": "$$y=2\\sin (x+60^\\circ )$$，振幅 2，故最大值为 2。",
-        "success": "对！最大值 2。"
+        "ans": 0
       },
       {
         "name": "12-4 巩固：单调递增区间",
@@ -1744,7 +1794,22 @@
         "archetype": "LAB",
         "lab": "trig",
         "q": "当$$x \\in R$$时，函数$$y=2\\sin x- 2\\cos x$$的最小值=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
-        "scene_data": {
+        "ask": "拖动 A、B，观察最小值始终是振幅的相反数",
+        "steps": [
+          "合并为 √(A²+B²)sin(x+φ)",
+          "最小值 = -振幅",
+          "得 -2√2≈-2.828"
+        ],
+        "goal": "掌握 asinx+bcosx 型函数的最值",
+        "tip": "最大值和最小值关于 0 对称",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "先求振幅$$\\sqrt{2^{2}+(-2)^{2}}=2\\sqrt{2}$$，最小值是振幅的相反数。",
+        "explain": "$$y=2\\sqrt{2}\\cdot \\sin (x- 45^\\circ )$$，振幅$$2\\sqrt{2}\\approx 2.828$$，故最小值为$$- 2\\sqrt{2}\\approx - 2.828$$。",
+        "success": "对！最小值 ≈ -2.828。",
+        "scene": {
           "range": 8,
           "axes": false,
           "sliders": [
@@ -1783,21 +1848,13 @@
             }
           ]
         },
-        "ask": "拖动 A、B，观察最小值始终是振幅的相反数",
-        "steps": [
-          "合并为 √(A²+B²)sin(x+φ)",
-          "最小值 = -振幅",
-          "得 -2√2≈-2.828"
+        "opts": [
+          "掌握 asinx+bcosx 型函数的最值",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
         ],
-        "goal": "掌握 asinx+bcosx 型函数的最值",
-        "tip": "最大值和最小值关于 0 对称",
-        "confirm": "看解析",
-        "gate": true,
-        "answers": {},
-        "retry": "继续调整参数，观察规律是否始终成立。",
-        "hint": "先求振幅$$\\sqrt{2^{2}+(-2)^{2}}=2\\sqrt{2}$$，最小值是振幅的相反数。",
-        "explain": "$$y=2\\sqrt{2}\\cdot \\sin (x- 45^\\circ )$$，振幅$$2\\sqrt{2}\\approx 2.828$$，故最小值为$$- 2\\sqrt{2}\\approx - 2.828$$。",
-        "success": "对！最小值 ≈ -2.828。"
+        "ans": 0
       }
     ]
   },
@@ -2225,7 +2282,22 @@
         "archetype": "LAB",
         "lab": "trig",
         "q": "为测塔高，在塔底同一水平线上选点 M，测得塔顶 C 的仰角为 30°；沿直线后退 20 m 到 N，测得仰角为$$15^\\circ$$（如图）。塔高$$BC$$=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
-        "scene_data": {
+        "ask": "拖动两个仰角和后退距离，观察塔高如何被算出",
+        "steps": [
+          "设塔高 h，第一次距塔 x=h·cot30°",
+          "第二次 x+d=h·cot15°",
+          "相减得 h=d/(cot15°-cot30°)=10"
+        ],
+        "goal": "掌握『后退法』测高模型（余切差）",
+        "tip": "保持 a₁>a₂，否则公式无意义",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "设塔高 h、第一次观测点距塔 x：$$h = x\\cdot \\tan 30^\\circ$$，且$$h = (x+20)\\cdot \\tan 15^\\circ$$，联立消去 x。",
+        "explain": "改用余切：$$x = h\\cdot \\cot 30^\\circ$$，$$x+20 = h\\cdot \\cot 15^\\circ$$，相减得$$20 = h\\cdot (\\cot 15^\\circ - \\cot 30^\\circ )$$。$$\\cot 15^\\circ = 2+\\sqrt{3}$$，$$\\cot 30^\\circ = \\sqrt{3}$$，差恰为 2，故$$h = 20/2 = 10$$（m）。",
+        "success": "对！塔高 10 m。",
+        "scene": {
           "range": 8,
           "axes": false,
           "sliders": [
@@ -2272,21 +2344,13 @@
             }
           ]
         },
-        "ask": "拖动两个仰角和后退距离，观察塔高如何被算出",
-        "steps": [
-          "设塔高 h，第一次距塔 x=h·cot30°",
-          "第二次 x+d=h·cot15°",
-          "相减得 h=d/(cot15°-cot30°)=10"
+        "opts": [
+          "掌握『后退法』测高模型（余切差）",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
         ],
-        "goal": "掌握『后退法』测高模型（余切差）",
-        "tip": "保持 a₁>a₂，否则公式无意义",
-        "confirm": "看解析",
-        "gate": true,
-        "answers": {},
-        "retry": "继续调整参数，观察规律是否始终成立。",
-        "hint": "设塔高 h、第一次观测点距塔 x：$$h = x\\cdot \\tan 30^\\circ$$，且$$h = (x+20)\\cdot \\tan 15^\\circ$$，联立消去 x。",
-        "explain": "改用余切：$$x = h\\cdot \\cot 30^\\circ$$，$$x+20 = h\\cdot \\cot 15^\\circ$$，相减得$$20 = h\\cdot (\\cot 15^\\circ - \\cot 30^\\circ )$$。$$\\cot 15^\\circ = 2+\\sqrt{3}$$，$$\\cot 30^\\circ = \\sqrt{3}$$，差恰为 2，故$$h = 20/2 = 10$$（m）。",
-        "success": "对！塔高 10 m。"
+        "ans": 0
       },
       {
         "name": "13-5 综合：不可达距离",
@@ -2295,7 +2359,22 @@
         "archetype": "LAB",
         "lab": "trig",
         "q": "河对岸有目标 A。在本岸沿河取 C、D 两点，使$$AC \\perp CD$$，量得$$CD = 80 m$$、$$\\angle ADC = 60^\\circ$$（如图）。A、D 两点的距离$$AD$$=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
-        "scene_data": {
+        "ask": "拖动 CD 与仰角，观察不可达距离 AD 如何计算",
+        "steps": [
+          "△ACD 是直角三角形",
+          "cos∠D=邻边/斜边=CD/AD",
+          "AD=80/cos60°=160"
+        ],
+        "goal": "掌握不可达距离的三角测量",
+        "tip": "找到直角三角形再用余弦",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "△ACD 中$$\\angle C = 90^\\circ$$：$$\\cos \\angle D$$等于邻边 CD 除以斜边 AD。",
+        "explain": "$$AD=CD/\\cos 60^\\circ=80/0.5=160$$（m）。也可先算$$AC=CD\\cdot\\tan 60^\\circ=80\\sqrt{3}$$，再用勾股定理验证$$AD=\\sqrt{80^{2}+(80\\sqrt{3})^{2}}=160$$。",
+        "success": "对！AD=160 m。",
+        "scene": {
           "range": 8,
           "axes": false,
           "sliders": [
@@ -2334,21 +2413,13 @@
             }
           ]
         },
-        "ask": "拖动 CD 与仰角，观察不可达距离 AD 如何计算",
-        "steps": [
-          "△ACD 是直角三角形",
-          "cos∠D=邻边/斜边=CD/AD",
-          "AD=80/cos60°=160"
+        "opts": [
+          "掌握不可达距离的三角测量",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
         ],
-        "goal": "掌握不可达距离的三角测量",
-        "tip": "找到直角三角形再用余弦",
-        "confirm": "看解析",
-        "gate": true,
-        "answers": {},
-        "retry": "继续调整参数，观察规律是否始终成立。",
-        "hint": "△ACD 中$$\\angle C = 90^\\circ$$：$$\\cos \\angle D$$等于邻边 CD 除以斜边 AD。",
-        "explain": "$$AD=CD/\\cos 60^\\circ=80/0.5=160$$（m）。也可先算$$AC=CD\\cdot\\tan 60^\\circ=80\\sqrt{3}$$，再用勾股定理验证$$AD=\\sqrt{80^{2}+(80\\sqrt{3})^{2}}=160$$。",
-        "success": "对！AD=160 m。"
+        "ans": 0
       }
     ]
   },
