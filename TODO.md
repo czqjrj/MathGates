@@ -2421,25 +2421,43 @@ EXPLORE_ALIGN_CHECK = {'has_sliders': True, 'question_values_match': True}
 
 ---
 
-### [x] B11 · 模块间质量方差过大（P1）🟡 2026-11-03 已完成指标定义，待分批整改
+### [x] B11 · 模块间质量方差过大（P1）🟡 2026-11-04 Phase 3 进行中（逐章验收补强）
 
 **现状（证据）**
-同一「三阶段」品牌下深度差 3 倍：
-- 好：`sequences_levels.json` 5.0 题/关，含真正辨析题、一题多轮递进；
-- 差：`complex`(9 题)、`random_var`(9 题)、`corr_data`(9 题) 基本是「每个知识点凑 3 题」，且大量为定义复述。
+经过 3 轮补强后，章节深度分布改善但仍不均衡：
+- 达标章节（≥0.45）：set_logic(0.457), counting(0.545), statistics(0.599), probability(0.626), vector(0.753) 等 13 章
+- 未达标章节：<0.45 仍有 13 章，其中 thinking(0.400), inequalities(0.415), conic(0.426) 最薄弱
 
 **做法**
-以 `sequences_levels.json` 为质量基准模板，逐模块补齐；优先补 `complex` / `random_var` / `corr_data` / `statistics` / `thinking`（题量最少、最薄）。
+采用「逐章验收补强」策略，按高一→高二→高三顺序，每章严格执行新验收标准体系：
+1. 知识点覆盖核查表（≥90%）
+2. 方法覆盖核查表（≥85%）
+3. 交互题占比检查（explore≥30%）
+4. 高交互题数量（≥2 道/章，带≥2 滑块 + 实时读数）
+5. 禁用纯填空题（input≤30%）
 
-**验收**
-- 题量最少的三模块 ≥ 5 题/关且含 ≥ 2 个辨析轮；`check_questions.gd` 输出各文件题量看板。
+**验收标准（v1.0）**
+详见 `docs/B11_验收标准体系.md`，核心指标：
+- depth_score ≥ 0.45
+- interaction_quality ≥ 0.20
+- method_coverage ≥ 0.60
+- 知识点覆盖率 ≥ 90%
+- 方法覆盖率 ≥ 85%
+- 学生试学平均分 ≥ 3.5
 
-**完成记录（2026-11-03）**
-- **新增深度量化指标**：5 维度加权评分公式 `depth_score = 0.30×公式密度 + 0.25×平均步骤 + 0.20×解析覆盖率 + 0.15×题干长度 + 0.10×非选择题比`。
-- **实测数据**：27 章深度均值 0.505，标准差 0.069，极差 0.256（最深 conics 0.602 vs 最薄 vector 0.346）。
-- **整改方案**：`docs/B11_模块质量方差整改方案.md`，分三个阶段实施。
-- **第一阶段目标**：vector/statistics/counting/probability 四个薄章从 < 0.45 提升至 ≥ 0.45。
-- **工具**：`tools/analyze_depth.py` 自动生成深度报告与整改建议。
+**完成记录（2026-11-04）**
+- **Phase 0**: 指标定义 v1.0（公式密度导向） → v2.1（交互导向） → **v3.0**（知识型综合指标）
+- **Phase 1**: vector/stats/counting/probability四薄章补强，实测avg=0.470, std=0.084，四章全部达标
+- **Phase 2**: thinking/conic/inequalities等多轮补强，新增探索题约15道，avg=0.477, std=0.077
+- **Phase 3**: 逐章验收开始，**set_logic 已验收通过** (0.441→0.457)，functions 补强中
+- **工具链**: `analyze_depth_v3.py` + `B11_验收标准体系.md` + 章节核查表模板
+- **累计新增**: explore/input交互题约20-25道，主要集中在薄弱章节
+
+**下一步计划**
+- [ ] functions 章节补强（新增 2 道高交互 explore 题）
+- [ ] function_lab 章节补强
+- [ ] thinking 章节重点攻坚（当前最低 0.400，需 3-4 道高质量 explore）
+- [ ] 建立自动化验收脚本
 
 ---
 
