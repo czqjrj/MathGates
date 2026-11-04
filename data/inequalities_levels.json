@@ -241,6 +241,854 @@
         "type": "explore",
         "q": "拖动向量 a 和 b，观察|a·b|与|a||b|的大小关系",
         "explain": "柯西不等式|a·b|≤|a||b|，等号当 a、b 共线时成立"
+      },
+      {
+        "id": "ineq_amgm_visualize_1",
+        "name": "均值不等式 · 几何证明探究",
+        "technique": "AM-GM 不等式 · 几何解释",
+        "archetype": "LAB",
+        "lab": "inequalities",
+        "type": "explore",
+        "q": "拖动两个正数 a、b，验证算术平均≥几何平均：(a+b)/2 ≥ √(ab)\n\n用半圆中的垂线长度直观理解这个不等式。",
+        "scene_data": {
+          "range": 6,
+          "sliders": [
+            {
+              "name": "a",
+              "min": 1,
+              "max": 9,
+              "value": 4,
+              "step": 0.5,
+              "label": "正数 a"
+            },
+            {
+              "name": "b",
+              "min": 1,
+              "max": 9,
+              "value": 9,
+              "step": 0.5,
+              "label": "正数 b"
+            }
+          ],
+          "geometric_figures": [
+            {
+              "type": "semicircle",
+              "diameter": "a+b",
+              "color": "#5ee6ff",
+              "label": "半圆（直径 a+b）"
+            },
+            {
+              "type": "radius",
+              "length": "(a+b)/2",
+              "color": "#ffd479",
+              "label": "半径=(a+b)/2"
+            },
+            {
+              "type": "perpendicular",
+              "height": "sqrt(a*b)",
+              "color": "#fb7185",
+              "label": "垂线=√(ab)"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "算术平均 AM=(a+b)/2",
+              "expr": "(a+b)/2",
+              "color": "#ffd479"
+            },
+            {
+              "label": "几何平均 GM=√(ab)",
+              "expr": "sqrt(a*b)",
+              "color": "#fb7185"
+            },
+            {
+              "label": "AM-GM≥0",
+              "expr": "(a+b)/2-sqrt(a*b)",
+              "color": "#40e0a8"
+            },
+            {
+              "label": "等号成立?",
+              "expr": "\"是✓\" if abs(a-b)<0.01 else \"否\"",
+              "color": "#5ee6ff"
+            }
+          ]
+        },
+        "ask": "观察半圆中半径与垂线的关系，证明 AM≥GM",
+        "steps": [
+          "调整 a、b 观察半圆中的线段长度",
+          "比较半径（AM）和垂线（GM）的长度",
+          "特别试试 a=b 的情况"
+        ],
+        "goal": "通过几何图形直观理解均值不等式的本质：垂线最长时等于半径（即 a=b）",
+        "tip": "垂线在直径中点处最长，此时 a=b",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "多试几组数据，确认定理始终成立",
+        "hint": "根据圆的性质，从直径上一点作的垂线长度不超过半径",
+        "explain": "均值不等式 (a+b)/2≥√(ab) 有一个经典的几何证明：构造一个直径为 a+b 的半圆，在直径上取一点将其分为长度 a 和 b 两段。从该点作垂线交半圆于一点，根据圆的性质，这条垂线的长度为√(ab)（射影定理），而半径长为(a+b)/2。由于半圆中从直径上任一点到圆弧的最长距离就是半径，所以√(ab)≤(a+b)/2，等号当且仅当垂线经过圆心（即 a=b）时成立。这种几何化的证明方法体现了数学的统一美——代数不等式背后隐藏着深刻的几何事实。均值不等式不仅是解题工具，更是优化问题的核心原理：在和固定的情况下，各量相等时乘积最大；在乘积固定的情况下，各量相等时和最小。这在物理（能量最小化）、经济（成本最优化）、工程（效率最大化）中都有广泛应用。"
+      },
+      {
+        "id": "ineq_cauchy_vector_1",
+        "name": "柯西不等式 · 向量形式可视化",
+        "technique": "柯西 - 施瓦茨不等式 · 几何意义",
+        "archetype": "LAB",
+        "lab": "inequalities",
+        "type": "explore",
+        "q": "拖动向量 a=(a₁,a₂) 和 b=(b₁,b₂) 的分量，验证柯西不等式：|a·b|≤|a||b|\n\n等号何时成立？",
+        "scene_data": {
+          "range": 6,
+          "axes": true,
+          "sliders": [
+            {
+              "name": "a1",
+              "min": -5,
+              "max": 5,
+              "value": 3,
+              "step": 0.5,
+              "label": "a₁"
+            },
+            {
+              "name": "a2",
+              "min": -5,
+              "max": 5,
+              "value": 4,
+              "step": 0.5,
+              "label": "a₂"
+            },
+            {
+              "name": "b1",
+              "min": -5,
+              "max": 5,
+              "value": 2,
+              "step": 0.5,
+              "label": "b₁"
+            },
+            {
+              "name": "b2",
+              "min": -5,
+              "max": 5,
+              "value": 1,
+              "step": 0.5,
+              "label": "b₂"
+            }
+          ],
+          "vectors": [
+            {
+              "p": [
+                0,
+                0
+              ],
+              "q": [
+                "a1",
+                "a2"
+              ],
+              "color": "#5ee6ff",
+              "label": "向量 a"
+            },
+            {
+              "p": [
+                0,
+                0
+              ],
+              "q": [
+                "b1",
+                "b2"
+              ],
+              "color": "#fb7185",
+              "label": "向量 b"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "点积 a·b=a₁b₁+a₂b₂",
+              "expr": "a1*b1+a2*b2",
+              "color": "#ffd479"
+            },
+            {
+              "label": "|a||b|=√(a₁²+a₂²)·√(b₁²+b₂²)",
+              "expr": "sqrt(a1*a1+a2*a2)*sqrt(b1*b1+b2*b2)",
+              "color": "#a878ff"
+            },
+            {
+              "label": "柯西差值",
+              "expr": "sqrt(a1*a1+a2*a2)*sqrt(b1*b1+b2*b2)-abs(a1*b1+a2*b2)",
+              "color": "#40e0a8"
+            },
+            {
+              "label": "夹角θ",
+              "expr": "acos((a1*b1+a2*a2)/(sqrt(a1*a1+a2*a2)*sqrt(b1*b1+b2*b2))) if sqrt(...)>0 else 0",
+              "color": "#5ee6ff"
+            }
+          ]
+        },
+        "ask": "发现柯西不等式等号成立的条件：两向量共线（平行）",
+        "steps": [
+          "调整向量分量观察点积与模长积的关系",
+          "特别尝试让两向量平行的情况",
+          "观察夹角与不等式紧度的关系"
+        ],
+        "goal": "理解柯西不等式的几何本质：点积的最大值是模长的乘积（当向量同向时）",
+        "tip": "当两向量垂直时点积为 0，当同向时达到最大值",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "多试几组不同的向量，确认不等式始终成立",
+        "hint": "根据点积定义 a·b=|a||b|cosθ，而|cosθ|≤1，所以|a·b|≤|a||b|",
+        "explain": "柯西 - 施瓦茨不等式是分析学中最基本的不等式之一，其向量形式为|a·b|≤|a||b|。几何解释非常清晰：根据点积的定义 a·b=|a||b|cosθ（θ为两向量夹角），而余弦函数的绝对值不超过 1，因此|a·b|=|a||b||cosθ|≤|a||b|。等号成立当且仅当|cosθ|=1，即θ=0°或 180°，也就是两向量共线（平行）。这个看似简单的不等式有深远的影响：①它是三角不等式|a+b|≤|a|+|b|的证明基础；②推广到函数空间得到内积空间的柯西不等式|⟨f,g⟩|≤‖f‖‖g‖；③在概率论中对应相关系数的性质|Cov(X,Y)|≤σ_X σ_Y；④在机器学习中用于衡量特征相关性。通过拖动滑块可以直观看到：两向量越接近同向，点积越接近模长乘积；完全反向时也取等号（但点积为负）；垂直时点积为 0，不等式最'松'。这种几何直觉是掌握高等数学的关键。"
+      },
+      {
+        "id": "ineq_triangle_visual_1",
+        "name": "三角不等式 · 路径最短原理",
+        "technique": "三角不等式 · 几何解释",
+        "archetype": "LAB",
+        "lab": "inequalities",
+        "type": "explore",
+        "q": "拖动三角形的三个顶点 A、B、C，验证三角不等式：AB+BC≥AC\n\n为什么两边之和大于第三边？",
+        "scene_data": {
+          "range": 8,
+          "axes": true,
+          "sliders": [
+            {
+              "name": "Ax",
+              "min": -5,
+              "max": 5,
+              "value": -2,
+              "step": 0.5,
+              "label": "A 点 x"
+            },
+            {
+              "name": "Ay",
+              "min": -5,
+              "max": 5,
+              "value": 1,
+              "step": 0.5,
+              "label": "A 点 y"
+            },
+            {
+              "name": "Bx",
+              "min": -5,
+              "max": 5,
+              "value": 3,
+              "step": 0.5,
+              "label": "B 点 x"
+            },
+            {
+              "name": "By",
+              "min": -5,
+              "max": 5,
+              "value": -2,
+              "step": 0.5,
+              "label": "B 点 y"
+            },
+            {
+              "name": "Cx",
+              "min": -5,
+              "max": 5,
+              "value": 4,
+              "step": 0.5,
+              "label": "C 点 x"
+            },
+            {
+              "name": "Cy",
+              "min": -5,
+              "max": 5,
+              "value": 3,
+              "step": 0.5,
+              "label": "C 点 y"
+            }
+          ],
+          "points": [
+            {
+              "p": [
+                "Ax",
+                "Ay"
+              ],
+              "color": "#5ee6ff",
+              "size": 10,
+              "label": "A"
+            },
+            {
+              "p": [
+                "Bx",
+                "By"
+              ],
+              "color": "#ffd479",
+              "size": 10,
+              "label": "B"
+            },
+            {
+              "p": [
+                "Cx",
+                "Cy"
+              ],
+              "color": "#fb7185",
+              "size": 10,
+              "label": "C"
+            }
+          ],
+          "lines": [
+            {
+              "p1": [
+                "Ax",
+                "Ay"
+              ],
+              "p2": [
+                "Bx",
+                "By"
+              ],
+              "color": "#5ee6ff",
+              "label": "AB"
+            },
+            {
+              "p1": [
+                "Bx",
+                "By"
+              ],
+              "p2": [
+                "Cx",
+                "Cy"
+              ],
+              "color": "#ffd479",
+              "label": "BC"
+            },
+            {
+              "p1": [
+                "Ax",
+                "Ay"
+              ],
+              "p2": [
+                "Cx",
+                "Cy"
+              ],
+              "color": "#fb7185",
+              "dash": true,
+              "label": "AC"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "AB 长度",
+              "expr": "sqrt((Bx-Ax)^2+(By-Ay)^2)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "BC 长度",
+              "expr": "sqrt((Bx-Cx)^2+(By-Cy)^2)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "AC 长度",
+              "expr": "sqrt((Ax-Cx)^2+(Ay-Cy)^2)",
+              "color": "#fb7185"
+            },
+            {
+              "label": "AB+BC-AC",
+              "expr": "sqrt((Bx-Ax)**2+(By-Ay)**2)+sqrt((Bx-Cx)**2+(By-Cy)**2)-sqrt((Ax-Cx)**2+(Ay-Cy)**2)",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "理解三角不等式的物理意义：两点之间直线最短",
+        "steps": [
+          "拖动 B 点观察 AB+BC 与 AC 的关系",
+          "特别试试让三点共线的情况",
+          "尝试让 B 远离 AC 连线"
+        ],
+        "goal": "证明三角形任意两边之和大于第三边，等号当三点共线时成立",
+        "tip": "当 B 点在 AC 直线上时，AB+BC=AC",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "多试几种不同的三角形形状",
+        "hint": "想象从 A 到 C 的两条路径：直接走 AC vs 经 B 绕行 AB+BC",
+        "explain": "三角不等式是最基本的距离性质：对任意三点 A、B、C，有 AB+BC≥AC。其物理意义非常直观：从 A 到 C 直接走直线是最短的路径，绕道 B 只会增加路程。这一简单事实构成了整个度量空间理论的基石。严格证明可以用向量法：设向量a=C-A，b=B-A，则需证|a|+|b-a|≥|b|，平方后展开并利用柯西不等式即可。等号成立当且仅当 A、B、C 三点共线且 B 在 A、C 之间。三角不等式的重要性在于：①它是距离函数的公理化定义的核心条件；②推广到高维空间仍成立；③在赋范线性空间中对应‖x+y‖≤‖x‖+‖y‖；④在最优控制理论中用于证明存在性；⑤在图论中用于 Dijkstra 算法的正确性保证。通过拖动顶点可以直观验证：无论三角形如何变形，这个不等式始终成立，只有当三点共线时才取等号——这就是'两点之间直线最短'的数学表达。"
+      },
+      {
+        "id": "ineq_holder_special_1",
+        "name": "赫尔德不等式 · 特例可视化",
+        "technique": "赫尔德不等式 · p-norm",
+        "archetype": "LAB",
+        "lab": "inequalities",
+        "type": "explore",
+        "q": "拖动参数 p、q（满足 1/p+1/q=1），观察赫尔德不等式的特例。\n\n验证∑|aᵢbᵢ|≤(∑|aᵢ|ᵖ)^(1/p)·(∑|bᵢ|q)^(1/q)",
+        "scene_data": {
+          "range": 6,
+          "sliders": [
+            {
+              "name": "p",
+              "min": 1.1,
+              "max": 3,
+              "value": 2,
+              "step": 0.2,
+              "label": "p"
+            },
+            {
+              "name": "a1",
+              "min": -5,
+              "max": 5,
+              "value": 3,
+              "step": 0.5,
+              "label": "a₁"
+            },
+            {
+              "name": "a2",
+              "min": -5,
+              "max": 5,
+              "value": 4,
+              "step": 0.5,
+              "label": "a₂"
+            },
+            {
+              "name": "b1",
+              "min": -5,
+              "max": 5,
+              "value": 2,
+              "step": 0.5,
+              "label": "b₁"
+            },
+            {
+              "name": "b2",
+              "min": -5,
+              "max": 5,
+              "value": 1,
+              "step": 0.5,
+              "label": "b₂"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "q=p/(p-1)",
+              "expr": "p/(p-1)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "|a₁b₁+a₂b₂|",
+              "expr": "abs(a1*b1+a2*b2)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "(|a₁|ᵖ+|a₂|ᵖ)^(1/p)",
+              "expr": "pow(abs(a1)**p+abs(a2)**p, 1/p)",
+              "color": "#fb7185"
+            },
+            {
+              "label": "(|b₁|q+|b₂|q)^(1/q)",
+              "expr": "pow(abs(b1)**(p/(p-1))+abs(b2)**(p/(p-1)), (p-1)/p)",
+              "color": "#a878ff"
+            }
+          ]
+        },
+        "ask": "当 p=q=2 时，赫尔德不等式退化为柯西不等式",
+        "steps": [
+          "先设 p=2，此时 q=2，验证柯西不等式",
+          "尝试 p≠2的情况",
+          "观察共轭指数 1/p+1/q=1的关系"
+        ],
+        "goal": "理解赫尔德不等式是柯西不等式的推广",
+        "tip": "p=2 时就是柯西 - 施瓦茨不等式",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "多试几个不同的 p 值",
+        "hint": "共轭指数满足 1/p+1/q=1，如 p=3,q=3/2",
+        "explain": "赫尔德不等式是柯西不等式的强力推广：对共轭指数 p、q（即 1/p+1/q=1，p>1），有∑|aᵢbᵢ|≤(∑|aᵢ|ᵖ)^(1/p)·(∑|bᵢ|q)^(1/q)。当 p=q=2 时就是柯西不等式；当 p=1,q=∞时得到范数不等式。其证明基于杨不等式 xy≤xᵖ/p+yq/q。这个不等式在泛函分析中定义了 Lᵖ空间的的对偶性，在信息论中用于推导熵的界限，在概率论中用于矩的不等式估计。"
+      },
+      {
+        "id": "ineq_jensen_convex_1",
+        "name": "琴生不等式 · 凸函数性质探究",
+        "technique": "琴生不等式 · 凸性",
+        "archetype": "LAB",
+        "lab": "inequalities",
+        "type": "explore",
+        "q": "拖动选择凸函数 f(x)=x²上的两点，验证琴生不等式：f((x₁+x₂)/2)≤(f(x₁)+f(x₂))/2",
+        "scene_data": {
+          "range": 6,
+          "axes": true,
+          "sliders": [
+            {
+              "name": "x1",
+              "min": -5,
+              "max": 5,
+              "value": -2,
+              "step": 0.5,
+              "label": "x₁"
+            },
+            {
+              "name": "x2",
+              "min": -5,
+              "max": 5,
+              "value": 3,
+              "step": 0.5,
+              "label": "x₂"
+            }
+          ],
+          "curves": [
+            {
+              "func": "x*x",
+              "range": [
+                -5,
+                5
+              ],
+              "color": "#5ee6ff",
+              "label": "f(x)=x²（凸函数）"
+            }
+          ],
+          "points": [
+            {
+              "p": [
+                "x1",
+                "x1*x1"
+              ],
+              "color": "#ffd479",
+              "size": 10,
+              "label": "(x₁,f(x₁))"
+            },
+            {
+              "p": [
+                "x2",
+                "x2*x2"
+              ],
+              "color": "#fb7185",
+              "size": 10,
+              "label": "(x₂,f(x₂))"
+            },
+            {
+              "p": [
+                "(x1+x2)/2",
+                "((x1+x2)/2)^2"
+              ],
+              "color": "#a878ff",
+              "size": 12,
+              "label": "中点下方"
+            },
+            {
+              "p": [
+                "(x1+x2)/2",
+                "(x1*x1+x2*x2)/2"
+              ],
+              "color": "#40e0a8",
+              "size": 12,
+              "label": "弦上中点"
+            }
+          ],
+          "lines": [
+            {
+              "p1": [
+                "x1",
+                "x1*x1"
+              ],
+              "p2": [
+                "x2",
+                "x2*x2"
+              ],
+              "color": "#ffd479",
+              "dash": true,
+              "label": "弦"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "f((x₁+x₂)/2)",
+              "expr": "((x1+x2)/2)^2",
+              "color": "#a878ff"
+            },
+            {
+              "label": "(f(x₁)+f(x₂))/2",
+              "expr": "(x1*x1+x2*x2)/2",
+              "color": "#40e0a8"
+            },
+            {
+              "label": "琴生差值",
+              "expr": "(x1*x1+x2*x2)/2-((x1+x2)/2)^2",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "理解凸函数的几何特征：弦在曲线上方",
+        "steps": [
+          "调整 x₁、x₂观察中点位置",
+          "比较曲线上的中点和弦上的中点",
+          "特别试试 x₁=x₂的情况"
+        ],
+        "goal": "掌握琴生不等式：凸函数的平均值的函数值≤函数值的平均值",
+        "tip": "凹函数的琴生不等式方向相反",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "多试几组数据确认定理成立",
+        "hint": "弦的中点纵坐标是两端点纵坐标的平均值",
+        "explain": "琴生不等式是凸分析的核心结果：若 f 是凸函数，则 f(λx+(1-λ)y)≤λf(x)+(1-λ)f(y)，特别地取λ=1/2 得 f((x+y)/2)≤(f(x)+f(y))/2。几何上这意味着凸函数的图像总在其任意弦的下方（或重合）。等价表述：E[f(X)]≥f(E[X])，即函数值的期望不小于期望的函数值。这一不等式在概率论中导出大数定律，在信息论中证明熵的非负性，在优化理论中保证凸规划的最优性条件。"
+      },
+      {
+        "id": "ineq_rearrange_visualize_1",
+        "name": "排序不等式 · 顺序与逆序和",
+        "technique": "排序不等式 · 贪心策略",
+        "archetype": "LAB",
+        "lab": "inequalities",
+        "type": "explore",
+        "q": "拖动两组数 a=(a₁,a₂,a₃) 和 b=(b₁,b₂,b₃)，验证排序不等式：\n顺序和≥乱序和≥逆序和",
+        "scene_data": {
+          "range": 6,
+          "sliders": [
+            {
+              "name": "a1",
+              "min": 1,
+              "max": 10,
+              "value": 2,
+              "step": 1,
+              "label": "a₁"
+            },
+            {
+              "name": "a2",
+              "min": 1,
+              "max": 10,
+              "value": 5,
+              "step": 1,
+              "label": "a₂"
+            },
+            {
+              "name": "a3",
+              "min": 1,
+              "max": 10,
+              "value": 8,
+              "step": 1,
+              "label": "a₃"
+            },
+            {
+              "name": "b1",
+              "min": 1,
+              "max": 10,
+              "value": 3,
+              "step": 1,
+              "label": "b₁"
+            },
+            {
+              "name": "b2",
+              "min": 1,
+              "max": 10,
+              "value": 6,
+              "step": 1,
+              "label": "b₂"
+            },
+            {
+              "name": "b3",
+              "min": 1,
+              "max": 10,
+              "value": 9,
+              "step": 1,
+              "label": "b₃"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "顺序和 a₁b₁+a₂b₂+a₃b₃",
+              "expr": "sorted([a1,a2,a3])[0]*sorted([b1,b2,b3])[0]+sorted([a1,a2,a3])[1]*sorted([b1,b2,b3])[1]+sorted([a1,a2,a3])[2]*sorted([b1,b2,b3])[2]",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "逆序和 a₁b₃+a₂b₂+a₃b₁",
+              "expr": "sorted([a1,a2,a3])[0]*sorted([b1,b2,b3])[2]+sorted([a1,a2,a3])[1]*sorted([b1,b2,b3])[1]+sorted([a1,a2,a3])[2]*sorted([b1,b2,b3])[0]",
+              "color": "#fb7185"
+            },
+            {
+              "label": "差值",
+              "expr": "顺 - 逆",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "发现规律：同序相乘最大，反序相乘最小",
+        "steps": [
+          "将两组数都从小到大排列",
+          "计算顺序积之和",
+          "计算逆序积之和并比较"
+        ],
+        "goal": "理解排序不等式：大的配大的，小的配小的，乘积和最大",
+        "tip": "这就是'门当户对'的数学原理",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "多试几组数据确认规律",
+        "hint": "将 a、b 都按升序排列后逐项相乘再相加即为最大值",
+        "explain": "排序不等式是最直观的初等不等式之一：设有两组实数 a₁≤a₂≤...≤aₙ和 b₁≤b₂≤...≤bₙ，则它们的各种排列组合的乘积和中，顺序和∑aᵢbᵢ最大，逆序和∑aᵢb_{n-i+1}最小，其他任意排列介于两者之间。直观解释：要让乘积和最大，应该让大的配大的、小的配小的（贪心策略）。证明可以用交换法：若某两项配对不是同序，交换后总和增大。应用包括：证明均值不等式、解决最优化问题、竞赛题中的放缩技巧。"
+      },
+      {
+        "id": "ineq_power_mean_1",
+        "name": "幂平均不等式 · 综合比较",
+        "technique": "幂平均 · 广义均值",
+        "archetype": "LAB",
+        "lab": "inequalities",
+        "type": "explore",
+        "q": "拖动参数 p，观察两个正数 a、b 的 p 次幂平均 Mₚ=[(aᵖ+bᵖ)/2]^(1/p) 如何随 p 变化。\n\n验证：M₋₁≤M₀≤M₁≤M₂（调和≤几何≤算术≤平方）",
+        "scene_data": {
+          "range": 6,
+          "sliders": [
+            {
+              "name": "a",
+              "min": 1,
+              "max": 10,
+              "value": 4,
+              "step": 1,
+              "label": "正数 a"
+            },
+            {
+              "name": "b",
+              "min": 1,
+              "max": 10,
+              "value": 9,
+              "step": 1,
+              "label": "正数 b"
+            },
+            {
+              "name": "p",
+              "min": -2,
+              "max": 3,
+              "value": 1,
+              "step": 0.5,
+              "label": "指数 p"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "调和平均 H=2/(1/a+1/b)",
+              "expr": "2/(1/a+1/b)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "几何平均 G=√(ab)",
+              "expr": "sqrt(a*b)",
+              "color": "#fb7185"
+            },
+            {
+              "label": "算术平均 A=(a+b)/2",
+              "expr": "(a+b)/2",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "平方平均 Q=√((a²+b²)/2)",
+              "expr": "sqrt((a*a+b*b)/2)",
+              "color": "#a878ff"
+            },
+            {
+              "label": "p 次幂平均 Mₚ",
+              "expr": "pow((pow(a,p)+pow(b,p))/2, 1/p) if p!=0 else sqrt(a*b)",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "总结规律：幂平均随 p 增大而增大",
+        "steps": [
+          "先固定 a、b，只调整 p 观察 Mₚ的变化趋势",
+          "对比 H、G、A、Q 的大小关系",
+          "特别试试 p→±∞的极限情况"
+        ],
+        "goal": "掌握幂平均不等式链：负指数平均≤几何平均≤算术平均≤平方平均",
+        "tip": "当 p=0 时定义为几何平均（极限值）",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "多试几个不同的 p 值",
+        "hint": "p 越大，大数的权重越重，平均值就越大",
+        "explain": "幂平均不等式是均值理论的统一定律：对正数 a₁,...,aₙ和实数 p<q，有 Mₚ≤M_q，其中 Mₚ=[(Σaᵢᵖ)/n]^(1/p)。特殊情形包括：p=-1 时为调和平均，p→0 时为几何平均，p=1 时为算术平均，p=2 时为平方平均（均方根）。这个不等式的深刻之处在于它统一了各种常见的平均值，并给出了它们之间的大小关系。证明方法多样：可用琴生不等式（函数 x^(q/p) 的凸性）、导数法或归纳法。应用广泛：在统计学中用于描述数据的分散程度，在经济学中用于计算购买力平价，在物理学中用于计算有效值。通过拖动滑块可以直观看到：随着 p 增大，Mₚ单调递增；当两数相等时所有均值重合；差距越大，不同均值之间的差异越明显。"
+      },
+      {
+        "id": "ineq_chebyshev_sum_1",
+        "name": "切比雪夫求和不等式 · 同步性原理",
+        "technique": "切比雪夫不等式 · 排序相关性",
+        "archetype": "LAB",
+        "lab": "inequalities",
+        "type": "explore",
+        "q": "拖动两组同序数列 a=(a₁,a₂,a₃) 和 b=(b₁,b₂,b₃)，验证切比雪夫求和不等式：\nn·Σaᵢbᵢ ≥ (Σaᵢ)(Σbᵢ) ≥ n·Σaᵢb_{n-i+1}",
+        "scene_data": {
+          "range": 6,
+          "sliders": [
+            {
+              "name": "a1",
+              "min": 1,
+              "max": 10,
+              "value": 2,
+              "step": 1,
+              "label": "a₁"
+            },
+            {
+              "name": "a2",
+              "min": 1,
+              "max": 10,
+              "value": 5,
+              "step": 1,
+              "label": "a₂"
+            },
+            {
+              "name": "a3",
+              "min": 1,
+              "max": 10,
+              "value": 8,
+              "step": 1,
+              "label": "a₃"
+            },
+            {
+              "name": "b1",
+              "min": 1,
+              "max": 10,
+              "value": 3,
+              "step": 1,
+              "label": "b₁"
+            },
+            {
+              "name": "b2",
+              "min": 1,
+              "max": 10,
+              "value": 6,
+              "step": 1,
+              "label": "b₂"
+            },
+            {
+              "name": "b3",
+              "min": 1,
+              "max": 10,
+              "value": 9,
+              "step": 1,
+              "label": "b₃"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "n·Σaᵢbᵢ（顺序）",
+              "expr": "3*(a1*b1+a2*b2+a3*b3)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "(Σaᵢ)(Σbᵢ)",
+              "expr": "(a1+a2+a3)*(b1+b2+b3)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "n·Σaᵢb_{逆序}",
+              "expr": "3*(a1*b3+a2*b2+a3*b1)",
+              "color": "#fb7185"
+            },
+            {
+              "label": "验证不等式",
+              "expr": "\"✓\" if 3*(a1*b1+a2*b2+a3*b3)>=(a1+a2+a3)*(b1+b2+b3)>=3*(a1*b3+a2*b2+a3*b1) else \"✗\"",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "理解切比雪夫不等式的本质：同序相乘的平均大于等于平均的乘积",
+        "steps": [
+          "将两组数都升序排列",
+          "计算顺序乘积和、逆序乘积和、以及总乘积",
+          "验证 3×顺序≥总乘积≥3×逆序"
+        ],
+        "goal": "掌握切比雪夫不等式：若 a₁≤...≤aₙ且 b₁≤...≤bₙ，则(nΣaᵢbᵢ)≥(Σaᵢ)(Σbᵢ)≥(nΣaᵢb_{n-i+1})",
+        "tip": "这就是'同步变化量'的正相关性体现",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "多试几组数据确认规律",
+        "hint": "相当于说协方差非负：E[XY]≥E[X]E[Y]当 X、Y 正相关时",
+        "explain": "切比雪夫求和不等式是概率论中正相关概念的离散形式：若两组数同序（都递增或都递减），则它们的'同步乘积和'不小于'各自和的乘积除以 n'。数学表达：设 a₁≤a₂≤...≤aₙ且 b₁≤b₂≤...≤bₙ，则(n/n)Σaᵢbᵢ≥(Σaᵢ/n)(Σbᵢ/n)，即 E[AB]≥E[A]E[B]。这等价于说 Cov(A,B)≥0，即正相关。逆序时不等号反向。证明可用重排不等式或归纳法。应用包括：①概率论中相关系数的界；②统计学中方差的分解；③算法分析中期望复杂度的估计。这个不等式直观上很自然：如果两个变量'步调一致'（同增同减），那么它们的联合表现会优于独立情况的期望值。"
       }
     ]
   },
