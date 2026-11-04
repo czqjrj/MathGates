@@ -1276,43 +1276,57 @@
       },
       {
         "name": "4-4 建构知识 · 分段函数的对应关系",
-        "type": "input",
-        "q": "已知分段函数$$f(x)$$：当 x<0 时 f(x)=x+1；当 x≥0 时 f(x)=x²。则 f(f(−2)) = （填数值）",
-        "ans": 0,
-        "tol": 0.001,
-        "hint": "先算内层 f(−2)（判断用哪一段），再把结果代入求外层。",
-        "explain": "因为 −2<0，用第一段：f(−2)=−2+1=−1；又 −1<0，仍用第一段：f(−1)=−1+1=0。所以 f(f(−2))=0。分段函数一定要先看清自变量落在哪一段。",
-        "scene": {
-          "x": [
-            -3,
-            3
-          ],
-          "y": [
-            -2,
-            6
-          ],
-          "curves": [
+        "type": "explore",
+        "technique": "4-4 建构知识 · 分段函数的对应关系",
+        "archetype": "LAB",
+        "lab": "functions",
+        "q": "已知分段函数$$f(x)$$：当 x<0 时 f(x)=x+1；当 x≥0 时 f(x)=x²。则 f(f(−2)) =\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
             {
-              "fn": "linear",
-              "a": 1,
-              "b": 1,
-              "from": -3,
-              "to": 0,
-              "color": "#5ee6ff",
-              "label": "f(x)=x+1 (x<0)"
+              "name": "x",
+              "min": -4,
+              "max": 4,
+              "value": -2,
+              "step": 1,
+              "label": "输入 x"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "内层 f(x)",
+              "expr": "x+1 if x<0 else x*x",
+              "color": "#5ee6ff"
             },
             {
-              "fn": "quad",
-              "a": 1,
-              "b": 0,
-              "c": 0,
-              "from": 0,
-              "to": 3,
-              "color": "#ffd479",
-              "label": "f(x)=x² (x≥0)"
+              "label": "外层 f(f(x))",
+              "expr": "((x+2) if x<-1 else pow(x+1,2)) if x<0 else pow(x*x,2)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "x=-2 时",
+              "expr": "f(f(-2)) = 0",
+              "color": "#40e0a8"
             }
           ]
-        }
+        },
+        "ask": "拖动 x，观察分段函数『先内后外』的计算过程",
+        "steps": [
+          "x=-2<0，用第一段 f(-2)=-1",
+          "-1<0，仍用第一段 f(-1)=0",
+          "所以 f(f(-2))=0"
+        ],
+        "goal": "掌握分段函数复合时逐层判断所在区间",
+        "tip": "先算内层，再看内层结果落在哪一段",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "先算内层 f(−2)（判断用哪一段），再把结果代入求外层。",
+        "explain": "因为 −2<0，用第一段：f(−2)=−2+1=−1；又 −1<0，仍用第一段：f(−1)=−1+1=0。所以 f(f(−2))=0。分段函数一定要先看清自变量落在哪一段。",
+        "success": "对！f(f(-2))=0。"
       },
       {
         "name": "4-5 迁移应用 · 复合对应关系",
@@ -1842,43 +1856,57 @@
       },
       {
         "name": "6-5 迁移应用 · 含参奇偶性求参数",
-        "type": "input",
-        "q": "若 f(x)=x²+(a−1)x+3 是偶函数，则 a=（填数值）",
-        "ans": 1,
-        "tol": 0.01,
-        "hint": "偶函数满足 f(−x)=f(x)，把 x 换成 −x 后与原来比较。",
-        "explain": "f(−x)=x²−(a−1)x+3。由 f(−x)=f(x) 得 −(a−1)x=(a−1)x，即 2(a−1)x=0 对任意 x 成立，故 a−1=0，a=1。直观上：偶函数不能含奇次项（一次项），所以一次项系数 a−1=0。",
-        "scene": {
-          "x": [
-            -3,
-            3
-          ],
-          "y": [
-            -1,
-            7
-          ],
-          "curves": [
+        "type": "explore",
+        "technique": "6-5 迁移应用 · 含参奇偶性求参数",
+        "archetype": "LAB",
+        "lab": "functions",
+        "q": "若 f(x)=x²+(a−1)x+3 是偶函数，则 a=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
             {
-              "fn": "quad",
-              "a": 1,
-              "b": 0,
-              "c": 3,
-              "color": "#5ee6ff",
-              "label": "偶函数：y=x²+3"
+              "name": "a",
+              "min": -3,
+              "max": 3,
+              "value": 1,
+              "step": 0.5,
+              "label": "参数 a"
             }
           ],
-          "lines": [
+          "readouts": [
             {
-              "A": 1,
-              "B": 0,
-              "C": 0,
-              "dash": true,
-              "color": "#ffd479",
-              "width": 1.3,
-              "label": "对称轴 x=0"
+              "label": "f(1)=a+3",
+              "expr": "a+3",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "f(-1)=5-a",
+              "expr": "5-a",
+              "color": "#ffd479"
+            },
+            {
+              "label": "是否为偶函数",
+              "expr": "\"是\" if f1==f_1 else \"否\"",
+              "color": "#40e0a8"
             }
           ]
-        }
+        },
+        "ask": "拖动 a，找出使 f(x) 成为偶函数的取值",
+        "steps": [
+          "偶函数要求 f(-x)=f(x)",
+          "比较 f(1) 与 f(-1)",
+          "a+3=5-a ⇒ a=1"
+        ],
+        "goal": "掌握利用 f(-x)=f(x) 求含参偶函数参数",
+        "tip": "偶函数不能含奇次项",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "偶函数满足 f(−x)=f(x)，把 x 换成 −x 后与原来比较。",
+        "explain": "f(−x)=x²−(a−1)x+3。由 f(−x)=f(x) 得 −(a−1)x=(a−1)x，即 2(a−1)x=0 对任意 x 成立，故 a−1=0，a=1。直观上：偶函数不能含奇次项（一次项），所以一次项系数 a−1=0。",
+        "success": "对！a=1 时一次项消失，函数为偶函数。"
       }
     ]
   },
@@ -2092,10 +2120,65 @@
       },
       {
         "name": "8-7 迁移：对数式求值",
-        "type": "input",
-        "q": "计算：$$\\log_{2} 8$$=（填数值）",
-        "ans": 3,
-        "explain": "$$\\log_{2} 8 = \\log_{2}(2^{3}) = 3$$。"
+        "type": "explore",
+        "technique": "8-7 迁移：对数式求值",
+        "archetype": "LAB",
+        "lab": "functions",
+        "q": "计算：$$\\log_{2} 8$$=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "base",
+              "min": 2,
+              "max": 5,
+              "value": 2,
+              "step": 1,
+              "label": "底数 b"
+            },
+            {
+              "name": "n",
+              "min": 1,
+              "max": 5,
+              "value": 3,
+              "step": 1,
+              "label": "指数 n"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "bⁿ",
+              "expr": "pow(base,n)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "log_b(bⁿ)",
+              "expr": "n",
+              "color": "#ffd479"
+            },
+            {
+              "label": "原题 log₂8",
+              "expr": "3",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动底数与指数，观察 log_b(bⁿ)=n 恒成立",
+        "steps": [
+          "把 8 写成 2³",
+          "log₂(2³)=3",
+          "对数的本质是『求指数』"
+        ],
+        "goal": "掌握对数的定义与基本求值",
+        "tip": "log 就是问『底数要几次方得到真数』",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "",
+        "explain": "$$\\log_{2} 8 = \\log_{2}(2^{3}) = 3$$。",
+        "success": "对！log₂8=3。"
       },
       {
         "name": "8-8 综合：指数函数图像特征",
@@ -2166,21 +2249,119 @@
       },
       {
         "name": "9-2 建构：迭代递推",
-        "type": "input",
-        "q": "已知 f(1)=2，且 f(x+1)=f(x)+3，则 f(2)=?（填数值）",
-        "ans": 5,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "9-2 建构：迭代递推",
+        "archetype": "LAB",
+        "lab": "functions",
+        "q": "已知 f(1)=2，且 f(x+1)=f(x)+3，则 f(2)=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "f1",
+              "min": -5,
+              "max": 10,
+              "value": 2,
+              "step": 1,
+              "label": "f(1)"
+            },
+            {
+              "name": "c",
+              "min": 0,
+              "max": 5,
+              "value": 3,
+              "step": 1,
+              "label": "每次增加 c"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "f(2)=f(1)+c",
+              "expr": "f1+c",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "f(3)=f(2)+c",
+              "expr": "f1+2*c",
+              "color": "#ffd479"
+            },
+            {
+              "label": "f(4)",
+              "expr": "f1+3*c",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动初值与增量，观察递推 f(x+1)=f(x)+c 的结果",
+        "steps": [
+          "令 x=1 代入递推式",
+          "f(2)=f(1)+3",
+          "得 f(2)=5"
+        ],
+        "goal": "掌握由递推式逐项求函数值",
+        "tip": "每步加上同一个增量",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "令 x=1 代入递推式。",
-        "explain": "f(2)=f(1)+3=2+3=5。"
+        "explain": "f(2)=f(1)+3=2+3=5。",
+        "success": "对！f(2)=5。"
       },
       {
         "name": "9-3 迁移：赋值求值",
-        "type": "input",
-        "q": "若 f(x+y)=f(x)+f(y) 且 f(2)=5，则 f(4)=?（填数值）",
-        "ans": 10,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "9-3 迁移：赋值求值",
+        "archetype": "LAB",
+        "lab": "functions",
+        "q": "若 f(x+y)=f(x)+f(y) 且 f(2)=5，则 f(4)=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "f2",
+              "min": 0,
+              "max": 10,
+              "value": 5,
+              "step": 1,
+              "label": "f(2)"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "f(4)=f(2+2)",
+              "expr": "f2+f2",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "f(2x)=2f(x)",
+              "expr": "2*f2",
+              "color": "#ffd479"
+            },
+            {
+              "label": "结果",
+              "expr": "2*f2",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动 f(2)，观察可加性如何决定 f(4)",
+        "steps": [
+          "f(4)=f(2+2)=f(2)+f(2)",
+          "即 f(4)=2f(2)",
+          "得 10"
+        ],
+        "goal": "掌握抽象函数赋值法",
+        "tip": "把 4 拆成 2+2",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "f(4)=f(2+2)=f(2)+f(2)。",
-        "explain": "f(4)=2f(2)=2×5=10。"
+        "explain": "f(4)=2f(2)=2×5=10。",
+        "success": "对！f(4)=10。"
       }
     ]
   },
@@ -2450,32 +2631,57 @@
       },
       {
         "name": "12-2 建构：二次函数模型",
-        "type": "input",
-        "q": "某商品利润 y=−x²+20x（x 为定价），则最大利润是？（填数值）",
-        "scene": {
-          "x": [
-            0,
-            20
-          ],
-          "y": [
-            0,
-            110
-          ],
-          "curves": [
+        "type": "explore",
+        "technique": "12-2 建构：二次函数模型",
+        "archetype": "LAB",
+        "lab": "functions",
+        "q": "某商品利润 y=−x²+20x（x 为定价），则最大利润是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
             {
-              "fn": "quad",
-              "a": -1,
-              "b": 20,
-              "c": 0,
-              "color": "#ffd479",
-              "label": "y=−x²+20x"
+              "name": "x",
+              "min": 0,
+              "max": 20,
+              "value": 10,
+              "step": 1,
+              "label": "定价 x"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "利润 y=-x²+20x",
+              "expr": "x*(20-x)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "配方 y=-(x-10)²+100",
+              "expr": "100-pow(x-10,2)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "是否达到最大",
+              "expr": "\"最大 100\" if x==10 else \"未达最大\"",
+              "color": "#40e0a8"
             }
           ]
         },
-        "ans": 100,
-        "tol": 0.01,
+        "ask": "拖动定价 x，观察利润在何处达到最大",
+        "steps": [
+          "配方 y=-(x-10)²+100",
+          "顶点 x=10",
+          "最大利润 100"
+        ],
+        "goal": "掌握二次函数模型求最大利润",
+        "tip": "开口向下，顶点处取最大",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "开口向下的二次函数在顶点取最大值：先用 x=−b/(2a) 求顶点横坐标，再代回原式。",
-        "explain": "y=−(x−10)²+100，当 x=10 时取最大值 100。"
+        "explain": "y=−(x−10)²+100，当 x=10 时取最大值 100。",
+        "success": "对！x=10 时利润最大为 100。"
       },
       {
         "name": "12-3 迁移：分段函数模型",
@@ -2555,12 +2761,57 @@
       },
       {
         "name": "13-2 建构：取中点",
-        "type": "input",
-        "q": "承上，取区间 (0,1) 的中点 x=0.5，则 f(0.5)=?（填数值）",
-        "ans": -0.25,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "13-2 建构：取中点",
+        "archetype": "LAB",
+        "lab": "functions",
+        "q": "承上，取区间 (0,1) 的中点 x=0.5，则 f(0.5)=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "x",
+              "min": -1,
+              "max": 1,
+              "value": 0.5,
+              "step": 0.05,
+              "label": "区间内取点 x"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "f(x)=x²+x-1",
+              "expr": "x*x+x-1",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "x=0.5 时",
+              "expr": "-0.25",
+              "color": "#ffd479"
+            },
+            {
+              "label": "符号",
+              "expr": "\"负\" if x*x+x-1<0 else \"非负\"",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动 x，观察二分法中取中点后的函数值符号",
+        "steps": [
+          "f(0.5)=0.25+0.5-1",
+          "得 -0.25",
+          "说明根在右半区间"
+        ],
+        "goal": "理解二分法取中点判断符号的思想",
+        "tip": "函数值变号说明区间内有根",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "f(0.5)=0.5²+0.5−1。",
-        "explain": "f(0.5)=0.25+0.5−1=−0.25<0。"
+        "explain": "f(0.5)=0.25+0.5−1=−0.25<0。",
+        "success": "对！f(0.5)=-0.25<0。"
       },
       {
         "name": "13-3 迁移：缩小区间",
@@ -2684,59 +2935,135 @@
       },
       {
         "name": "14-4 巩固：拟合定参",
-        "type": "input",
-        "q": "某组数据拟合指数模型$$y=a\\cdot b^{x}$$（a>0，b>1），已知图象过$$(1,6)$$与$$(2,18)$$，则底数 b=？（填数值）",
-        "scene": {
-          "x": [
-            0,
-            3.4
-          ],
-          "y": [
-            0,
-            24
-          ],
-          "points": [
+        "type": "explore",
+        "technique": "14-4 巩固：拟合定参",
+        "archetype": "LAB",
+        "lab": "functions",
+        "q": "某组数据拟合指数模型$$y=a\\cdot b^{x}$$（a>0，b>1），已知图象过$$(1,6)$$与$$(2,18)$$，则底数 b=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
             {
-              "p": [
-                1,
-                6
-              ],
-              "color": "#f2637b",
-              "label": "(1,6)"
+              "name": "y1",
+              "min": 1,
+              "max": 20,
+              "value": 6,
+              "step": 1,
+              "label": "x=1 时的 y"
             },
             {
-              "p": [
-                2,
-                18
-              ],
-              "color": "#f2637b",
-              "label": "(2,18)"
+              "name": "y2",
+              "min": 1,
+              "max": 60,
+              "value": 18,
+              "step": 1,
+              "label": "x=2 时的 y"
             }
           ],
-          "labels": [
+          "readouts": [
             {
-              "p": [
-                0.1,
-                22
-              ],
-              "text": "观测数据",
+              "label": "底数 b=y₂/y₁",
+              "expr": "y2/y1",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "系数 a=y₁/b",
+              "expr": "y1/(y2/y1)",
               "color": "#ffd479"
+            },
+            {
+              "label": "模型",
+              "expr": "y = a·bˣ",
+              "color": "#40e0a8"
             }
           ]
         },
-        "ans": 3,
-        "tol": 0.01,
+        "ask": "拖动两点函数值，观察指数模型的底数如何确定",
+        "steps": [
+          "代入得 ab=6、ab²=18",
+          "两式相除得 b=3",
+          "a=2，模型 y=2·3ˣ"
+        ],
+        "goal": "掌握由两点确定指数模型参数",
+        "tip": "两式相除可消去系数 a",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "两式相除消去 a：把两点代入后用$$ab^{2}$$除以 ab。",
-        "explain": "代入得$$ab=6$$、$$ab^{2}=18$$，两式相除$$b=18/6=3$$（进而 a=2，模型为$$y=2\\cdot 2^{x}$$）。"
+        "explain": "代入得$$ab=6$$、$$ab^{2}=18$$，两式相除$$b=18/6=3$$（进而 a=2，模型为$$y=2\\cdot 2^{x}$$）。",
+        "success": "对！b=3。"
       },
       {
         "name": "14-5 综合：复利模型",
-        "type": "input",
-        "q": "本金 1000 元、年利率 5%，按年复利计息，2 年后本利和是多少元？（填数值）",
-        "ans": 1102.5,
-        "tol": 0.1,
+        "type": "explore",
+        "technique": "14-5 综合：复利模型",
+        "archetype": "LAB",
+        "lab": "functions",
+        "q": "本金 1000 元、年利率 5%，按年复利计息，2 年后本利和是多少元\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "P",
+              "min": 500,
+              "max": 2000,
+              "value": 1000,
+              "step": 50,
+              "label": "本金 P"
+            },
+            {
+              "name": "r",
+              "min": 0.01,
+              "max": 0.2,
+              "value": 0.05,
+              "step": 0.01,
+              "label": "年利率 r"
+            },
+            {
+              "name": "n",
+              "min": 1,
+              "max": 10,
+              "value": 2,
+              "step": 1,
+              "label": "年数 n"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "本利和 P(1+r)ⁿ",
+              "expr": "P*pow(1+r,n)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "利息",
+              "expr": "P*pow(1+r,n)-P",
+              "color": "#ffd479"
+            },
+            {
+              "label": "原题 1000·1.05²",
+              "expr": "1102.5",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动本金、利率、年数，观察复利的指数增长",
+        "steps": [
+          "第一年末 1000×1.05",
+          "第二年末再乘 1.05",
+          "得 1102.5 元"
+        ],
+        "goal": "掌握复利模型 y=a(1+r)ˣ",
+        "tip": "每一年都在上一年的基础上乘 (1+r)",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "每年年末都再乘一次 1.05。",
-        "explain": "$$1000\\times 1.05^{2}=1102.5$$（元）——复利正是指数模型$$y=a(1+r)^{x}$$的应用。"
+        "explain": "$$1000\\times 1.05^{2}=1102.5$$（元）——复利正是指数模型$$y=a(1+r)^{x}$$的应用。",
+        "success": "对！2 年后本利和 1102.5 元。"
       }
     ]
   }
