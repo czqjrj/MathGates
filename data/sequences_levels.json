@@ -76,6 +76,65 @@
         "hint": "把 n=3 代入通项公式。",
         "explain": "$$a_{3} =3^{2}- 3=9- 3=6$$。",
         "opts": []
+      },
+      {
+        "id": "seq_fixedpoint_expl_1",
+        "name": "3-6 递推数列 · 特征根法探索",
+        "technique": "递推法 · 特征方程",
+        "archetype": "LAB",
+        "lab": "sequences",
+        "type": "explore",
+        "q": "拖动参数 a 和 b，观察递推数列 a_{n+1} = a·a_n + b 的收敛情况。\n\n猜想：什么时候数列会收敛到某个固定值？",
+        "scene_data": {
+          "range": 6,
+          "sliders": [
+            {
+              "name": "a",
+              "min": -1.5,
+              "max": 1.5,
+              "value": 0.5,
+              "step": 0.1,
+              "label": "系数 a"
+            },
+            {
+              "name": "b",
+              "min": -2,
+              "max": 2,
+              "value": 1,
+              "step": 0.1,
+              "label": "常数 b"
+            },
+            {
+              "name": "n_max",
+              "min": 5,
+              "max": 20,
+              "value": 10,
+              "step": 1,
+              "label": "迭代次数"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "a_n (当前项)",
+              "expr": "iter_seq[n]",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "固定点 x* = b/(1-a)",
+              "expr": "b/(1-a)",
+              "color": "#ffd479"
+            }
+          ]
+        },
+        "steps": [
+          "设置 a 和 b",
+          "拖动 n_max 增加迭代次数",
+          "观察数列是否收敛"
+        ],
+        "goal": "发现当|a|<1 时数列收敛，且收敛值接近 b/(1-a)",
+        "hint": "设极限为 L，则 L = aL + b ⇒ L = b/(1-a)",
+        "explain": "特征根法是求解递推数列的重要方法。对于 a_{n+1} = a·a_n + b，若数列收敛到 L，则 L = aL + b，解得 L = b/(1-a)。通过拖动滑块可以直观看到：当|a|<1 时数列确实收敛到该固定点；当|a|≥1 时数列可能发散或震荡。",
+        "success": "正确！这就是'不动点理论'的简单应用。"
       }
     ]
   },
