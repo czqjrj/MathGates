@@ -1,0 +1,69 @@
+﻿pairs: 1556
+---- 淇鍚庡鏁?$$锛堜笉璇ュ嚭鐜帮級 0
+---- 娈嬬暀鐩搁偦/绌烘 0
+---- 娈嬬暀鍙屽弽鏂滄潬 0
+---- 娈嬬暀鍗? 0
+---- 鍝ㄥ叺娈嬬暀 0
+---- 鎺у埗绗︽畫鐣?0
+---- 绾枃鏈鍖咃紙鏃犲己绗﹀彿锛岄渶浜哄伐澶嶆牳锛?77
+ * complex_levels.json plx_calc.levels.levels[e].q]
+   - 澶嶆暟 $z=3+4i$ 瀵瑰簲鐨勭偣鍒板師鐐圭殑璺濈鏄紵锛堝～鏁板€硷級
+   + 澶嶆暟$$z=3+4i$$瀵瑰簲鐨勭偣鍒板師鐐圭殑璺濈鏄紵锛堝～鏁板€硷級
+ * complex_levels.json plx_calc.levels.levels[e].explain]
+   - $|z|=\sqrt{3^2+4^2}=5$銆?
+   + $$|z|=\sqrt{3^{2}+4^{2}}=5$$銆?
+ * complex_levels.json plx_calc.levels.levels[e].name]
+   - 1-4 宸╁浐锛歾路z虅 涓庢ā鐨勫钩鏂?
+   + 1-4 宸╁浐锛?$z\cdot \bar{z}$$涓庢ā鐨勫钩鏂?
+ * complex_levels.json plx_geo.levels.levels[e].q]
+   - 婊¤冻 $|z-(1+i)|=2$ 鐨勫鏁?$z$ 鍦ㄥ骞抽潰涓婄殑杞ㄨ抗鏄紵
+   + 婊¤冻$$|z-(1+i)|=2$$鐨勫鏁?z 鍦ㄥ骞抽潰涓婄殑杞ㄨ抗鏄紵
+ * complex_levels.json plx_geo.levels.levels[e].opts.opts[e]]
+   - 浠?$1+i$ 瀵瑰簲鐨勭偣涓哄渾蹇冿紝2 涓哄崐寰勭殑鍦?
+   + 浠?$1+i$$瀵瑰簲鐨勭偣涓哄渾蹇冿紝2 涓哄崐寰勭殑鍦?
+ * complex_levels.json plx_geo.levels.levels[e].explain]
+   - 鍒扮偣 $(1,1)$ 璺濈涓?2 鐨勫渾銆?
+   + 鍒扮偣$$(1,1)$$璺濈涓?2 鐨勫渾銆?
+ * complex_levels.json plx_period.levels.levels[e].q]
+   - $i^{2023}=$锛?
+   + $$i^{2023}$$=锛?
+ * complex_levels.json plx_period.levels.levels[e].opts.opts[e]]
+   - $-1$
+   + $$-1$$
+ * complex_levels.json plx_period.levels.levels[e].opts.opts[e]]
+   - $-i$
+   + $$-i$$
+ * complex_levels.json plx_period.levels.levels[e].explain]
+   - $i^4=1, 2023\div4浣?, i^{2023}=-i$銆?
+   + $$i^{4}=1, 2023\div4$$浣?$3, i^{2023}=-i$$銆?
+ * complex_levels.json plx_div.levels.levels[e].q]
+   - $\frac{2+i}{1-i}=$锛?
+   + $$\frac{2+i}{1-i}$$=锛?
+ * complex_levels.json plx_div.levels.levels[e].opts.opts[e]]
+   - $\frac{1}{2}+\frac{3}{2}i$
+   + $$\frac{1}{2}+\frac{3}{2}i$$
+ * complex_levels.json plx_div.levels.levels[e].opts.opts[e]]
+   - $\frac{1}{2}-\frac{3}{2}i$
+   + $$\frac{1}{2}-\frac{3}{2}i$$
+ * complex_levels.json plx_div.levels.levels[e].opts.opts[e]]
+   - $1+i$
+   + $$1+i$$
+ * complex_levels.json plx_div.levels.levels[e].opts.opts[e]]
+   - $-1+i$
+   + $$-1+i$$
+ * complex_levels.json plx_div.levels.levels[e].explain]
+   - 鍚屼箻 $(1+i)$ 鍖栫畝寰?$\frac{1}{2}+\frac{3}{2}i$銆?
+   + 鍚屼箻$$(1+i)$$鍖栫畝寰?$\frac{1}{2}+\frac{3}{2}i$$銆?
+ * complex_levels.json plx_eq.levels.levels[e].q]
+   - 宸茬煡 $x+yi=1+3i$锛?x,y\in\mathbb{R}$锛屽垯 $x+y=$锛燂紙濉暟鍊硷級
+   + 宸茬煡$$x+yi=1+3i$$锛?$x,y\in\mathbb{R}$$锛屽垯$$x+y$$=锛燂紙濉暟鍊硷級
+ * complex_levels.json plx_eq.levels.levels[e].explain]
+   - $x=1,y=3$銆?
+   + $$x=1,y=3$$銆?
+ * complex_levels.json plx_mod.levels.levels[e].q]
+   - $|z|=3$锛屽垯 $|z-(1+i)|$ 鐨勬渶灏忓€兼槸锛?
+   + $$|z|=3$$锛屽垯$$|z-(1+i)|$$鐨勬渶灏忓€兼槸锛?
+ * complex_levels.json plx_mod.levels.levels[e].opts.opts[e]]
+   - $3-\sqrt{2}$
+   + $$3-\sqrt{2}$$
+---- LOG 琛?0

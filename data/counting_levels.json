@@ -162,6 +162,23 @@
         "hint": "两步相乘，末段先不算。",
         "explain": "甲→乙→丙为 2×4=8 种（到丙为止）。",
         "opts": []
+      },
+      {
+        "name": "3-4 Permutation Formula Proof by Induction",
+        "type": "input",
+        "q": "Prove by mathematical induction that P(n,k) = n!/(n-k)!\nBase case: k=1\nInductive step: Assume for k, prove for k+1",
+        "steps": [
+          "Verify base case P(n,1)=n",
+          "Assume P(n,k)=n!/(n-k)!",
+          "Show P(n,k+1) = P(n,k) × (n-k)",
+          "Conclude the formula"
+        ],
+        "hint": "P(n,k+1) means choosing k+1 items from n with order.",
+        "explain": "Base: P(n,1)=n=n!/(n-1)!. Step: P(n,k+1) = P(n,k)×(n-k) = [n!/(n-k)!]×(n-k) = n!/(n-k-1)!.QED",
+        "ans": "proof_complete",
+        "scene": {
+          "range": 5
+        }
       }
     ]
   },
@@ -239,6 +256,21 @@
         "hint": "把甲乙捆绑看成一个人。",
         "explain": "捆绑后有 2 个“人”排列（2!），甲乙内部再排（2!），共 2×2=4 种。",
         "opts": []
+      },
+      {
+        "name": "4-3 Combination Symmetry Identity Proof",
+        "type": "input",
+        "q": "Prove the symmetry identity: C(n,k) = C(n,n-k)\nUse both algebraic and combinatorial arguments.",
+        "steps": [
+          "Algebraic: Expand factorials",
+          "Combinatorial: Choose k vs leave k"
+        ],
+        "hint": "C(n,k) = n!/[k!(n-k)!]",
+        "explain": "Algebraic: C(n,k)=n!/[k!(n-k)!], C(n,n-k)=n!/[(n-k)!k!] - identical.\nCombinatorial: Choosing k items is equivalent to leaving out (n-k) items.",
+        "ans": "proof_complete",
+        "scene": {
+          "range": 5
+        }
       }
     ]
   },
@@ -316,6 +348,23 @@
         "hint": "总数 C(6,2) 减去和为 7 的 3 组。",
         "explain": "总数 15，和为 7 的有 (1,6),(2,5),(3,4) 共 3 组，15−3=12。",
         "opts": []
+      },
+      {
+        "name": "5-2 Bijections in Counting",
+        "type": "input",
+        "q": "Explain why the number of subsets of an n-element set equals 2^n using bijection.\nHint: Map each subset to a binary string of length n.",
+        "steps": [
+          "Define the mapping",
+          "Show it's injective",
+          "Show it's surjective",
+          "Conclude equality"
+        ],
+        "hint": "Each element either in or out → bit is 1 or 0",
+        "explain": "Map subset S to binary string b where b[i]=1 iff i∈S. This is a bijection between subsets and {0,1}^n. Since |{0,1}^n|=2^n, we have 2^n subsets.",
+        "ans": "bijection_explained",
+        "scene": {
+          "range": 5
+        }
       }
     ]
   },
@@ -408,6 +457,24 @@
         "ans": 1,
         "hint": "代入后左边应当是所有二项式系数相加。",
         "explain": "令 a=b=1 得 C(n,0)+C(n,1)+…+C(n,n)=2ⁿ，这就是赋值法；a=1、b=−1 得交错和 0，a=b=0 得 0，a=b=2 得 4ⁿ。"
+      },
+      {
+        "name": "6-3 Multi-branch Classification Problem",
+        "type": "input",
+        "q": "How many ways to distribute 5 distinct balls into 3 distinct boxes with no empty boxes?\nUse inclusion-exclusion principle.\nTotal without restriction: 3^5\nSubtract cases with at least one empty box...",
+        "steps": [
+          "Total unrestricted: 3^5",
+          "Subtract 1-empty: C(3,1)×2^5",
+          "Add back 2-empty: C(3,2)×1^5",
+          "Final answer"
+        ],
+        "hint": "Inclusion-exclusion: |A∪B∪C| = Σ|A| - Σ|A∩B| + |A∩B∩C|",
+        "explain": "Using inclusion-exclusion: 3^5 - C(3,1)×2^5 + C(3,2)×1^5 = 243 - 3×32 + 3×1 = 243 - 96 + 3 = 150",
+        "ans": 150,
+        "tol": 1,
+        "scene": {
+          "range": 5
+        }
       }
     ]
   },

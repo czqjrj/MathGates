@@ -1,0 +1,125 @@
+======================== conics_levels.json  (2 处 [dry-run])
+  [conic_line_circle.levels.levels[e].explain]
+  - $$d=|1|/\sqrt{2}\approx 0.707$$，r=2，则$$|AB|=2\sqrt{4−0.5}=2\sqrt{3}.5=\sqrt{14}\approx 3.74$$。
+  + $$d=|1|/\sqrt{2}\approx 0.707$$，r=2，则$$|AB|=2\sqrt{4- 0.5}=2\sqrt{3}.5=\sqrt{14}\approx 3.74$$。
+  [conic_fixed.levels.levels[e].hint]
+  - 周长 =$$|AB|+|AF_{2}|+|BF_{2}|$$，把 |AB| 拆成$$|AF_{1}|+|BF_{1}|$$。
+  + 周长=$$|AB|+|AF_{2}|+|BF_{2}|$$，把 |AB| 拆成$$|AF_{1}|+|BF_{1}|$$。
+======================== corr_data_levels.json  (1 处 [dry-run])
+  [cd_indep.levels.levels[e].explain]
+  - 行合计 =$$30 + 20 = 50$$。独立性检验中期望频数由「行合计×列合计÷总计」算出。
+  + 行合计=$$30 + 20 = 50$$。独立性检验中期望频数由「行合计×列合计÷总计」算出。
+======================== derivative_levels.json  (7 处 [dry-run])
+  [deriv_formula.levels.levels[e].opts.opts[e]]
+  - $$y′$$=$$x^{2}$$
+  + $$y′ =x^{2}$$
+  [deriv_formula.levels.levels[e].opts.opts[e]]
+  - $$y′$$=$$3 x^{2}$$
+  + $$y′ =3 x^{2}$$
+  [deriv_formula.levels.levels[e].opts.opts[e]]
+  - $$y′$$=$$3 x^{2} +2x$$
+  + $$y′ =3 x^{2} +2x$$
+  [deriv_formula.levels.levels[e].opts.opts[e]]
+  - $$y′$$=$$x^{2} +2$$
+  + $$y′ =x^{2} +2$$
+  [deriv_zero.levels.levels[e].explain]
+  - f(0)=−1<0、f(1)=1>0，且 f 单调递增（$$f′$$=$$3 x^{2} +1>0$$），故唯一零点位于 (0,1)，即 k=0。
+  + f(0)=−1<0、f(1)=1>0，且 f 单调递增（$$f′ =3 x^{2} +1>0$$），故唯一零点位于 (0,1)，即 k=0。
+  [deriv_extrema.levels.levels[e].explain]
+  - $$f′$$=$$x^{2} +3a$$：$$a \ge 0$$时恒$$\ge 0$$不变号 → 无极值（a=0 时仅 x=0 处为零）；a<0 时有两个零点且变号，有极值。
+  + $$f′ =x^{2} +3a$$：$$a \ge 0$$时恒$$\ge 0$$不变号 → 无极值（a=0 时仅 x=0 处为零）；a<0 时有两个零点且变号，有极值。
+  [deriv_optimize.levels.levels[e].explain]
+  - $$A=d(P- 2d)$$是开口向下的抛物线，$$d=P/4$$时最大，此时$$w=P/2 \to$$宽:深 =$$2:1$$。
+  + $$A=d(P- 2d)$$是开口向下的抛物线，$$d=P/4$$时最大，此时$$w=P/2 \to$$宽:深=$$2:1$$。
+======================== inequalities_levels.json  (1 处 [dry-run])
+  [ineq_basic.levels.levels[e].opts.opts[e]]
+  - x+1/x 的最小值一定是$$2\sqrt{x·1/x}$$，与 x 的正负无关
+  + x+1/x 的最小值一定是$$2\sqrt{x\cdot 1/x}$$，与 x 的正负无关
+======================== line_levels.json  (1 处 [dry-run])
+  [line_4_1.levels.levels[e].explain]
+  - 把 Δx、Δy 看作直角边，由勾股定理$$|AB| = \sqrt{Δ x^{2} + Δ y^{2}}$$。
+  + 把 Δx、Δy 看作直角边，由勾股定理$$|AB| = \sqrt{\Delta x^{2} + \Delta y^{2}}$$。
+======================== set_logic_levels.json  (3 处 [dry-run])
+  [logic_neg.levels.levels[e].q]
+  - 命题$$“\forall x>0$$，$$\ln x\le x- 1”$$的否定是？
+  + 命题“$$\forall x>0$$，$$\ln x\le x- 1$$”的否定是？
+  [logic_neg.levels.levels[e].explain]
+  - 全称变存在、结论$$“\le ”$$的否定是“>”，故否定为$$\exists x>0$$，$$\ln x>x- 1$$。
+  + 全称变存在、结论“$$\le$$”的否定是“>”，故否定为$$\exists x>0$$，$$\ln x>x- 1$$。
+  [logic_special.levels.levels[e].q]
+  - 命题“∀x∈R，$$x^{2}>x”$$是假命题。下列可作反例的是？
+  + 命题“∀x∈R，$$x^{2}>x$$”是假命题。下列可作反例的是？
+======================== solid_basic_levels.json  (6 处 [dry-run])
+  [solid_surface.levels.levels[e].hint]
+  - S全 =$$2\pi r^{2} + 2\pi rh = 2\pi r(r+h)$$。
+  + S全=$$2\pi r^{2} + 2\pi rh = 2\pi r(r+h)$$。
+  [solid_surface.levels.levels[e].explain]
+  - S全 =$$2\pi \cdot 2\cdot (2+3) = 20\pi$$，故系数为 20。
+  + S全=$$2\pi \cdot 2\cdot (2+3) = 20\pi$$，故系数为 20。
+  [solid_surface.levels.levels[e].explain]
+  - 弧长 =$$2\pi r = 2\pi$$，半径 =$$l = 4$$，圆心角 =$$2\pi /4 = \pi /2$$。
+  + 弧长=$$2\pi r = 2\pi$$，半径=$$l = 4$$，圆心角=$$2\pi /4 = \pi /2$$。
+  [solid_diag.levels.levels[e].hint]
+  - 体对角线长的平方 =$$a^{2}+b^{2}+c^{2}$$。
+  + 体对角线长的平方=$$a^{2}+b^{2}+c^{2}$$。
+  [solid_diag.levels.levels[e].explain]
+  - 体对角线长 =$$\sqrt{1²+2²+2²} = \sqrt{9} = 3$$，其平方为 9。
+  + 体对角线长=$$\sqrt{1^{2}+2^{2}+2^{2}} = \sqrt{9} = 3$$，其平方为 9。
+  [solid_sphere.levels.levels[e].explain]
+  - $$r = \sqrt{R²−d²} = \sqrt{25−9} = 4$$。
+  + $$r = \sqrt{R^{2}- d^{2}} = \sqrt{25- 9} = 4$$。
+======================== solid_methods.json  (1 处 [dry-run])
+  [methods.complement.levels.levels[e].hint]
+  - 体对角线 =$$\sqrt{}$$长$$^{2}+$$宽$$^{2}+$$高²)，半径是体对角线的一半。
+  + 体对角线=$$\sqrt{}$$长$$^{2}+$$宽$$^{2}+$$高²)，半径是体对角线的一半。
+======================== statistics_levels.json  (1 处 [dry-run])
+  [stat_sampling.levels.levels[e].explain]
+  - 第 i 个编号 =$$7 + (i- 1)\times 10 \to$$第 30 个 =$$7 + 29\times 10 = 297$$。
+  + 第 i 个编号=$$7 + (i- 1)\times 10 \to$$第 30 个=$$7 + 29\times 10 = 297$$。
+======================== trig_levels.json  (14 处 [dry-run])
+  [trig_double.levels.levels[e].explain]
+  - $$\sin (\alpha /2)=\sqrt{(1−3/5)/2}=\sqrt{1/5}=\sqrt{5}/5\approx 0.447$$。
+  + $$\sin (\alpha /2)=\sqrt{(1- 3/5)/2}=\sqrt{1/5}=\sqrt{5}/5\approx 0.447$$。
+  [trig_aux.summary]
+  - 把$$A\cdot \sin x+B\cdot \cos x$$合并成$$\sqrt{A²+B²}\cdot \sin (x+\varphi )$$，用于求最值与单调区间。
+  + 把$$A\cdot \sin x+B\cdot \cos x$$合并成$$\sqrt{A^{2}+B^{2}}\cdot \sin (x+\varphi )$$，用于求最值与单调区间。
+  [trig_aux.levels.levels[e].goal]
+  - 发现$$A\cdot \sin x+B\cdot \cos x$$的取值与$$\sqrt{A²+B²}$$之间的关系
+  + 发现$$A\cdot \sin x+B\cdot \cos x$$的取值与$$\sqrt{A^{2}+B^{2}}$$之间的关系
+  [trig_aux.levels.levels[e].steps.steps[e]]
+  - 调 A、B，观察第二行读数$$\sqrt{A²+B²}$$的变化
+  + 调 A、B，观察第二行读数$$\sqrt{A^{2}+B^{2}}$$的变化
+  [trig_aux.levels.levels[e].ask]
+  - 把 A 调到 3、B 调到 4，第二行读数$$\sqrt{A²+B²}$$显示多少？（这正是 3sinx+4cosx 的最大值）
+  + 把 A 调到 3、B 调到 4，第二行读数$$\sqrt{A^{2}+B^{2}}$$显示多少？（这正是 3sinx+4cosx 的最大值）
+  [trig_aux.levels.levels[e].explain]
+  - $$\sqrt{3²+4²}=\sqrt{25}=5$$。第三行读数恒在 [−1,1] 说明$$A\cdot \sin x+B\cdot \cos x=\sqrt{A²+B²}\cdot \sin (x+\varphi )$$，其最大值就是$$\sqrt{A²+B²}$$。
+  + $$\sqrt{3^{2}+4^{2}}=\sqrt{25}=5$$。第三行读数恒在 [−1,1] 说明$$A\cdot \sin x+B\cdot \cos x=\sqrt{A^{2}+B^{2}}\cdot \sin (x+\varphi )$$，其最大值就是$$\sqrt{A^{2}+B^{2}}$$。
+  [trig_aux.levels.levels[e].hint]
+  - 化为$$\sqrt{A²+B²}\cdot \sin (x+\varphi )$$的形式再读最大值。
+  + 化为$$\sqrt{A^{2}+B^{2}}\cdot \sin (x+\varphi )$$的形式再读最大值。
+  [trig_aux.levels.levels[e].explain]
+  - 最大值$$\sqrt{3²+4²}=5$$（辅助角公式）。选 7 是把系数直接相加，选 12、25 是做了乘法——最大值只与平方和有关。
+  + 最大值$$\sqrt{3^{2}+4^{2}}=5$$（辅助角公式）。选 7 是把系数直接相加，选 12、25 是做了乘法——最大值只与平方和有关。
+  [trig_aux.levels.levels[e].hint]
+  - 振幅是$$\sqrt{1²+(√3)²}$$。
+  + 振幅是$$\sqrt{1^{2}+(\sqrt{3})^{2}}$$。
+  [trig_aux.levels.levels[e].hint]
+  - 先求振幅$$\sqrt{2²+(−2)²}=2\sqrt{2}$$，最小值是振幅的相反数。
+  + 先求振幅$$\sqrt{2^{2}+(- 2)^{2}}=2\sqrt{2}$$，最小值是振幅的相反数。
+  [trig_measure.levels.levels[e].ask]
+  - 图中标出的仰角 α 满足$$\tan \alpha$$= ？
+  + 图中标出的仰角 α 满足$$\tan \alpha$$=？
+  [trig_measure.levels.levels[e].q]
+  - 为测塔高，在塔底同一水平线上选点 M，测得塔顶 C 的仰角为 30°；沿直线后退 20 m 到 N，测得仰角为$$15^\circ$$（如图）。塔高$$BC$$= ？（填数值，单位 m）
+  + 为测塔高，在塔底同一水平线上选点 M，测得塔顶 C 的仰角为 30°；沿直线后退 20 m 到 N，测得仰角为$$15^\circ$$（如图）。塔高$$BC$$=？（填数值，单位 m）
+  [trig_measure.levels.levels[e].q]
+  - 河对岸有目标 A。在本岸沿河取 C、D 两点，使$$AC \perp CD$$，量得$$CD = 80 m$$、$$\angle ADC = 60^\circ$$（如图）。A、D 两点的距离$$AD$$= ？（填数值，单位 m）
+  + 河对岸有目标 A。在本岸沿河取 C、D 两点，使$$AC \perp CD$$，量得$$CD = 80 m$$、$$\angle ADC = 60^\circ$$（如图）。A、D 两点的距离$$AD$$=？（填数值，单位 m）
+  [trig_measure.levels.levels[e].explain]
+  - $$AD = CD/\cos 60^\circ = 80/0.5 = 160$$（m）。也可先算$$AC = CD\cdot \tan 60^\circ = 80\sqrt{3}$$，再用勾股定理验证$$AD = \sqrt{80² + (80√3)²} = 160$$。
+  + $$AD = CD/\cos 60^\circ = 80/0.5 = 160$$（m）。也可先算$$AC = CD\cdot \tan 60^\circ = 80\sqrt{3}$$，再用勾股定理验证$$AD = \sqrt{80^{2} + (80\sqrt{3})^{2}} = 160$$。
+======================== vectors_levels.json  (1 处 [dry-run])
+  [vector_physics.levels.levels[e].explain]
+  - 力与位移夹角为$$\theta$$时，功的定义式为 =$$|\vec{F}||\vec{s}|\cos\theta$$。
+  + 力与位移夹角为$$\theta$$时，功的定义式为=$$|\vec{F}||\vec{s}|\cos\theta$$。

@@ -1,0 +1,7 @@
+﻿
+Path                                         LineNumber
+----                                         ----------
+E:\MathGates-main\data\functions_levels.json        733
+E:\MathGates-main\data\vectors_levels.json          475
+
+

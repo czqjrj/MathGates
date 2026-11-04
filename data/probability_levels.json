@@ -94,6 +94,22 @@
         "hint": "对立事件概率之和为 1。",
         "explain": "$$P(\\bar{A})=1- P(A)=0.7$$。",
         "opts": []
+      },
+      {
+        "name": "2-4 Conditional Probability Formula Derivation",
+        "type": "input",
+        "q": "Derive the conditional probability formula P(A|B) = P(AB)/P(B) from first principles.\nStart with the frequency interpretation and take the limit.",
+        "steps": [
+          "Define conditional event",
+          "Use frequency ratio",
+          "Take limit to get probability"
+        ],
+        "hint": "In n trials, count occurrences of B and AB.",
+        "explain": "Let n(B) be count of B, n(AB) be count of both. Then P(A|B) ≈ n(AB)/n(B) = [n(AB)/n]/[n(B)/n] → P(AB)/P(B).",
+        "ans": "derivation_complete",
+        "scene": {
+          "range": 5
+        }
       }
     ]
   },
@@ -188,17 +204,29 @@
       },
       {
         "name": "2-3 迁移：独立性",
-        "type": "choice",
+        "type": "input",
         "q": "若 A、B 相互独立，则$$P(AB)$$=?",
-        "opts": [
-          "$$P(A)- P(B)$$",
-          "$$P(A)+P(B)$$",
-          "$$P(A \\mid B)$$",
-          "$$P(A) P(B)$$"
-        ],
-        "ans": 3,
         "hint": "独立意味着一个发生不影响另一个。",
-        "explain": "独立事件$$P(AB)=P(A) P(B)$$。"
+        "explain": "独立事件$$P(AB)=P(A) P(B)$$。",
+        "ans": "answer_provided"
+      },
+      {
+        "name": "3-4 Bayes Theorem Multi-step Application",
+        "type": "input",
+        "q": "A disease test has 99% sensitivity and 95% specificity. Disease prevalence is 0.1%.\nIf a person tests positive, what's the probability they actually have the disease?\nUse Bayes theorem: P(Disease|Positive) = P(Positive|Disease)×P(Disease) / P(Positive)",
+        "steps": [
+          "Identify given probabilities",
+          "Calculate P(Positive) using total probability",
+          "Apply Bayes theorem",
+          "Interpret result"
+        ],
+        "hint": "P(Positive) = P(Positive|Disease)P(Disease) + P(Positive|No Disease)P(No Disease)",
+        "explain": "Given: P(Pos|D)=0.99, P(Neg|~D)=0.95 so P(Pos|~D)=0.05, P(D)=0.001.\nP(Pos) = 0.99×0.001 + 0.05×0.999 = 0.00099 + 0.04995 = 0.05094\nP(D|Pos) = 0.99×0.001/0.05094 ≈ 0.0194 = 1.94%",
+        "ans": 0.0194,
+        "tol": 0.001,
+        "scene": {
+          "range": 5
+        }
       }
     ]
   },
@@ -280,6 +308,23 @@
         "ans": 0,
         "hint": "期望的线性性质。",
         "explain": "$$E(aX+b)=a E(X)+b$$，故$$E(Y)=2 E(X)+1$$。"
+      },
+      {
+        "name": "4-2 Mutual Independence vs Pairwise",
+        "type": "input",
+        "q": "Events A, B, C are pairwise independent if P(AB)=P(A)P(B), P(AC)=P(A)P(C), P(BC)=P(B)P(C).\nThey are mutually independent if additionally P(ABC)=P(A)P(B)P(C).\nConstruct an example where events are pairwise independent but NOT mutually independent.",
+        "steps": [
+          "Define sample space",
+          "Define three events",
+          "Verify pairwise independence",
+          "Show mutual independence fails"
+        ],
+        "hint": "Consider two coin flips and define events based on parity.",
+        "explain": "Example: Two fair coins. A=first=heads, B=second=heads, C=both same.\nP(A)=P(B)=P(C)=1/2. P(AB)=1/4=P(A)P(B). Similarly for AC, BC.\nBut P(ABC)=1/4 ≠ P(A)P(B)P(C)=1/8. So pairwise but not mutually independent.",
+        "ans": "example_constructed",
+        "scene": {
+          "range": 5
+        }
       }
     ]
   },
@@ -371,6 +416,22 @@
         "ans": 0,
         "hint": "μ 是均值，也是对称轴位置。",
         "explain": "二项分布$$P (X=k)=C(n,k)p^{k}(1-p)^(n-k)$$。"
+      },
+      {
+        "name": "5-3 Total Probability Multi-step Calculation",
+        "type": "input",
+        "q": "A factory has 3 machines producing widgets:\n- Machine A: 50% output, 2% defect rate\n- Machine B: 30% output, 3% defect rate  \n- Machine C: 20% output, 5% defect rate\nIf a randomly selected widget is defective, what's the probability it came from Machine A?\nUse Bayes theorem with total probability.",
+        "steps": [
+          "Compute P(Defect) using total probability",
+          "Apply Bayes for P(A|Defect)"
+        ],
+        "hint": "P(Defect) = Σ P(Defect|M_i)P(M_i)",
+        "explain": "P(Defect) = 0.02×0.50 + 0.03×0.30 + 0.05×0.20 = 0.01 + 0.009 + 0.01 = 0.029\nP(A|Defect) = P(Defect|A)P(A)/P(Defect) = 0.02×0.50/0.029 = 0.01/0.029 ≈ 0.345",
+        "ans": 0.345,
+        "tol": 0.005,
+        "scene": {
+          "range": 5
+        }
       }
     ]
   },
