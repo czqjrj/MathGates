@@ -154,6 +154,345 @@
             }
           ]
         }
+      },
+      {
+        "id": "func_transform_explore_1",
+        "name": "函数变换 · 平移伸缩可视化探究",
+        "technique": "函数变换 · 图像性质",
+        "archetype": "LAB",
+        "lab": "functions",
+        "type": "explore",
+        "q": "拖动参数 a、h、k，观察函数 y=a·f(x-h)+k 的图像如何变化。\n\n猜想：每个参数分别控制什么变换？",
+        "scene_data": {
+          "range": 8,
+          "axes": true,
+          "sliders": [
+            {
+              "name": "a",
+              "min": -2,
+              "max": 2,
+              "value": 1,
+              "step": 0.1,
+              "label": "a (伸缩)"
+            },
+            {
+              "name": "h",
+              "min": -3,
+              "max": 3,
+              "value": 0,
+              "step": 0.1,
+              "label": "h (左右平移)"
+            },
+            {
+              "name": "k",
+              "min": -3,
+              "max": 3,
+              "value": 0,
+              "step": 0.1,
+              "label": "k (上下平移)"
+            }
+          ],
+          "curves": [
+            {
+              "func": "x^2",
+              "range": [
+                -4,
+                4
+              ],
+              "color": "#ffd479",
+              "dash": true,
+              "label": "原函数 y=x²"
+            },
+            {
+              "func": "a*(x-h)^2+k",
+              "range": [
+                -4,
+                4
+              ],
+              "color": "#5ee6ff",
+              "label": "变换后 y=a(x-h)²+k"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "顶点坐标",
+              "expr": "(h,k)",
+              "color": "#a878ff"
+            },
+            {
+              "label": "开口方向",
+              "expr": "\"向上\" if a>0 else \"向下\"",
+              "color": "#fb7185"
+            },
+            {
+              "label": "开口大小",
+              "expr": "|a|",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "总结规律：a、h、k 分别控制什么类型的变换？",
+        "steps": [
+          "先固定 h=k=0，只调整 a 观察伸缩效果",
+          "再固定 a=1，调整 h 看左右平移",
+          "最后调整 k 看上下平移"
+        ],
+        "goal": "理解函数变换的基本规律：y=f(x-h) 右移 h，y=f(x)+k 上移 k，y=af(x) 纵向伸缩",
+        "tip": "特别试试负的 a、h、k 值",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，确保理解每个参数的作用",
+        "hint": "注意记忆口诀：左加右减，上加下减；a>1 拉伸，0<a<1 压缩，a<0 翻转",
+        "explain": "函数图像的三种基本变换：①水平平移：y=f(x-h) 将图像向右平移 h 个单位（h<0 时左移）；②垂直平移：y=f(x)+k 将图像向上平移 k 个单位（k<0 时下移）；③纵向伸缩：y=af(x)，当|a|>1 时拉伸，0<|a|<1 时压缩，a<0 时还需关于 x 轴翻转。这三种变换的组合可以描述任何二次函数的图像位置。通过拖动滑块可以直观看到每个参数的独立影响，这是研究函数性质的重要方法，后续学习三角函数、指数函数等都会用到这些变换技巧。",
+        "success": "对！函数变换的思想贯穿整个高中数学，务必熟练掌握。"
+      },
+      {
+        "id": "func_composition_exploration_1",
+        "name": "复合函数 · 分层映射互动探究",
+        "technique": "复合函数 · 链式法则",
+        "archetype": "LAB",
+        "lab": "functions",
+        "type": "explore",
+        "q": "拖动输入 x，观察复合函数 f(g(x)) 的分层计算过程。\n\n设 g(x)=2x+1，f(u)=u²，求 f(g(x))=___",
+        "scene_data": {
+          "range": 6,
+          "sliders": [
+            {
+              "name": "x",
+              "min": -3,
+              "max": 3,
+              "value": 1,
+              "step": 0.1,
+              "label": "输入 x"
+            },
+            {
+              "name": "g_coef",
+              "min": -3,
+              "max": 3,
+              "value": 2,
+              "step": 0.5,
+              "label": "g(x)=ax+b 的系数 a"
+            },
+            {
+              "name": "g_const",
+              "min": -3,
+              "max": 3,
+              "value": 1,
+              "step": 0.5,
+              "label": "g(x)=ax+b 的常数 b"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "中间层 u=g(x)",
+              "expr": "g_coef*x+g_const",
+              "color": "#ffd479"
+            },
+            {
+              "label": "输出层 y=f(u)=u²",
+              "expr": "pow(g_coef*x+g_const, 2)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "直接计算 f(g(x))",
+              "expr": "pow(g_coef*x+g_const, 2)",
+              "color": "#a878ff"
+            }
+          ]
+        },
+        "ask": "推导 f(g(x)) 的表达式，并与链式法则验证",
+        "steps": [
+          "先计算内层 u=g(x)",
+          "再将 u 代入 f(u)",
+          "得到复合函数表达式"
+        ],
+        "goal": "理解复合函数的'由内到外'计算顺序，掌握展开技巧",
+        "tip": "尝试不同的 g(x) 形式：一次函数、二次函数",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察复合结果的变化规律",
+        "hint": "若 g(x)=ax+b，则 f(g(x))=(ax+b)²，展开后是二次函数",
+        "explain": "复合函数 f(g(x)) 的计算遵循'由内到外'原则：先将 x 代入 g(x) 得到中间值 u，再将 u 代入 f(u) 得到最终结果 y。本题中 g(x)=2x+1，f(u)=u²，所以 f(g(x))=(2x+1)²=4x²+4x+1。这是一个典型的'函数嵌套'结构，外层函数决定整体形态（抛物线），内层函数决定位置和变形。复合函数思想在微积分中有重要应用（链式法则求导），在学习分段函数、反函数时也会频繁使用。关键是理解'逐层计算'的顺序和中间变量的意义。",
+        "success": "完美！复合函数是构建复杂函数的基础模块，后续学习导数、积分时会大量使用。"
+      },
+      {
+        "id": "func_zeros_visual_1",
+        "name": "函数零点 · 数形结合探究",
+        "technique": "零点定理 · 图像交点",
+        "archetype": "LAB",
+        "lab": "functions",
+        "type": "explore",
+        "q": "拖动参数 a、b，观察二次函数 f(x)=ax²+bx+c 的零点个数如何变化。\n\n猜想：判别式Δ=b²-4ac 与零点个数的关系是什么？",
+        "scene_data": {
+          "range": 8,
+          "axes": true,
+          "sliders": [
+            {
+              "name": "a",
+              "min": -3,
+              "max": 3,
+              "value": 1,
+              "step": 0.5,
+              "label": "a (开口)"
+            },
+            {
+              "name": "b",
+              "min": -6,
+              "max": 6,
+              "value": 0,
+              "step": 0.5,
+              "label": "b (一次项)"
+            },
+            {
+              "name": "c",
+              "min": -5,
+              "max": 5,
+              "value": 1,
+              "step": 0.5,
+              "label": "c (常数项)"
+            }
+          ],
+          "curves": [
+            {
+              "func": "a*x^2+b*x+c",
+              "range": [
+                -5,
+                5
+              ],
+              "color": "#5ee6ff",
+              "label": "f(x)=ax²+bx+c"
+            }
+          ],
+          "lines": [
+            {
+              "p1": [
+                -5,
+                0
+              ],
+              "p2": [
+                5,
+                0
+              ],
+              "color": "#ffd479",
+              "dash": true,
+              "label": "x 轴"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "判别式Δ",
+              "expr": "b*b-4*a*c",
+              "color": "#a878ff"
+            },
+            {
+              "label": "零点个数",
+              "expr": "\"2 个\" if b*b-4*a*c>0 else \"1 个\" if b*b-4*a*c==0 else \"0 个\"",
+              "color": "#fb7185"
+            },
+            {
+              "label": "顶点坐标",
+              "expr": "(-b/(2*a), c-b*b/(4*a))",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "总结规律：Δ>0、Δ=0、Δ<0 时分别有几个零点？",
+        "steps": [
+          "先固定 a=1,c=1，只调整 b 看变化",
+          "尝试让Δ刚好为 0 的情况",
+          "观察图像与 x 轴的交点情况"
+        ],
+        "goal": "理解判别式与零点个数的对应关系：Δ>0 有 2 个零点，Δ=0 有 1 个零点（相切），Δ<0 无零点",
+        "tip": "特别试试 b²=4ac 的临界情况",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，确保覆盖三种情况",
+        "hint": "记住口诀：大于零两个根，等于零一个根，小于零无实根",
+        "explain": "二次函数的零点问题体现了数形结合的核心思想：代数上，零点是方程 ax²+bx+c=0 的解；几何上，零点是函数图像与 x 轴的交点横坐标。判别式Δ=b²-4ac 正是连接两者的桥梁：当Δ>0 时，方程有两个不同实根，图像与 x 轴有两个交点；当Δ=0 时，方程有两个相同实根，图像与 x 轴相切于一点；当Δ<0 时，方程无实根，图像完全在 x 轴上方或下方。通过拖动滑块可以直观验证这个结论，这也是解决函数零点问题的通用方法——先看判别式判断个数，再用求根公式或韦达定理求解具体值。",
+        "success": "对！这是函数与方程思想的经典应用，后续学习导数、不等式时会反复用到这个思路。"
+      },
+      {
+        "id": "func_abstract_props_explore_1",
+        "name": "抽象函数 · 赋值法探索性质",
+        "technique": "抽象函数 · 赋值技巧",
+        "archetype": "LAB",
+        "lab": "functions",
+        "type": "explore",
+        "q": "已知函数 f(x) 满足 f(x+y)=f(x)+f(y)，拖动选择 x、y 的值，发现这个函数的性质。\n\n猜想：这样的函数可能是什么形式？",
+        "scene_data": {
+          "range": 6,
+          "sliders": [
+            {
+              "name": "x",
+              "min": -3,
+              "max": 3,
+              "value": 1,
+              "step": 0.5,
+              "label": "x"
+            },
+            {
+              "name": "y",
+              "min": -3,
+              "max": 3,
+              "value": 1,
+              "step": 0.5,
+              "label": "y"
+            },
+            {
+              "name": "k",
+              "min": -3,
+              "max": 3,
+              "value": 2,
+              "step": 0.5,
+              "label": "斜率 k(假设 f(x)=kx)"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "f(x)",
+              "expr": "k*x",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "f(y)",
+              "expr": "k*y",
+              "color": "#ffd479"
+            },
+            {
+              "label": "f(x)+f(y)",
+              "expr": "k*x+k*y",
+              "color": "#a878ff"
+            },
+            {
+              "label": "f(x+y)",
+              "expr": "k*(x+y)",
+              "color": "#fb7185"
+            },
+            {
+              "label": "是否相等",
+              "expr": "\"是\" if abs(k*x+k*y-k*(x+y))<0.001 else \"否\"",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "通过多次实验，归纳出满足 f(x+y)=f(x)+f(y) 的函数类型",
+        "steps": [
+          "设 f(x)=kx，验证是否满足条件",
+          "尝试其他函数形式，看是否也满足",
+          "总结这类函数的共同特征"
+        ],
+        "goal": "发现只有正比例函数 f(x)=kx 满足可加性",
+        "tip": "先试简单的整数值，再试分数和负数",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "多试几组不同的 x、y 值，确保结论可靠",
+        "hint": "令 y=0 可以得到 f(0)=?；令 y=x 可以得到 f(2x)=?",
+        "explain": "这是一个经典的函数方程问题：寻找所有满足 f(x+y)=f(x)+f(y) 的函数 f。通过赋值法可以逐步推导：①令 y=0 得 f(x)=f(x)+f(0)，故 f(0)=0；②令 y=x 得 f(2x)=2f(x)；③归纳可得 f(nx)=nf(x) 对所有整数 n 成立；④进一步可证 f(qx)=qf(x) 对所有有理数 q 成立。如果再加上连续性条件，最终可以证明 f(x)=kx 是唯一解。这类抽象函数问题在数学竞赛中很常见，核心技巧是'特殊化'——通过选取特殊的 x、y 值来获得更多信息。本题通过交互式验证，让学生直观感受正比例函数的'可加性'特征。",
+        "success": "完美！这就是'从特殊到一般'的数学归纳思想，也是研究抽象函数的标准方法。"
       }
     ]
   },
