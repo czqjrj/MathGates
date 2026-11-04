@@ -59,8 +59,8 @@ def make_explore(lab, orig, spec):
         "gate": False,
         "answers": {},
         "retry": spec.get('retry', '继续调整参数，观察规律是否始终成立。'),
-        "hint": orig.get('hint') or '',
-        "explain": orig.get('explain') or '',
+        "hint": spec.get('hint') or orig.get('hint') or '',
+        "explain": spec.get('explain') or orig.get('explain') or '',
         "success": spec.get('success', '很好！你已通过实验掌握了这个结论。'),
     }
 

@@ -77,39 +77,215 @@
       },
       {
         "name": "1-2 建构：几何概型",
-        "type": "input",
-        "q": "在区间 [0,2] 上随机取一点，落在 [0,1] 内的概率是？（填数值）",
-        "ans": 0.5,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "1-2 建构：几何概型",
+        "archetype": "LAB",
+        "lab": "probability",
+        "q": "在区间 [0,2] 上随机取一点，落在 [0,1] 内的概率是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "L",
+              "min": 0,
+              "max": 3,
+              "value": 1,
+              "step": 0.1,
+              "label": "落在其中的区间长度 L"
+            },
+            {
+              "name": "T",
+              "min": 1,
+              "max": 5,
+              "value": 2,
+              "step": 0.1,
+              "label": "总区间长度 T"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "总区间长度 T",
+              "expr": "T",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "目标区间长度 L",
+              "expr": "L",
+              "color": "#ffd479"
+            },
+            {
+              "label": "概率 = L / T",
+              "expr": "L/T",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动两个长度，观察概率始终等于“目标长度 ÷ 总长度”",
+        "opts": [
+          "掌握几何概型用长度之比求概率",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "几何概型用长度之比",
+          "概率 = L / T",
+          "L=1、T=2 时概率为 1/2"
+        ],
+        "goal": "掌握几何概型用长度之比求概率",
+        "tip": "只比长度，不需要数样本点",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "几何概型用长度之比。",
         "explain": "长度比 1/2，故概率为 1/2。",
-        "opts": []
+        "success": "对！概率为 1/2。"
       },
       {
         "name": "1-3 迁移：互斥与对立",
-        "type": "input",
-        "q": "若$$P(A)=0.3$$，则 P(Ā) =?（填数值）",
-        "ans": 0.7,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "1-3 迁移：互斥与对立",
+        "archetype": "LAB",
+        "lab": "probability",
+        "q": "若$$P(A)=0.3$$，则 P(Ā) =\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "p",
+              "min": 0,
+              "max": 1,
+              "value": 0.3,
+              "step": 0.01,
+              "label": "P(A)"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "P(A)",
+              "expr": "p",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "P(Ā) = 1 − P(A)",
+              "expr": "1-p",
+              "color": "#ffd479"
+            },
+            {
+              "label": "两者之和（恒为 1）",
+              "expr": "p+1-p",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动 P(A)，观察对立事件概率之和始终为 1",
+        "opts": [
+          "掌握对立事件概率之和为 1",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "A 与 Ā 必有一个发生且不能同时发生",
+          "所以 P(Ā)=1−P(A)",
+          "P(A)=0.3 时 P(Ā)=0.7"
+        ],
+        "goal": "掌握对立事件概率之和为 1",
+        "tip": "对立事件是“非此即彼”，不是任意互斥事件",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "对立事件概率之和为 1。",
         "explain": "$$P(\\bar{A})=1- P(A)=0.7$$。",
-        "opts": []
+        "success": "对！P(Ā)=0.7。"
       },
       {
         "name": "2-4 Conditional Probability Formula Derivation",
-        "type": "input",
-        "q": "Derive the conditional probability formula P(A|B) = P(AB)/P(B) from first principles.\nStart with the frequency interpretation and take the limit.",
-        "steps": [
-          "Define conditional event",
-          "Use frequency ratio",
-          "Take limit to get probability"
+        "type": "explore",
+        "technique": "2-4 Conditional Probability Formula Derivation",
+        "archetype": "LAB",
+        "lab": "probability",
+        "q": "条件概率公式推导：在 n 次试验中，记 B 发生 n(B) 次、AB 同时发生 n(AB) 次。\n\n拖动滑块改变计数，观察 n(AB)/n(B) 如何稳定到 P(AB)/P(B)。\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "n",
+              "min": 100,
+              "max": 2000,
+              "value": 1000,
+              "step": 100,
+              "label": "试验总次数 n"
+            },
+            {
+              "name": "nB",
+              "min": 10,
+              "max": 2000,
+              "value": 400,
+              "step": 10,
+              "label": "B 发生次数 n(B)"
+            },
+            {
+              "name": "nAB",
+              "min": 0,
+              "max": 2000,
+              "value": 120,
+              "step": 10,
+              "label": "AB 同时发生次数 n(AB)"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "P(B) ≈ n(B)/n",
+              "expr": "nB/n",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "P(AB) ≈ n(AB)/n",
+              "expr": "nAB/n",
+              "color": "#ffd479"
+            },
+            {
+              "label": "条件频率 n(AB)/n(B)",
+              "expr": "nAB/nB",
+              "color": "#40e0a8"
+            },
+            {
+              "label": "两者之比 P(AB)/P(B)",
+              "expr": "(nAB/n)/(nB/n)",
+              "color": "#a878ff"
+            }
+          ]
+        },
+        "ask": "拖动计数，观察条件频率与 P(AB)/P(B) 始终是同一个比值",
+        "opts": [
+          "从频率角度推导条件概率公式 P(A|B)=P(AB)/P(B)",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
         ],
+        "ans": 0,
+        "steps": [
+          "条件概率按“缩小后的样本空间”计算",
+          "P(A|B) ≈ n(AB)/n(B)",
+          "上下同除以 n 得 P(AB)/P(B)"
+        ],
+        "goal": "从频率角度推导条件概率公式 P(A|B)=P(AB)/P(B)",
+        "tip": "分母是 P(B)，不是 P(A)",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "In n trials, count occurrences of B and AB.",
         "explain": "Let n(B) be count of B, n(AB) be count of both. Then P(A|B) ≈ n(AB)/n(B) = [n(AB)/n]/[n(B)/n] → P(AB)/P(B).",
-        "ans": "derivation_complete",
-        "scene": {
-          "range": 5
-        }
+        "success": "对！P(A|B)=P(AB)/P(B)。"
       }
     ]
   },
@@ -204,29 +380,149 @@
       },
       {
         "name": "2-3 迁移：独立性",
-        "type": "input",
-        "q": "若 A、B 相互独立，则$$P(AB)$$=?",
+        "type": "explore",
+        "technique": "2-3 迁移：独立性",
+        "archetype": "LAB",
+        "lab": "probability",
+        "q": "若 A、B 相互独立，则$$P(AB)$$=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "pa",
+              "min": 0,
+              "max": 1,
+              "value": 0.5,
+              "step": 0.01,
+              "label": "P(A)"
+            },
+            {
+              "name": "pb",
+              "min": 0,
+              "max": 1,
+              "value": 0.4,
+              "step": 0.01,
+              "label": "P(B)"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "P(A)",
+              "expr": "pa",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "P(B)",
+              "expr": "pb",
+              "color": "#ffd479"
+            },
+            {
+              "label": "P(AB) = P(A)·P(B)",
+              "expr": "pa*pb",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动两个概率，观察独立事件同时发生的概率始终是乘积",
+        "opts": [
+          "掌握独立事件同时发生的乘法公式",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "独立表示一个事件发生不影响另一个",
+          "此时 P(AB)=P(A)P(B)",
+          "0.5×0.4=0.2"
+        ],
+        "goal": "掌握独立事件同时发生的乘法公式",
+        "tip": "只有独立才能直接相乘",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "独立意味着一个发生不影响另一个。",
         "explain": "独立事件$$P(AB)=P(A) P(B)$$。",
-        "ans": "answer_provided"
+        "success": "对！P(AB)=P(A)P(B)。"
       },
       {
         "name": "3-4 Bayes Theorem Multi-step Application",
-        "type": "input",
-        "q": "A disease test has 99% sensitivity and 95% specificity. Disease prevalence is 0.1%.\nIf a person tests positive, what's the probability they actually have the disease?\nUse Bayes theorem: P(Disease|Positive) = P(Positive|Disease)×P(Disease) / P(Positive)",
-        "steps": [
-          "Identify given probabilities",
-          "Calculate P(Positive) using total probability",
-          "Apply Bayes theorem",
-          "Interpret result"
+        "type": "explore",
+        "technique": "3-4 Bayes Theorem Multi-step Application",
+        "archetype": "LAB",
+        "lab": "probability",
+        "q": "贝叶斯公式：某病检测灵敏度 99%、特异度 95%，患病率 0.1%。若检测呈阳性，真正患病的概率是多少？\n\n拖动三个滑块，观察阳性结果中“真患病”的比例如何被患病率压低。\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "prev",
+              "min": 0.0001,
+              "max": 0.01,
+              "value": 0.001,
+              "step": 0.0001,
+              "label": "患病率 P(D)"
+            },
+            {
+              "name": "sens",
+              "min": 0.5,
+              "max": 1,
+              "value": 0.99,
+              "step": 0.01,
+              "label": "灵敏度 P(+|D)"
+            },
+            {
+              "name": "spec",
+              "min": 0.5,
+              "max": 1,
+              "value": 0.95,
+              "step": 0.01,
+              "label": "特异度 P(−|~D)"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "P(+) 总阳性率",
+              "expr": "sens*prev+(1-spec)*(1-prev)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "真阳性率",
+              "expr": "sens*prev",
+              "color": "#ffd479"
+            },
+            {
+              "label": "P(D|+) = 真阳性/总阳性",
+              "expr": "sens*prev/(sens*prev+(1-spec)*(1-prev))",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动患病率与检测指标，观察阳性后验概率如何变化",
+        "opts": [
+          "掌握贝叶斯公式与全概率公式的组合使用",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
         ],
+        "ans": 0,
+        "steps": [
+          "P(+)=P(+|D)P(D)+P(+|~D)P(~D)",
+          "P(D|+)=P(+|D)P(D)/P(+)",
+          "代入得 ≈0.0194，即约 1.94%"
+        ],
+        "goal": "掌握贝叶斯公式与全概率公式的组合使用",
+        "tip": "患病率很低时，即使检测很准，阳性后验概率也可能很小",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "P(Positive) = P(Positive|Disease)P(Disease) + P(Positive|No Disease)P(No Disease)",
         "explain": "Given: P(Pos|D)=0.99, P(Neg|~D)=0.95 so P(Pos|~D)=0.05, P(D)=0.001.\nP(Pos) = 0.99×0.001 + 0.05×0.999 = 0.00099 + 0.04995 = 0.05094\nP(D|Pos) = 0.99×0.001/0.05094 ≈ 0.0194 = 1.94%",
-        "ans": 0.0194,
-        "tol": 0.001,
-        "scene": {
-          "range": 5
-        }
+        "success": "对！P(D|+)≈0.0194。"
       }
     ]
   },
@@ -287,13 +583,72 @@
       },
       {
         "name": "3-2 建构：方差",
-        "type": "input",
-        "q": "承上，$$D(X)=\\sum (x- E(X))^{2} P(x)$$，其值为？（填数值）",
-        "ans": 0.61,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "3-2 建构：方差",
+        "archetype": "LAB",
+        "lab": "probability",
+        "q": "承上，$$D(X)=\\sum (x- E(X))^{2} P(x)$$，其值为\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "p1",
+              "min": 0,
+              "max": 1,
+              "value": 0.2,
+              "step": 0.05,
+              "label": "P(X=1)"
+            },
+            {
+              "name": "p2",
+              "min": 0,
+              "max": 1,
+              "value": 0.3,
+              "step": 0.05,
+              "label": "P(X=2)"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "P(X=3)=1−p1−p2",
+              "expr": "1-p1-p2",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "E(X)",
+              "expr": "1*p1+2*p2+3*(1-p1-p2)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "D(X)=Σ(x−E)²P",
+              "expr": "(1-(1*p1+2*p2+3*(1-p1-p2)))^2*p1+(2-(1*p1+2*p2+3*(1-p1-p2)))^2*p2+(3-(1*p1+2*p2+3*(1-p1-p2)))^2*(1-p1-p2)",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动两个概率，观察方差随分布离散程度的变化",
+        "opts": [
+          "掌握由分布列计算数学期望与方差",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "先由分布列求 E(X)",
+          "再按 D(X)=Σ(x−E(X))²P(x) 计算",
+          "p1=0.2、p2=0.3 时 D(X)=0.61"
+        ],
+        "goal": "掌握由分布列计算数学期望与方差",
+        "tip": "方差衡量的是偏离期望的程度，恒为非负数",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "用 (1−2.3)²×0.2+(2−2.3)²×0.3+(3−2.3)²×0.5。",
         "explain": "$$D(X)=1.69\\times 0.2+0.09\\times 0.3+0.49\\times 0.5=0.61$$。",
-        "opts": []
+        "success": "对！D(X)=0.61。"
       },
       {
         "name": "3-3 迁移：线性变换",
@@ -311,20 +666,80 @@
       },
       {
         "name": "4-2 Mutual Independence vs Pairwise",
-        "type": "input",
-        "q": "Events A, B, C are pairwise independent if P(AB)=P(A)P(B), P(AC)=P(A)P(C), P(BC)=P(B)P(C).\nThey are mutually independent if additionally P(ABC)=P(A)P(B)P(C).\nConstruct an example where events are pairwise independent but NOT mutually independent.",
-        "steps": [
-          "Define sample space",
-          "Define three events",
-          "Verify pairwise independence",
-          "Show mutual independence fails"
+        "type": "explore",
+        "technique": "4-2 Mutual Independence vs Pairwise",
+        "archetype": "LAB",
+        "lab": "probability",
+        "q": "两两独立与相互独立：A、B 两两独立只要求 P(AB)=P(A)P(B) 等三式；相互独立还要求 P(ABC)=P(A)P(B)P(C)。\n\n拖动三个概率，对比两个乘积是否一致。\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "pa",
+              "min": 0,
+              "max": 1,
+              "value": 0.5,
+              "step": 0.05,
+              "label": "P(A)"
+            },
+            {
+              "name": "pb",
+              "min": 0,
+              "max": 1,
+              "value": 0.5,
+              "step": 0.05,
+              "label": "P(B)"
+            },
+            {
+              "name": "pc",
+              "min": 0,
+              "max": 1,
+              "value": 0.5,
+              "step": 0.05,
+              "label": "P(C)"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "P(A)P(B)",
+              "expr": "pa*pb",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "P(A)P(B)P(C)",
+              "expr": "pa*pb*pc",
+              "color": "#ffd479"
+            },
+            {
+              "label": "P(ABC) 与 1/8 的差",
+              "expr": "pa*pb*pc-0.125",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动三个概率，观察“两两独立”与“相互独立”要求的乘积并不相同",
+        "opts": [
+          "区分两两独立与相互独立",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
         ],
+        "ans": 0,
+        "steps": [
+          "两两独立只保证每两个的乘积关系",
+          "相互独立还要三个一起满足",
+          "抛两枚硬币：A=第一枚正、B=第二枚正、C=两枚相同，即两两独立但不相互独立"
+        ],
+        "goal": "区分两两独立与相互独立",
+        "tip": "两两独立推不出相互独立",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "Consider two coin flips and define events based on parity.",
         "explain": "Example: Two fair coins. A=first=heads, B=second=heads, C=both same.\nP(A)=P(B)=P(C)=1/2. P(AB)=1/4=P(A)P(B). Similarly for AC, BC.\nBut P(ABC)=1/4 ≠ P(A)P(B)P(C)=1/8. So pairwise but not mutually independent.",
-        "ans": "example_constructed",
-        "scene": {
-          "range": 5
-        }
+        "success": "对！三个事件还需额外满足 P(ABC)=P(A)P(B)P(C)。"
       }
     ]
   },
@@ -419,19 +834,96 @@
       },
       {
         "name": "5-3 Total Probability Multi-step Calculation",
-        "type": "input",
-        "q": "A factory has 3 machines producing widgets:\n- Machine A: 50% output, 2% defect rate\n- Machine B: 30% output, 3% defect rate  \n- Machine C: 20% output, 5% defect rate\nIf a randomly selected widget is defective, what's the probability it came from Machine A?\nUse Bayes theorem with total probability.",
-        "steps": [
-          "Compute P(Defect) using total probability",
-          "Apply Bayes for P(A|Defect)"
+        "type": "explore",
+        "technique": "5-3 Total Probability Multi-step Calculation",
+        "archetype": "LAB",
+        "lab": "probability",
+        "q": "全概率与贝叶斯：三台机器产量占比 50%/30%/20%，次品率 2%/3%/5%。任取一件是次品，它来自 A 机器的概率是多少？\n\n拖动产量占比与次品率，观察后验概率的变化。\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "w1",
+              "min": 0,
+              "max": 1,
+              "value": 0.5,
+              "step": 0.05,
+              "label": "A 的产量占比"
+            },
+            {
+              "name": "w2",
+              "min": 0,
+              "max": 1,
+              "value": 0.3,
+              "step": 0.05,
+              "label": "B 的产量占比"
+            },
+            {
+              "name": "d1",
+              "min": 0,
+              "max": 0.2,
+              "value": 0.02,
+              "step": 0.005,
+              "label": "A 的次品率"
+            },
+            {
+              "name": "d2",
+              "min": 0,
+              "max": 0.2,
+              "value": 0.03,
+              "step": 0.005,
+              "label": "B 的次品率"
+            },
+            {
+              "name": "d3",
+              "min": 0,
+              "max": 0.2,
+              "value": 0.05,
+              "step": 0.005,
+              "label": "C 的次品率"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "C 的产量占比 1−w1−w2",
+              "expr": "1-w1-w2",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "P(次品) 全概率",
+              "expr": "d1*w1+d2*w2+d3*(1-w1-w2)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "P(A|次品)",
+              "expr": "d1*w1/(d1*w1+d2*w2+d3*(1-w1-w2))",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动产量占比与次品率，观察次品主要来自哪台机器",
+        "opts": [
+          "掌握全概率公式与贝叶斯公式的综合应用",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
         ],
+        "ans": 0,
+        "steps": [
+          "先用全概率公式求 P(次品)",
+          "再用贝叶斯公式求 P(A|次品)",
+          "代入得 0.01/0.029≈0.345"
+        ],
+        "goal": "掌握全概率公式与贝叶斯公式的综合应用",
+        "tip": "分母是总的次品率，分子是 A 贡献的次品率",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "P(Defect) = Σ P(Defect|M_i)P(M_i)",
         "explain": "P(Defect) = 0.02×0.50 + 0.03×0.30 + 0.05×0.20 = 0.01 + 0.009 + 0.01 = 0.029\nP(A|Defect) = P(Defect|A)P(A)/P(Defect) = 0.02×0.50/0.029 = 0.01/0.029 ≈ 0.345",
-        "ans": 0.345,
-        "tol": 0.005,
-        "scene": {
-          "range": 5
-        }
+        "success": "对！P(A|次品)≈0.345。"
       }
     ]
   },
@@ -586,13 +1078,80 @@
       },
       {
         "name": "6-2 建构：计算次品率",
-        "type": "input",
-        "q": "甲厂产量占 60%、次品率 2%，乙厂占 40%、次品率 1%，任取一件为次品的概率是？（填数值）",
-        "ans": 0.016,
-        "tol": 0.001,
+        "type": "explore",
+        "technique": "6-2 建构：计算次品率",
+        "archetype": "LAB",
+        "lab": "probability",
+        "q": "甲厂产量占 60%、次品率 2%，乙厂占 40%、次品率 1%，任取一件为次品的概率是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "pa",
+              "min": 0,
+              "max": 1,
+              "value": 0.6,
+              "step": 0.05,
+              "label": "甲厂产量占比"
+            },
+            {
+              "name": "da",
+              "min": 0,
+              "max": 0.1,
+              "value": 0.02,
+              "step": 0.005,
+              "label": "甲厂次品率"
+            },
+            {
+              "name": "db",
+              "min": 0,
+              "max": 0.1,
+              "value": 0.01,
+              "step": 0.005,
+              "label": "乙厂次品率"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "乙厂占比 1−pa",
+              "expr": "1-pa",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "甲厂贡献的次品率",
+              "expr": "pa*da",
+              "color": "#ffd479"
+            },
+            {
+              "label": "总次品率 P(D)",
+              "expr": "pa*da+(1-pa)*db",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动产量占比与次品率，观察总次品率是两厂贡献之和",
+        "opts": [
+          "掌握全概率公式的加权求和思想",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "甲厂贡献：占比 × 次品率",
+          "乙厂贡献同理",
+          "P=0.6×0.02+0.4×0.01=0.016"
+        ],
+        "goal": "掌握全概率公式的加权求和思想",
+        "tip": "两个权重之和必须为 1",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "0.6×0.02+0.4×0.01。",
         "explain": "P=0.6×0.02+0.4×0.01=0.012+0.004=0.016。",
-        "opts": []
+        "success": "对！总次品率为 0.016。"
       },
       {
         "name": "6-3 迁移：贝叶斯公式",
@@ -680,13 +1239,64 @@
       },
       {
         "name": "7-3 迁移：计算概率",
-        "type": "input",
-        "q": "10 件产品中有 3 件次品，不放回取 2 件，恰好 1 件次品的概率是？（填数值或分数，如 7/15）",
-        "ans": 0.4666667,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "7-3 迁移：计算概率",
+        "archetype": "LAB",
+        "lab": "probability",
+        "q": "10 件产品中有 3 件次品，不放回取 2 件，恰好 1 件次品的概率是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "K",
+              "min": 0,
+              "max": 10,
+              "value": 3,
+              "step": 1,
+              "label": "10 件中的次品数 K"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "次品数 K",
+              "expr": "K",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "正品数 10−K",
+              "expr": "10-K",
+              "color": "#ffd479"
+            },
+            {
+              "label": "恰好 1 件次品的概率",
+              "expr": "2*K*(10-K)/(10*9)",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动次品数，观察“恰好一件次品”的概率何时最大",
+        "opts": [
+          "掌握不放回抽样（超几何型）的概率计算",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "从 K 件次品取 1 件、从 10−K 件正品取 1 件",
+          "总取法 C(10,2)=45",
+          "K=3 时概率 =3×7/45=7/15≈0.467"
+        ],
+        "goal": "掌握不放回抽样（超几何型）的概率计算",
+        "tip": "不放回时第二次抽取的概率会受第一次影响",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "C(3,1)C(7,1)/C(10,2)。",
         "explain": "P=C(3,1)C(7,1)/C(10,2)=(3×7)/45=21/45=7/15。",
-        "opts": []
+        "success": "对！概率为 7/15≈0.467。"
       }
     ]
   },
@@ -936,23 +1546,141 @@
       },
       {
         "name": "10-2 建构：同时发生",
-        "type": "input",
-        "q": "甲命中率 0.8，乙命中率 0.7，两人射击相互独立，则两人都命中的概率是？（填数值）",
-        "ans": 0.56,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "10-2 建构：同时发生",
+        "archetype": "LAB",
+        "lab": "probability",
+        "q": "甲命中率 0.8，乙命中率 0.7，两人射击相互独立，则两人都命中的概率是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "pa",
+              "min": 0,
+              "max": 1,
+              "value": 0.8,
+              "step": 0.01,
+              "label": "甲命中率 P(A)"
+            },
+            {
+              "name": "pb",
+              "min": 0,
+              "max": 1,
+              "value": 0.7,
+              "step": 0.01,
+              "label": "乙命中率 P(B)"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "P(A)",
+              "expr": "pa",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "P(B)",
+              "expr": "pb",
+              "color": "#ffd479"
+            },
+            {
+              "label": "都命中 P(AB)=P(A)P(B)",
+              "expr": "pa*pb",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动两人命中率，观察都命中的概率是两者相乘",
+        "opts": [
+          "掌握独立事件同时发生的概率",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "两人射击相互独立",
+          "同时发生用乘法",
+          "0.8×0.7=0.56"
+        ],
+        "goal": "掌握独立事件同时发生的概率",
+        "tip": "独立才可相乘",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "独立事件同时发生用乘法。",
         "explain": "$$P(AB)=P(A) P(B)=0.8\\times 0.7=0.56$$。",
-        "opts": []
+        "success": "对！0.8×0.7=0.56。"
       },
       {
         "name": "10-3 迁移：至少一次",
-        "type": "input",
-        "q": "承上（甲命中率 0.8、乙 0.7，相互独立），至少有一人命中的概率是？（填数值）",
-        "ans": 0.94,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "10-3 迁移：至少一次",
+        "archetype": "LAB",
+        "lab": "probability",
+        "q": "承上（甲命中率 0.8、乙 0.7，相互独立），至少有一人命中的概率是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "pa",
+              "min": 0,
+              "max": 1,
+              "value": 0.8,
+              "step": 0.01,
+              "label": "甲命中率 P(A)"
+            },
+            {
+              "name": "pb",
+              "min": 0,
+              "max": 1,
+              "value": 0.7,
+              "step": 0.01,
+              "label": "乙命中率 P(B)"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "都不中 (1−pa)(1−pb)",
+              "expr": "(1-pa)*(1-pb)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "至少一中 1−都不中",
+              "expr": "1-(1-pa)*(1-pb)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "直接相加 pa+pb（会重复计数）",
+              "expr": "pa+pb",
+              "color": "#fb7185"
+            }
+          ]
+        },
+        "ask": "拖动两人命中率，观察“至少一次”用对立事件最方便",
+        "opts": [
+          "掌握用对立事件处理“至少一个”问题",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "“至少一次”的对立事件是“一次都没有”",
+          "P=1−P(都不中)",
+          "1−0.2×0.3=0.94"
+        ],
+        "goal": "掌握用对立事件处理“至少一个”问题",
+        "tip": "直接相加会把“都命中”算两次",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "用对立事件：1−P(都不中)。",
         "explain": "1−0.2×0.3=1−0.06=0.94。",
-        "opts": []
+        "success": "对！0.94。"
       }
     ]
   },
@@ -1030,13 +1758,72 @@
       },
       {
         "name": "11-2 建构：计算频率",
-        "type": "input",
-        "q": "抛硬币 1000 次，正面出现 480 次，则正面出现的频率是？（填数值）",
-        "ans": 0.48,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "11-2 建构：计算频率",
+        "archetype": "LAB",
+        "lab": "probability",
+        "q": "抛硬币 1000 次，正面出现 480 次，则正面出现的频率是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "h",
+              "min": 0,
+              "max": 2000,
+              "value": 480,
+              "step": 10,
+              "label": "正面出现次数"
+            },
+            {
+              "name": "n",
+              "min": 100,
+              "max": 2000,
+              "value": 1000,
+              "step": 50,
+              "label": "试验总次数"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "正面次数",
+              "expr": "h",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "试验次数",
+              "expr": "n",
+              "color": "#ffd479"
+            },
+            {
+              "label": "频率 = h / n",
+              "expr": "h/n",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动次数，观察频率始终在 0 到 1 之间并围绕 0.5 波动",
+        "opts": [
+          "理解频率与概率的关系",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "频率=频数÷试验次数",
+          "480/1000=0.48",
+          "次数越多，频率越稳定到概率附近"
+        ],
+        "goal": "理解频率与概率的关系",
+        "tip": "频率是实验值，概率是理论值",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "频率=频数÷试验次数。",
         "explain": "频率=480/1000=0.48。",
-        "opts": []
+        "success": "对！频率为 0.48。"
       },
       {
         "name": "11-3 迁移：频率与概率",
@@ -1168,13 +1955,80 @@
       },
       {
         "name": "12-3 迁移：估计不规则图形的面积",
-        "type": "input",
-        "q": "向边长为 10 的正方形区域随机投点 2000 个，其中 1360 个落在某不规则图形内。估计该图形的面积。（填数值）",
-        "ans": 68,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "12-3 迁移：估计不规则图形的面积",
+        "archetype": "LAB",
+        "lab": "probability",
+        "q": "向边长为 10 的正方形区域随机投点 2000 个，其中 1360 个落在某不规则图形内。估计该图形的面积。\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "M",
+              "min": 0,
+              "max": 4000,
+              "value": 1360,
+              "step": 20,
+              "label": "落在图形内的点数"
+            },
+            {
+              "name": "N",
+              "min": 100,
+              "max": 4000,
+              "value": 2000,
+              "step": 20,
+              "label": "总投点数"
+            },
+            {
+              "name": "s",
+              "min": 1,
+              "max": 20,
+              "value": 10,
+              "step": 1,
+              "label": "正方形边长 s"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "落入频率 M/N",
+              "expr": "M/N",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "正方形面积 s²",
+              "expr": "s*s",
+              "color": "#ffd479"
+            },
+            {
+              "label": "估计面积 = M/N · s²",
+              "expr": "M/N*s*s",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动投点数与边长，观察频率如何估计面积",
+        "opts": [
+          "掌握用随机模拟（频率）估计面积",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "用频率估计落入的概率",
+          "面积 ≈ 概率 × 正方形面积",
+          "1360/2000×100=68"
+        ],
+        "goal": "掌握用随机模拟（频率）估计面积",
+        "tip": "投点越多，估计越稳定",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "先算落在图形内的频率，再乘正方形的面积。",
         "explain": "$$\\dfrac{1360}{2000}=0.68$$，正方形面积$$10\\times 10=100$$，故面积约为$$0.68\\times 100=68$$。",
-        "opts": []
+        "success": "对！估计面积为 68。"
       },
       {
         "name": "12-4 巩固：投点数与估计误差",
