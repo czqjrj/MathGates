@@ -159,6 +159,81 @@
         "ans": 0,
         "hint": "开口向上时，要恒正需抛物线与 x 轴无交点，即 Δ<0。",
         "explain": "$$\\Delta =4- 4a<0 \\Rightarrow a>1$$。若 a=1 则 Δ=0，x=1 处函数值为 0，「>0 对一切 x 成立」不成立，故不能取等号。"
+      },
+      {
+        "id": "ineq_amgm_visual_1",
+        "name": "2-5 AM-GM 不等式 · 几何直观验证",
+        "technique": "均值不等式 · 几何证明",
+        "archetype": "LAB",
+        "lab": "inequalities",
+        "lab_ref": "ineq_amgm_visual_1",
+        "scene": "res://scenes/LabStage.tscn",
+        "type": "explore",
+        "q": "拖动滑块改变 a、b 的值，观察算术平均数 (a+b)/2 与几何平均数√(ab) 的大小关系。\n\n猜想：什么时候两者相等？",
+        "scene_data": {
+          "range": 8,
+          "axes": true,
+          "sliders": [
+            {
+              "name": "a",
+              "min": 0.5,
+              "max": 5,
+              "value": 2,
+              "step": 0.1,
+              "label": "a"
+            },
+            {
+              "name": "b",
+              "min": 0.5,
+              "max": 5,
+              "value": 4,
+              "step": 0.1,
+              "label": "b"
+            }
+          ],
+          "rectangles": [
+            {
+              "x": 0,
+              "y": 0,
+              "width": "a",
+              "height": "b",
+              "color": "#5ee6ff33",
+              "label": "矩形面积 ab"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "算术平均 (a+b)/2",
+              "expr": "(a+b)/2",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "几何平均 √(ab)",
+              "expr": "sqrt(a*b)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "差值 (AM-GM)",
+              "expr": "(a+b)/2 - sqrt(a*b)",
+              "color": "#a878ff"
+            }
+          ]
+        },
+        "ask": "当 a=b 时，差值会怎样？尝试拖动 a 和 b 验证",
+        "steps": [
+          "拖动 a、b 改变数值",
+          "观察算术平均和几何平均",
+          "看差值何时为 0"
+        ],
+        "goal": "发现当且仅当 a=b 时，(a+b)/2 = √(ab)",
+        "tip": "尝试让 a=b，然后慢慢拉开差距",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整 a 和 b，特别试试 a=b 的情况",
+        "hint": "基本不等式：(a+b)/2 ≥ √(ab)，等号当且仅当 a=b 时成立",
+        "explain": "均值不等式（AM-GM）是最基本也最重要的不等式之一：对任意正数 a,b，有 (a+b)/2 ≥ √(ab)，等号当且仅当 a=b 时成立。这个不等式在求最值问题中应用极广。通过拖动 a、b 可以直观看到：当 a≠b 时算术平均严格大于几何平均，只有当 a=b 时两者相等。几何解释：固定面积的矩形中，正方形的周长最小。",
+        "success": "正确！这就是'定积求和最小'或'定和求积最大'的经典工具。"
       }
     ]
   },
@@ -286,6 +361,31 @@
         ],
         "ans": 0,
         "explain": "使用$$a+b \\ge 2\\sqrt{ab}$$等形式时，要求$$a>0,b>0$$。"
+      },
+      {
+        "id": "ineq_cauchy_app_2",
+        "name": "3-6 柯西不等式 · 向量形式应用",
+        "technique": "柯西 - 施瓦茨 · 向量证明",
+        "archetype": "LAB",
+        "lab": "inequalities",
+        "lab_ref": "ineq_cauchy_app_2",
+        "scene": "res://scenes/LabStage.tscn",
+        "type": "input",
+        "q": "用柯西不等式 (a²+b²)(c²+d²) ≥ (ac+bd)²求最小值：\n\n已知 x + y = 1，求 x² + y²的最小值。\n\n思路：构造向量 a=x, b=y, c=1, d=1，代入柯西不等式。\n\n(x²+y²)(1²+1²) ≥ (x·1 + y·1)²\n即：__·(x²+y²) ≥ __²",
+        "steps": [
+          "构造向量：(x,y) 和 (1,1)",
+          "应用柯西：(x²+y²)(1+1) ≥ (x+y)²",
+          "代入已知：x+y=1",
+          "解出：x²+y² ≥ ___"
+        ],
+        "ask": "请填写推导过程中的空缺部分",
+        "ans_factor": 2,
+        "ans_sum": 1,
+        "ans_min": 0.5,
+        "tol": 0.01,
+        "hint": "柯西不等式左边有两个因子：(x²+y²) 和 (1²+1²)=2",
+        "explain": "柯西不等式（Cauchy-Schwarz Inequality）是分析学中最基础也最强大的工具之一。向量形式：|u·v| ≤ |u||v|，展开即 (a₁²+a₂²)(b₁²+b₂²) ≥ (a₁b₁+a₂b₂)²。本题中，令 u=(x,y), v=(1,1)，则 (x²+y²)·2 ≥ (x+y)² = 1² = 1，故 x²+y² ≥ 1/2。等号当且仅当 x:y = 1:1，即 x=y=1/2 时取得。",
+        "success": "完美！柯西不等式将复杂的优化问题转化为简单的代数运算，这就是数学的美妙之处。"
       }
     ]
   },
