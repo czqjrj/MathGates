@@ -122,18 +122,28 @@ static func _panel(root: Node, title: String, body_text: String, ok_text: String
 	_maybe_popup(center)
 
 ## 半透明遮罩层（拦截点击，防止穿透到下层界面）。
+## 必须挂在独立的模态 CanvasLayer 上：关卡 UI 自身在 LAYER_STAGE_UI(10)，
+## 若遮罩直接加到关卡根节点（默认 layer 0），会被左侧答题面板整块盖住。
 static func _dim(root: Node) -> Control:
+	var layer := CanvasLayer.new()
+	layer.name = "GuideModalLayer"
+	layer.layer = UiConst.LAYER_MODAL
+	root.add_child(layer)
 	var dim := ColorRect.new()
 	dim.color = Color(0.01, 0.02, 0.05, 0.62)
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	dim.mouse_filter = Control.MOUSE_FILTER_STOP
-	root.add_child(dim)
+	layer.add_child(dim)
 	return dim
 
 ## 引导关闭：移除遮罩并回调。回调用于记录「已看过」（写 Settings）。
 static func _finish(dim: Control, on_done: Callable) -> void:
 	if is_instance_valid(dim):
-		dim.queue_free()
+		var holder := dim.get_parent()
+		if holder is CanvasLayer:
+			holder.queue_free()
+		else:
+			dim.queue_free()
 	if on_done.is_valid():
 		on_done.call()
 
