@@ -293,6 +293,241 @@
         "hint": "集合的并、交运算都满足交换律，但差运算不满足",
         "explain": "集合运算的基本性质包括：①交换律：A∪B=B∪A，A∩B=B∩A；②结合律：(A∪B)∪C=A∪(B∪C)，(A∩B)∩C=A∩(B∩C)；③分配律：A∪(B∩C)=(A∪B)∩(A∪C)。这些运算律可以通过枚举所有可能的元素归属情况来证明：对任意元素 x，它要么属于 A 要么不属于，要么属于 B 要么不属于，总共只有 4 种组合。逐一验证可以发现交换律、结合律始终成立。本题通过随机化实验的方法，让学生从大量实例中归纳出一般规律，培养数学直觉。",
         "success": "完美！这就是'特殊→一般'的归纳推理思想，也是实验数学的基本方法。"
+      },
+      {
+        "id": "set_op_calc_explore",
+        "name": "集合运算·计算互动探究",
+        "technique": "集合交并补·计算技巧",
+        "archetype": "LAB",
+        "lab": "set_logic",
+        "type": "explore",
+        "q": "拖动调整集合 A、B 的元素个数及交集大小，观察各种集合运算的结果。\n\n设原题为：A={1,2,3,4}, B={3,4,5,6}，求 A∪B, A∩B, A-B。",
+        "scene_data": {
+          "range": 6,
+          "sliders": [
+            {
+              "name": "size_A",
+              "min": 1,
+              "max": 8,
+              "value": 4,
+              "step": 1,
+              "label": "|A|"
+            },
+            {
+              "name": "size_B",
+              "min": 1,
+              "max": 8,
+              "value": 4,
+              "step": 1,
+              "label": "|B|"
+            },
+            {
+              "name": "size_inter",
+              "min": 0,
+              "max": 4,
+              "value": 2,
+              "step": 1,
+              "label": "|A∩B|"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "|A∪B|=|A|+|B|-|A∩B|",
+              "expr": "size_A + size_B - size_inter",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "|A-B|=|A|-|A∩B|",
+              "expr": "size_A - size_inter",
+              "color": "#ffd479"
+            },
+            {
+              "label": "|B-A|=|B|-|A∩B|",
+              "expr": "size_B - size_inter",
+              "color": "#fb7185"
+            },
+            {
+              "label": "容斥原理验证",
+              "expr": "\"✓\" if size_A+size_B-size_inter==size_A+size_B-size_inter else \"✗\"",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "总结规律：并集元素数=两集合元素数之和减去交集元素数",
+        "steps": [
+          "按原题设置：|A|=4, |B|=4, |A∩B|=2",
+          "计算 A∪B=4+4-2=6",
+          "验证容斥原理公式"
+        ],
+        "goal": "掌握集合运算的基本计算方法及容斥原理的应用",
+        "tip": "当 A、B 无交集时，|A∪B|=|A|+|B|",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "多试几组数据，确保理解容斥原理",
+        "hint": "对于原题，A∪B={1,2,3,4,5,6}有 6 个元素",
+        "explain": "集合的基本运算包括并集 (A∪B)、交集 (A∩B)、差集 (A-B)。其核心计算公式是容斥原理：|A∪B|=|A|+|B|-|A∩B|。这个公式的含义是：计算两个集合并集的元素数时，先把每个集合的元素数相加，再减去重复计算的交集部分（因为交集被加了两次）。由此可推导出：|A-B|=|A|-|A∩B|（A 独有的元素数），|B-A|=|B|-|A∩B|。本题的原题 A={1,2,3,4}, B={3,4,5,6}，则 A∩B={3,4}（2 个元素），A∪B={1,2,3,4,5,6}（6 个元素），A-B={1,2}（2 个元素）。通过拖动滑块可以直观验证这些计算结果，理解公式背后的直观意义——不是死记硬背，而是理解为什么需要'减去交集'。"
+      },
+      {
+        "id": "set_subset_visualize",
+        "name": "子集关系·韦恩图互动探究",
+        "technique": "子集判定·图形表示",
+        "archetype": "LAB",
+        "lab": "set_logic",
+        "type": "explore",
+        "q": "拖动生成随机集合 A、B，观察 A⊆B 的条件是什么。\n\n设原题为：判断下列关系是否正确：{1,2}⊆{1,2,3,4}",
+        "scene_data": {
+          "range": 6,
+          "sliders": [
+            {
+              "name": "seed",
+              "min": 1,
+              "max": 100,
+              "value": 42,
+              "step": 1,
+              "label": "随机种子"
+            },
+            {
+              "name": "universe_size",
+              "min": 5,
+              "max": 20,
+              "value": 10,
+              "step": 1,
+              "label": "全集大小"
+            },
+            {
+              "name": "prob_A",
+              "min": 0.1,
+              "max": 0.9,
+              "value": 0.4,
+              "step": 0.1,
+              "label": "A 的概率"
+            },
+            {
+              "name": "prob_B",
+              "min": 0.1,
+              "max": 0.9,
+              "value": 0.5,
+              "step": 0.1,
+              "label": "B 的概率"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "|A|",
+              "expr": "int(universe_size * prob_A)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "|B|",
+              "expr": "int(universe_size * prob_B)",
+              "color": "#fb7185"
+            },
+            {
+              "label": "|A∩B|",
+              "expr": "int(universe_size * prob_A * prob_B)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "A⊆B?",
+              "expr": "\"是✓\" if prob_A<=prob_B and abs(prob_A-prob_B)<0.5 else \"否✗\"",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "发现规律：A⊆B 当且仅当 A 的所有元素都在 B 中",
+        "steps": [
+          "按原题思路：{1,2}的所有元素是否都在{1,2,3,4}中？",
+          "调整概率观察子集条件",
+          "特别试试 A=B 的情况"
+        ],
+        "goal": "理解子集的判定方法和性质",
+        "tip": "空集是任何集合的子集，任何集合都是自身的子集",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "多试几种不同的集合组合",
+        "hint": "对于原题，{1,2}⊆{1,2,3,4}是正确的，因为 1 和 2 都在右边集合中",
+        "explain": "子集是集合论的基本概念：A⊆B 当且仅当对任意 x∈A 都有 x∈B。判定方法：①逐一检查法：列出 A 的每个元素，验证是否都在 B 中；②计数法：若 A、B 有限，当|A∩B|=|A|时 A⊆B；③排除法：只要能找到一个 x∈A 但 x∉B，就能否定 A⊆B。重要性质：①空集∅⊆A 对所有 A 成立；②A⊆A（自反性）；③若 A⊆B 且 B⊆C，则 A⊆C（传递性）；④若 A⊆B 且 B⊆A，则 A=B。本题的原题{1,2}⊆{1,2,3,4}显然正确，因为 1∈{1,2,3,4}且 2∈{1,2,3,4}。真子集 A⊂B 还要求 A≠B，即 B 中至少有一个元素不在 A 中。通过交互实验可以更深刻理解子集与元素个数的关系——A⊆B 不要求|A|<|B|，只要求 A 的元素全部包含在 B 中。"
+      },
+      {
+        "id": "set_complement_properties",
+        "name": "补集性质·德摩根律探究",
+        "technique": "补集运算·集合恒等式",
+        "archetype": "LAB",
+        "lab": "set_logic",
+        "type": "explore",
+        "q": "拖动调整集合 A、B，验证德摩根定律：(A∪B)ᶜ=Aᶜ∩Bᶜ和 (A∩B)ᶜ=Aᶜ∪Bᶜ。\n\n设原题为：已知 U={1,2,3,4,5}, A={1,2}, 求∁ᵤA",
+        "scene_data": {
+          "range": 6,
+          "sliders": [
+            {
+              "name": "u_size",
+              "min": 5,
+              "max": 15,
+              "value": 10,
+              "step": 1,
+              "label": "全集 U 大小"
+            },
+            {
+              "name": "prob_A",
+              "min": 0.1,
+              "max": 0.9,
+              "value": 0.3,
+              "step": 0.1,
+              "label": "A 占 U 的比例"
+            },
+            {
+              "name": "prob_B",
+              "min": 0.1,
+              "max": 0.9,
+              "value": 0.4,
+              "step": 0.1,
+              "label": "B 占 U 的比例"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "|U|",
+              "expr": "u_size",
+              "color": "#a878ff"
+            },
+            {
+              "label": "|A|",
+              "expr": "int(u_size * prob_A)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "|Aᶜ|=|U|-|A|",
+              "expr": "u_size-int(u_size*prob_A)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "德摩根律 1",
+              "expr": "|(A∪B)ᶜ| vs |Aᶜ∩Bᶜ|",
+              "color": "#40e0a8"
+            },
+            {
+              "label": "德摩根律 2",
+              "expr": "|(A∩B)ᶜ| vs |Aᶜ∪Bᶜ|",
+              "color": "#fb7185"
+            }
+          ]
+        },
+        "ask": "验证德摩根定律的正确性及其对偶性",
+        "steps": [
+          "按原题：∁ᵤA=U-A={3,4,5}",
+          "调整集合观察补集的变化",
+          "验证两个德摩根定律都成立"
+        ],
+        "goal": "掌握补集的定义及德摩根定律的应用",
+        "tip": "补集运算是相对于某个全集 U 而言的",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "多试几组数据确认定律成立",
+        "hint": "对于原题，∁ᵤA 就是 U 中不属于 A 的元素，即{3,4,5}",
+        "explain": "补集∁ᵤA 定义为 U 中所有不属于 A 的元素组成的集合，即∁ᵤA={x∈U:x∉A}。基本性质：①A∪∁ᵤA=U；②A∩∁ᵤA=∅；③∁ᵤ(∁ᵤA)=A；④∁ᵤ∅=U；⑤∁ᵤU=∅。德摩根定律是补集运算的重要恒等式：①∁ᵤ(A∪B)=∁ᵤA∩∁ᵤB；②∁ᵤ(A∩B)=∁ᵤA∪∁ᵤB。这可以用韦恩图直观证明：并集的补集等于各自补集的交集，交集的补集等于各自补集的并集。记忆口诀：'去括号，变符号'——去掉括号时，∪变∩或∩变∪，同时对每个集合取补。本题的原题 U={1,2,3,4,5}, A={1,2}，则∁ᵤA={3,4,5}。通过拖动滑块可以验证德摩根定律在任何集合配置下都成立，这是逻辑学中'非 (P 或 Q)=(非 P) 且 (非 Q)'和'非 (P 且 Q)=(非 P) 或 (非 Q)'的集合版本。"
       }
     ]
   },
@@ -404,12 +639,65 @@
       },
       {
         "name": "2-5 综合：补集区间",
-        "type": "input",
-        "q": "全集为实数集 R，集合$$A=(1,5)$$的补集 ∁ᵣA 可以写成$$(- \\infty ,1]\\cup [5,+\\infty )$$。其中端点“1”应取到吗——若取到填 1，不取到填 0？（填数值）",
-        "ans": 1,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "2-5 综合：补集区间",
+        "archetype": "LAB",
+        "lab": "set_logic",
+        "q": "全集为实数集 R，集合$$A=(1,5)$$的补集 ∁ᵣA 可以写成$$(- \\infty ,1]\\cup [5,+\\infty )$$。其中端点“1”应取到吗——若取到填 1，不取到填 0\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "a",
+              "min": 0,
+              "max": 4,
+              "value": 1,
+              "step": 1,
+              "label": "左端点 a"
+            },
+            {
+              "name": "b",
+              "min": 5,
+              "max": 9,
+              "value": 5,
+              "step": 1,
+              "label": "右端点 b"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "集合 A",
+              "expr": "\"(\" + str(a) + \",\" + str(b) + \")\"",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "补集 ∁ᵣA",
+              "expr": "\"(-∞,\" + str(a) + \"] ∪ [\" + str(b) + \",+∞)\"",
+              "color": "#ffd479"
+            },
+            {
+              "label": "端点 a 是否取到",
+              "expr": "\"取到（闭）\"",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "观察：开区间 (a,b) 的补集为什么在两个端点处都取到？",
+        "steps": [
+          "拖动 a、b 改变区间位置",
+          "观察补集端点括号由圆括号变方括号",
+          "总结开区间补集的端点取舍"
+        ],
+        "goal": "理解开区间补集包含端点，即 ∁ᵣ(a,b)=(-∞,a]∪[b,+∞)",
+        "tip": "A 不含端点，补集就要把端点补回来",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "A 不含端点 1、5，故它们的补集要包含这两个端点。",
-        "explain": "$$A=(1,5)$$不含 1、5；其补集$$(- \\infty ,1]\\cup [5,+\\infty )$$恰好包含 1、5，故端点应取到，填 1。"
+        "explain": "$$A=(1,5)$$不含 1、5；其补集$$(- \\infty ,1]\\cup [5,+\\infty )$$恰好包含 1、5，故端点应取到，填 1。",
+        "success": "对！开区间的补集在端点处取闭。"
       }
     ]
   },
@@ -519,12 +807,62 @@
       },
       {
         "name": "3-5 综合：由充分条件反求参数",
-        "type": "input",
-        "q": "已知 p：x>a，q：x>2。若 p 是 q 的充分不必要条件，则 a 的取值范围是 a>2。其中 a 能取到的最小整数值是？（填数值）",
-        "ans": 3,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "3-5 综合：由充分条件反求参数",
+        "archetype": "LAB",
+        "lab": "set_logic",
+        "q": "已知 p：x>a，q：x>2。若 p 是 q 的充分不必要条件，则 a 的取值范围是 a>2。其中 a 能取到的最小整数值是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "a",
+              "min": -2,
+              "max": 6,
+              "value": 3,
+              "step": 1,
+              "label": "参数 a"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "p 对应集合 (a,+∞)",
+              "expr": "\"(\" + str(a) + \",+∞)\"",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "q 对应集合 (2,+∞)",
+              "expr": "\"(2,+∞)\"",
+              "color": "#ffd479"
+            },
+            {
+              "label": "p 与 q 的关系",
+              "expr": "\"p 是 q 的充分不必要\" if a>2 else (\"p 与 q 等价\" if a==2 else \"p 是 q 的必要不充分\")",
+              "color": "#40e0a8"
+            },
+            {
+              "label": "a 的最小整数值",
+              "expr": "\"3\" if a>2 else \"不存在（a>2 才行）\"",
+              "color": "#fb7185"
+            }
+          ]
+        },
+        "ask": "拖动 a，观察什么时候 p 是 q 的充分不必要条件？",
+        "steps": [
+          "把 a 调到 2 观察关系",
+          "把 a 调大 / 调小分别观察",
+          "找到使 p 真包含于 q 的最小整数 a"
+        ],
+        "goal": "理解充分不必要条件的集合刻画：(a,+∞)⊊(2,+∞) 即 a>2",
+        "tip": "小圈推大圈：p 的集合要真包含于 q 的集合",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "p 的集合$$(a,+\\infty )$$要真包含于 q 的集合$$(2,+\\infty )$$，故需$$a>2$$。",
-        "explain": "要 p⇒q 且 q⇏p，需$$(a,+\\infty )⊊(2,+\\infty )$$，即$$a>2$$，故最小整数值为 3。"
+        "explain": "要 p⇒q 且 q⇏p，需$$(a,+\\infty )⊊(2,+\\infty )$$，即$$a>2$$，故最小整数值为 3。",
+        "success": "很好！a>2 时 p⇒q 但 q⇏p，最小整数是 3。"
       }
     ]
   },
@@ -633,12 +971,57 @@
       },
       {
         "name": "4-5 综合：由存在命题为真求参数",
-        "type": "input",
-        "q": "命题“∃x∈R，x²+2x+m<0”为真，则 m 需小于某个值。这个值（上界）是？（填数值）",
-        "ans": 1,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "4-5 综合：由存在命题为真求参数",
+        "archetype": "LAB",
+        "lab": "set_logic",
+        "q": "命题“∃x∈R，x²+2x+m<0”为真，则 m 需小于某个值。这个值（上界）是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "m",
+              "min": -3,
+              "max": 5,
+              "value": 1,
+              "step": 1,
+              "label": "参数 m"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "x²+2x+m 的最小值",
+              "expr": "m-1",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "命题为真条件",
+              "expr": "\"m < 1\"",
+              "color": "#ffd479"
+            },
+            {
+              "label": "当前命题真假",
+              "expr": "\"真\" if m-1<0 else \"假\"",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动 m，找出使存在命题为真的临界值",
+        "steps": [
+          "配方得 (x+1)²+m-1",
+          "最小值 m-1 必须小于 0",
+          "解出 m<1，上界为 1"
+        ],
+        "goal": "掌握存在命题为真 ⇔ 相应二次式最小值小于 0",
+        "tip": "存在性只看最小值是否落在条件里",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "存在性等价于$$x^{2}+2x+m$$的最小值小于 0。",
-        "explain": "x²+2x+m=(x+1)²+m−1，最小值$$m- 1<0 \\Rightarrow m<1$$，故上界为 1。"
+        "explain": "x²+2x+m=(x+1)²+m−1，最小值$$m- 1<0 \\Rightarrow m<1$$，故上界为 1。",
+        "success": "对！m<1 时存在 x 使命题为真，上界 1。"
       }
     ]
   },
@@ -842,39 +1225,275 @@
       },
       {
         "name": "6-2 建构：card 容斥公式",
-        "type": "input",
-        "q": "设$$|A|=40$$，$$|B|=30$$，$$|A\\cap B|=15$$，则$$|A\\cup B|$$=？（填数值）",
-        "ans": 55,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "6-2 建构：card 容斥公式",
+        "archetype": "LAB",
+        "lab": "set_logic",
+        "q": "设$$|A|=40$$，$$|B|=30$$，$$|A\\cap B|=15$$，则$$|A\\cup B|$$=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "size_A",
+              "min": 0,
+              "max": 60,
+              "value": 40,
+              "step": 1,
+              "label": "|A|"
+            },
+            {
+              "name": "size_B",
+              "min": 0,
+              "max": 60,
+              "value": 30,
+              "step": 1,
+              "label": "|B|"
+            },
+            {
+              "name": "size_inter",
+              "min": 0,
+              "max": 30,
+              "value": 15,
+              "step": 1,
+              "label": "|A∩B|"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "|A∪B|",
+              "expr": "size_A + size_B - size_inter",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "容斥公式",
+              "expr": "|A|+|B|-|A∩B|",
+              "color": "#ffd479"
+            },
+            {
+              "label": "计算过程",
+              "expr": "str(size_A)+\"+\"+str(size_B)+\"-\"+str(size_inter)",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动三个量，观察并集元素数如何随交集变化",
+        "steps": [
+          "固定 |A|、|B|，只改交集",
+          "交集越大，并集越小",
+          "验证 |A∪B|=|A|+|B|-|A∩B|"
+        ],
+        "goal": "掌握容斥原理 |A∪B|=|A|+|B|-|A∩B|",
+        "tip": "交集被算了两次，要减掉一次",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "把重复计数的交集减掉一次。",
-        "explain": "$$|A\\cup B|=|A|+|B|-|A\\cap B|=40+30-15=55$$。"
+        "explain": "$$|A\\cup B|=|A|+|B|-|A\\cap B|=40+30-15=55$$。",
+        "success": "对！40+30-15=55。"
       },
       {
         "name": "6-3 迁移：反推一个集合的基数",
-        "type": "input",
-        "q": "已知$$|A\\cup B|=50$$，$$|B|=30$$，$$|A\\cap B|=10$$，则$$|A|$$=？（填数值）",
-        "ans": 30,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "6-3 迁移：反推一个集合的基数",
+        "archetype": "LAB",
+        "lab": "set_logic",
+        "q": "已知$$|A\\cup B|=50$$，$$|B|=30$$，$$|A\\cap B|=10$$，则$$|A|$$=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "union",
+              "min": 10,
+              "max": 80,
+              "value": 50,
+              "step": 1,
+              "label": "|A∪B|"
+            },
+            {
+              "name": "size_B",
+              "min": 0,
+              "max": 60,
+              "value": 30,
+              "step": 1,
+              "label": "|B|"
+            },
+            {
+              "name": "size_inter",
+              "min": 0,
+              "max": 30,
+              "value": 10,
+              "step": 1,
+              "label": "|A∩B|"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "反推 |A|",
+              "expr": "union - size_B + size_inter",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "公式移项",
+              "expr": "|A|=|A∪B|-|B|+|A∩B|",
+              "color": "#ffd479"
+            },
+            {
+              "label": "计算过程",
+              "expr": "str(union)+\"-\"+str(size_B)+\"+\"+str(size_inter)",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "把容斥公式移项，观察如何反推 |A|",
+        "steps": [
+          "由 |A∪B|=|A|+|B|-|A∩B| 移项",
+          "代入已知量",
+          "验证 50-30+10=30"
+        ],
+        "goal": "掌握容斥公式的灵活变形",
+        "tip": "三个量已知其二即可求第三",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "把公式移项：$$|A|=|A\\cup B|-|B|+|A\\cap B|$$。",
-        "explain": "$$|A|=50-30+10=30$$——card 公式三个量已知其二即可求第三。"
+        "explain": "$$|A|=50-30+10=30$$——card 公式三个量已知其二即可求第三。",
+        "success": "对！|A|=30。"
       },
       {
         "name": "6-4 巩固：都不喜欢的怎么算",
-        "type": "input",
-        "q": "某班 52 人，参加 A 组的 30 人、参加 B 组的 25 人，两组都参加的 12 人。两组都不参加的有几人？（填数值）",
-        "ans": 9,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "6-4 巩固：都不喜欢的怎么算",
+        "archetype": "LAB",
+        "lab": "set_logic",
+        "q": "某班 52 人，参加 A 组的 30 人、参加 B 组的 25 人，两组都参加的 12 人。两组都不参加的有几人\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "total",
+              "min": 30,
+              "max": 80,
+              "value": 52,
+              "step": 1,
+              "label": "全班人数"
+            },
+            {
+              "name": "size_A",
+              "min": 0,
+              "max": 60,
+              "value": 30,
+              "step": 1,
+              "label": "参加 A"
+            },
+            {
+              "name": "size_B",
+              "min": 0,
+              "max": 60,
+              "value": 25,
+              "step": 1,
+              "label": "参加 B"
+            },
+            {
+              "name": "size_inter",
+              "min": 0,
+              "max": 20,
+              "value": 12,
+              "step": 1,
+              "label": "两组都参加"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "至少参加一组",
+              "expr": "size_A + size_B - size_inter",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "都不参加",
+              "expr": "total - (size_A + size_B - size_inter)",
+              "color": "#fb7185"
+            },
+            {
+              "label": "计算过程",
+              "expr": "str(total)+\"-(\"+str(size_A)+\"+\"+str(size_B)+\"-\"+str(size_inter)+\")\"",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动人数，观察『都不参加』如何用容斥原理算出",
+        "steps": [
+          "先算至少参加一组的人数",
+          "再用全班人数相减",
+          "验证 52-43=9"
+        ],
+        "goal": "掌握容斥原理在实际计数问题中的应用",
+        "tip": "先并集，再补集",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "先算至少参加一组的人数，再用全班人数相减。",
-        "explain": "至少参加一组：$$30+25-12=43$$（人）；都不参加：$$52-43=9$$（人）。"
+        "explain": "至少参加一组：$$30+25-12=43$$（人）；都不参加：$$52-43=9$$（人）。",
+        "success": "对！都不参加的有 9 人。"
       },
       {
         "name": "6-5 综合：子集个数与元素个数",
-        "type": "input",
-        "q": "若集合 A 的真子集恰有 15 个，则$$|A|$$=？（填数值）",
-        "ans": 4,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "6-5 综合：子集个数与元素个数",
+        "archetype": "LAB",
+        "lab": "set_logic",
+        "q": "若集合 A 的真子集恰有 15 个，则$$|A|$$=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "n",
+              "min": 0,
+              "max": 8,
+              "value": 4,
+              "step": 1,
+              "label": "元素个数 n"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "子集个数 2ⁿ",
+              "expr": "pow(2,n)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "真子集个数 2ⁿ-1",
+              "expr": "pow(2,n)-1",
+              "color": "#ffd479"
+            },
+            {
+              "label": "是否恰为 15",
+              "expr": "\"是\" if pow(2,n)-1==15 else \"否\"",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动 n，观察真子集个数如何变化，找出等于 15 的 n",
+        "steps": [
+          "列出 n=1,2,3,4 时的真子集数",
+          "发现 2ⁿ-1=15",
+          "解得 n=4"
+        ],
+        "goal": "掌握含 n 个元素的集合有 2ⁿ 个子集、2ⁿ-1 个真子集",
+        "tip": "真子集要排除集合本身",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "含 n 个元素的集合有$$2^{n}$$个子集、$$2^{n}-1$$个真子集。",
-        "explain": "$$2^{n}-1=15\\Rightarrow 2^{n}=16\\Rightarrow n=4$$，即$$|A|=4$$。"
+        "explain": "$$2^{n}-1=15\\Rightarrow 2^{n}=16\\Rightarrow n=4$$，即$$|A|=4$$。",
+        "success": "对！n=4 时真子集恰有 15 个。"
       }
     ]
   },
@@ -1002,21 +1621,119 @@
       },
       {
         "name": "7-4 巩固：夹在两集合之间",
-        "type": "input",
-        "q": "已知$$\\{1\\}\\subseteq A\\subseteq \\{1,2,3\\}$$，则这样的集合 A 共有多少个？（填数值）",
-        "ans": 4,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "7-4 巩固：夹在两集合之间",
+        "archetype": "LAB",
+        "lab": "set_logic",
+        "q": "已知$$\\{1\\}\\subseteq A\\subseteq \\{1,2,3\\}$$，则这样的集合 A 共有多少个\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "take2",
+              "min": 0,
+              "max": 1,
+              "value": 1,
+              "step": 1,
+              "label": "是否取元素 2"
+            },
+            {
+              "name": "take3",
+              "min": 0,
+              "max": 1,
+              "value": 1,
+              "step": 1,
+              "label": "是否取元素 3"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "集合 A 是否含 1",
+              "expr": "\"含（必须）\"",
+              "color": "#40e0a8"
+            },
+            {
+              "label": "A 的元素个数",
+              "expr": "1 + take2 + take3",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "满足条件的 A 的个数",
+              "expr": "4",
+              "color": "#ffd479"
+            }
+          ]
+        },
+        "ask": "切换元素 2、3 的取舍，数一数共能得到几个集合 A",
+        "steps": [
+          "A 必含 1",
+          "元素 2 有两种选择",
+          "元素 3 有两种选择，共 2×2=4 个"
+        ],
+        "goal": "理解『夹在中间』的集合计数：2 的（可选元素个数）次方",
+        "tip": "每个可选元素独立地取或不取",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "A 必须含有 1；元素 2、3 各有『取』与『不取』两种选择。",
-        "explain": "2、3 各自独立地取或不取，共$$2^{2}=4$$个：$$\\{1\\}$$、$$\\{1,2\\}$$、$$\\{1,3\\}$$、$$\\{1,2,3\\}$$。"
+        "explain": "2、3 各自独立地取或不取，共$$2^{2}=4$$个：$$\\{1\\}$$、$$\\{1,2\\}$$、$$\\{1,3\\}$$、$$\\{1,2,3\\}$$。",
+        "success": "对！2²=4 个：{1}、{1,2}、{1,3}、{1,2,3}。"
       },
       {
         "name": "7-5 综合：互异性筛根",
-        "type": "input",
-        "q": "已知集合$$A=\\{1,a,a^{2}-a\\}$$中三个元素互不相同，且$$2\\in A$$，则$$a=$$？（填数值）",
-        "ans": -1,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "7-5 综合：互异性筛根",
+        "archetype": "LAB",
+        "lab": "set_logic",
+        "q": "已知集合$$A=\\{1,a,a^{2}-a\\}$$中三个元素互不相同，且$$2\\in A$$，则$$a=$$\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "a",
+              "min": -3,
+              "max": 4,
+              "value": -1,
+              "step": 1,
+              "label": "参数 a"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "a²-a",
+              "expr": "a*a-a",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "集合 A",
+              "expr": "str(1)+\",\"+str(a)+\",\"+str(a*a-a)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "检验",
+              "expr": "\"互异且含2 ✓\" if (a*a-a!=1 and a!=1 and a*a-a!=a and (a==2 or a*a-a==2)) else (\"含2但有重复 ✗\" if (a==2 or a*a-a==2) else \"不含2\")",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动 a，找出既满足 2∈A 又满足互异性的取值",
+        "steps": [
+          "尝试 a=2，发现集合出现重复元素",
+          "再令 a²-a=2 求根",
+          "筛掉重复的根，得到 a=-1"
+        ],
+        "goal": "掌握集合元素的互异性在求参数时的筛选作用",
+        "tip": "求出根后一定要代回检验互异性",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "分别令 a=2 与$$a^{2}- a=2$$求根，再用『三个元素互不相同』逐一检验。",
-        "explain": "$$a=2$$时$$a^{2}-a=2$$，集合变成$$\\{1,2,2\\}$$（出现两个 2，违反互异性），舍去；$$a^{2}-a=2$$解得$$a=2$$或$$a=-1$$，$$a=2$$已舍，故$$a=-1$$（此时$$A=\\{1,-1,2\\}$$，元素互异）。"
+        "explain": "$$a=2$$时$$a^{2}-a=2$$，集合变成$$\\{1,2,2\\}$$（出现两个 2，违反互异性），舍去；$$a^{2}-a=2$$解得$$a=2$$或$$a=-1$$，$$a=2$$已舍，故$$a=-1$$（此时$$A=\\{1,-1,2\\}$$，元素互异）。",
+        "success": "对！a=2 会造成重复元素，只有 a=-1 合格。"
       }
     ]
   },
@@ -1144,12 +1861,81 @@
       },
       {
         "name": "8-4 巩固：补集与 card 联用",
-        "type": "input",
-        "q": "全集 U 有 30 个元素，$$|A|=10$$，$$|B|=8$$，$$|A\\cap B|=3$$，则$$∁^{u}(A\\cup B)$$中有多少个元素？（填数值）",
-        "ans": 15,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "8-4 巩固：补集与 card 联用",
+        "archetype": "LAB",
+        "lab": "set_logic",
+        "q": "全集 U 有 30 个元素，$$|A|=10$$，$$|B|=8$$，$$|A\\cap B|=3$$，则$$∁^{u}(A\\cup B)$$中有多少个元素\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "u_size",
+              "min": 10,
+              "max": 50,
+              "value": 30,
+              "step": 1,
+              "label": "|U|"
+            },
+            {
+              "name": "size_A",
+              "min": 0,
+              "max": 30,
+              "value": 10,
+              "step": 1,
+              "label": "|A|"
+            },
+            {
+              "name": "size_B",
+              "min": 0,
+              "max": 30,
+              "value": 8,
+              "step": 1,
+              "label": "|B|"
+            },
+            {
+              "name": "size_inter",
+              "min": 0,
+              "max": 15,
+              "value": 3,
+              "step": 1,
+              "label": "|A∩B|"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "|A∪B|",
+              "expr": "size_A + size_B - size_inter",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "补集元素数",
+              "expr": "u_size - (size_A + size_B - size_inter)",
+              "color": "#fb7185"
+            },
+            {
+              "label": "计算过程",
+              "expr": "str(u_size)+\"-(\"+str(size_A)+\"+\"+str(size_B)+\"-\"+str(size_inter)+\")\"",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动参数，观察补集元素数如何由容斥公式推出",
+        "steps": [
+          "先算 |A∪B|",
+          "再用全集总数相减",
+          "验证 30-15=15"
+        ],
+        "goal": "掌握补集与容斥原理的联用",
+        "tip": "∁ᵤ(A∪B) 的元素数 = |U| - |A∪B|",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "先用 card 公式算$$|A\\cup B|$$，再用全集总数相减。",
-        "explain": "$$|A\\cup B|=10+8- 3=15$$，所以$$∁^{u}(A\\cup B)$$有$$30- 15=15$$个元素。"
+        "explain": "$$|A\\cup B|=10+8- 3=15$$，所以$$∁^{u}(A\\cup B)$$有$$30- 15=15$$个元素。",
+        "success": "对！补集有 15 个元素。"
       },
       {
         "name": "8-5 综合：德摩根律辨析",

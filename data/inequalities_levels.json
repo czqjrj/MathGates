@@ -1150,21 +1150,111 @@
       },
       {
         "name": "2-2 建构：配凑应用",
-        "type": "input",
-        "q": "当 x>0 时，x+4/x 的最小值是？（填数值）",
-        "ans": 4,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "2-2 建构：配凑应用",
+        "archetype": "LAB",
+        "lab": "inequalities",
+        "q": "当 x>0 时，x+4/x 的最小值是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "x",
+              "min": 0.2,
+              "max": 10,
+              "value": 2,
+              "step": 0.1,
+              "label": "正数 x"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "x+4/x",
+              "expr": "x+4/x",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "理论最小值 2√4",
+              "expr": "4",
+              "color": "#ffd479"
+            },
+            {
+              "label": "是否 ≥4",
+              "expr": "\"是\" if x+4/x>=4 else \"否\"",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动 x，观察 x+4/x 何时取到最小值",
+        "steps": [
+          "x·(4/x)=4 为定值",
+          "由 AM-GM 得 ≥2√4=4",
+          "x=2 时取等号"
+        ],
+        "goal": "掌握配凑定值后用均值不等式求最小值",
+        "tip": "两项之积为定值时，和有最小值",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "x·(4/x)=4，和为定值时最小 = 2√4。",
-        "explain": "x+4/x≥2√4=4，当 x=2 时取到。"
+        "explain": "x+4/x≥2√4=4，当 x=2 时取到。",
+        "success": "对！最小值 4，在 x=2 处取得。"
       },
       {
         "name": "2-3 迁移：1 的代换",
-        "type": "input",
-        "q": "若 a>0，b>0 且 a+b=1，则 1/a+1/b 的最小值是？（填数值）",
-        "ans": 4,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "2-3 迁移：1 的代换",
+        "archetype": "LAB",
+        "lab": "inequalities",
+        "q": "若 a>0，b>0 且 a+b=1，则 1/a+1/b 的最小值是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "a",
+              "min": 0.02,
+              "max": 0.98,
+              "value": 0.5,
+              "step": 0.02,
+              "label": "正数 a（b=1-a）"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "b=1-a",
+              "expr": "1-a",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "1/a+1/b",
+              "expr": "1/a+1/(1-a)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "是否 ≥4",
+              "expr": "\"是\" if 1/a+1/(1-a)>=4 else \"否\"",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动 a，观察 1/a+1/b（a+b=1）何时最小",
+        "steps": [
+          "1/a+1/b=(a+b)(1/a+1/b)=2+a/b+b/a",
+          "由 AM-GM 得 ≥2+2=4",
+          "a=b=1/2 时取等号"
+        ],
+        "goal": "掌握『1 的代换』技巧",
+        "tip": "乘以 (a+b) 制造定值",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "1/a+1/b=(a+b)(1/a+1/b)=2+a/b+b/a。",
-        "explain": "1/a+1/b=2+(a/b+b/a)≥2+2=4，当 a=b=1/2 时取到。"
+        "explain": "1/a+1/b=2+(a/b+b/a)≥2+2=4，当 a=b=1/2 时取到。",
+        "success": "对！最小值 4。"
       },
       {
         "name": "2-4 巩固：前提条件「一正」",
@@ -1182,27 +1272,165 @@
       },
       {
         "name": "2-5 综合：配凑定值",
-        "type": "input",
-        "q": "当$$x>1$$时，$$x+\\dfrac{1}{x-1}$$的最小值是？（填数值）",
-        "ans": 3,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "2-5 综合：配凑定值",
+        "archetype": "LAB",
+        "lab": "inequalities",
+        "q": "当$$x>1$$时，$$x+\\dfrac{1}{x-1}$$的最小值是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "x",
+              "min": 1.05,
+              "max": 6,
+              "value": 2,
+              "step": 0.05,
+              "label": "x>1"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "x+1/(x-1)",
+              "expr": "x+1/(x-1)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "配凑形式",
+              "expr": "(x-1)+1/(x-1)+1",
+              "color": "#ffd479"
+            },
+            {
+              "label": "是否 ≥3",
+              "expr": "\"是\" if x+1/(x-1)>=3 else \"否\"",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动 x，观察配凑后最小值何时出现",
+        "steps": [
+          "配成 (x-1)+1/(x-1)+1",
+          "两项之积为定值 1",
+          "x=2 时取最小值 3"
+        ],
+        "goal": "掌握『配凑定值』技巧",
+        "tip": "把 x 拆成 (x-1)+1",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "配凑成$$(x-1)+\\dfrac{1}{x-1}+1$$，两项之积才是定值。",
         "explain": "$$x+\\dfrac{1}{x-1}=(x-1)+\\dfrac{1}{x-1}+1\\ge 2+1=3$$，当$$x-1=1$$即$$x=2$$时取等号（此时$$x=2>1$$✓）。",
-        "opts": []
+        "success": "对！最小值 3，在 x=2 处取得。"
       },
       {
         "name": "2-6 建构：积定和有最小值",
-        "type": "input",
-        "q": "若$$x>0,y>0,x y=4$$，则$$x+y$$的最小值是？（填数值）",
-        "ans": 4,
-        "explain": "由$$x+y \\ge 2\\sqrt{xy}=2\\sqrt{4}=4$$，当且仅当$$x=y=2$$时等号成立。"
+        "type": "explore",
+        "technique": "2-6 建构：积定和有最小值",
+        "archetype": "LAB",
+        "lab": "inequalities",
+        "q": "若$$x>0,y>0,x y=4$$，则$$x+y$$的最小值是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "x",
+              "min": 0.5,
+              "max": 8,
+              "value": 2,
+              "step": 0.1,
+              "label": "正数 x（y=4/x）"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "y=4/x",
+              "expr": "4/x",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "x+y",
+              "expr": "x+4/x",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "是否 ≥4",
+              "expr": "\"是\" if x+4/x>=4 else \"否\"",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动 x，观察积定 xy=4 时和 x+y 的最小值",
+        "steps": [
+          "由 x+y≥2√(xy)",
+          "代入 xy=4 得 ≥4",
+          "x=y=2 时取等号"
+        ],
+        "goal": "掌握积定时求和的最小值",
+        "tip": "积定，和最小 = 2√(积)",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "",
+        "explain": "由$$x+y \\ge 2\\sqrt{xy}=2\\sqrt{4}=4$$，当且仅当$$x=y=2$$时等号成立。",
+        "success": "对！最小值 4。"
       },
       {
         "name": "2-7 迁移：和定积有最大值",
-        "type": "input",
-        "q": "若$$x>0,y>0,x+y=10$$，则$$x y$$的最大值是？（填数值）",
-        "ans": 25,
-        "explain": "$$x y \\le ((x+y)/2)^{2}=25$$，当$$x=y=5$$时等号成立。"
+        "type": "explore",
+        "technique": "2-7 迁移：和定积有最大值",
+        "archetype": "LAB",
+        "lab": "inequalities",
+        "q": "若$$x>0,y>0,x+y=10$$，则$$x y$$的最大值是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "x",
+              "min": 0,
+              "max": 10,
+              "value": 5,
+              "step": 0.5,
+              "label": "正数 x（y=10-x）"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "y=10-x",
+              "expr": "10-x",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "xy",
+              "expr": "x*(10-x)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "是否 ≤25",
+              "expr": "\"是\" if x*(10-x)<=25 else \"否\"",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动 x，观察和定 x+y=10 时积 xy 的最大值",
+        "steps": [
+          "由 xy≤((x+y)/2)²",
+          "代入 x+y=10 得 ≤25",
+          "x=y=5 时取等号"
+        ],
+        "goal": "掌握和定时求积的最大值",
+        "tip": "和定，积最大 = (和/2)²",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "",
+        "explain": "$$x y \\le ((x+y)/2)^{2}=25$$，当$$x=y=5$$时等号成立。",
+        "success": "对！最大值 25。"
       },
       {
         "name": "2-8 综合：均值不等式口诀",
@@ -1218,29 +1446,63 @@
         "explain": "使用$$a+b \\ge 2\\sqrt{ab}$$等形式时，要求$$a>0,b>0$$。"
       },
       {
-        "id": "ineq_cauchy_app_2",
         "name": "3-6 柯西不等式 · 向量形式应用",
-        "technique": "柯西 - 施瓦茨 · 向量证明",
+        "type": "explore",
+        "technique": "3-6 柯西不等式 · 向量形式应用",
         "archetype": "LAB",
         "lab": "inequalities",
-        "lab_ref": "ineq_cauchy_app_2",
-        "scene": "res://scenes/LabStage.tscn",
-        "type": "input",
-        "q": "用柯西不等式 (a²+b²)(c²+d²) ≥ (ac+bd)²求最小值：\n\n已知 x + y = 1，求 x² + y²的最小值。\n\n思路：构造向量 a=x, b=y, c=1, d=1，代入柯西不等式。\n\n(x²+y²)(1²+1²) ≥ (x·1 + y·1)²\n即：__·(x²+y²) ≥ __²",
+        "q": "用柯西不等式 (a²+b²)(c²+d²) ≥ (ac+bd)²求最小值：\n\n已知 x + y = 1，求 x² + y²的最小值。\n\n思路：构造向量 a=x, b=y, c=1, d=1，代入柯西不等式。\n\n(x²+y²)(1²+1²) ≥ (x·1 + y·1)²\n即：__·(x²+y²) ≥ __²\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "x",
+              "min": 0,
+              "max": 1,
+              "value": 0.5,
+              "step": 0.05,
+              "label": "x（y=1-x）"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "y=1-x",
+              "expr": "1-x",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "x²+y²",
+              "expr": "x*x+(1-x)*(1-x)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "柯西下界 1/2",
+              "expr": "0.5",
+              "color": "#ffd479"
+            },
+            {
+              "label": "是否 ≥1/2",
+              "expr": "\"是\" if x*x+(1-x)*(1-x)>=0.5 else \"否\"",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动 x，观察 x²+y²（x+y=1）的最小值",
         "steps": [
-          "构造向量：(x,y) 和 (1,1)",
-          "应用柯西：(x²+y²)(1+1) ≥ (x+y)²",
-          "代入已知：x+y=1",
-          "解出：x²+y² ≥ ___"
+          "构造向量 (x,y),(1,1)",
+          "由柯西 (x²+y²)·2≥(x+y)²=1",
+          "得 ≥1/2，x=y=1/2 取等"
         ],
-        "ask": "请填写推导过程中的空缺部分",
-        "ans_factor": 2,
-        "ans_sum": 1,
-        "ans_min": 0.5,
-        "tol": 0.01,
+        "goal": "掌握柯西不等式的向量形式应用",
+        "tip": "配成 (x²+y²)(1²+1²)≥(x+y)²",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "柯西不等式左边有两个因子：(x²+y²) 和 (1²+1²)=2",
         "explain": "柯西不等式（Cauchy-Schwarz Inequality）是分析学中最基础也最强大的工具之一。向量形式：|u·v| ≤ |u||v|，展开即 (a₁²+a₂²)(b₁²+b₂²) ≥ (a₁b₁+a₂b₂)²。本题中，令 u=(x,y), v=(1,1)，则 (x²+y²)·2 ≥ (x+y)² = 1² = 1，故 x²+y² ≥ 1/2。等号当且仅当 x:y = 1:1，即 x=y=1/2 时取得。",
-        "success": "完美！柯西不等式将复杂的优化问题转化为简单的代数运算，这就是数学的美妙之处。"
+        "success": "对！最小值 1/2。"
       }
     ]
   },
@@ -1400,12 +1662,57 @@
       },
       {
         "name": "4-5 综合：恒成立求最小值",
-        "type": "input",
-        "q": "若$$x^{2}-2x+a\\ge 0$$对所有实数 x 恒成立，则 a 的最小值是？（填数值）",
-        "ans": 1,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "4-5 综合：恒成立求最小值",
+        "archetype": "LAB",
+        "lab": "inequalities",
+        "q": "若$$x^{2}-2x+a\\ge 0$$对所有实数 x 恒成立，则 a 的最小值是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "a",
+              "min": -2,
+              "max": 4,
+              "value": 1,
+              "step": 0.5,
+              "label": "参数 a"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "配方 (x-1)²+a-1",
+              "expr": "a-1",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "最小值 a-1",
+              "expr": "a-1",
+              "color": "#ffd479"
+            },
+            {
+              "label": "恒成立条件",
+              "expr": "\"a≥1\" if a>=1 else \"不满足\"",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动 a，找出使不等式恒成立的最小值",
+        "steps": [
+          "配方得 (x-1)²+a-1",
+          "最小值 a-1≥0",
+          "a≥1，最小值为 1"
+        ],
+        "goal": "掌握恒成立问题转化为最值问题",
+        "tip": "恒成立 ⇔ 最小值 ≥ 0",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "配方后由平方项非负得下界。",
-        "explain": "$$x^{2}-2x+a=(x-1)^{2}+a-1\\ge a-1$$，要非负则$$a\\ge 1$$，最小值 1。"
+        "explain": "$$x^{2}-2x+a=(x-1)^{2}+a-1\\ge a-1$$，要非负则$$a\\ge 1$$，最小值 1。",
+        "success": "对！a 的最小值为 1。"
       },
       {
         "name": "4-6 巩固：二次项系数的符号",
@@ -1490,21 +1797,111 @@
       },
       {
         "name": "5-2 建构：和定积最大",
-        "type": "input",
-        "q": "若两个正数 x、y 满足$$x+y=10$$，则$$xy$$的最大值是？（填数值）",
-        "ans": 25,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "5-2 建构：和定积最大",
+        "archetype": "LAB",
+        "lab": "inequalities",
+        "q": "若两个正数 x、y 满足$$x+y=10$$，则$$xy$$的最大值是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "x",
+              "min": 0,
+              "max": 10,
+              "value": 5,
+              "step": 0.5,
+              "label": "正数 x（y=10-x）"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "y=10-x",
+              "expr": "10-x",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "xy",
+              "expr": "x*(10-x)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "最大值 25",
+              "expr": "25",
+              "color": "#ffd479"
+            }
+          ]
+        },
+        "ask": "拖动 x，观察 xy 在 x=y 时达到最大",
+        "steps": [
+          "xy≤((x+y)/2)²",
+          "x+y=10 ⇒ xy≤25",
+          "x=y=5 取等号"
+        ],
+        "goal": "掌握和定积最大的结论",
+        "tip": "两数相等时积最大",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "积最大等于（和的一半）的平方。",
-        "explain": "$$xy\\le(\\frac{x+y}{2})^{2}=(\\frac{10}{2})^{2}=25$$，当$$x=y=5$$时取到。"
+        "explain": "$$xy\\le(\\frac{x+y}{2})^{2}=(\\frac{10}{2})^{2}=25$$，当$$x=y=5$$时取到。",
+        "success": "对！最大值 25。"
       },
       {
         "name": "5-3 迁移：积定和最小",
-        "type": "input",
-        "q": "若两个正数 x、y 满足$$xy=16$$，则$$x+y$$的最小值是？（填数值）",
-        "ans": 8,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "5-3 迁移：积定和最小",
+        "archetype": "LAB",
+        "lab": "inequalities",
+        "q": "若两个正数 x、y 满足$$xy=16$$，则$$x+y$$的最小值是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "x",
+              "min": 0.5,
+              "max": 16,
+              "value": 4,
+              "step": 0.1,
+              "label": "正数 x（y=16/x）"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "y=16/x",
+              "expr": "16/x",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "x+y",
+              "expr": "x+16/x",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "是否 ≥8",
+              "expr": "\"是\" if x+16/x>=8 else \"否\"",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动 x，观察积定 xy=16 时和的最小值",
+        "steps": [
+          "x+y≥2√(xy)",
+          "xy=16 ⇒ ≥8",
+          "x=y=4 取等号"
+        ],
+        "goal": "掌握积定和最小的结论",
+        "tip": "积定，和最小 = 2√(积)",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "和最小等于两倍根号下积。",
-        "explain": "$$x+y\\ge 2\\sqrt{xy}=2\\sqrt{16}=8$$，当$$x=y=4$$时取到。"
+        "explain": "$$x+y\\ge 2\\sqrt{xy}=2\\sqrt{16}=8$$，当$$x=y=4$$时取到。",
+        "success": "对！最小值 8。"
       },
       {
         "name": "5-4 巩固：1 的代换",
@@ -1522,12 +1919,57 @@
       },
       {
         "name": "5-5 综合：和的最小值",
-        "type": "input",
-        "q": "当$$x>0$$时，$$2x+\\frac{8}{x}$$的最小值是？（填数值）",
-        "ans": 8,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "5-5 综合：和的最小值",
+        "archetype": "LAB",
+        "lab": "inequalities",
+        "q": "当$$x>0$$时，$$2x+\\frac{8}{x}$$的最小值是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene_data": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "x",
+              "min": 0.2,
+              "max": 6,
+              "value": 2,
+              "step": 0.1,
+              "label": "正数 x"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "2x+8/x",
+              "expr": "2*x+8/x",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "两项之积为定值 16",
+              "expr": "16",
+              "color": "#ffd479"
+            },
+            {
+              "label": "是否 ≥8",
+              "expr": "\"是\" if 2*x+8/x>=8 else \"否\"",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动 x，观察 2x+8/x 何时取到最小值",
+        "steps": [
+          "2x·(8/x)=16 为定值",
+          "由 AM-GM 得 ≥2√16=8",
+          "x=2 时取等号"
+        ],
+        "goal": "掌握一般形式的积定求和最小值",
+        "tip": "先确认两项之积为定值",
+        "confirm": "看解析",
+        "gate": true,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "两项之积为定值 16。",
-        "explain": "$$2x+\\frac{8}{x}\\ge 2\\sqrt{2x\\cdot\\frac{8}{x}}=2\\sqrt{16}=8$$，当$$2x=\\frac{8}{x}$$即$$x=2$$时取到。"
+        "explain": "$$2x+\\frac{8}{x}\\ge 2\\sqrt{2x\\cdot\\frac{8}{x}}=2\\sqrt{16}=8$$，当$$2x=\\frac{8}{x}$$即$$x=2$$时取到。",
+        "success": "对！最小值 8。"
       }
     ]
   },
