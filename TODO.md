@@ -47,7 +47,7 @@
 | **B5** | 干扰项改为诊断性干扰项 | **P1** | ✅ 已完成（2026-10-20 收官：黑名单校验器 + 42 轮整改 + 抽检 30 题；`tools/sample_distractors.gd`） |
 | **B6** | 选项过短、退化为结果核对 | **P1** | 🟡 度量校准（第五十轮）：选项字数中位数 8.0；概念轮「理由选项」已 57.3%（≥30% 达标）。**「105 题全数值选项」经第五十一轮复核作废**（102 条是正经计算题、3 条是探究轮误判）。余：仅 `err_reason` 错因标签（引擎侧） |
 | **B7** | 图片选项回归 LaTeX 文本 | **P1** | ✅ 已完成（2026-10-26 第四十六轮）：关卡文件 **188 处**图片选项全改 `$$LaTeX$$`（`vector` 44 / `recurrence` 42 / `ellipse` 22 / `conic` 6 + 立几方法 74），`data/` 下 `opts` 引用 `res://art/**` 归零；顺带补 22 条「选项变文本后才暴露」的 hint 泄露 |
-| **B11** | 模块间质量方差过大 | **P1** | 🟡 Phase 3：13 章共 160 道 `input` 已就地转 `explore`（input 190→87），已转章节 depth 全部 ≥0.45；剩余 12 文件 87 道待转 |
+| **B11** | 模块间质量方差过大 | **P1** | 🟡 Phase 3：13 章共 160 道 `input` 已就地转 `explore`（input 190→96），统计章再转 13 道（2026-11-05，input 96→83）；已转章节 depth 全部 ≥0.45；剩余 12 文件 83 道待转 |
 | **A4** | 上帝对象拆分（`GameData`/`StageBase`/`TheoremTree`） | **P2** | ✅ 已收口（2026-10-21 第二十五轮 `7b4f8be`）：九刀拆出规则层七文件 696 行，三文件 4725→4311 行；行数红线进 `check_all`（超限即红灯）+ README「代码结构红线」；全程无行为变化、九件套绿 |
 | **A7** | 版本声明漂移（文档 vs `project.godot` vs GDExtension） | **P2** | ✅ 已完成（文档基线 + 版本策略已记录） |
 | **A8** | 「地图」隐喻套在清单结构上 | **P2** | 产品层，长期方向 |
@@ -146,7 +146,7 @@
   - **引擎兼容修复**（`f848aa3`）：`scene_data`→`scene` 127 处；60 组读数重装、55 条非法表达式丢弃；121 道死闸门解除、130 道补追问选项。
   - **数学修正**：`thinking` 待定系数题原解析 `B=−1` 有误 → 改为 `A=2, B=1` 并重写验证。
   - **当前深度（v3.0）**：13 章全部 ≥0.45（最高 counting 0.704、probability 0.695、vector 0.784；thinking 0.461 过线）。
-  - **剩余**：12 文件 87 道 input（statistics 13 · random_var 9 · circle 9 · hyperbola 9 · ellipse 8 · line 7 · recurrence 7 · corr_data 6 · solid_basic 6 · space 5 · conic 5 · parabola 3）。
+  - **剩余**：12 文件 83 道 input（thinking 9 · random_var 9 · circle 9 · hyperbola 9 · ellipse 8 · line 7 · recurrence 7 · corr_data 6 · solid_basic 6 · space 5 · conic 5 · parabola 3；statistics 13 已于 2026-11-05 转完）。
   - **校验**：`scan_all_input.py` 12 文件；`validate_explore.py` 结构问题仍为历史存量 129（本轮未新增）；`scan_bad_readouts.py` 仅剩 3D 合法 `atan` 1 条。
 
 - **本轮工作 XI（2026-11-03）：E5 教材对齐闭环 + E4 收尾 + B11 指标定义 + B6 err_reason schema（43/55）**
@@ -2438,7 +2438,7 @@ EXPLORE_ALIGN_CHECK = {'has_sliders': True, 'question_values_match': True}
 - set_logic 0.533 · function_lab 0.512 · sequences 0.552 · inequalities 0.516 · trig 0.505
 - functions 0.486 · vector 0.784 · vectors 0.516 · conics 0.531 · probability 0.695
 - derivative 0.485 · complex 0.513 · counting 0.704 · thinking 0.461
-- 全库 input 已从 190 → **87 道**（12 个文件待转换）
+- 全库 input 已从 190 → **96 道**（12 个文件待转换；2026-11-05 statistics 13 道转完后为 83）
 
 **做法**
 采用「逐章验收补强」策略，按高一→高三顺序，每章严格执行新验收标准体系：
@@ -2462,7 +2462,7 @@ EXPLORE_ALIGN_CHECK = {'has_sliders': True, 'question_values_match': True}
 - **Phase 1**: vector/stats/counting/probability四薄章补强，实测avg=0.470, std=0.084，四章全部达标
 - **Phase 2**: thinking/conic/inequalities等多轮补强，新增探索题约15道，avg=0.477, std=0.077
 - **Phase 3**: 逐章验收开始，set_logic 首次验收通过 (0.441→0.457)
-- **Phase 3（续，input→explore 就地转换）**：13 章共 **160 道 input 就地改写为 explore**（每题 ≥2 滑块 + 纯数值实时读数 + 追问 opts/ans），input 190 → 87
+- **Phase 3（续，input→explore 就地转换）**：13 章共 **160 道 input 就地改写为 explore**（每题 ≥2 滑块 + 纯数值实时读数 + 追问 opts/ans），input 190 → 96；2026-11-05 statistics 13 道转完后 96 → 83
   - 批次：set_logic 10 · function_lab 7 · sequences 17 · inequalities 10 · trig 13 · functions 9 · vector 8 · vectors 12 · conics 11 · probability 14 · derivative 11 · complex 10 · counting 25 · thinking 3
   - 引擎修复（同批提交 `f848aa3`）：`scene_data`→`scene` 127 处；`fix_readouts.py` 安装 60 组合法读数、丢弃 55 条无法修复的旧表达式；`repair_explore_flow.py` 修 121 道 `gate:true+answers:{}` 死闸门、为 130 道补 `opts/ans`
   - 数学修正：`thinking` 待定系数题原解析 `B=−1` 有误，已按 `A=2, B=1` 重写（验证 2/(x+1)+1/(x+2)=(3x+5)/((x+1)(x+2))）
@@ -2471,7 +2471,7 @@ EXPLORE_ALIGN_CHECK = {'has_sliders': True, 'question_values_match': True}
 **下一步计划**
 - [x] functions / function_lab / thinking 章节补强（均 ≥0.46）
 - [x] 建立自动化验收脚本（`validate_explore.py` / `scan_bad_readouts.py` / `scan_all_input.py`）
-- [ ] 继续按课程表顺序转换剩余 12 个文件、87 道 input：
+- [ ] 继续按课程表顺序转换剩余 12 个文件、83 道 input：
       statistics 13 · random_var 9 · circle 9 · hyperbola 9 · ellipse 8 · line 7 · recurrence 7 · corr_data 6 · solid_basic 6 · space 5 · conic 5 · parabola 3
 - [ ] 转换完成后统一复核：`validate_explore.py`（目标 0 结构问题）、`scan_bad_readouts.py`（目标仅 3D 合法 `atan`）、`analyze_depth_v3.py` 全库 ≥0.45
 
