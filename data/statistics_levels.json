@@ -90,11 +90,72 @@
       },
       {
         "name": "1-2 建构：随机数法",
-        "type": "input",
-        "q": "简单随机抽样中，每个个体被抽到的概率？",
+        "type": "explore",
+        "technique": "1-2 建构：随机数法",
+        "archetype": "LAB",
+        "lab": "statistics",
+        "q": "简单随机抽样中，每个个体被抽到的概率\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "N",
+              "min": 50,
+              "max": 1000,
+              "value": 800,
+              "step": 50,
+              "label": "总体个体数 N"
+            },
+            {
+              "name": "n",
+              "min": 5,
+              "max": 100,
+              "value": 40,
+              "step": 5,
+              "label": "样本容量 n"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "样本容量 n",
+              "expr": "n",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "总体 N",
+              "expr": "N",
+              "color": "#ffd479"
+            },
+            {
+              "label": "每个个体被抽概率 n/N",
+              "expr": "n/N",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动总体数和样本容量，观察简单随机抽样中每个个体被抽到的概率",
+        "opts": [
+          "理解简单随机抽样的等概率性质",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "简单随机抽样要求每个个体机会均等",
+          "概率 = 样本容量/总体数 = n/N",
+          "N=800、n=40 时概率为 0.05"
+        ],
+        "goal": "理解简单随机抽样的等概率性质",
+        "tip": "每个个体被抽到的概率相等",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "简单随机抽样要求机会均等。",
         "explain": "简单随机抽样中每个个体被抽到的概率相等。",
-        "ans": "answer_provided"
+        "success": "对！概率为 n/N。"
       },
       {
         "name": "1-3 迁移：分层抽样计算",
@@ -183,13 +244,71 @@
       },
       {
         "name": "2-2 建构：由频率求频数",
-        "type": "input",
-        "q": "样本容量为 100，某组频率为 0.3，则该组频数为？（填数值）",
-        "ans": 30,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "2-2 建构：由频率求频数",
+        "archetype": "LAB",
+        "lab": "statistics",
+        "q": "样本容量为 100，某组频率为 0.3，则该组频数为\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "N",
+              "min": 50,
+              "max": 200,
+              "value": 100,
+              "step": 1,
+              "label": "样本容量 N"
+            },
+            {
+              "name": "f",
+              "min": 0.1,
+              "max": 0.9,
+              "value": 0.3,
+              "step": 0.05,
+              "label": "频率 f"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "样本容量 N",
+              "expr": "N",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "频率 f",
+              "expr": "f",
+              "color": "#ffd479"
+            },
+            {
+              "label": "频数 = N×f",
+              "expr": "N*f",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动样本容量和频率，观察频数如何由两者相乘得出",
+        "opts": [
+          "掌握频数与频率的换算关系",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "频数 = 样本容量 × 频率",
+          "N=100、f=0.3 时频数为 30"
+        ],
+        "goal": "掌握频数与频率的换算关系",
+        "tip": "频数是整数，频率是小数",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "频数=样本容量×频率。",
         "explain": "频数=100×0.3=30。",
-        "opts": []
+        "success": "对！频数 =30。"
       },
       {
         "name": "2-3 迁移：估计众数",
@@ -302,89 +421,173 @@
       },
       {
         "name": "4-2 Median Estimation from Histogram",
-        "type": "input",
-        "q": "From a frequency histogram with bins [0,10):5, [10,20):12, [20,30):18, [30,40):10, estimate the median position.\nTotal n = 45, median is at position n/2 = 22.5",
-        "steps": [
-          "Find cumulative frequencies",
-          "Locate median bin",
-          "Use linear interpolation"
+        "type": "explore",
+        "technique": "4-2 Median Estimation from Histogram",
+        "archetype": "LAB",
+        "lab": "statistics",
+        "q": "直方图中估计中位数：已知分组及频数 [0,10):5、[10,20):12、[20,30):18、[30,40):10。\n\n拖动各区间频数，观察中位数位置的变化。\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "f1",
+              "min": 0,
+              "max": 20,
+              "value": 5,
+              "step": 1,
+              "label": "区间 [0,10) 频数"
+            },
+            {
+              "name": "f2",
+              "min": 0,
+              "max": 20,
+              "value": 12,
+              "step": 1,
+              "label": "区间 [10,20) 频数"
+            },
+            {
+              "name": "f3",
+              "min": 0,
+              "max": 30,
+              "value": 18,
+              "step": 1,
+              "label": "区间 [20,30) 频数"
+            },
+            {
+              "name": "f4",
+              "min": 0,
+              "max": 20,
+              "value": 10,
+              "step": 1,
+              "label": "区间 [30,40) 频数"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "总数 n=f1+f2+f3+f4",
+              "expr": "f1+f2+f3+f4",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "中位数位置 n/2",
+              "expr": "(f1+f2+f3+f4)/2",
+              "color": "#ffd479"
+            },
+            {
+              "label": "累积频数",
+              "expr": "f1+f2+f3+f4",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动各区间的频数，观察中位数落在哪个区间",
+        "opts": [
+          "掌握用频率分布直方图估计中位数",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
         ],
+        "ans": 0,
+        "steps": [
+          "总数 n=45，中位数在位置 22.5",
+          "前两个区间累积 17，第三区间从 17 到 35",
+          "中位数落在 [20,30)，插值得 ≈23.1"
+        ],
+        "goal": "掌握用频率分布直方图估计中位数",
+        "tip": "先找中位数位置，再用插值法估算",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "Cumulative: 5, 17, 35, 45. Median falls in [20,30).",
         "explain": "Median position = 22.5. Cumulative before [20,30) is 17, so need 22.5-17 = 5.5 more from the 18 in this bin. Using interpolation: median ≈ 20 + (5.5/18)×10 ≈ 23.1",
-        "ans": 23.1,
-        "tol": 0.5,
-        "scene": {
-          "histogram": [
-            [
-              0,
-              5
-            ],
-            [
-              10,
-              12
-            ],
-            [
-              20,
-              18
-            ],
-            [
-              30,
-              10
-            ]
-          ],
-          "x": [
-            0,
-            40
-          ],
-          "y": [
-            0,
-            20
-          ]
-        }
+        "success": "对！中位数约为 23.1。"
       },
       {
         "name": "5-3 Comparing Variability via Std Dev",
-        "type": "input",
-        "q": "Group A: [85, 90, 95], Group B: [70, 85, 100]. Both have mean = 90. Which group has larger standard deviation? Calculate both.\nσ = sqrt(Σ(x_i-mean)²/n)",
-        "steps": [
-          "Verify means are equal",
-          "Compute squared deviations",
-          "Calculate variance and std dev",
-          "Compare"
+        "type": "explore",
+        "technique": "5-3 Comparing Variability via Std Dev",
+        "archetype": "LAB",
+        "lab": "statistics",
+        "q": "比较两组数据的标准差：Group A=[85,90,95]，Group B=[70,85,100]。\n\n拖动各组数据点，观察哪组离散程度更大。\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "A_mean",
+              "min": 80,
+              "max": 100,
+              "value": 90,
+              "step": 1,
+              "label": "A 组均值"
+            },
+            {
+              "name": "A_dev",
+              "min": 0,
+              "max": 15,
+              "value": 5,
+              "step": 1,
+              "label": "A 组偏离度"
+            },
+            {
+              "name": "B_mean",
+              "min": 80,
+              "max": 100,
+              "value": 90,
+              "step": 1,
+              "label": "B 组均值"
+            },
+            {
+              "name": "B_dev",
+              "min": 0,
+              "max": 25,
+              "value": 15,
+              "step": 1,
+              "label": "B 组偏离度"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "A 组标准差 σ_A≈A_dev×√(2/3)",
+              "expr": "A_dev*sqrt(2/3)*2",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "B 组标准差 σ_B≈B_dev×√(2/3)",
+              "expr": "B_dev*sqrt(2/3)*2",
+              "color": "#ffd479"
+            },
+            {
+              "label": "比较差异",
+              "expr": "abs(B_dev-A_dev)",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动两组的偏离程度，观察标准差如何反映离散程度",
+        "opts": [
+          "理解标准差衡量数据离散程度的意义",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
         ],
+        "ans": 0,
+        "steps": [
+          "σ=√(Σ(x−mean)²/n)",
+          "A 组：σ≈√((25+0+25)/3)≈4.08",
+          "B 组：σ≈√((400+25+100)/3)≈13.23"
+        ],
+        "goal": "理解标准差衡量数据离散程度的意义",
+        "tip": "标准差越大，数据越分散",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "A: deviations are -5, 0, +5. B: deviations are -20, -5, +10.",
         "explain": "Group A: σ = sqrt((25+0+25)/3) = sqrt(50/3) ≈ 4.08. Group B: σ = sqrt((400+25+100)/3) = sqrt(525/3) = sqrt(175) ≈ 13.23. Group B is much more variable.",
-        "ans": 13.23,
-        "tol": 0.5,
-        "scene": {
-          "range": 5,
-          "points": [
-            [
-              1,
-              85
-            ],
-            [
-              1,
-              90
-            ],
-            [
-              1,
-              95
-            ],
-            [
-              2,
-              70
-            ],
-            [
-              2,
-              85
-            ],
-            [
-              2,
-              100
-            ]
-          ]
-        }
+        "success": "对！B 组标准差更大。"
       }
     ]
   },
@@ -488,13 +691,72 @@
       },
       {
         "name": "4-3 迁移：求中位数",
-        "type": "input",
-        "q": "数据 1,2,3,4,5,6,7,8,9,10 的第 50 百分位数（中位数）是？（填数值）",
-        "ans": 5.5,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "4-3 迁移：求中位数",
+        "archetype": "LAB",
+        "lab": "statistics",
+        "q": "数据 1,2,3,4,5,6,7,8,9,10 的第 50 百分位数（中位数）是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "n",
+              "min": 4,
+              "max": 12,
+              "value": 10,
+              "step": 1,
+              "label": "数据个数 n"
+            },
+            {
+              "name": "start",
+              "min": 1,
+              "max": 10,
+              "value": 1,
+              "step": 1,
+              "label": "起始数字"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "连续数字序列",
+              "expr": "start+n-1",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "中间位置 (n+1)/2",
+              "expr": "(n+1)/2",
+              "color": "#ffd479"
+            },
+            {
+              "label": "中位数（偶数个取平均）",
+              "expr": "(start + (start+n-1))/2",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动数据个数和起始值，观察中位数的计算规律",
+        "opts": [
+          "掌握连续数列的中位数计算方法",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "n=10 个连续数：1,2,...,10",
+          "偶数个取中间两个的平均",
+          "第 5 和第 6 个数的平均=(5+6)/2=5.5"
+        ],
+        "goal": "掌握连续数列的中位数计算方法",
+        "tip": "偶数个时取中间两个的平均值",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "偶数个数据取中间两个的平均。",
         "explain": "中间两个数是 5 和 6，中位数为 (5+6)/2=5.5。",
-        "opts": []
+        "success": "对！中位数 =5.5。"
       }
     ]
   },
@@ -682,13 +944,96 @@
       },
       {
         "name": "6-2 建构：众数",
-        "type": "input",
-        "q": "数据 1、1、1、1、2、2、3、5、50 的众数是？（填数值）",
-        "ans": 1,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "6-2 建构：众数",
+        "archetype": "LAB",
+        "lab": "statistics",
+        "q": "数据 1、1、1、1、2、2、3、5、50 的众数是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "n1",
+              "min": 1,
+              "max": 6,
+              "value": 4,
+              "step": 1,
+              "label": "数字 1 的出现次数"
+            },
+            {
+              "name": "n2",
+              "min": 1,
+              "max": 6,
+              "value": 1,
+              "step": 1,
+              "label": "数字 2 的出现次数"
+            },
+            {
+              "name": "n3",
+              "min": 1,
+              "max": 6,
+              "value": 1,
+              "step": 1,
+              "label": "数字 3 的出现次数"
+            },
+            {
+              "name": "n4",
+              "min": 1,
+              "max": 6,
+              "value": 1,
+              "step": 1,
+              "label": "数字 4 的出现次数"
+            },
+            {
+              "name": "n5",
+              "min": 1,
+              "max": 6,
+              "value": 1,
+              "step": 1,
+              "label": "数字 5 的出现次数"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "出现次数最多的数",
+              "expr": "max([n1,n2,n3,n4,n5])",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "其出现次数",
+              "expr": "max(n1,n2,n3,n4,n5)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "众数",
+              "expr": "n1",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动各数字的出现次数，观察众数如何确定",
+        "opts": [
+          "理解众数的定义与计算方法",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "众数是出现次数最多的数",
+          "1 出现 4 次，次数最多",
+          "故众数为 1"
+        ],
+        "goal": "理解众数的定义与计算方法",
+        "tip": "众数可能不唯一",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "出现次数最多的数。",
         "explain": "1 出现 4 次，次数最多，故众数为 1。",
-        "opts": []
+        "success": "对！众数为 1。"
       },
       {
         "name": "6-3 迁移：哪个统计量更稳健",
@@ -706,13 +1051,64 @@
       },
       {
         "name": "6-4 巩固：直方图估中位数",
-        "type": "input",
-        "q": "在频率分布直方图中估计中位数，通常取使左右两侧面积各为多少的横坐标？（填数值）",
-        "ans": 0.5,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "6-4 巩固：直方图估中位数",
+        "archetype": "LAB",
+        "lab": "statistics",
+        "q": "在频率分布直方图中估计中位数，通常取使左右两侧面积各为多少的横坐标\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "area_half",
+              "min": 0.3,
+              "max": 0.7,
+              "value": 0.5,
+              "step": 0.05,
+              "label": "单侧面积比例"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "左侧面积",
+              "expr": "area_half",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "右侧面积 1−左侧",
+              "expr": "1-area_half",
+              "color": "#ffd479"
+            },
+            {
+              "label": "是否平分（应为 0.5）",
+              "expr": "abs(area_half-0.5)",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动面积比例，观察中位数应使两侧面积各为多少",
+        "opts": [
+          "掌握用直方图估计中位数的原理",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "中位数把频率分布平分为左右两部分",
+          "每侧面积为 0.5",
+          "即累计频率达到 50% 的位置"
+        ],
+        "goal": "掌握用直方图估计中位数的原理",
+        "tip": "中位数对应累计频率 50% 的横坐标",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "中位数把频率（即面积）平分。",
         "explain": "中位数是使直方图左右两侧面积各为 0.5 的横坐标。",
-        "opts": []
+        "success": "对！中位数使两侧面积各为 0.5。"
       },
       {
         "name": "6-5 综合：平均数与中位数",
@@ -913,13 +1309,80 @@
       },
       {
         "name": "7-3 迁移：起点与最后一个编号",
-        "type": "input",
-        "q": "总体 300 个个体编号 1~300，按系统抽样抽取 30 个，已知随机起点为 7——第 30 个被抽到的编号是？（填数值）",
-        "ans": 297,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "7-3 迁移：起点与最后一个编号",
+        "archetype": "LAB",
+        "lab": "statistics",
+        "q": "总体 300 个个体编号 1~300，按系统抽样抽取 30 个，已知随机起点为 7——第 30 个被抽到的编号是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "N",
+              "min": 200,
+              "max": 500,
+              "value": 300,
+              "step": 10,
+              "label": "总体个数 N"
+            },
+            {
+              "name": "n",
+              "min": 20,
+              "max": 50,
+              "value": 30,
+              "step": 1,
+              "label": "样本容量 n"
+            },
+            {
+              "name": "start",
+              "min": 1,
+              "max": 10,
+              "value": 7,
+              "step": 1,
+              "label": "随机起点"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "抽样间隔 k=N/n",
+              "expr": "int(N/n)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "第 n 个编号=start+(n−1)k",
+              "expr": "start+(n-1)*int(N/n)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "示例验证",
+              "expr": "7+29*10",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动总体数、样本容量和起点，观察系统抽样的规律",
+        "opts": [
+          "掌握系统抽样的编号计算方法",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "抽样间隔 k=N/n",
+          "第 m 个被抽到的编号 = 起点 +(m−1)×k",
+          "N=300、n=30、起点=7 时，第 30 个编号 =7+29×10=297"
+        ],
+        "goal": "掌握系统抽样的编号计算方法",
+        "tip": "等距抽取，间距恒定",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "间隔 300/30 = 10，抽取的编号依次为 7、17、27、…",
         "explain": "第 i 个编号 =$$7 + (i- 1)\\times 10 \\to$$第 30 个 =$$7 + 29\\times 10 = 297$$。",
-        "opts": []
+        "success": "对！第 30 个编号为 297。"
       },
       {
         "name": "7-4 巩固：方法与情境匹配",
@@ -937,13 +1400,72 @@
       },
       {
         "name": "7-5 综合：每人被抽中的概率",
-        "type": "input",
-        "q": "从 800 名学生中用简单随机抽样抽取 40 人，每名学生被抽中的概率是？（填小数）",
-        "ans": 0.05,
-        "tol": 0.001,
+        "type": "explore",
+        "technique": "7-5 综合：每人被抽中的概率",
+        "archetype": "LAB",
+        "lab": "statistics",
+        "q": "从 800 名学生中用简单随机抽样抽取 40 人，每名学生被抽中的概率是？（填小数）\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "N",
+              "min": 100,
+              "max": 2000,
+              "value": 800,
+              "step": 50,
+              "label": "总体人数 N"
+            },
+            {
+              "name": "n",
+              "min": 10,
+              "max": 200,
+              "value": 40,
+              "step": 5,
+              "label": "样本容量 n"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "样本容量 n",
+              "expr": "n",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "总体 N",
+              "expr": "N",
+              "color": "#ffd479"
+            },
+            {
+              "label": "每人被抽中概率 n/N",
+              "expr": "n/N",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动总体人数和样本容量，观察每个人被抽中的概率",
+        "opts": [
+          "理解简单随机抽样中个体的入样概率",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "简单随机抽样中每个个体机会均等",
+          "概率 = 样本容量/总体数 = n/N",
+          "N=800、n=40 时概率为 0.05"
+        ],
+        "goal": "理解简单随机抽样中个体的入样概率",
+        "tip": "每个人的被抽中概率相同，与抽取顺序无关",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "简单随机抽样中，每个个体被抽中的概率 = 样本容量 ÷ 总体容量。",
         "explain": "40/800 = 0.05，即每名学生被抽中的概率都是 0.05，机会均等。",
-        "opts": []
+        "success": "对！每名学生被抽中的概率是 0.05。"
       }
     ]
   },
@@ -1004,13 +1526,75 @@
       },
       {
         "name": "8-2 建构：估计全公司人数",
-        "type": "input",
-        "q": "若该样本具有代表性，估计全公司 1000 名员工中肥胖者约有多少人？（填数值）",
-        "ans": 150,
-        "tol": 0.5,
+        "type": "explore",
+        "technique": "8-2 建构：估计全公司人数",
+        "archetype": "LAB",
+        "lab": "statistics",
+        "q": "若该样本具有代表性，估计全公司 1000 名员工中肥胖者约有多少人\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "sample_n",
+              "min": 50,
+              "max": 200,
+              "value": 100,
+              "step": 5,
+              "label": "样本容量"
+            },
+            {
+              "name": "obese_rate",
+              "min": 0.05,
+              "max": 0.3,
+              "value": 0.15,
+              "step": 0.02,
+              "label": "样本肥胖比例"
+            },
+            {
+              "name": "total_emp",
+              "min": 500,
+              "max": 2000,
+              "value": 1000,
+              "step": 50,
+              "label": "全公司总人数"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "样本肥胖比例",
+              "expr": "obese_rate",
+              "color": "#ffd479"
+            },
+            {
+              "label": "估计全公司肥胖人数 = total×rate",
+              "expr": "total_emp*obese_rate",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动样本规模和肥胖比例，观察如何用样本频率估计总体",
+        "opts": [
+          "理解用样本频率估计总体概率的思想",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "用样本的肥胖比例作为全公司肥胖比例的估计",
+          "估计值 = 总人数 × 肥胖比例",
+          "1000×0.15=150（人）"
+        ],
+        "goal": "理解用样本频率估计总体概率的思想",
+        "tip": "样本需要具有代表性，估计存在抽样误差",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "用样本的肥胖比例作为全公司肥胖比例的估计。",
         "explain": "$$15% \\times 1000 = 150$$（人）——用样本频率估计总体概率。",
-        "opts": []
+        "success": "对！估计全公司肥胖者约 150 人。"
       },
       {
         "name": "8-3 迁移：抽样偏差辨析",
@@ -1042,108 +1626,221 @@
       },
       {
         "name": "8-5 综合：按同一抽样比扩样",
-        "type": "input",
-        "q": "若按上例的抽样比（样本 100 人 / 总体 1000 人）从 800 名普通员工中等比例抽取复查样本，应抽多少人？（填数值）",
-        "ans": 80,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "8-5 综合：按同一抽样比扩样",
+        "archetype": "LAB",
+        "lab": "statistics",
+        "q": "若按上例的抽样比（样本 100 人 / 总体 1000 人）从 800 名普通员工中等比例抽取复查样本，应抽多少人\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "sample_n",
+              "min": 50,
+              "max": 200,
+              "value": 100,
+              "step": 5,
+              "label": "原样本容量"
+            },
+            {
+              "name": "total_n",
+              "min": 500,
+              "max": 2000,
+              "value": 1000,
+              "step": 50,
+              "label": "原总体人数"
+            },
+            {
+              "name": "new_total",
+              "min": 200,
+              "max": 2000,
+              "value": 800,
+              "step": 50,
+              "label": "新群体人数"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "抽样比 = sample/total",
+              "expr": "sample_n/total_n",
+              "color": "#ffd479"
+            },
+            {
+              "label": "新群体应抽人数 = new×rate",
+              "expr": "new_total*(sample_n/total_n)",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动各参数，观察如何按同一抽样比进行扩样",
+        "opts": [
+          "掌握按比例抽样的计算方法",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "先计算抽样比 = 样本数/总体数",
+          "再用同一抽样比乘以新群体人数",
+          "100/1000=0.1，800×0.1=80（人）"
+        ],
+        "goal": "掌握按比例抽样的计算方法",
+        "tip": "保持抽样比一致才能保证可比性",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "抽样比 = 100/1000 = 0.1，再乘普通员工人数。",
         "explain": "同一抽样比$$0.1 \\to 800\\times 0.1 = 80$$（人）。",
-        "opts": []
+        "success": "对！应抽取 80 人。"
       },
       {
         "name": "2-4 Least Squares Regression Derivation",
-        "type": "input",
-        "q": "Derive the formula for linear regression line y = bx + a using least squares method.\nGiven n data points (x_i, y_i), show that:\nb = Σ(x_i-x̄)(y_i-ȳ) / Σ(x_i-x̄)²\na = ȳ - b*x̄",
-        "steps": [
-          "Define residual sum of squares",
-          "Take partial derivatives",
-          "Set derivatives to zero",
-          "Solve for a and b"
-        ],
-        "hint": "Start with SSE = Σ(y_i - bx_i - a)²",
-        "explain": "Full derivation shows: ∂SSE/∂b = -2Σx_i(y_i-bx_i-a) = 0 and ∂SSE/∂a = -2Σ(y_i-bx_i-a) = 0. Solving this system yields the formulas above.",
-        "ans": "derivation_complete",
+        "type": "explore",
+        "technique": "2-4 Least Squares Regression Derivation",
+        "archetype": "LAB",
+        "lab": "statistics",
+        "q": "最小二乘法回归直线推导：寻找 y=a+bx 使得残差平方和最小。\n\n拖动数据点和斜率 b、截距 a，观察残差平方和的变化。\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
         "scene": {
           "range": 8,
-          "scatter": [
-            [
-              1,
-              2
-            ],
-            [
-              2,
-              3
-            ],
-            [
-              3,
-              5
-            ],
-            [
-              4,
-              4
-            ],
-            [
-              5,
-              6
-            ]
+          "axes": false,
+          "sliders": [
+            {
+              "name": "b",
+              "min": -2,
+              "max": 2,
+              "value": 1,
+              "step": 0.1,
+              "label": "斜率 b"
+            },
+            {
+              "name": "a",
+              "min": -10,
+              "max": 10,
+              "value": 0,
+              "step": 1,
+              "label": "截距 a"
+            },
+            {
+              "name": "x_var",
+              "min": 1,
+              "max": 10,
+              "value": 5,
+              "step": 1,
+              "label": "x 的方差"
+            }
           ],
-          "x": [
-            0,
-            6
-          ],
-          "y": [
-            0,
-            7
+          "readouts": [
+            {
+              "label": "预测值 ŷ=a+bx",
+              "expr": "a+b*x_var",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "残差平方和 RSS",
+              "expr": "(a+b*x_var-a-b*x_var)^2",
+              "color": "#ffd479"
+            },
+            {
+              "label": "最优 b 的公式",
+              "expr": "cov(x,y)/var(x)",
+              "color": "#40e0a8"
+            }
           ]
-        }
+        },
+        "ask": "拖动斜率和截距，观察如何使残差平方和最小",
+        "opts": [
+          "理解最小二乘法的基本原理",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "RSS=Σ(y_i−ŷ_i)²",
+          "最小化 RSS 得正规方程",
+          "解出 b=cov(x,y)/var(x)，a=y_mean−b·x_mean"
+        ],
+        "goal": "理解最小二乘法的基本原理",
+        "tip": "回归直线一定过点 (x̄,ȳ)",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "Start with SSE = Σ(y_i - bx_i - a)²",
+        "explain": "Full derivation shows: ∂SSE/∂b = -2Σx_i(y_i-bx_i-a) = 0 and ∂SSE/∂a = -2Σ(y_i-bx_i-a) = 0. Solving this system yields the formulas above.",
+        "success": "对！理解了最小二乘法。"
       },
       {
         "name": "3-3 Pearson Correlation Calculation",
-        "type": "input",
-        "q": "Given data: x=[1,2,3,4,5], y=[2,4,5,4,5]. Calculate the Pearson correlation coefficient r.\nFormula: r = Σ(x_i-x̄)(y_i-ȳ) / sqrt(Σ(x_i-x̄)² × Σ(y_i-ȳ)²)",
-        "steps": [
-          "Calculate means x̄ and ȳ",
-          "Compute deviations",
-          "Calculate numerator and denominator",
-          "Find ratio"
+        "type": "explore",
+        "technique": "3-3 Pearson Correlation Calculation",
+        "archetype": "LAB",
+        "lab": "statistics",
+        "q": "Given data: x=[1,2,3,4,5], y=[2,4,5,4,5]. Calculate the Pearson correlation coefficient r.\nFormula: r = Σ(x_i-x̄)(y_i-ȳ) / sqrt(Σ(x_i-x̄)² × Σ(y_i-ȳ)²)\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "r",
+              "min": -1,
+              "max": 1,
+              "value": 0.5,
+              "step": 0.1,
+              "label": "相关系数 r"
+            },
+            {
+              "name": "n",
+              "min": 5,
+              "max": 50,
+              "value": 20,
+              "step": 1,
+              "label": "样本量 n"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "相关系数 r",
+              "expr": "r",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "|r|接近 1 表示强相关",
+              "expr": "abs(r)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "r>0 正相关，r<0 负相关",
+              "expr": "r",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动相关系数，观察线性相关强度和方向",
+        "opts": [
+          "理解相关系数的含义与解读",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
         ],
+        "ans": 0,
+        "steps": [
+          "Pearson 相关系数 r∈[−1,1]",
+          "|r| 越大相关性越强",
+          "r>0 正相关，r<0 负相关"
+        ],
+        "goal": "理解相关系数的含义与解读",
+        "tip": "相关≠因果，只是线性关系的度量",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "x̄ = 3, ȳ = 4. Compute each term systematically.",
         "explain": "x̄=3, ȳ=4. Numerator = (1-3)(2-4)+(2-3)(4-4)+(3-3)(5-4)+(4-3)(4-4)+(5-3)(5-4) = 6. Denominator = sqrt(10×4) = sqrt(40) ≈ 6.32. So r = 6/6.32 ≈ 0.95.",
-        "ans": 0.95,
-        "tol": 0.02,
-        "scene": {
-          "range": 6,
-          "scatter": [
-            [
-              1,
-              2
-            ],
-            [
-              2,
-              4
-            ],
-            [
-              3,
-              5
-            ],
-            [
-              4,
-              4
-            ],
-            [
-              5,
-              5
-            ]
-          ],
-          "x": [
-            0,
-            6
-          ],
-          "y": [
-            0,
-            6
-          ]
-        }
+        "success": "对！理解了相关系数。"
       }
     ]
   }
