@@ -133,19 +133,149 @@
       },
       {
         "name": "1-5 综合：差是等比型的累加",
-        "type": "input",
-        "q": "已知$$a_{1}=1$$，$$a_{n+1}-a_{n}=2^{n}$$，则$$a_{4}$$=（填数值）",
-        "ans": 15,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "1-5 综合：差是等比型的累加",
+        "archetype": "LAB",
+        "lab": "recurrence",
+        "q": "已知$$a_{1}=1$$，$$a_{n+1}-a_{n}=2^{n}$$，则$$a_{4}$$=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "a1",
+              "min": 0,
+              "max": 5,
+              "value": 1,
+              "step": 1,
+              "label": "首项 a₁"
+            },
+            {
+              "name": "ratio",
+              "min": 1,
+              "max": 4,
+              "value": 2,
+              "step": 1,
+              "label": "公比 r (差为 rⁿ)"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "a₂=a₁+r¹",
+              "expr": "a1+ratio",
+              "color": "#ffd479"
+            },
+            {
+              "label": "a₃=a₂+r²",
+              "expr": "a1+ratio+ratio*ratio",
+              "color": "#40e0a8"
+            },
+            {
+              "label": "a₄=a₃+r³",
+              "expr": "a1+ratio+ratio*ratio+ratio**3",
+              "color": "#fb7185"
+            }
+          ]
+        },
+        "ask": "拖动首项和公比，观察累加法求数列的通项",
+        "opts": [
+          "掌握差为等比型的累加法求数列",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "a_{n+1}−a_n=rⁿ",
+          "累加得 a_n=a₁+(r¹+r²+⋯+r^{n−1})",
+          "a₄=1+(2+4+8)=15"
+        ],
+        "goal": "掌握差为等比型的累加法求数列",
+        "tip": "注意累加时指数从 1 开始",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "累加得$$a_{n}=a_{1}+(2^{1}+2^{2}+\\cdots+2^{n-1})$$，再算$$a_{4}$$。",
-        "explain": "$$a_{4}=1+(2+4+8)=15$$（也可用$$a_{n}=2^{n}-1$$验算）。"
+        "explain": "$$a_{4}=1+(2+4+8)=15$$（也可用$$a_{n}=2^{n}-1$$验算）。",
+        "success": "对！a₄=15。"
       },
       {
-        "id": "recur_iter_1",
         "name": "递推数列 · 迭代法求通项",
-        "type": "input",
-        "q": "已知 a₁=1, a_{n+1}=2a_n+1，用迭代法求通项",
-        "explain": "计算前几项发现规律：a_n=2ⁿ-1，再用数学归纳法证明"
+        "type": "explore",
+        "technique": "递推数列 · 迭代法求通项",
+        "archetype": "LAB",
+        "lab": "recurrence",
+        "q": "已知 a₁=1, a_{n+1}=2a_n+1，用迭代法求通项\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "a1",
+              "min": 1,
+              "max": 10,
+              "value": 1,
+              "step": 1,
+              "label": "首项 a₁"
+            },
+            {
+              "name": "k",
+              "min": 1,
+              "max": 5,
+              "value": 2,
+              "step": 1,
+              "label": "系数 k (a_{n+1}=ka_n+c)"
+            },
+            {
+              "name": "c",
+              "min": 0,
+              "max": 5,
+              "value": 1,
+              "step": 1,
+              "label": "常数 c"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "a₁",
+              "expr": "a1",
+              "color": "#ffd479"
+            },
+            {
+              "label": "a₂=ka₁+c",
+              "expr": "k*a1+c",
+              "color": "#40e0a8"
+            },
+            {
+              "label": "a₃=ka₂+c",
+              "expr": "k*(k*a1+c)+c",
+              "color": "#fb7185"
+            }
+          ]
+        },
+        "ask": "拖动参数，观察迭代法求递推数列的规律",
+        "opts": [
+          "掌握用迭代法求递推数列的通项",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "a_{n+1}=ka_n+c",
+          "迭代计算前几项找规律",
+          "a₁=1、k=2、c=1 时 a_n=2ⁿ−1"
+        ],
+        "goal": "掌握用迭代法求递推数列的通项",
+        "tip": "先计算前几项，再归纳猜想通项",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "",
+        "explain": "计算前几项发现规律：a_n=2ⁿ-1，再用数学归纳法证明",
+        "success": "对！通项为 a_n=2ⁿ−1。"
       }
     ]
   },
@@ -246,12 +376,77 @@
       },
       {
         "name": "2-4 巩固：常比值的累乘",
-        "type": "input",
-        "q": "已知$$a_{1}=3$$，$$a_{n+1}=2a_{n}$$，则$$a_{4}$$=（填数值）",
-        "ans": 24,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "2-4 巩固：常比值的累乘",
+        "archetype": "LAB",
+        "lab": "recurrence",
+        "q": "已知$$a_{1}=3$$，$$a_{n+1}=2a_{n}$$，则$$a_{4}$$=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "a1",
+              "min": 1,
+              "max": 10,
+              "value": 3,
+              "step": 1,
+              "label": "首项 a₁"
+            },
+            {
+              "name": "ratio",
+              "min": 1,
+              "max": 5,
+              "value": 2,
+              "step": 1,
+              "label": "公比 q"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "a₁",
+              "expr": "a1",
+              "color": "#ffd479"
+            },
+            {
+              "label": "a₂=a₁q",
+              "expr": "a1*ratio",
+              "color": "#40e0a8"
+            },
+            {
+              "label": "a₃=a₁q²",
+              "expr": "a1*ratio*ratio",
+              "color": "#fb7185"
+            },
+            {
+              "label": "a₄=a₁q³",
+              "expr": "a1*ratio**3",
+              "color": "#5ee6ff"
+            }
+          ]
+        },
+        "ask": "拖动首项和公比，观察等比数列的累乘规律",
+        "opts": [
+          "掌握等比数列的累乘法",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "a_{n+1}=qa_n ⇒ a_n=a₁·q^{n−1}",
+          "a₄=a₁·q³",
+          "a₁=3、q=2 时 a₄=3×8=24"
+        ],
+        "goal": "掌握等比数列的累乘法",
+        "tip": "等比数列每项都是前一项乘以公比",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "比值恒为 2 的等比数列，$$a_{n}=a_{1}\\cdot 2^{n-1}$$。",
-        "explain": "$$a_{4}=3\\times 2^{3}=24$$。"
+        "explain": "$$a_{4}=3\\times 2^{3}=24$$。",
+        "success": "对！a₄=24。"
       },
       {
         "name": "2-5 综合：消去型比值的累乘",
@@ -381,12 +576,72 @@
       },
       {
         "name": "3-4 巩固：不动点的计算",
-        "type": "input",
-        "q": "递推式$$a_{n+1}=3a_{n}-4$$的不动点$$\\lambda$$是？（填数值）",
-        "ans": 2,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "3-4 巩固：不动点的计算",
+        "archetype": "LAB",
+        "lab": "recurrence",
+        "q": "递推式$$a_{n+1}=3a_{n}-4$$的不动点$$\\lambda$$是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "k",
+              "min": 1,
+              "max": 5,
+              "value": 3,
+              "step": 1,
+              "label": "系数 k (a_{n+1}=ka_n+c)"
+            },
+            {
+              "name": "c",
+              "min": -10,
+              "max": 10,
+              "value": -4,
+              "step": 1,
+              "label": "常数 c"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "不动点满足 λ=kλ+c",
+              "expr": "c/(1-k)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "解方程：λ(1−k)=c，得λ=c/(1−k)",
+              "expr": "c/(1-k)",
+              "color": "#40e0a8"
+            },
+            {
+              "label": "验证：代入递推式",
+              "expr": "c/(1-k)",
+              "color": "#fb7185"
+            }
+          ]
+        },
+        "ask": "拖动参数，观察递推数列的不动点计算",
+        "opts": [
+          "理解递推数列不动点的概念与计算",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "不动点定义：a_{n+1}=a_n=λ",
+          "代入得λ=kλ+c，解出λ=c/(1−k)",
+          "k=3、c=−4 时λ=−4/(1−3)=2"
+        ],
+        "goal": "理解递推数列不动点的概念与计算",
+        "tip": "不动点是递推关系稳定时的值",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "令$$a_{n+1}=a_{n}=\\lambda$$，解$$\\lambda=3\\lambda-4$$。",
-        "explain": "$$\\lambda=3\\lambda-4\\Rightarrow 2\\lambda=4\\Rightarrow\\lambda=2$$；此时$$a_{n+1}-2=3(a_{n}-2)$$。"
+        "explain": "$$\\lambda=3\\lambda-4\\Rightarrow 2\\lambda=4\\Rightarrow\\lambda=2$$；此时$$a_{n+1}-2=3(a_{n}-2)$$。",
+        "success": "对！不动点λ=2。"
       },
       {
         "name": "3-5 综合：构造后的通项",
@@ -522,12 +777,73 @@
       },
       {
         "name": "4-4 巩固：等差部分的公差",
-        "type": "input",
-        "q": "已知$$a_{1}=1$$，$$a_{n+1}=\\dfrac{a_{n}}{3a_{n}+1}$$，则数列$$\\left\\{\\dfrac{1}{a_{n}}\\right\\}$$的公差是？（填数值）",
-        "ans": 3,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "4-4 巩固：等差部分的公差",
+        "archetype": "LAB",
+        "lab": "recurrence",
+        "q": "已知$$a_{1}=1$$，$$a_{n+1}=\\dfrac{a_{n}}{3a_{n}+1}$$，则数列$$\\left\\{\\dfrac{1}{a_{n}}\\right\\}$$的公差是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "a1",
+              "min": 0.5,
+              "max": 5,
+              "value": 1,
+              "step": 0.5,
+              "label": "首项 a₁"
+            },
+            {
+              "name": "m",
+              "min": 1,
+              "max": 5,
+              "value": 3,
+              "step": 1,
+              "label": "分母系数 m (a_{n+1}=a_n/(ma_n+1))"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "取倒数：1/a_{n+1}=(ma_n+1)/a_n=m+1/a_n",
+              "expr": "m",
+              "color": "#ffd479"
+            },
+            {
+              "label": "新数列 b_n=1/a_n 是等差数列",
+              "expr": "m",
+              "color": "#40e0a8"
+            },
+            {
+              "label": "公差 d=m",
+              "expr": "m",
+              "color": "#fb7185"
+            }
+          ]
+        },
+        "ask": "拖动参数，观察取倒数后数列变为等差数列",
+        "opts": [
+          "掌握通过取倒数转化递推数列为等差数列",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "a_{n+1}=a_n/(ma_n+1)",
+          "两边取倒数得 1/a_{n+1}=m+1/a_n",
+          "故{1/a_n}是公差为 m 的等差数列",
+          "m=3 时公差为 3"
+        ],
+        "goal": "掌握通过取倒数转化递推数列为等差数列",
+        "tip": "这类倒数型递推很常见",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "两边取倒数：$$\\dfrac{1}{a_{n+1}}=\\dfrac{1}{a_{n}}+3$$。",
-        "explain": "$$\\dfrac{1}{a_{n+1}}-\\dfrac{1}{a_{n}}=3$$，公差为 3，且$$\\dfrac{1}{a_{1}}=1$$。"
+        "explain": "$$\\dfrac{1}{a_{n+1}}-\\dfrac{1}{a_{n}}=3$$，公差为 3，且$$\\dfrac{1}{a_{1}}=1$$。",
+        "success": "对！公差为 3。"
       },
       {
         "name": "4-5 综合：取倒数求通项",
@@ -661,12 +977,73 @@
       },
       {
         "name": "5-4 巩固：取对数后的公差",
-        "type": "input",
-        "q": "已知$$a_{1}=1$$，$$a_{n+1}=a_{n}^{2}$$（$$a_{n}>0$$），则数列$$\\{\\lg a_{n}\\}$$的公差是？（填数值）",
+        "type": "explore",
+        "technique": "5-4 巩固：取对数后的公差",
+        "archetype": "LAB",
+        "lab": "recurrence",
+        "q": "已知$$a_{1}=1$$，$$a_{n+1}=a_{n}^{2}$$（$$a_{n}>0$$），则数列$$\\{\\lg a_{n}\\}$$的公差是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "a1",
+              "min": 0.1,
+              "max": 10,
+              "value": 1,
+              "step": 0.5,
+              "label": "首项 a₁ (>0)"
+            },
+            {
+              "name": "p",
+              "min": 1,
+              "max": 4,
+              "value": 2,
+              "step": 1,
+              "label": "指数 p (a_{n+1}=a_n^p)"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "取对数：log a_{n+1}=p·log a_n",
+              "expr": "p",
+              "color": "#ffd479"
+            },
+            {
+              "label": "若 a₁=1 则 log a₁=0",
+              "expr": "0",
+              "color": "#40e0a8"
+            },
+            {
+              "label": "故 log a_n≡0（常数列）",
+              "expr": "0",
+              "color": "#fb7185"
+            }
+          ]
+        },
+        "ask": "拖动参数，观察取对数后数列的性质",
+        "opts": [
+          "掌握通过对数转化指数型递推数列",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
         "ans": 0,
-        "tol": 0.01,
+        "steps": [
+          "a_{n+1}=a_n^p",
+          "取对数得 log a_{n+1}=p·log a_n",
+          "若 a₁=1 则 log a₁=0，故 log a_n≡0",
+          "公差为 0"
+        ],
+        "goal": "掌握通过对数转化指数型递推数列",
+        "tip": "当 a₁=1 时数列所有项都为 1",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "取对数得$$\\lg a_{n+1}=2\\lg a_{n}$$，而$$\\lg a_{1}=\\lg 1=0$$。",
-        "explain": "首项$$\\lg a_{1}=0$$，故$$\\lg a_{n}\\equiv 0$$，公差为 0（该数列是常数列）。"
+        "explain": "首项$$\\lg a_{1}=0$$，故$$\\lg a_{n}\\equiv 0$$，公差为 0（该数列是常数列）。",
+        "success": "对！公差为 0。"
       },
       {
         "name": "5-5 综合：取对数求通项",
@@ -802,12 +1179,72 @@
       },
       {
         "name": "6-4 巩固：由 Sn 求具体项",
-        "type": "input",
-        "q": "已知$$S_{n}=n^{2}$$，则$$a_{3}$$=（填数值）",
-        "ans": 5,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "6-4 巩固：由 Sn 求具体项",
+        "archetype": "LAB",
+        "lab": "recurrence",
+        "q": "已知$$S_{n}=n^{2}$$，则$$a_{3}$$=\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "n",
+              "min": 1,
+              "max": 10,
+              "value": 3,
+              "step": 1,
+              "label": "项数 n"
+            },
+            {
+              "name": "power",
+              "min": 1,
+              "max": 3,
+              "value": 2,
+              "step": 1,
+              "label": "Sn 的幂次"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "S_n=n^power",
+              "expr": "n**power",
+              "color": "#ffd479"
+            },
+            {
+              "label": "S_{n-1}=(n-1)^power",
+              "expr": "(n-1)**power",
+              "color": "#40e0a8"
+            },
+            {
+              "label": "a_n=S_n−S_{n-1}",
+              "expr": "n**power-(n-1)**power",
+              "color": "#fb7185"
+            }
+          ]
+        },
+        "ask": "拖动 n 和幂次，观察由前 n 项和求具体项的方法",
+        "opts": [
+          "掌握由 S_n 求 a_n 的方法",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "a_n=S_n−S_{n−1}(n≥2)",
+          "已知 S_n=n²",
+          "a₃=S₃−S₂=9−4=5"
+        ],
+        "goal": "掌握由 S_n 求 a_n 的方法",
+        "tip": "注意 n=1 时 a₁=S₁",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "$$a_{3}=S_{3}-S_{2}$$。",
-        "explain": "$$a_{3}=S_{3}-S_{2}=9-4=5$$（也可先求$$a_{n}=2n-1$$，再得$$a_{3}=5$$）。"
+        "explain": "$$a_{3}=S_{3}-S_{2}=9-4=5$$（也可先求$$a_{n}=2n-1$$，再得$$a_{3}=5$$）。",
+        "success": "对！a₃=5。"
       },
       {
         "name": "6-5 综合：首项不满足作差式",

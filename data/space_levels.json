@@ -589,12 +589,79 @@
       },
       {
         "name": "3-2 建构：向量模长",
-        "type": "input",
-        "q": "已知 a = (1, 2, 2)，则 |a| = ？（填数值）",
-        "ans": 3,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "3-2 建构：向量模长",
+        "archetype": "LAB",
+        "lab": "space",
+        "q": "已知 a = (1, 2, 2)，则 |a| =\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "ax",
+              "min": -5,
+              "max": 5,
+              "value": 1,
+              "step": 1,
+              "label": "a 的 x 分量"
+            },
+            {
+              "name": "ay",
+              "min": -5,
+              "max": 5,
+              "value": 2,
+              "step": 1,
+              "label": "a 的 y 分量"
+            },
+            {
+              "name": "az",
+              "min": -5,
+              "max": 5,
+              "value": 2,
+              "step": 1,
+              "label": "a 的 z 分量"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "a²+b²+c²",
+              "expr": "ax*ax+ay*ay+az*az",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "|a|=√(x²+y²+z²)",
+              "expr": "sqrt(ax*ax+ay*ay+az*az)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "a=(1,2,2) 时 |a|=3",
+              "expr": "sqrt(1*1+2*2+2*2)",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动三个分量，观察空间向量的模长如何由三维勾股定理给出",
+        "opts": [
+          "掌握空间向量模长的坐标计算公式",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "|a|=√(x²+y²+z²)",
+          "代入 a=(1,2,2) 得 √(1+4+4)=√9=3"
+        ],
+        "goal": "掌握空间向量模长的坐标计算公式",
+        "tip": "这是平面勾股定理在三维的自然推广",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "|a| = √(1²+2²+2²)。",
-        "explain": "|a| = √(1+4+4) = √9 = 3。"
+        "explain": "|a| = √(1+4+4) = √9 = 3。",
+        "success": "对！|a|=3。"
       },
       {
         "name": "3-3 迁移：垂直判定",
@@ -2109,21 +2176,181 @@
       },
       {
         "name": "12-2 建构：点到平面距离公式应用",
-        "type": "input",
-        "q": "点 P(1,2,3) 到平面 z=0 的距离是？（填数值）",
-        "ans": 3,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "12-2 建构：点到平面距离公式应用",
+        "archetype": "LAB",
+        "lab": "space",
+        "q": "点 P(1,2,3) 到平面 z=0 的距离是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "px",
+              "min": -5,
+              "max": 5,
+              "value": 1,
+              "step": 1,
+              "label": "点 P 的 x 坐标"
+            },
+            {
+              "name": "py",
+              "min": -5,
+              "max": 5,
+              "value": 2,
+              "step": 1,
+              "label": "点 P 的 y 坐标"
+            },
+            {
+              "name": "pz",
+              "min": -5,
+              "max": 5,
+              "value": 3,
+              "step": 1,
+              "label": "点 P 的 z 坐标"
+            },
+            {
+              "name": "plane_z",
+              "min": -5,
+              "max": 5,
+              "value": 0,
+              "step": 1,
+              "label": "平面 z=k 的高度 k"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "P 的 z 坐标",
+              "expr": "pz",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "平面高度 k",
+              "expr": "plane_z",
+              "color": "#ffd479"
+            },
+            {
+              "label": "距离 d=|z−k|",
+              "expr": "abs(pz-plane_z)",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动点的坐标和平面高度，观察点到平面距离的计算",
+        "opts": [
+          "理解点到平面距离公式的应用",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "对于平面 z=0，法向量 n=(0,0,1)",
+          "距离 d=|P·n|/|n|=|z|",
+          "P(1,2,3) 到 z=0 的距离为 3"
+        ],
+        "goal": "理解点到平面距离公式的应用",
+        "tip": "特殊情况下可直接用坐标差计算",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "z=0 平面的法向量为 (0,0,1)。",
-        "explain": "d = |AP·n|/|n| = |3| = 3。"
+        "explain": "d = |AP·n|/|n| = |3| = 3。",
+        "success": "对！距离为 3。"
       },
       {
         "name": "12-3 迁移：平行平面的距离",
-        "type": "input",
-        "q": "两平行平面 2x+y+2z−6=0 与 2x+y+2z+3=0 之间的距离是？（填数值）",
-        "ans": 3,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "12-3 迁移：平行平面的距离",
+        "archetype": "LAB",
+        "lab": "space",
+        "q": "两平行平面 2x+y+2z−6=0 与 2x+y+2z+3=0 之间的距离是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "d1",
+              "min": -6,
+              "max": 6,
+              "value": -6,
+              "step": 1,
+              "label": "第一个平面常数 d₁"
+            },
+            {
+              "name": "d2",
+              "min": -6,
+              "max": 6,
+              "value": 3,
+              "step": 1,
+              "label": "第二个平面常数 d₂"
+            },
+            {
+              "name": "nx",
+              "min": -3,
+              "max": 3,
+              "value": 2,
+              "step": 1,
+              "label": "法向量 x 分量"
+            },
+            {
+              "name": "ny",
+              "min": -3,
+              "max": 3,
+              "value": 1,
+              "step": 1,
+              "label": "法向量 y 分量"
+            },
+            {
+              "name": "nz",
+              "min": -3,
+              "max": 3,
+              "value": 2,
+              "step": 1,
+              "label": "法向量 z 分量"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "|n|=√(n_x²+n_y²+n_z²)",
+              "expr": "sqrt(nx*nx+ny*ny+nz*nz)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "|d₁−d₂|",
+              "expr": "abs(d1-d2)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "距离 d=|d₁−d₂|/|n|",
+              "expr": "abs(d1-d2)/sqrt(nx*nx+ny*ny+nz*nz)",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动两个平面的常数和法向量，观察平行平面间距的计算",
+        "opts": [
+          "掌握平行平面之间的距离公式",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "平行平面 Ax+By+Cz+d₁=0 与 Ax+By+Cz+d₂=0",
+          "距离 d=|d₁−d₂|/√(A²+B²+C²)",
+          "|−6−3|/3=9/3=3"
+        ],
+        "goal": "掌握平行平面之间的距离公式",
+        "tip": "两个平面的法向量必须相同（或成比例）",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "d = |d₁ − d₂| / |n|，这里 |n| = √(4+1+4)=3。",
-        "explain": "d = |(−6) − 3| / 3 = 9/3 = 3。"
+        "explain": "d = |(−6) − 3| / 3 = 9/3 = 3。",
+        "success": "对！距离为 3。"
       }
     ]
   },
@@ -3046,12 +3273,64 @@
       },
       {
         "name": "18-3 迁移：正方体内切球",
-        "type": "input",
-        "q": "棱长为 2 的正方体的内切球半径是？（填数值）",
-        "ans": 1,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "18-3 迁移：正方体内切球",
+        "archetype": "LAB",
+        "lab": "space",
+        "q": "棱长为 2 的正方体的内切球半径是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "edge",
+              "min": 1,
+              "max": 5,
+              "value": 2,
+              "step": 0.5,
+              "label": "正方体棱长"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "棱长",
+              "expr": "edge",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "内切球直径 = 棱长",
+              "expr": "edge",
+              "color": "#ffd479"
+            },
+            {
+              "label": "内切球半径 r=edge/2",
+              "expr": "edge/2",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "ask": "拖动正方体棱长，观察内切球半径与棱长的关系",
+        "opts": [
+          "理解正方体内切球的几何性质",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "内切球与各面相切",
+          "直径等于棱长",
+          "棱长为 2 时半径 r=1"
+        ],
+        "goal": "理解正方体内切球的几何性质",
+        "tip": "内切球与外接球不同",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "内切球与各面相切，直径等于棱长。",
-        "explain": "内切球直径等于棱长 2，故半径 r = 1。"
+        "explain": "内切球直径等于棱长 2，故半径 r = 1。",
+        "success": "对！内切球半径为 1。"
       }
     ]
   },
@@ -3198,52 +3477,64 @@
       },
       {
         "name": "19-2 Boss-2 综合：异面直线夹角",
-        "type": "input",
-        "q": "正方体棱长为 2，则异面直线 AC 与 BD₁ 所成角的余弦值是？（填数值）",
+        "type": "explore",
+        "technique": "19-2 Boss-2 综合：异面直线夹角",
+        "archetype": "LAB",
+        "lab": "space",
+        "q": "正方体棱长为 2，则异面直线 AC 与 BD₁ 所成角的余弦值是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
         "scene": {
-          "grid": true,
-          "grid_range": 4,
-          "solids": [
+          "range": 8,
+          "axes": false,
+          "sliders": [
             {
-              "kind": "cube",
-              "name": "C",
-              "a": 2,
-              "b": 2,
-              "h": 2,
-              "color": "#7EC8FF",
-              "alpha": 0.06
+              "name": "edge",
+              "min": 1,
+              "max": 4,
+              "value": 2,
+              "step": 1,
+              "label": "正方体棱长"
             }
           ],
-          "segments": [
+          "readouts": [
             {
-              "p1": "A",
-              "p2": "C",
-              "color": "#ffd479",
-              "width": 0.04,
-              "id": "ac"
+              "label": "AC 向量 (edge,edge,0)",
+              "expr": "edge + ', ' + edge + ', 0'",
+              "color": "#5ee6ff"
             },
             {
-              "p1": "B",
-              "p2": "D1",
-              "color": "#5ee6ff",
-              "width": 0.04,
-              "id": "bd1"
+              "label": "BD₁向量 (−edge,edge,edge)",
+              "expr": "-edge + ', ' + edge + ', ' + edge",
+              "color": "#ffd479"
+            },
+            {
+              "label": "AC·BD₁=−edge²+edge²+0",
+              "expr": "-edge*edge+edge*edge+0",
+              "color": "#40e0a8"
             }
-          ],
-          "view": {
-            "yaw": 40,
-            "pitch": 22,
-            "zoom": 1.0
-          },
-          "highlight": [
-            "ac",
-            "bd1"
           ]
         },
+        "ask": "拖动棱长，观察异面直线的方向向量及其点积",
+        "opts": [
+          "掌握用向量法求异面直线夹角",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
         "ans": 0,
-        "tol": 0.001,
+        "steps": [
+          "建立坐标系：A(0,0,0)、C(edge,edge,0)、B(edge,0,0)、D₁(0,edge,edge)",
+          "AC=(edge,edge,0)，BD₁=(−edge,edge,edge)",
+          "AC·BD₁=−edge²+edge²+0=0，故两向量垂直"
+        ],
+        "goal": "掌握用向量法求异面直线夹角",
+        "tip": "异面直线夹角等于它们方向向量的夹角",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "用坐标：$$A(0,0,0)$$、$$C(2,2,0)$$、$$B(2,0,0)$$、D₁(0,2,2)，算 AC·BD₁。",
-        "explain": "AC=(2,2,0)，BD₁=(−2,2,2)，AC·BD₁ = −4+4+0 = 0，故两向量垂直，所成角为 90°，cos θ = 0。"
+        "explain": "AC=(2,2,0)，BD₁=(−2,2,2)，AC·BD₁ = −4+4+0 = 0，故两向量垂直，所成角为 90°，cos θ = 0。",
+        "success": "对！两向量垂直，所成角为 90°，cosθ=0。"
       },
       {
         "name": "19-3 Boss-3 综合：线面角",
