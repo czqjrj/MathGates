@@ -50,6 +50,28 @@
         "success": "对！算术平均总是不小于几何平均"
       },
       {
+        "name": "1-3 实验：等号成立条件探究",
+        "type": "explore",
+        "q": "探究何时 (a+b)/2 = √(ab)，改变 a 和 b 的值进行验证",
+        "scene": {
+          "range": 10,
+          "sliders": [
+            {"name": "a", "min": 0.5, "max": 8, "value": 4, "step": 0.5},
+            {"name": "b", "min": 0.5, "max": 8, "value": 4, "step": 0.5}
+          ]
+        },
+        "ask": "当 a 和 b 满足什么关系时，等号成立？",
+        "readouts": [
+          {"label": "a=b?", "expr": "a==b ? '是' : '否'", "color": "#ffd479"},
+          {"label": "算术平均", "expr": "(a+b)/2"},
+          {"label": "几何平均", "expr": "sqrt(a*b)"}
+        ],
+        "steps": ["当 a=b 时，(a+a)/2 = a = √(a·a)", "等号成立的条件是两数相等", "这是均值不等式的取等条件"],
+        "goal": "深入理解等号成立的充要条件",
+        "tip": "所有基本不等式的等号都在变量相等时成立",
+        "success": "对！当 a=b 时等号成立"
+      },
+      {
         "name": "2-1 巩固：直接应用求最值",
         "type": "explore",
         "q": "已知 x>0，求 x+1/x 的最小值",
@@ -63,7 +85,8 @@
         "readouts": [
           {"label": "x", "expr": "x"},
           {"label": "1/x", "expr": "1/x"},
-          {"label": "f(x)=x+1/x", "expr": "x+1/x", "color": "#40e0a8"}
+          {"label": "f(x)=x+1/x", "expr": "x+1/x", "color": "#40e0a8"},
+          {"label": "理论最小值 2", "expr": "2", "color": "#fb7185"}
         ],
         "steps": ["x+1/x ≥ 2√(x·1/x) = 2", "等号当 x=1/x 即 x=1 时取得", "最小值是 2"],
         "goal": "掌握积定和最小的应用",
@@ -105,7 +128,7 @@
         "ask": "观察函数图像，找到最小值点",
         "readouts": [
           {"label": "f(x)=x+4/x", "expr": "x+4/x", "color": "#40e0a8"},
-          {"label": "理论最小值 2√4", "expr": "4", "color": "#fb7185"}
+          {"label": "理论最小值 4", "expr": "4", "color": "#fb7185"}
         ],
         "steps": ["x+4/x ≥ 2√(x·4/x) = 4", "等号当 x=4/x 即 x=2 时取得", "最小值是 4"],
         "goal": "掌握直接应用均值不等式求最值",
