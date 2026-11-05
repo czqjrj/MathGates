@@ -657,31 +657,77 @@
       },
       {
         "name": "4-2 建构知识 · 由方程读 a、b、c",
-        "type": "input",
-        "q": "椭圆 x²/25 + y²/16 = 1 的焦距(两焦点间距离)是？（填数值）",
-        "ans": 6,
-        "tol": 0.01,
-        "hint": "a² = 25、b² = 16，则 c² = a² − b² = 9；焦距是 2c。",
-        "explain": "a = 5、b = 4，c = √(25−16) = 3，焦距 2c = 6。记得 a 最大。",
+        "type": "explore",
+        "technique": "4-2 建构知识 · 由方程读 a、b、c",
+        "archetype": "LAB",
+        "lab": "ellipse",
+        "q": "椭圆 x²/25 + y²/16 = 1 的焦距(两焦点间距离)是\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
         "scene": {
-          "range": 7,
-          "ellipses": [
+          "range": 8,
+          "axes": false,
+          "sliders": [
             {
-              "a": 5,
-              "b": 4,
-              "axis": "x",
-              "color": "#ff7ea8",
-              "label": "x²/25+y²/16=1"
+              "name": "a_sq",
+              "min": 9,
+              "max": 36,
+              "value": 25,
+              "step": 1,
+              "label": "a²"
+            },
+            {
+              "name": "b_sq",
+              "min": 9,
+              "max": 30,
+              "value": 16,
+              "step": 1,
+              "label": "b²"
             }
           ],
-          "foci": [
+          "readouts": [
             {
-              "c": 3,
-              "axis": "x",
+              "label": "a=√a²",
+              "expr": "sqrt(a_sq)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "b=√b²",
+              "expr": "sqrt(b_sq)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "c=√(a²−b²)",
+              "expr": "sqrt(a_sq-b_sq)",
+              "color": "#40e0a8"
+            },
+            {
+              "label": "焦距 2c",
+              "expr": "2*sqrt(a_sq-b_sq)",
               "color": "#fb7185"
             }
           ]
-        }
+        },
+        "ask": "拖动 a²、b²，观察如何从椭圆方程读出 a、b、c 及焦距",
+        "opts": [
+          "掌握由椭圆标准方程读取几何参数的方法",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "椭圆 x²/a² + y²/b² = 1 中 a>b",
+          "c²=a²−b²",
+          "焦距=2c；a²=25、b²=16 时 c=3，焦距=6"
+        ],
+        "goal": "掌握由椭圆标准方程读取几何参数的方法",
+        "tip": "记得区分哪个分母大，大的对应长轴",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "a² = 25、b² = 16，则 c² = a² − b² = 9；焦距是 2c。",
+        "explain": "a = 5、b = 4，c = √(25−16) = 3，焦距 2c = 6。记得 a 最大。",
+        "success": "对！焦距为 6。"
       },
       {
         "name": "4-3 迁移应用 · 焦点看分母",
@@ -812,30 +858,77 @@
       },
       {
         "name": "5-3 迁移应用 · 参数决定形状",
-        "type": "input",
-        "q": "椭圆 x²/16 + y²/(m) = 1 的离心率为 1/2，则 m 的值为？（填数值）",
-        "ans": 12,
-        "tol": 0.01,
-        "hint": "先看分母较大的是哪条轴（长轴），由 e=c/a 求出 c，再用 b²=a²−c² 反解 m。",
-        "explain": "a²=16、e=c/a=1/2 ⇒ c=2、c²=4，b²=m=16−4=12。",
+        "type": "explore",
+        "technique": "5-3 迁移应用 · 参数决定形状",
+        "archetype": "LAB",
+        "lab": "ellipse",
+        "q": "椭圆 x²/16 + y²/(m) = 1 的离心率为 1/2，则 m 的值为\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
         "scene": {
-          "range": 7,
-          "ellipses": [
+          "range": 8,
+          "axes": false,
+          "sliders": [
             {
-              "a": 4,
-              "b": 3.4641,
-              "axis": "x",
-              "color": "#ff7ea8"
+              "name": "a_sq",
+              "min": 9,
+              "max": 30,
+              "value": 16,
+              "step": 1,
+              "label": "a²"
+            },
+            {
+              "name": "e",
+              "min": 0.1,
+              "max": 0.9,
+              "value": 0.5,
+              "step": 0.05,
+              "label": "离心率 e"
             }
           ],
-          "foci": [
+          "readouts": [
             {
-              "c": 2,
-              "axis": "x",
+              "label": "a=√a²",
+              "expr": "sqrt(a_sq)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "c=ae",
+              "expr": "sqrt(a_sq)*e",
+              "color": "#ffd479"
+            },
+            {
+              "label": "c²",
+              "expr": "a_sq*e*e",
+              "color": "#40e0a8"
+            },
+            {
+              "label": "b²=a²−c²",
+              "expr": "a_sq-a_sq*e*e",
               "color": "#fb7185"
             }
           ]
-        }
+        },
+        "ask": "拖动 a²和离心率，观察如何反求 b²",
+        "opts": [
+          "掌握用离心率和已知参数求解未知量",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "e=c/a，得 c=ae",
+          "b²=a²−c²=a²(1−e²)",
+          "a²=16、e=1/2 时 b²=16×(1−1/4)=12"
+        ],
+        "goal": "掌握用离心率和已知参数求解未知量",
+        "tip": "离心率越大，椭圆越扁",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "先看分母较大的是哪条轴（长轴），由 e=c/a 求出 c，再用 b²=a²−c² 反解 m。",
+        "explain": "a²=16、e=c/a=1/2 ⇒ c=2、c²=4，b²=m=16−4=12。",
+        "success": "对！m=12。"
       }
     ]
   },
@@ -910,57 +1003,133 @@
       },
       {
         "name": "6-2 建构知识 · 由 a、c 求离心率",
-        "type": "input",
-        "q": "椭圆的长轴长为 10，焦距为 8，则离心率 e = ？（填数值）",
-        "ans": 0.8,
-        "tol": 0.01,
-        "hint": "长轴长 2a=10 ⇒ a=5；焦距 2c=8 ⇒ c=4；e=c/a。",
-        "explain": "a=5、c=4，e=c/a=4/5=0.8。",
+        "type": "explore",
+        "technique": "6-2 建构知识 · 由 a、c 求离心率",
+        "archetype": "LAB",
+        "lab": "ellipse",
+        "q": "椭圆的长轴长为 10，焦距为 8，则离心率 e =\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
         "scene": {
-          "range": 7,
-          "ellipses": [
+          "range": 8,
+          "axes": false,
+          "sliders": [
             {
-              "a": 5,
-              "b": 3,
-              "axis": "x",
-              "color": "#ff7ea8"
+              "name": "axis_len",
+              "min": 6,
+              "max": 20,
+              "value": 10,
+              "step": 1,
+              "label": "长轴长 2a"
+            },
+            {
+              "name": "focus_dist",
+              "min": 2,
+              "max": 18,
+              "value": 8,
+              "step": 1,
+              "label": "焦距 2c"
             }
           ],
-          "foci": [
+          "readouts": [
             {
-              "c": 4,
-              "axis": "x",
-              "color": "#fb7185"
+              "label": "a=2a/2",
+              "expr": "axis_len/2",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "c=2c/2",
+              "expr": "focus_dist/2",
+              "color": "#ffd479"
+            },
+            {
+              "label": "离心率 e=c/a",
+              "expr": "(focus_dist/2)/(axis_len/2)",
+              "color": "#40e0a8"
             }
           ]
-        }
+        },
+        "ask": "拖动长轴长和焦距，观察离心率的计算",
+        "opts": [
+          "理解离心率的定义及其计算方法",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "长轴 2a=10，得 a=5",
+          "焦距 2c=8，得 c=4",
+          "e=c/a=4/5=0.8"
+        ],
+        "goal": "理解离心率的定义及其计算方法",
+        "tip": "离心率反映椭圆的扁平程度",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "长轴长 2a=10 ⇒ a=5；焦距 2c=8 ⇒ c=4；e=c/a。",
+        "explain": "a=5、c=4，e=c/a=4/5=0.8。",
+        "success": "对！离心率 e=0.8。"
       },
       {
         "name": "6-3 迁移应用 · 由关系求离心率",
-        "type": "input",
-        "q": "已知椭圆满足 b² = 3/4·a²，则其离心率 e = ？（填数值）",
-        "ans": 0.5,
-        "tol": 0.01,
-        "hint": "e² = 1 − b²/a² = 1 − 3/4 = 1/4。",
-        "explain": "e² = 1 − b²/a² = 1/4，故 e = 1/2。",
+        "type": "explore",
+        "technique": "6-3 迁移应用 · 由关系求离心率",
+        "archetype": "LAB",
+        "lab": "ellipse",
+        "q": "已知椭圆满足 b² = 3/4·a²，则其离心率 e =\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
         "scene": {
-          "range": 7,
-          "ellipses": [
+          "range": 8,
+          "axes": false,
+          "sliders": [
             {
-              "a": 4,
-              "b": "2*sqrt(3)",
-              "axis": "x",
-              "color": "#ff7ea8"
+              "name": "ratio",
+              "min": 0.2,
+              "max": 0.9,
+              "value": 0.75,
+              "step": 0.05,
+              "label": "b²/a²的比值"
             }
           ],
-          "foci": [
+          "readouts": [
             {
-              "c": 2,
-              "axis": "x",
-              "color": "#fb7185"
+              "label": "b²/a²",
+              "expr": "ratio",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "e²=1−b²/a²",
+              "expr": "1-ratio",
+              "color": "#ffd479"
+            },
+            {
+              "label": "离心率 e=√(1−b²/a²)",
+              "expr": "sqrt(1-ratio)",
+              "color": "#40e0a8"
             }
           ]
-        }
+        },
+        "ask": "拖动 b²与 a²的比值，观察如何求离心率",
+        "opts": [
+          "掌握用 b²与 a²的关系求离心率",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "e²=1−b²/a²",
+          "b²=3/4·a²时 b²/a²=3/4",
+          "e²=1−3/4=1/4，故 e=1/2"
+        ],
+        "goal": "掌握用 b²与 a²的关系求离心率",
+        "tip": "记住 e²=1−b²/a²这个常用公式",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "e² = 1 − b²/a² = 1 − 3/4 = 1/4。",
+        "explain": "e² = 1 − b²/a² = 1/4，故 e = 1/2。",
+        "success": "对！离心率 e=0.5。"
       }
     ]
   },
@@ -1239,57 +1408,149 @@
       },
       {
         "name": "8-2 建构知识 · 余弦定理与面积",
-        "type": "input",
-        "q": "椭圆 x²/25+y²/9=1 上一点 P 使 ∠F₁PF₂ = 90°，则 |PF₁|·|PF₂| 等于多少？（填数值）",
-        "ans": 18,
-        "tol": 0.01,
-        "hint": "在 △PF₁F₂ 中，由 |PF₁|²+|PF₂|²=|F₁F₂|² 及 |PF₁|+|PF₂|=2a 求乘积。",
-        "explain": "|PF₁|+|PF₂|=10，|PF₁|²+|PF₂|²=64；乘积=(10²−64)/2=18。",
+        "type": "explore",
+        "technique": "8-2 建构知识 · 余弦定理与面积",
+        "archetype": "LAB",
+        "lab": "ellipse",
+        "q": "椭圆 x²/25+y²/9=1 上一点 P 使 ∠F₁PF₂ = 90°，则 |PF₁|·|PF₂| 等于多少\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
         "scene": {
-          "range": 7,
-          "ellipses": [
+          "range": 8,
+          "axes": false,
+          "sliders": [
             {
-              "a": 5,
-              "b": 3,
-              "axis": "x",
-              "color": "#ff7ea8"
+              "name": "a",
+              "min": 3,
+              "max": 10,
+              "value": 5,
+              "step": 0.5,
+              "label": "长半轴 a"
+            },
+            {
+              "name": "c",
+              "min": 1,
+              "max": 8,
+              "value": 4,
+              "step": 0.5,
+              "label": "半焦距 c"
+            },
+            {
+              "name": "angle",
+              "min": 30,
+              "max": 150,
+              "value": 90,
+              "step": 10,
+              "label": "∠F₁PF₂（度）"
             }
           ],
-          "foci": [
+          "readouts": [
             {
-              "c": 4,
-              "axis": "x",
-              "color": "#fb7185"
+              "label": "2a",
+              "expr": "2*a",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "2c",
+              "expr": "2*c",
+              "color": "#ffd479"
+            },
+            {
+              "label": "|PF₁|+|PF₂|=2a",
+              "expr": "2*a",
+              "color": "#40e0a8"
             }
           ]
-        }
+        },
+        "ask": "拖动 a、c 和夹角，观察焦点三角形的边长关系",
+        "opts": [
+          "掌握椭圆焦点三角形的几何性质",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "|PF₁|+|PF₂|=2a=10",
+          "|F₁F₂|=2c=8",
+          "当∠F₁PF₂=90°时用勾股定理得 |PF₁|·|PF₂|=(10²−8²)/2=18"
+        ],
+        "goal": "掌握椭圆焦点三角形的几何性质",
+        "tip": "结合椭圆定义和余弦定理解题",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "在 △PF₁F₂ 中，由 |PF₁|²+|PF₂|²=|F₁F₂|² 及 |PF₁|+|PF₂|=2a 求乘积。",
+        "explain": "|PF₁|+|PF₂|=10，|PF₁|²+|PF₂|²=64；乘积=(10²−64)/2=18。",
+        "success": "对！|PF₁|·|PF₂|=18。"
       },
       {
         "name": "8-3 迁移应用 · 由面积求角",
-        "type": "input",
-        "q": "上题条件下(∠F₁PF₂ = 90°)，焦点三角形面积 S = （填数值）",
-        "ans": 9,
-        "tol": 0.01,
-        "hint": "S = ½·|PF₁|·|PF₂|·sin90°。",
-        "explain": "S = ½·|PF₁|·|PF₂| = ½·18 = 9，也等于 b²·tan45°=9。",
+        "type": "explore",
+        "technique": "8-3 迁移应用 · 由面积求角",
+        "archetype": "LAB",
+        "lab": "ellipse",
+        "q": "上题条件下(∠F₁PF₂ = 90°)，焦点三角形面积 S =\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
         "scene": {
-          "range": 7,
-          "ellipses": [
+          "range": 8,
+          "axes": false,
+          "sliders": [
             {
-              "a": 5,
-              "b": 3,
-              "axis": "x",
-              "color": "#ff7ea8"
+              "name": "product",
+              "min": 5,
+              "max": 30,
+              "value": 18,
+              "step": 1,
+              "label": "|PF₁|·|PF₂|"
+            },
+            {
+              "name": "theta",
+              "min": 30,
+              "max": 150,
+              "value": 90,
+              "step": 10,
+              "label": "∠F₁PF₂（度）"
             }
           ],
-          "foci": [
+          "readouts": [
             {
-              "c": 4,
-              "axis": "x",
-              "color": "#fb7185"
+              "label": "S=½·|PF₁|·|PF₂|·sinθ",
+              "expr": "0.5*product*sin(theta)",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "当θ=90°时 sinθ=1",
+              "expr": "0.5*product",
+              "color": "#ffd479"
+            },
+            {
+              "label": "也等于 b²·tan(θ/2)",
+              "expr": "9",
+              "color": "#40e0a8"
             }
           ]
-        }
+        },
+        "ask": "拖动乘积值和夹角，观察焦点三角形面积的计算",
+        "opts": [
+          "掌握椭圆焦点三角形面积的计算公式",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "S=½·|PF₁|·|PF₂|·sinθ",
+          "θ=90°时 sinθ=1，S=½·18=9",
+          "也等于 b²·tan45°=9"
+        ],
+        "goal": "掌握椭圆焦点三角形面积的计算公式",
+        "tip": "记住 S=b²·tan(θ/2) 这个结论",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "S = ½·|PF₁|·|PF₂|·sin90°。",
+        "explain": "S = ½·|PF₁|·|PF₂| = ½·18 = 9，也等于 b²·tan45°=9。",
+        "success": "对！面积为 9。"
       }
     ]
   },
@@ -1384,30 +1645,72 @@
       },
       {
         "name": "9-2 建构知识 · 焦半径公式应用",
-        "type": "input",
-        "q": "椭圆 x²/25+y²/9=1 上点 P 到左焦点的距离为 3，则 P 到右焦点的距离为？（填数值）",
-        "ans": 7,
-        "tol": 0.01,
-        "hint": "两焦半径之和恒等于 2a = 10。",
-        "explain": "|PF₁|+|PF₂| = 2a = 10，故 |PF₂| = 10 − 3 = 7。",
+        "type": "explore",
+        "technique": "9-2 建构知识 · 焦半径公式应用",
+        "archetype": "LAB",
+        "lab": "ellipse",
+        "q": "椭圆 x²/25+y²/9=1 上点 P 到左焦点的距离为 3，则 P 到右焦点的距离为\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
         "scene": {
-          "range": 7,
-          "ellipses": [
+          "range": 8,
+          "axes": false,
+          "sliders": [
             {
-              "a": 5,
-              "b": 3,
-              "axis": "x",
-              "color": "#ff7ea8"
+              "name": "a",
+              "min": 3,
+              "max": 10,
+              "value": 5,
+              "step": 0.5,
+              "label": "长半轴 a"
+            },
+            {
+              "name": "pf1",
+              "min": 1,
+              "max": 10,
+              "value": 3,
+              "step": 0.5,
+              "label": "|PF₁|"
             }
           ],
-          "foci": [
+          "readouts": [
             {
-              "c": 4,
-              "axis": "x",
-              "color": "#fb7185"
+              "label": "2a",
+              "expr": "2*a",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "|PF₁|+|PF₂|=2a",
+              "expr": "2*a",
+              "color": "#ffd479"
+            },
+            {
+              "label": "|PF₂|=2a−|PF₁|",
+              "expr": "2*a-pf1",
+              "color": "#40e0a8"
             }
           ]
-        }
+        },
+        "ask": "拖动 a 和到左焦点的距离，观察如何求到右焦点的距离",
+        "opts": [
+          "掌握椭圆上点到两焦点距离之和恒为 2a",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "由椭圆定义 |PF₁|+|PF₂|=2a",
+          "2a=10，|PF₁|=3",
+          "|PF₂|=10−3=7"
+        ],
+        "goal": "掌握椭圆上点到两焦点距离之和恒为 2a",
+        "tip": "这是椭圆的基本定义",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "两焦半径之和恒等于 2a = 10。",
+        "explain": "|PF₁|+|PF₂| = 2a = 10，故 |PF₂| = 10 − 3 = 7。",
+        "success": "对！|PF₂|=7。"
       },
       {
         "name": "9-3 迁移应用 · 距离之和的最值",
@@ -1744,23 +2047,72 @@
       },
       {
         "name": "11-3 迁移应用 · 中点弦的定点特征",
-        "type": "input",
-        "q": "若椭圆 x²/16 + y²/4 = 1 的弦 AB 的中点为 M，则 k_AB·k_OM 恒等于？（填数值）",
-        "ans": -0.25,
-        "tol": 0.01,
-        "hint": "k_AB·k_OM = −b²/a² = −4/16。",
-        "explain": "k_AB·k_OM = −b²/a² = −4/16 = −1/4，与弦的位置无关。",
+        "type": "explore",
+        "technique": "11-3 迁移应用 · 中点弦的定点特征",
+        "archetype": "LAB",
+        "lab": "ellipse",
+        "q": "若椭圆 x²/16 + y²/4 = 1 的弦 AB 的中点为 M，则 k_AB·k_OM 恒等于\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
         "scene": {
-          "range": 6,
-          "ellipses": [
+          "range": 8,
+          "axes": false,
+          "sliders": [
             {
-              "a": 4,
-              "b": 2,
-              "axis": "x",
-              "color": "#ff7ea8"
+              "name": "a_sq",
+              "min": 4,
+              "max": 40,
+              "value": 16,
+              "step": 1,
+              "label": "a²"
+            },
+            {
+              "name": "b_sq",
+              "min": 1,
+              "max": 20,
+              "value": 4,
+              "step": 1,
+              "label": "b²"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "-b²/a²",
+              "expr": "-b_sq/a_sq",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "k_AB·k_OM 的定值",
+              "expr": "-b_sq/a_sq",
+              "color": "#ffd479"
+            },
+            {
+              "label": "a²=16、b²=4 时",
+              "expr": "-0.25",
+              "color": "#40e0a8"
             }
           ]
-        }
+        },
+        "ask": "拖动 a²、b²，观察中点弦斜率与 OM 斜率乘积的定值",
+        "opts": [
+          "掌握椭圆中点弦的斜率乘积性质",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 0,
+        "steps": [
+          "对于椭圆 x²/a²+y²/b²=1",
+          "若 M 是弦 AB 的中点，则 k_AB·k_OM=−b²/a²",
+          "a²=16、b²=4 时乘积=−4/16=−0.25"
+        ],
+        "goal": "掌握椭圆中点弦的斜率乘积性质",
+        "tip": "这是一个重要的定点特征",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "k_AB·k_OM = −b²/a² = −4/16。",
+        "explain": "k_AB·k_OM = −b²/a² = −4/16 = −1/4，与弦的位置无关。",
+        "success": "对！乘积恒为 −0.25。"
       }
     ]
   },
