@@ -1,0 +1,273 @@
+{
+  "basic_inequality": {
+    "title": "基本不等式",
+    "method": "均值不等式 · a²+b²≥2ab",
+    "color": "#F6BD16",
+    "summary": "掌握基本不等式的核心形式、证明方法和应用场景，包括算术 - 几何平均不等式及其变形。",
+    "levels": [
+      {
+        "name": "1-1 建构：理解基本不等式",
+        "type": "explore",
+        "q": "观察 a²+b²与 2ab 的大小关系，拖动滑块改变 a、b 的值",
+        "scene": {
+          "range": 10,
+          "sliders": [
+            {"name": "a", "min": -5, "max": 5, "value": 3, "step": 0.5},
+            {"name": "b", "min": -5, "max": 5, "value": 2, "step": 0.5}
+          ]
+        },
+        "ask": "比较 a²+b²和 2ab 的大小，发现什么规律？",
+        "readouts": [
+          {"label": "a²+b²", "expr": "a*a+b*b"},
+          {"label": "2ab", "expr": "2*a*b"},
+          {"label": "差值 (a-b)²", "expr": "(a-b)*(a-b)", "color": "#40e0a8"}
+        ],
+        "steps": ["计算 a²+b²-2ab = (a-b)²", "因为平方数非负，所以(a-b)²≥0", "故 a²+b²≥2ab"],
+        "goal": "理解基本不等式的本质是平方非负性",
+        "tip": "等号成立当且仅当 a=b",
+        "success": "对！a²+b²总是大于或等于 2ab"
+      },
+      {
+        "name": "1-2 建构：算术 - 几何平均不等式",
+        "type": "explore",
+        "q": "对于正数 a、b，比较算术平均值 (a+b)/2 和几何平均值√(ab)",
+        "scene": {
+          "range": 10,
+          "sliders": [
+            {"name": "a", "min": 0.1, "max": 10, "value": 4, "step": 0.5},
+            {"name": "b", "min": 0.1, "max": 10, "value": 9, "step": 0.5}
+          ]
+        },
+        "ask": "观察两个平均值的关系，何时相等？",
+        "readouts": [
+          {"label": "算术平均 (a+b)/2", "expr": "(a+b)/2"},
+          {"label": "几何平均√(ab)", "expr": "sqrt(a*b)", "color": "#40e0a8"},
+          {"label": "差值", "expr": "(a+b)/2-sqrt(a*b)", "color": "#fb7185"}
+        ],
+        "steps": ["算术平均 ≥ 几何平均", "(a+b)/2 ≥ √(ab)", "等号成立时 a=b"],
+        "goal": "掌握均值不等式的核心形式",
+        "tip": "要求 a,b 都是正数",
+        "success": "对！算术平均总是不小于几何平均"
+      },
+      {
+        "name": "2-1 巩固：直接应用求最值",
+        "type": "explore",
+        "q": "已知 x>0，求 x+1/x 的最小值",
+        "scene": {
+          "range": 10,
+          "sliders": [
+            {"name": "x", "min": 0.1, "max": 5, "value": 2, "step": 0.1}
+          ]
+        },
+        "ask": "拖动 x 的值，观察函数的变化",
+        "readouts": [
+          {"label": "x", "expr": "x"},
+          {"label": "1/x", "expr": "1/x"},
+          {"label": "f(x)=x+1/x", "expr": "x+1/x", "color": "#40e0a8"}
+        ],
+        "steps": ["x+1/x ≥ 2√(x·1/x) = 2", "等号当 x=1/x 即 x=1 时取得", "最小值是 2"],
+        "goal": "掌握积定和最小的应用",
+        "tip": "注意验证等号能否取到",
+        "success": "对！最小值为 2"
+      },
+      {
+        "name": "2-2 巩固：和定积最大",
+        "type": "explore",
+        "q": "已知 x+y=10 (x,y>0)，求 xy 的最大值",
+        "scene": {
+          "range": 10,
+          "sliders": [
+            {"name": "x", "min": 0.1, "max": 9.9, "value": 3, "step": 0.5},
+            {"name": "y", "min": 0.1, "max": 9.9, "value": 7, "step": 0.5}
+          ]
+        },
+        "ask": "保持 x+y=10，观察 xy 的变化",
+        "readouts": [
+          {"label": "x+y", "expr": "x+y"},
+          {"label": "xy", "expr": "x*y", "color": "#40e0a8"},
+          {"label": "最大值 (10/2)²", "expr": "25", "color": "#fb7185"}
+        ],
+        "steps": ["由均值不等式：xy ≤ ((x+y)/2)²", "当 x=y=5 时取最大值", "最大值为 25"],
+        "goal": "掌握和定积最大的应用",
+        "tip": "两数相等时乘积最大",
+        "success": "对！xy 的最大值为 25"
+      },
+      {
+        "name": "3-1 迁移：配凑法应用",
+        "type": "explore",
+        "q": "求 f(x)=x+4/x (x>0) 的最小值",
+        "scene": {
+          "range": 10,
+          "sliders": [
+            {"name": "x", "min": 0.1, "max": 8, "value": 2, "step": 0.2}
+          ]
+        },
+        "ask": "观察函数图像，找到最小值点",
+        "readouts": [
+          {"label": "f(x)=x+4/x", "expr": "x+4/x", "color": "#40e0a8"},
+          {"label": "理论最小值 2√4", "expr": "4", "color": "#fb7185"}
+        ],
+        "steps": ["x+4/x ≥ 2√(x·4/x) = 4", "等号当 x=4/x 即 x=2 时取得", "最小值是 4"],
+        "goal": "掌握直接应用均值不等式求最值",
+        "tip": "确保满足'一正二定三相等'",
+        "success": "对！最小值为 4"
+      },
+      {
+        "name": "3-2 迁移：拆项法",
+        "type": "explore",
+        "q": "求 f(x)=x+1/(4x) (x>0) 的最小值",
+        "scene": {
+          "range": 10,
+          "sliders": [
+            {"name": "x", "min": 0.1, "max": 5, "value": 0.5, "step": 0.1}
+          ]
+        },
+        "ask": "将表达式变形后使用均值不等式",
+        "readouts": [
+          {"label": "f(x)", "expr": "x+1/(4*x)"},
+          {"label": "最小值", "expr": "1", "color": "#40e0a8"}
+        ],
+        "steps": ["x+1/(4x) ≥ 2√(x·1/4x) = 1", "等号当 x=1/(4x) 即 x=0.5 时取得"],
+        "goal": "灵活应用基本不等式",
+        "tip": "系数不同也要保证乘积为常数",
+        "success": "对！最小值为 1"
+      },
+      {
+        "name": "4-1 迁移：约束条件下的最值",
+        "type": "explore",
+        "q": "已知 x+2y=8 (x,y>0)，求 xy 的最大值",
+        "scene": {
+          "range": 10,
+          "sliders": [
+            {"name": "x", "min": 0.1, "max": 7.8, "value": 4, "step": 0.5},
+            {"name": "y", "min": 0.1, "max": 3.9, "value": 2, "step": 0.5}
+          ]
+        },
+        "ask": "在约束条件下寻找最优解",
+        "readouts": [
+          {"label": "约束 x+2y", "expr": "x+2*y"},
+          {"label": "目标 xy", "expr": "x*y", "color": "#40e0a8"}
+        ],
+        "steps": ["设 y=k，则 x=8-2k", "xy=(8-2k)k=-2k²+8k", "二次函数顶点处取最大值"],
+        "goal": "处理带约束的最优化问题",
+        "tip": "可以代入消元转化为一元问题",
+        "success": "对！理解了约束优化的思路"
+      },
+      {
+        "name": "4-2 迁移：多次使用不等式",
+        "type": "explore",
+        "q": "已知 a,b,c>0，证明 (a+b+c)/3 ≥ ∛(abc)",
+        "scene": {
+          "range": 10,
+          "sliders": [
+            {"name": "a", "min": 0.1, "max": 10, "value": 2, "step": 0.5},
+            {"name": "b", "min": 0.1, "max": 10, "value": 4, "step": 0.5},
+            {"name": "c", "min": 0.1, "max": 10, "value": 8, "step": 0.5}
+          ]
+        },
+        "ask": "验证三元均值不等式",
+        "readouts": [
+          {"label": "算术平均", "expr": "(a+b+c)/3"},
+          {"label": "几何平均", "expr": "(a*b*c)**(1/3)", "color": "#40e0a8"},
+          {"label": "差值", "expr": "(a+b+c)/3-(a*b*c)**(1/3)", "color": "#fb7185"}
+        ],
+        "steps": ["三元均值不等式推广", "等号当 a=b=c 时取得"],
+        "goal": "理解均值不等式的多元推广",
+        "tip": "n 元形式同样成立",
+        "success": "对！三元均值不等式成立"
+      },
+      {
+        "name": "5-1 综合：柯西不等式基础",
+        "type": "explore",
+        "q": "验证柯西不等式 (a²+b²)(c²+d²) ≥ (ac+bd)²",
+        "scene": {
+          "range": 10,
+          "sliders": [
+            {"name": "a", "min": -5, "max": 5, "value": 3, "step": 0.5},
+            {"name": "b", "min": -5, "max": 5, "value": 4, "step": 0.5},
+            {"name": "c", "min": -5, "max": 5, "value": 1, "step": 0.5},
+            {"name": "d", "min": -5, "max": 5, "value": 2, "step": 0.5}
+          ]
+        },
+        "ask": "拖动参数，观察不等式是否成立",
+        "readouts": [
+          {"label": "(a²+b²)", "expr": "a*a+b*b"},
+          {"label": "(c²+d²)", "expr": "c*c+d*d"},
+          {"label": "左边乘积", "expr": "(a*a+b*b)*(c*c+d*d)"},
+          {"label": "(ac+bd)²", "expr": "(a*c+b*d)**2", "color": "#40e0a8"}
+        ],
+        "steps": ["柯西不等式是基本不等式的推广", "等号成立条件：a/c = b/d"],
+        "goal": "理解柯西不等式的形式和应用",
+        "tip": "在向量、积分等领域有广泛应用",
+        "success": "对！柯西不等式成立"
+      },
+      {
+        "name": "5-2 综合：权方和不等式",
+        "type": "explore",
+        "q": "验证权方和不等式：x₁²/a₁ + x₂²/a₂ ≥ (x₁+x₂)²/(a₁+a₂)",
+        "scene": {
+          "range": 10,
+          "sliders": [
+            {"name": "x1", "min": 1, "max": 10, "value": 3, "step": 0.5},
+            {"name": "x2", "min": 1, "max": 10, "value": 4, "step": 0.5},
+            {"name": "a1", "min": 1, "max": 10, "value": 2, "step": 0.5},
+            {"name": "a2", "min": 1, "max": 10, "value": 3, "step": 0.5}
+          ]
+        },
+        "ask": "验证这个重要的变式不等式",
+        "readouts": [
+          {"label": "左边", "expr": "x1*x1/a1+x2*x2/a2"},
+          {"label": "右边", "expr": "(x1+x2)*(x1+x2)/(a1+a2)", "color": "#40e0a8"}
+        ],
+        "steps": ["权方和不等式是柯西的变形", "常用于分式和的最值问题"],
+        "goal": "掌握常见不等式变式",
+        "tip": "注意各项的符号和范围",
+        "success": "对！不等式成立"
+      },
+      {
+        "name": "6-1 实验：调和 - 几何 - 算术均值关系",
+        "type": "explore",
+        "q": "比较调和平均、几何平均、算术平均的大小关系",
+        "scene": {
+          "range": 10,
+          "sliders": [
+            {"name": "a", "min": 1, "max": 10, "value": 4, "step": 0.5},
+            {"name": "b", "min": 1, "max": 10, "value": 9, "step": 0.5}
+          ]
+        },
+        "ask": "观察三种平均值的关系链",
+        "readouts": [
+          {"label": "调和平均", "expr": "2/(1/a+1/b)"},
+          {"label": "几何平均", "expr": "sqrt(a*b)"},
+          {"label": "算术平均", "expr": "(a+b)/2", "color": "#40e0a8"}
+        ],
+        "steps": ["调和平均 ≤ 几何平均 ≤ 算术平均", "等号都当 a=b 时成立"],
+        "goal": "理解三种经典平均值的层次关系",
+        "tip": "这个关系链反映了不同的平均思想",
+        "success": "对！发现了完整的平均值关系链"
+      },
+      {
+        "name": "6-2 综合：实际应用问题",
+        "type": "explore",
+        "q": "用固定长度的篱笆围矩形菜园，如何使面积最大？",
+        "scene": {
+          "range": 20,
+          "sliders": [
+            {"name": "length", "min": 1, "max": 19, "value": 6, "step": 0.5},
+            {"name": "width", "min": 1, "max": 19, "value": 4, "step": 0.5}
+          ]
+        },
+        "ask": "给定周长下，如何设计使面积最大",
+        "readouts": [
+          {"label": "周长 2(l+w)", "expr": "2*(length+width)"},
+          {"label": "面积 l×w", "expr": "length*width", "color": "#40e0a8"},
+          {"label": "正方形面积", "expr": "((length+width)/2)**2", "color": "#fb7185"}
+        ],
+        "steps": ["设周长为 L，则 l+w=L/2", "面积 lw ≤ ((l+w)/2)²", "当长=宽时面积最大（正方形）"],
+        "goal": "应用基本不等式解决实际问题",
+        "tip": "数学建模能力很重要",
+        "success": "对！正方形是最优选择"
+      }
+    ]
+  }
+}
