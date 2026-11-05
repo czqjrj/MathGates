@@ -17,8 +17,39 @@ CHAPTER_METHODS = {
     'counting': ['分类原理', '分步原理', '排列', '组合', '综合应用', '捆绑法', '插空法', '隔板法'],
     'probability': ['古典概型', '几何概型', '互斥对立', '条件概率', '乘法公式', '全概率', '贝叶斯', '独立重复试验'],
     'conics': ['椭圆定义', '双曲线定义', '抛物线定义', '标准方程', '几何性质', '焦点三角形', '直线与圆锥曲线', '轨迹方程'],
+    'inequalities': ['基本不等式', 'AM-GM', '等号条件', '和定积最大', '积定和最小',
+                     '配凑法', '乘1法', '系数配凑', '换元法', '三元均值', '多次使用', '实际建模'],
     # ... 可继续补充其他章节
 }
+
+# 不等式章节的方法关键词（仅在 chapter_name == 'inequalities' 时启用，
+# 避免污染其他章节的 method_coverage 分母）
+INEQ_METHOD_KEYWORDS = {
+    '基本不等式': ['a²+b²', 'a²+b²≥2ab', '2ab', '平方非负'],
+    'AM-GM': ['am-gm', '算术平均', '几何平均', '√(ab)'],
+    '等号条件': ['等号', '取等', '三相等', '等号成立'],
+    '和定积最大': ['和定积', '积最大', 's²/4'],
+    '积定和最小': ['积定和', '和最小', '2√p'],
+    '配凑法': ['配凑'],
+    '乘1法': ['乘 1', '乘1', '1 的代换', '1的代换', '乘进去'],
+    '系数配凑': ['系数配凑', '2x+y'],
+    '换元法': ['换元', 't=x²'],
+    '三元均值': ['三元', '∛', 'a+b+c'],
+    '多次使用': ['多次使用', '连续使用', '两式相乘'],
+    '实际建模': ['建模', '围栏', '菜园', '篱笆'],
+}
+
+
+def detect_ineq_methods(levels_data):
+    """不等式章节：按题名/题干关键词判定方法覆盖。"""
+    covered = set()
+    for section in levels_data.values():
+        for level in section.get('levels', []):
+            text = (level.get('name', '') + level.get('q', '')).lower()
+            for method, keywords in INEQ_METHOD_KEYWORDS.items():
+                if any(kw.lower() in text for kw in keywords):
+                    covered.add(method)
+    return covered
 
 def load_levels_file(path):
     with open(path, 'r', encoding='utf-8') as f:
@@ -125,8 +156,12 @@ def analyze_chapter_depth_v3(levels_data, chapter_name):
         return {'depth_score': 0, 'metrics': {}, 'stats': {}}
     
     # 方法覆盖率
-    covered_methods = detect_methods_in_chapter(levels_data)
     all_methods = CHAPTER_METHODS.get(chapter_name, [])
+    if chapter_name == 'inequalities':
+        covered_methods = detect_ineq_methods(levels_data)
+        covered_methods = covered_methods & set(all_methods)
+    else:
+        covered_methods = detect_methods_in_chapter(levels_data)
     method_coverage = len(covered_methods) / len(all_methods) if all_methods else 0.5
     
     # 交互质量
