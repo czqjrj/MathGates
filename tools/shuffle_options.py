@@ -235,7 +235,11 @@ def verify(old_raw, new_raw, label):
     def walk(o, nw, path):
         nonlocal n_checked
         if isinstance(o, dict):
-            if "opts" in o and "ans" in o:
+            # 填空题（input）也会带 opts: [] + 数值 ans，不属于可换位的选择题，
+            # 不能按「选项下标」校验，否则会 IndexError（B1 转 input 后的新形态）。
+            src_opts = o.get("opts")
+            if (src_opts is not None and isinstance(src_opts, list) and len(src_opts) >= 2
+                    and "ans" in o):
                 n_checked += 1
                 a, b = o["opts"], nw["opts"]
                 if sorted(map(str, a)) != sorted(map(str, b)):

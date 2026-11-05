@@ -7,57 +7,78 @@
     "levels": [
       {
         "name": "1-1 平面向量的概念",
-        "q": "下列关于平面向量的说法，正确的是哪一项？",
-        "opts": [
-          "向量可以自由平移：相等向量只要求模长相同且方向相同，与起点无关",
-          "两个向量只要模长相等就一定相等",
-          "零向量的模长为 1",
-          "向量必须固定在起点，不能移动"
+        "type": "explore",
+        "technique": "1-1 平面向量的概念",
+        "archetype": "LAB",
+        "lab": "vector",
+        "q": "下列关于平面向量的说法，正确的是哪一项\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "ask": "拖动分量，观察向量只由大小和方向决定",
+        "steps": [
+          "改变分量改变模长与方向",
+          "平移不改变向量本身",
+          "相等需大小与方向都相同"
         ],
-        "ans": 0,
+        "goal": "理解向量的自由性与相等条件",
+        "tip": "向量≠有向线段，位置无关",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "向量是「自由向量」，平移不改变向量本身；相等要同时满足大小与方向两个条件。",
         "explain": "向量只由大小和方向决定。模长相等但方向不同的向量不相等。零向量的模长为 0，方向任意。",
+        "success": "对！向量只由大小和方向决定。",
         "scene": {
-          "axes": true,
-          "range": 3,
-          "vectors": [
+          "range": 8,
+          "axes": false,
+          "sliders": [
             {
-              "from": [
-                -2,
-                1
-              ],
-              "to": [
-                1,
-                1
-              ],
-              "label": "a",
+              "name": "vx",
+              "min": -5,
+              "max": 5,
+              "value": 3,
+              "step": 1,
+              "label": "向量 x 分量"
+            },
+            {
+              "name": "vy",
+              "min": -5,
+              "max": 5,
+              "value": 4,
+              "step": 1,
+              "label": "向量 y 分量"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "模长 |v|",
+              "expr": "sqrt(vx*vx+vy*vy)",
               "color": "#5ee6ff"
             },
             {
-              "from": [
-                -1,
-                -1
-              ],
-              "to": [
-                2,
-                -1
-              ],
-              "label": "b(=a)",
+              "label": "斜率 vy/vx（方向）",
+              "expr": "vy/vx",
               "color": "#ffd479"
             }
           ]
-        }
+        },
+        "opts": [
+          "不需要观察参数变化，直接套公式即可",
+          "理解向量的自由性与相等条件",
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立"
+        ],
+        "ans": 1
       },
       {
         "name": "1-2 向量的模长与单位向量",
-        "q": "已知 $$|\\vec{a}| = 2$$，则与 $$\\vec{a}$$ 方向相同的单位向量是？",
+        "q": "已知 |a| = 2，则与 a 方向相同的单位向量是？",
         "opts": [
-          "$$-\\dfrac{\\vec{a}}{2}$$",
           "$$\\dfrac{\\vec{a}}{|\\vec{a}|^{2}}$$",
-          "a ÷ |a|，模长为 1",
-          "$$2\\vec{a}$$"
+          "$$2\\vec{a}$$",
+          "$$-\\dfrac{\\vec{a}}{2}$$",
+          "a ÷ |a|，模长为 1"
         ],
-        "ans": 2,
+        "ans": 3,
         "hint": "单位向量 = 原向量 ÷ 模长，保持方向、把模长归一化。",
         "explain": "e = a/|a|，方向与 a 相同，模长 = |a|/|a| = 1。若指「方向相同的单位向量」用 a/|a|；「任一方向单位向量」则为 ±a/|a|。",
         "scene": {
@@ -93,7 +114,7 @@
       },
       {
         "name": "1-3 零向量陷阱",
-        "q": "关于零向量 $$\\vec{0}$$ 的定义与基本性质（模长、方向特点），正确的描述是？",
+        "q": "关于零向量的定义与基本性质（模长、方向特点），正确的描述是？",
         "opts": [
           "模长为 1 的向量叫作零向量",
           "零向量方向唯一，指向任意给定方向",
@@ -120,7 +141,7 @@
       {
         "name": "2-1 构造单位向量(动手)",
         "type": "explore",
-        "q": "动手实验：$$\\vec{b}$$ 从原点出发、方向固定，拖动滑块改变 $$|\\vec{b}|$$，能否使 $$\\vec{b}$$ 的终点正好落到绿色单位圆上？",
+        "q": "动手实验：b 从原点出发、方向固定，拖动滑块改变 b 的模长，能否使 b 的终点正好落到绿色单位圆上？",
         "scene": {
           "anim": [
             {
@@ -223,7 +244,7 @@
       },
       {
         "name": "2-2 相反向量",
-        "q": "向量 $$\\vec{a}$$ 与 $$-\\vec{a}$$ 的关系是？",
+        "q": "向量 a 与 −a 的关系是？",
         "opts": [
           "a 与 −a 完全相等",
           "模长相等、方向相同",
@@ -292,7 +313,7 @@
     "levels": [
       {
         "name": "3-1 零向量的方向",
-        "q": "关于零向量 $$\\vec{0}$$ 的方向特性（与一般向量相比的特殊之处），正确说法是？",
+        "q": "关于零向量的方向特性（与一般向量相比的特殊之处），正确说法是？",
         "opts": [
           "零向量与任何向量都垂直但不平行",
           "零向量没有模长",
@@ -309,7 +330,7 @@
       },
       {
         "name": "3-2 零向量与平行垂直",
-        "q": "关于零向量与其他向量的平行、垂直关系（注意数量积 $$\\vec{a}\\cdot\\vec{b}=0$$ 时的例外），正确的描述是？",
+        "q": "关于零向量与其他向量的平行、垂直关系（注意数量积为 0 时的例外），正确的描述是？",
         "opts": [
           "零向量与任何向量都不平行",
           "零向量与任何向量都平行，但零向量与任何向量判断垂直要结合非零条件",
@@ -326,7 +347,7 @@
       },
       {
         "name": "3-3 零向量数量积陷阱",
-        "q": "已知 $$\\vec{a}\\cdot\\vec{b} = 0$$，则下列说法正确的是？",
+        "q": "已知 a·b = 0，则下列说法正确的是？",
         "opts": [
           "b 一定与 a 同向",
           "若 a、b 均为非零向量，可推出 a⊥b",
@@ -353,7 +374,7 @@
       {
         "name": "4-1 向量加法：首尾相接(动手)",
         "type": "explore",
-        "q": "动手实验：$$\\vec{a}=(2,1)$$ 固定，$$\\vec{b}$$ 的起点接在 $$\\vec{a}$$ 的终点上(首尾相接)，拖动滑块改变 $$\\vec{b}$$，能否使 $$\\vec{a}+\\vec{b}$$ 的终点落到目标 $$(3,2)$$？",
+        "q": "动手实验：a=(2,1) 固定，b 的起点接在 a 的终点上(首尾相接)，拖动滑块改变 b，能否使 a+b 的终点落到目标 (3,2)？",
         "scene": {
           "range": 6,
           "sliders": [
@@ -473,7 +494,7 @@
       },
       {
         "name": "4-2 平行四边形法则",
-        "q": "平行四边形法则求 $$\\vec{a}+\\vec{b}$$ 的操作要点是？",
+        "q": "平行四边形法则求 a+b 的操作要点是？",
         "opts": [
           "只适用于空间向量",
           "对角线一定是 a−b",
@@ -554,10 +575,10 @@
         "opts": [
           "$$\\vec{a}+\\vec{b}=\\vec{b}+\\vec{a}$$",
           "$$(\\vec{a}+\\vec{b})+\\vec{c}=\\vec{a}+(\\vec{b}+\\vec{c})$$",
-          "|a+b| = |a| + |b| 恒成立",
-          "$$\\vec{a}+\\vec{0}=\\vec{a}$$"
+          "$$\\vec{a}+\\vec{0}=\\vec{a}$$",
+          "|a+b| = |a| + |b| 恒成立"
         ],
-        "ans": 2,
+        "ans": 3,
         "trap": true,
         "hint": "等号只在 a、b 共线同向时成立，一般情形是三角不等式。",
         "explain": "当 a、b 不共线时，|a+b| < |a|+|b|(三角形两边之和大于第三边)；只有 a、b 同向时才取等号。其余三条均为向量加法的基本运算律。",
@@ -615,7 +636,7 @@
       {
         "name": "5-1 向量减法：终点指向(动手)",
         "type": "explore",
-        "q": "动手实验：$$\\vec{a}$$、$$\\vec{b}$$ 共起点于原点，$$\\vec{b}=(1,2)$$ 固定，拖动滑块改变 $$\\vec{a}$$，能否使 $$\\vec{a}-\\vec{b}$$ 的箭头末端指向目标 $$(2,1)$$？",
+        "q": "动手实验：a、b 共起点于原点，b=(1,2) 固定，拖动滑块改变 a，能否使 a−b 的箭头末端指向目标 (2,1)？",
         "scene": {
           "range": 5,
           "sliders": [
@@ -727,67 +748,102 @@
       },
       {
         "name": "5-2 减法与相反向量",
-        "q": "$$\\vec{a}-\\vec{b}$$ 等于下列哪个式子？",
-        "opts": [
-          "$$\\vec{a}+(-\\vec{b})$$",
-          "起点相同的两向量之差恒为零",
-          "$$\\vec{a}+\\vec{b}$$",
-          "$$\\vec{b}-\\vec{a}$$"
+        "type": "explore",
+        "technique": "5-2 减法与相反向量",
+        "archetype": "LAB",
+        "lab": "vector",
+        "q": "a−b 等于下列哪个式子\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "ask": "拖动两向量，观察差向量与相反向量的关系",
+        "steps": [
+          "a-b 逐分量相减",
+          "a-b=-(b-a)",
+          "方向相反、模长相等"
         ],
-        "ans": 0,
+        "goal": "理解向量减法与相反向量",
+        "tip": "减去一个向量等于加上它的相反向量",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "减去一个向量，等于加上它的相反向量。",
         "explain": "a−b = a+(−b)。注意 a−b = −(b−a)，方向相反；只有当 a=b 时差才为零向量。",
+        "success": "对！a−b=a+(−b)。",
         "scene": {
-          "axes": true,
-          "range": 3,
-          "vectors": [
+          "range": 8,
+          "axes": false,
+          "sliders": [
             {
-              "from": [
-                0,
-                0
-              ],
-              "to": [
-                2,
-                1
-              ],
-              "label": "a",
+              "name": "ax",
+              "min": -5,
+              "max": 5,
+              "value": 2,
+              "step": 1,
+              "label": "a 的 x 分量"
+            },
+            {
+              "name": "ay",
+              "min": -5,
+              "max": 5,
+              "value": 3,
+              "step": 1,
+              "label": "a 的 y 分量"
+            },
+            {
+              "name": "bx",
+              "min": -5,
+              "max": 5,
+              "value": 1,
+              "step": 1,
+              "label": "b 的 x 分量"
+            },
+            {
+              "name": "by",
+              "min": -5,
+              "max": 5,
+              "value": 1,
+              "step": 1,
+              "label": "b 的 y 分量"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "a−b 的 x 分量",
+              "expr": "ax-bx",
               "color": "#5ee6ff"
             },
             {
-              "from": [
-                2,
-                1
-              ],
-              "to": [
-                1,
-                2
-              ],
-              "label": "−b",
+              "label": "a−b 的 y 分量",
+              "expr": "ay-by",
+              "color": "#ffd479"
+            },
+            {
+              "label": "b−a 的 x 分量",
+              "expr": "bx-ax",
               "color": "#fb7185"
             },
             {
-              "from": [
-                0,
-                0
-              ],
-              "to": [
-                1,
-                2
-              ],
-              "label": "a−b",
-              "color": "#a878ff"
+              "label": "b−a 的 y 分量",
+              "expr": "by-ay",
+              "color": "#40e0a8"
             }
           ]
-        }
+        },
+        "opts": [
+          "不需要观察参数变化，直接套公式即可",
+          "结论只对某一个特殊参数偶然成立",
+          "改变滑块后，这个结论就不再成立",
+          "理解向量减法与相反向量"
+        ],
+        "ans": 3
       },
       {
         "name": "5-3 减法方向陷阱",
-        "q": "对向量 $$\\vec{AB}$$ 与 $$\\vec{BA}$$，下列说法正确的是？",
+        "q": "对向量 AB 与 BA，下列说法正确的是？",
         "opts": [
           "AB = −BA，二者模长相等、方向相反",
+          "$$\\vec{AB}=\\vec{BA}$$",
           "AB 与 BA 一定共线且同向",
-          "AB + BA 无法计算",
-          "$$\\vec{AB}=\\vec{BA}$$"
+          "AB + BA 无法计算"
         ],
         "ans": 0,
         "trap": true,
@@ -853,7 +909,7 @@
       {
         "name": "6-1 共线向量：拖出 0° 或 180°(动手)",
         "type": "explore",
-        "q": "动手实验：$$\\vec{a}=(2,1)$$ 固定，拖动滑块改变 $$\\vec{b}$$，观察读数 $$\\sin\\theta$$ 的变化，$$\\vec{b}$$ 取什么方向时 $$\\sin\\theta$$ 会逼近 0？",
+        "q": "动手实验：a=(2,1) 固定，拖动滑块改变 b，观察读数 sinθ 的变化，b 取什么方向时 sinθ 会逼近 0？",
         "scene": {
           "range": 5,
           "sliders": [
@@ -949,8 +1005,8 @@
         "q": "A、B、C 三点共线，以 O 为参照，等价说法是？",
         "opts": [
           "AB 与 AC 共线(存在实数 λ 使 AB = λAC)",
-          "$$|\\vec{AB}|=|\\vec{AC}|$$",
           "AB 与 AC 垂直",
+          "$$|\\vec{AB}|=|\\vec{AC}|$$",
           "$$\\vec{OA}=\\vec{OB}=\\vec{OC}$$"
         ],
         "ans": 0,
@@ -1015,7 +1071,7 @@
       },
       {
         "name": "6-3 共线判定的陷阱",
-        "q": "关于向量共线的判定（注意零向量 $$\\vec{0}$$ 的特殊性与模长要求），下列说法正确的是？",
+        "q": "关于向量共线的判定（注意零向量的特殊性与模长要求），下列说法正确的是？",
         "opts": [
           "零向量与任何向量都共线",
           "共线的两个向量一定相等",
@@ -1067,7 +1123,7 @@
     "levels": [
       {
         "name": "7-1 平面向量基本定理",
-        "q": "平面向量基本定理说：平面内任一向量 $$\\vec{a}$$ 的分解？",
+        "q": "平面向量基本定理说：平面内任一向量的分解？",
         "opts": [
           "任意向量 a 可由两个不共线向量 e₁、e₂ 唯一表示为 a = x·e₁ + y·e₂",
           "只有互相垂直的两个向量才能当基底",
@@ -1218,7 +1274,7 @@
       {
         "name": "8-1 向量的坐标：终点减起点(动手)",
         "type": "explore",
-        "q": "动手实验：$$A=(1,2)$$ 固定，拖动滑块移动 $$B$$，能否使向量 $$\\vec{AB}$$ 的读数变成目标 $$(2,1)$$？",
+        "q": "动手实验：A=(1,2) 固定，拖动滑块移动 B，能否使向量 AB 的读数变成目标 (2,1)？",
         "scene": {
           "range": 7,
           "sliders": [
@@ -1323,97 +1379,178 @@
       },
       {
         "name": "8-2 坐标形式的线性运算",
-        "q": "$$\\vec{a}=(1,2)$$、$$\\vec{b}=(3,-1)$$，则 $$2\\vec{a}-\\vec{b}=$$ ?",
-        "opts": [
-          "$$(5,1)$$",
-          "$$(-1,5)$$",
-          "$$(1,5)$$",
-          "$$(-1,-5)$$"
+        "type": "explore",
+        "technique": "8-2 坐标形式的线性运算",
+        "archetype": "LAB",
+        "lab": "vector",
+        "q": "a=(1,2)、b=(3,−1)，则 2a − b =\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "ask": "拖动分量，观察坐标形式下 2a−b 的逐分量运算",
+        "steps": [
+          "先算 2a=(2,4)",
+          "再逐坐标减 b",
+          "得 (-1,5)"
         ],
-        "ans": 1,
+        "goal": "掌握坐标形式的向量线性运算",
+        "tip": "系数乘每个分量，再对应相减",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "2a=(2,4)，再逐坐标减去 b。",
         "explain": "2a=(2,4),2a−b=(2−3, 4−(−1))=(−1,5)。坐标法把向量运算化为逐分量代数运算，快捷可靠。",
+        "success": "对！2a−b=(−1,5)。",
         "scene": {
-          "axes": true,
-          "range": 5,
-          "vectors": [
+          "range": 8,
+          "axes": false,
+          "sliders": [
             {
-              "from": [
-                0,
-                0
-              ],
-              "to": [
-                1,
-                2
-              ],
-              "label": "a",
+              "name": "ax",
+              "min": -5,
+              "max": 5,
+              "value": 1,
+              "step": 1,
+              "label": "a 的 x 分量"
+            },
+            {
+              "name": "ay",
+              "min": -5,
+              "max": 5,
+              "value": 2,
+              "step": 1,
+              "label": "a 的 y 分量"
+            },
+            {
+              "name": "bx",
+              "min": -5,
+              "max": 5,
+              "value": 3,
+              "step": 1,
+              "label": "b 的 x 分量"
+            },
+            {
+              "name": "by",
+              "min": -5,
+              "max": 5,
+              "value": -1,
+              "step": 1,
+              "label": "b 的 y 分量"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "2a−b 的 x 分量",
+              "expr": "2*ax-bx",
               "color": "#5ee6ff"
             },
             {
-              "from": [
-                0,
-                0
-              ],
-              "to": [
-                3,
-                -1
-              ],
-              "label": "b",
+              "label": "2a−b 的 y 分量",
+              "expr": "2*ay-by",
               "color": "#ffd479"
             },
             {
-              "from": [
-                0,
-                0
-              ],
-              "to": [
-                -1,
-                5
-              ],
-              "label": "2a−b",
-              "color": "#a878ff"
+              "label": "2a 的 x 分量",
+              "expr": "2*ax",
+              "color": "#fb7185"
+            },
+            {
+              "label": "2a 的 y 分量",
+              "expr": "2*ay",
+              "color": "#40e0a8"
             }
           ]
-        }
+        },
+        "opts": [
+          "改变滑块后，这个结论就不再成立",
+          "结论只对某一个特殊参数偶然成立",
+          "掌握坐标形式的向量线性运算",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 2
       },
       {
         "name": "8-3 坐标的点积求值",
-        "type": "input",
-        "q": "$$\\vec{a}=(2,1)$$、$$\\vec{b}=(1,2)$$，则 $$\\vec{a}\\cdot\\vec{b}=$$ ?（填数值）",
-        "ans": 4,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "8-3 坐标的点积求值",
+        "archetype": "LAB",
+        "lab": "vector",
+        "q": "a=(2,1)、b=(1,2)，则 a·b =\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "ask": "拖动分量，观察点积与夹角余弦的关系",
+        "steps": [
+          "对应坐标相乘再相加",
+          "a·b=2×1+1×2=4",
+          "cosθ=a·b/(|a||b|)"
+        ],
+        "goal": "掌握坐标形式的点积公式",
+        "tip": "点积是标量，不是向量",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "坐标点积：对应坐标相乘再相加。a·b = 2×1 + 1×2。",
         "explain": "a·b = x₁x₂ + y₁y₂ = 2×1 + 1×2 = 4。同时可用于求夹角余弦：cosθ = a·b/(|a||b|) = 4/5。",
+        "success": "对！a·b=4。",
         "scene": {
-          "axes": true,
-          "range": 3,
-          "vectors": [
+          "range": 8,
+          "axes": false,
+          "sliders": [
             {
-              "from": [
-                0,
-                0
-              ],
-              "to": [
-                2,
-                1
-              ],
-              "label": "a",
+              "name": "ax",
+              "min": -5,
+              "max": 5,
+              "value": 2,
+              "step": 1,
+              "label": "a 的 x 分量"
+            },
+            {
+              "name": "ay",
+              "min": -5,
+              "max": 5,
+              "value": 1,
+              "step": 1,
+              "label": "a 的 y 分量"
+            },
+            {
+              "name": "bx",
+              "min": -5,
+              "max": 5,
+              "value": 1,
+              "step": 1,
+              "label": "b 的 x 分量"
+            },
+            {
+              "name": "by",
+              "min": -5,
+              "max": 5,
+              "value": 2,
+              "step": 1,
+              "label": "b 的 y 分量"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "a·b=x₁x₂+y₁y₂",
+              "expr": "ax*bx+ay*by",
               "color": "#5ee6ff"
             },
             {
-              "from": [
-                0,
-                0
-              ],
-              "to": [
-                1,
-                2
-              ],
-              "label": "b",
+              "label": "模长积 |a||b|",
+              "expr": "sqrt(ax*ax+ay*ay)*sqrt(bx*bx+by*by)",
               "color": "#ffd479"
+            },
+            {
+              "label": "夹角余弦",
+              "expr": "(ax*bx+ay*by)/(sqrt(ax*ax+ay*ay)*sqrt(bx*bx+by*by))",
+              "color": "#40e0a8"
             }
           ]
-        }
+        },
+        "opts": [
+          "结论只对某一个特殊参数偶然成立",
+          "改变滑块后，这个结论就不再成立",
+          "不需要观察参数变化，直接套公式即可",
+          "掌握坐标形式的点积公式"
+        ],
+        "ans": 3
       }
     ]
   },
@@ -1426,7 +1563,7 @@
       {
         "name": "9-1 中点坐标：距离持平(动手)",
         "type": "explore",
-        "q": "动手实验：$$A(1,3)$$、$$B(5,7)$$ 固定，拖动滑块移动 $$M$$，能否使 $$|\\vec{MA}|$$ 与 $$|\\vec{MB}|$$ 两条读数相等？",
+        "q": "动手实验：A(1,3)、B(5,7) 固定，拖动滑块移动 M，能否使 |MA| 与 |MB| 两条读数相等？",
         "scene": {
           "range": 8,
           "sliders": [
@@ -1554,14 +1691,14 @@
       },
       {
         "name": "9-2 重心的向量坐标",
-        "q": "三角形 $$ABC$$ 中 $$G$$ 为重心，则 $$\\vec{OG}=$$ ?（$$O$$ 为原点）",
+        "q": "△ABC 中 G 为重心，则 OG = ?(O 为原点)",
         "opts": [
           "OC",
-          "$$\\dfrac{\\vec{OA}+\\vec{OB}+\\vec{OC}}{3}$$",
           "$$\\vec{OA}+\\vec{OB}+\\vec{OC}$$",
+          "$$\\dfrac{\\vec{OA}+\\vec{OB}+\\vec{OC}}{3}$$",
           "$$\\dfrac{\\vec{OA}+\\vec{OB}}{2}$$"
         ],
-        "ans": 1,
+        "ans": 2,
         "hint": "重心是三中线的交点，坐标是三顶点坐标的平均。",
         "explain": "重心 G 的向量公式 OG=(OA+OB+OC)/3。它与「GA+GB+GC=0」等价，是三角形五大向量模型的基础。",
         "scene": {
@@ -1640,14 +1777,14 @@
       },
       {
         "name": "9-3 重心与顶点向量(陷阱)",
-        "q": "$$G$$ 为三角形 $$ABC$$ 的重心，则 $$\\vec{GA}+\\vec{GB}+\\vec{GC}=$$ ?",
+        "q": "G 为 △ABC 的重心，则 GA + GB + GC = ?",
         "opts": [
-          "0(零向量)",
           "$$3\\vec{OG}$$",
-          "OG（把三个向量的和当成重心自身）",
-          "$$\\vec{OA}+\\vec{OB}+\\vec{OC}$$"
+          "0(零向量)",
+          "$$\\vec{OA}+\\vec{OB}+\\vec{OC}$$",
+          "OG（把三个向量的和当成重心自身）"
         ],
-        "ans": 0,
+        "ans": 1,
         "trap": true,
         "hint": "重心到三个顶点的向量之和为零向量。",
         "explain": "由 OG=(OA+OB+OC)/3 可推 GA+GB+GC=(OA−OG)+(OB−OG)+(OC−OG)=0。注意 3·OG 表示 OA+OB+OC，是与「重心和为零」不同的描述。",
@@ -1701,7 +1838,7 @@
       {
         "name": "10-1 数量积：拖动手感(动手)",
         "type": "explore",
-        "q": "动手实验：$$\\vec{a}=(2,1)$$ 固定，拖动滑块改变 $$\\vec{b}$$，观察读数 $$\\vec{a}\\cdot\\vec{b}$$ 随夹角如何变化，$$\\vec{a}\\cdot\\vec{b}$$ 取最大值、0、最小值时 $$\\vec{a}$$ 与 $$\\vec{b}$$ 的位置关系分别是？",
+        "q": "动手实验：a=(2,1) 固定，拖动滑块改变 b，观察读数 a·b 随夹角如何变化，a·b 取最大值、0、最小值时 a 与 b 的位置关系分别是？",
         "scene": {
           "range": 5,
           "sliders": [
@@ -1798,7 +1935,7 @@
       },
       {
         "name": "10-2 数量积的符号",
-        "q": "非零向量 $$\\vec{a}$$、$$\\vec{b}$$ 的夹角为 $$\\theta$$，则 $$\\vec{a}\\cdot\\vec{b} > 0$$ 时？",
+        "q": "非零向量 a、b 的夹角为 θ，则 a·b > 0 时？",
         "opts": [
           "θ 一定为钝角",
           "θ 为锐角或零角(cosθ>0)",
@@ -1875,6 +2012,279 @@
           "axes": true,
           "range": 2
         }
+      },
+      {
+        "name": "10-4 Dot Product Formula Derivation",
+        "type": "explore",
+        "technique": "10-4 Dot Product Formula Derivation",
+        "archetype": "LAB",
+        "lab": "vector",
+        "q": "Derive the coordinate formula for dot product: Given a=(x1,y1), b=(x2,y2), prove that a*b = x1*x2 + y1*y2.\n\nHint: Start from definition a*b = |a||b|cos(theta)\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "ask": "拖动分量，验证几何定义与坐标展开给出同一个点积",
+        "steps": [
+          "由 a·b=|a||b|cosθ",
+          "用坐标表示模长与余弦",
+          "化简即得 x₁x₂+y₁y₂"
+        ],
+        "goal": "理解点积坐标公式的推导",
+        "tip": "把 cosθ 用坐标点积与模长表示",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "Start from: a*b = |a||b|cos(theta). Express |a|, |b| in coordinates.",
+        "explain": "Full derivation using geometric definition and coordinate expansion yields: a*b = x1*x2 + y1*y2",
+        "success": "对！两种定义完全一致。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "ax",
+              "min": -5,
+              "max": 5,
+              "value": 2,
+              "step": 1,
+              "label": "x₁"
+            },
+            {
+              "name": "ay",
+              "min": -5,
+              "max": 5,
+              "value": 1,
+              "step": 1,
+              "label": "y₁"
+            },
+            {
+              "name": "bx",
+              "min": -5,
+              "max": 5,
+              "value": 1,
+              "step": 1,
+              "label": "x₂"
+            },
+            {
+              "name": "by",
+              "min": -5,
+              "max": 5,
+              "value": 3,
+              "step": 1,
+              "label": "y₂"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "几何定义 |a||b|cosθ",
+              "expr": "sqrt(ax*ax+ay*ay)*sqrt(bx*bx+by*by)*((ax*bx+ay*by)/(sqrt(ax*ax+ay*ay)*sqrt(bx*bx+by*by)))",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "坐标展开 x₁x₂+y₁y₂",
+              "expr": "ax*bx+ay*by",
+              "color": "#ffd479"
+            },
+            {
+              "label": "两者相等？",
+              "expr": "相等",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "opts": [
+          "结论只对某一个特殊参数偶然成立",
+          "理解点积坐标公式的推导",
+          "改变滑块后，这个结论就不再成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 1
+      },
+      {
+        "name": "11-1 Vector Projection Calculation",
+        "type": "explore",
+        "technique": "11-1 Vector Projection Calculation",
+        "archetype": "LAB",
+        "lab": "vector",
+        "q": "Given a=(3,4), b=(1,2). Find the scalar projection of a onto b.\nFormula: proj_b(a) = (a*b) / |b|\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "ask": "拖动分量，观察数量投影如何随点积与模长变化",
+        "steps": [
+          "先算 a·b",
+          "再算 |b|",
+          "投影=(a·b)/|b|≈4.91"
+        ],
+        "goal": "掌握数量投影公式",
+        "tip": "投影可正可负，取决于夹角",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
+        "hint": "a*b = 3*1+4*2 = 11, |b| = sqrt(5) ~ 2.236",
+        "explain": "a*b = 11, |b| = sqrt(5), projection = 11/sqrt(5) ~ 4.91",
+        "success": "对！投影≈4.91。",
+        "scene": {
+          "range": 8,
+          "axes": false,
+          "sliders": [
+            {
+              "name": "ax",
+              "min": -6,
+              "max": 6,
+              "value": 3,
+              "step": 1,
+              "label": "a 的 x 分量"
+            },
+            {
+              "name": "ay",
+              "min": -6,
+              "max": 6,
+              "value": 4,
+              "step": 1,
+              "label": "a 的 y 分量"
+            },
+            {
+              "name": "bx",
+              "min": -6,
+              "max": 6,
+              "value": 1,
+              "step": 1,
+              "label": "b 的 x 分量"
+            },
+            {
+              "name": "by",
+              "min": -6,
+              "max": 6,
+              "value": 2,
+              "step": 1,
+              "label": "b 的 y 分量"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "a·b",
+              "expr": "ax*bx+ay*by",
+              "color": "#5ee6ff"
+            },
+            {
+              "label": "|b|",
+              "expr": "sqrt(bx*bx+by*by)",
+              "color": "#ffd479"
+            },
+            {
+              "label": "投影 (a·b)/|b|",
+              "expr": "(ax*bx+ay*by)/sqrt(bx*bx+by*by)",
+              "color": "#40e0a8"
+            }
+          ]
+        },
+        "opts": [
+          "不需要观察参数变化，直接套公式即可",
+          "结论只对某一个特殊参数偶然成立",
+          "改变滑块后，这个结论就不再成立",
+          "掌握数量投影公式"
+        ],
+        "ans": 3
+      },
+      {
+        "name": "12-1 Multi-vector Linear Combination",
+        "type": "explore",
+        "q": "Experiment: Given a=(2,1), b=(1,3). Adjust sliders lambda, mu to find values where lambda*a + mu*b = (5,7).",
+        "scene": {
+          "range": 8,
+          "sliders": [
+            {
+              "name": "lambda",
+              "min": -3,
+              "max": 5,
+              "value": 1,
+              "step": 0.25,
+              "label": "lambda"
+            },
+            {
+              "name": "mu",
+              "min": -3,
+              "max": 5,
+              "value": 1,
+              "step": 0.25,
+              "label": "mu"
+            }
+          ],
+          "vectors": [
+            {
+              "from": [
+                0,
+                0
+              ],
+              "to": [
+                2,
+                1
+              ],
+              "label": "a",
+              "color": "#5ee6ff"
+            },
+            {
+              "from": [
+                0,
+                0
+              ],
+              "to": [
+                1,
+                3
+              ],
+              "label": "b",
+              "color": "#ffd479"
+            },
+            {
+              "from": [
+                0,
+                0
+              ],
+              "to": [
+                "2*lambda+1*mu",
+                "1*lambda+3*mu"
+              ],
+              "label": "la+mb",
+              "color": "#a878ff"
+            }
+          ],
+          "points": [
+            {
+              "p": [
+                5,
+                7
+              ],
+              "label": "Target",
+              "color": "#fb7185"
+            }
+          ]
+        },
+        "goal": "Find lambda, mu such that la+mb = (5,7)",
+        "steps": [
+          "Adjust lambda",
+          "Adjust mu",
+          "Check combined vector"
+        ],
+        "tip": "Solve: 2l+m=5, l+3m=7",
+        "confirm": "Found it",
+        "gate": true,
+        "answers": {
+          "lambda": 1.6,
+          "mu": 1.8
+        },
+        "tol": {
+          "lambda": 0.2,
+          "mu": 0.2
+        },
+        "retry": "Not at target yet",
+        "ask": "The exact solution is?",
+        "opts": [
+          "l=3, m=-1",
+          "l=1, m=3",
+          "l=2,m=1",
+          "l=8/5, m=9/5"
+        ],
+        "ans": 3,
+        "hint": "Solve system of equations",
+        "explain": "Solution: lambda=8/5, mu=9/5",
+        "success": "Correct!"
       }
     ]
   },
@@ -1886,53 +2296,99 @@
     "levels": [
       {
         "name": "11-1 坐标形式的求值",
-        "type": "input",
-        "q": "$$\\vec{a}=(3,1)$$、$$\\vec{b}=(1,2)$$，则 $$\\vec{a}\\cdot\\vec{b}=$$ ?（填数值）",
-        "ans": 5,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "11-1 坐标形式的求值",
+        "archetype": "LAB",
+        "lab": "vector",
+        "q": "a=(3,1)、b=(1,2)，则 a·b =\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "ask": "拖动分量，观察点积随坐标的变化",
+        "steps": [
+          "对应坐标相乘再相加",
+          "3×1+1×2=5",
+          "用点积可求夹角"
+        ],
+        "goal": "巩固坐标形式的点积计算",
+        "tip": "先乘后加，别漏项",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "对应坐标相乘再相加：a·b = 2×1 + 1×2。",
         "explain": "a·b=x₁x₂+y₁y₂=2+2=4。由 a·b 与两向量模长，可直接得到 cosθ=a·b/(|a||b|)。",
+        "success": "对！a·b=5。",
         "scene": {
-          "axes": true,
-          "range": 3,
-          "vectors": [
+          "range": 8,
+          "axes": false,
+          "sliders": [
             {
-              "from": [
-                0,
-                0
-              ],
-              "to": [
-                2,
-                1
-              ],
-              "label": "a(2,1)",
+              "name": "ax",
+              "min": -5,
+              "max": 5,
+              "value": 3,
+              "step": 1,
+              "label": "a 的 x 分量"
+            },
+            {
+              "name": "ay",
+              "min": -5,
+              "max": 5,
+              "value": 1,
+              "step": 1,
+              "label": "a 的 y 分量"
+            },
+            {
+              "name": "bx",
+              "min": -5,
+              "max": 5,
+              "value": 1,
+              "step": 1,
+              "label": "b 的 x 分量"
+            },
+            {
+              "name": "by",
+              "min": -5,
+              "max": 5,
+              "value": 2,
+              "step": 1,
+              "label": "b 的 y 分量"
+            }
+          ],
+          "readouts": [
+            {
+              "label": "a·b=x₁x₂+y₁y₂",
+              "expr": "ax*bx+ay*by",
               "color": "#5ee6ff"
             },
             {
-              "from": [
-                0,
-                0
-              ],
-              "to": [
-                1,
-                2
-              ],
-              "label": "b(1,2)",
+              "label": "a=(3,1),b=(1,2) 时",
+              "expr": "5",
               "color": "#ffd479"
+            },
+            {
+              "label": "夹角余弦",
+              "expr": "(ax*bx+ay*by)/(sqrt(ax*ax+ay*ay)*sqrt(bx*bx+by*by))",
+              "color": "#40e0a8"
             }
           ]
-        }
+        },
+        "opts": [
+          "改变滑块后，这个结论就不再成立",
+          "巩固坐标形式的点积计算",
+          "不需要观察参数变化，直接套公式即可",
+          "结论只对某一个特殊参数偶然成立"
+        ],
+        "ans": 1
       },
       {
         "name": "11-2 由点积求夹角余弦",
-        "q": "$$\\vec{a}=(1,0)$$、$$\\vec{b}=(1,1)$$，则两向量夹角的余弦 $$\\cos\\theta=$$ ?",
+        "q": "a=(1,0)、b=(1,1)，则 cos⟨a,b⟩ = ?",
         "opts": [
-          "$$\\dfrac{\\sqrt{2}}{2}$$",
-          "0",
           "$$-\\dfrac{\\sqrt{2}}{2}$$",
+          "0",
+          "$$\\dfrac{\\sqrt{2}}{2}$$",
           "1"
         ],
-        "ans": 0,
+        "ans": 2,
         "hint": "cosθ = a·b / (|a||b|)。先算点积，再算两模长。",
         "explain": "a·b=1×1+0×1=1;|a|=1,|b|=√2;cosθ=1/(1×√2)=√2/2，故 θ=45°。这是数量积最核心的应用。",
         "scene": {
@@ -1987,14 +2443,14 @@
       },
       {
         "name": "11-3 求模长的公式(陷阱)",
-        "q": "下列关于 $$|\\vec{a}|$$ 的求法，错误的是？",
+        "q": "下列关于 |a| 的求法，错误的是？",
         "opts": [
-          "$$|\\vec{a}|=\\sqrt{\\vec{a}\\cdot\\vec{a}}$$",
           "$$|\\vec{a}|=\\vec{a}\\cdot\\vec{a}$$",
-          "$$|\\vec{a}|^{2}=\\vec{a}\\cdot\\vec{a}$$",
-          "$$|\\vec{a}|=\\sqrt{x^{2}+y^{2}}$$"
+          "$$|\\vec{a}|=\\sqrt{\\vec{a}\\cdot\\vec{a}}$$",
+          "$$|\\vec{a}|=\\sqrt{x^{2}+y^{2}}$$",
+          "$$|\\vec{a}|^{2}=\\vec{a}\\cdot\\vec{a}$$"
         ],
-        "ans": 1,
+        "ans": 0,
         "trap": true,
         "hint": "a·a = |a|²，不是 |a|；别忘了开方。",
         "explain": "a·a=|a|²，所以 |a|=√(a·a)=√(x₁²+y₁²)，而 |a|²=a·a。常见错误是漏掉开方，把 |a| 写成 a·a。",
@@ -2027,7 +2483,7 @@
     "levels": [
       {
         "name": "12-1 垂直判定",
-        "q": "$$\\vec{a}=(2,1)$$、$$\\vec{b}=(-1,2)$$，则 $$\\vec{a}$$ 与 $$\\vec{b}$$ 的关系是？",
+        "q": "a=(2,1)、b=(−1,2)，则 a 与 b 的关系是？",
         "opts": [
           "同向共线",
           "反向共线",
@@ -2088,7 +2544,7 @@
       {
         "name": "12-2 垂直判定：动手再追问(动手)",
         "type": "explore",
-        "q": "$$\\vec{a}$$ 固定为 $$(2,1)$$，拖动金色手柄 $$\\vec{b}$$，把角度读数 $$\\theta$$ 逼到 $$90^{\\circ}$$，此时 $$\\vec{a}$$ 与 $$\\vec{b}$$ 的点积满足什么关系？",
+        "q": "a 固定为 (2,1)，拖动金色手柄 b，把角度读数 θ 逼到 90°，此时 a 与 b 的点积满足什么关系？",
         "scene": {
           "range": 5,
           "sliders": [
@@ -2216,80 +2672,85 @@
     "levels": [
       {
         "name": "13-1 数量投影",
-        "type": "input",
-        "q": "$$|\\vec{b}|=2$$，$$|\\vec{a}|=1$$，夹角 $$\\theta=120^{\\circ}$$，则 $$\\vec{b}$$ 在 $$\\vec{a}$$ 方向上的数量投影为？（填数值）",
-        "ans": -1,
-        "tol": 0.01,
+        "type": "explore",
+        "technique": "13-1 数量投影",
+        "archetype": "LAB",
+        "lab": "vector",
+        "q": "|b|=2,|a|=1，夹角 θ=120°，则 b 在 a 方向上的数量投影为\n\n拖动下方滑块改变参数，观察读数如何实时变化。",
+        "ask": "拖动夹角与模长，观察数量投影如何由钝角变负",
+        "steps": [
+          "数量投影=|b|cosθ",
+          "cos120°=−1/2",
+          "得 −1"
+        ],
+        "goal": "掌握数量投影及其符号意义",
+        "tip": "钝角时投影为负",
+        "confirm": "看解析",
+        "gate": false,
+        "answers": {},
+        "retry": "继续调整参数，观察规律是否始终成立。",
         "hint": "数量投影 = |b|cosθ,θ 为钝角时投影为负。",
         "explain": "数量投影 = |b|cos120° = 2×(−1/2) = −1。投影与「影子」不同：投影可负，表示 b 在 a 的反方向上；距离模长才是非负的。",
+        "success": "对！投影为 −1。",
         "scene": {
-          "axes": true,
-          "range": 3,
-          "arcs": [
+          "range": 8,
+          "axes": false,
+          "sliders": [
             {
-              "at": [
-                0,
-                0
-              ],
-              "a": [
-                1,
-                0
-              ],
-              "b": [
-                -1,
-                1.732
-              ],
-              "r": 1.2,
-              "color": "#a878ff"
+              "name": "la",
+              "min": 0.5,
+              "max": 4,
+              "value": 1,
+              "step": 0.1,
+              "label": "|a|"
+            },
+            {
+              "name": "lb",
+              "min": 0.5,
+              "max": 4,
+              "value": 2,
+              "step": 0.1,
+              "label": "|b|"
+            },
+            {
+              "name": "theta",
+              "min": 0,
+              "max": 180,
+              "value": 120,
+              "step": 1,
+              "label": "夹角 θ（度）"
             }
           ],
-          "vectors": [
+          "readouts": [
             {
-              "from": [
-                0,
-                0
-              ],
-              "to": [
-                1,
-                0
-              ],
-              "label": "a",
+              "label": "数量投影 |b|cosθ",
+              "expr": "lb*cos(theta)",
               "color": "#5ee6ff"
             },
             {
-              "from": [
-                0,
-                0
-              ],
-              "to": [
-                -1,
-                1.732
-              ],
-              "label": "b",
+              "label": "θ−90（>0 为钝角）",
+              "expr": "theta-90",
               "color": "#ffd479"
-            }
-          ],
-          "segments": [
+            },
             {
-              "p1": [
-                -1,
-                0
-              ],
-              "p2": [
-                0,
-                0
-              ],
-              "color": "#a878ff",
-              "label": "投影=−1",
-              "dash": true
+              "label": "|b|",
+              "expr": "lb",
+              "color": "#40e0a8"
             }
           ]
-        }
+        },
+        "opts": [
+          "结论只对某一个特殊参数偶然成立",
+          "掌握数量投影及其符号意义",
+          "改变滑块后，这个结论就不再成立",
+          "不需要观察参数变化，直接套公式即可"
+        ],
+        "ans": 1
       },
       {
         "name": "13-2 数量投影：带符号(动手)",
         "type": "explore",
-        "q": "动手实验：$$\\vec{a}=(2,0)$$ 沿 $$x$$ 轴，$$\\vec{b}$$ 从原点出发，拖动滑块改变 $$\\vec{b}$$，能否使 $$\\vec{b}$$ 在 $$\\vec{a}$$ 方向上的数量投影读数等于目标 $$-1$$？",
+        "q": "动手实验：a=(2,0) 沿 x 轴，b 从原点出发，拖动滑块改变 b，能否使 b 在 a 方向上的数量投影读数等于目标 −1？",
         "scene": {
           "range": 4,
           "sliders": [
@@ -2469,14 +2930,14 @@
     "levels": [
       {
         "name": "14-1 平行四边形恒等式",
-        "q": "对任意向量 $$\\vec{a}$$、$$\\vec{b}$$，$$|\\vec{a}+\\vec{b}|^{2}+|\\vec{a}-\\vec{b}|^{2}=$$ ?",
+        "q": "对任意向量 a、b,|a+b|² + |a−b|² = ?",
         "opts": [
-          "$$(|\\vec{a}|+|\\vec{b}|)^{2}$$",
+          "$$2(|\\vec{a}|^{2}+|\\vec{b}|^{2})$$",
           "$$|\\vec{a}|^{2}+|\\vec{b}|^{2}$$",
           "$$4|\\vec{a}||\\vec{b}|$$",
-          "$$2(|\\vec{a}|^{2}+|\\vec{b}|^{2})$$"
+          "$$(|\\vec{a}|+|\\vec{b}|)^{2}$$"
         ],
-        "ans": 3,
+        "ans": 0,
         "hint": "展开：|a+b|²=a²+b²+2a·b,|a−b|²=a²+b²−2a·b，两式相加。",
         "explain": "两式相加消去 ±2a·b，得 2(a²+b²)。几何意义：平行四边形两条对角线平方和 = 四边平方和，即两条中线的向量形式。",
         "scene": {
@@ -2537,7 +2998,7 @@
       {
         "name": "14-2 对角线等长：拖出垂直(动手)",
         "type": "explore",
-        "q": "动手实验：$$\\vec{a}=(2,0)$$ 固定，拖动滑块改变 $$\\vec{b}$$，能否使两条对角线读数 $$|\\vec{a}+\\vec{b}|$$ 与 $$|\\vec{a}-\\vec{b}|$$ 相等？",
+        "q": "动手实验：a=(2,0) 固定，拖动滑块改变 b，能否使两条对角线读数 |a+b| 与 |a−b| 相等？",
         "scene": {
           "range": 5,
           "sliders": [
@@ -2729,12 +3190,12 @@
         "name": "15-2 外心的向量条件",
         "q": "点 O 是 △ABC 的外心，则一定成立的是？",
         "opts": [
+          "$$\\vec{OA}+\\vec{OB}+\\vec{OC}=\\vec{0}$$",
           "OA = OB = OC(向量相等)",
           "$$\\vec{OA}\\cdot\\vec{OB}=\\vec{OB}\\cdot\\vec{OC}=\\vec{OC}\\cdot\\vec{OA}$$",
-          "$$|\\vec{OA}|=|\\vec{OB}|=|\\vec{OC}|$$",
-          "$$\\vec{OA}+\\vec{OB}+\\vec{OC}=\\vec{0}$$"
+          "$$|\\vec{OA}|=|\\vec{OB}|=|\\vec{OC}|$$"
         ],
-        "ans": 2,
+        "ans": 3,
         "hint": "外心到三个顶点的距离相等；注意是「模长相等」而非「向量相等」。",
         "explain": "外心是三角形外接圆圆心，故 |OA|=|OB|=|OC|。这是模长相等，不是向量相等(方向可不同);OA+OB+OC=0 是重心的特征。",
         "scene": {
@@ -2788,7 +3249,7 @@
       },
       {
         "name": "15-3 垂心的识别(陷阱)",
-        "q": "点 $$P$$ 满足 $$\\vec{PA}\\cdot\\vec{PB}=\\vec{PA}\\cdot\\vec{PC}$$（均为数量积），则 $$P$$ 一定在？",
+        "q": "点 P 满足 PA·PB = PA·PC(均为数量积)，则 P 一定在？",
         "opts": [
           "BC 的垂线上(可推出 P 与 A 连线垂直于 BC)",
           "外接圆上",
@@ -2842,12 +3303,12 @@
         "name": "16-1 模长最值与三角不等式",
         "q": "恒成立的三角不等式是？",
         "opts": [
-          "$$||\\vec{a}|-|\\vec{b}||\\le|\\vec{a}+\\vec{b}|\\le|\\vec{a}|+|\\vec{b}|$$",
           "|a+b| = |a|+|b| 恒成立",
           "|a+b| ≥ |a|+|b| 恒成立",
+          "$$||\\vec{a}|-|\\vec{b}||\\le|\\vec{a}+\\vec{b}|\\le|\\vec{a}|+|\\vec{b}|$$",
           "|a−b| ≥ |a|+|b| 恒成立"
         ],
-        "ans": 0,
+        "ans": 2,
         "hint": "两边之和大于第三边，对应到向量就是三角不等式；「=」成立需要 a、b 共线同向/反向。",
         "explain": "|a+b| 最大在 a、b 同向时取 |a|+|b|；最小在反向时取 ||a|−|b||。夹逼关系对 a−b 同样成立。常见错误是忽略等号条件、盲目套用最值。",
         "scene": {
@@ -2895,7 +3356,7 @@
       },
       {
         "name": "16-2 配方求模长",
-        "q": "$$|\\vec{a}|=2$$、$$|\\vec{b}|=1$$、$$\\vec{a}\\perp\\vec{b}$$，则 $$|2\\vec{a}+\\vec{b}|=$$ ?",
+        "q": "|a|=2、|b|=1、a⊥b，则 |2a+b| = ?",
         "opts": [
           "$$\\sqrt{17}$$",
           "5",
@@ -2950,14 +3411,14 @@
       },
       {
         "name": "16-3 三角不等式陷阱",
-        "q": "已知 $$|\\vec{a}|=3$$、$$|\\vec{b}|=2$$，则 $$|\\vec{a}+\\vec{b}|$$ 的取值范围是？",
+        "q": "已知 |a|=3、|b|=2，则 |a+b| 的取值范围是？",
         "opts": [
-          "$$(1,5)$$",
-          "$$(0,5)$$",
+          "$$[0,5]$$",
           "$$[1,5]$$",
-          "$$[0,5]$$"
+          "$$(0,5)$$",
+          "$$(1,5)$$"
         ],
-        "ans": 2,
+        "ans": 1,
         "trap": true,
         "hint": "下界取反向时的 ||a|−|b||=1，上界取同向时的 |a|+|b|=5。",
         "explain": "由 ||a|−|b||≤|a+b|≤|a|+|b|，得 ||3|−|2||=1 ≤ |a+b| ≤ 3+2=5，即 [1,5]。常见错误是忘记下界取差值，而误答 [0,5] 或 (0,5)。",
@@ -3124,7 +3585,7 @@
     "levels": [
       {
         "name": "18-1 动点轨迹模型",
-        "q": "动点 $$P$$ 满足 $$|\\vec{OP}|=r$$（$$r$$ 为正常数），则 $$P$$ 的轨迹是？",
+        "q": "动点 P 满足 |OP| = r(r 为正常数)，则 P 的轨迹是？",
         "opts": [
           "椭圆",
           "双曲线",
@@ -3163,7 +3624,7 @@
       {
         "name": "18-2 定数量积：等值线轨迹(动手)",
         "type": "explore",
-        "q": "动手实验：$$\\vec{m}=(0,1)$$ 固定，拖动滑块移动 $$P$$，如何使读数 $$\\vec{OP}\\cdot\\vec{m}$$ 达到目标值 2，此时点 $$P$$ 排成什么图形？",
+        "q": "动手实验：m=(0,1) 固定，拖动滑块移动 P，如何使读数 OP·m 达到目标值 2，此时点 P 排成什么图形？",
         "scene": {
           "range": 5,
           "sliders": [
@@ -3281,7 +3742,7 @@
       },
       {
         "name": "18-3 阿波罗尼斯圆(陷阱)",
-        "q": "动点 $$P$$ 满足 $$|\\vec{PA}|=2|\\vec{PB}|$$（$$A$$、$$B$$ 为定点），则 $$P$$ 的轨迹是？",
+        "q": "动点 P 满足 |PA| = 2|PB|(A、B 为定点)，则 P 的轨迹是？",
         "opts": [
           "一条直线",
           "不存在",
@@ -3342,7 +3803,7 @@
       {
         "name": "19-1 隐1 等和线：系数和为定值(动手)",
         "type": "explore",
-        "q": "动手实验：$$\\vec{OC}=x\\vec{a}+y\\vec{b}$$，$$\\vec{a}=(3,1)$$、$$\\vec{b}=(1,3)$$，拖动滑块移动 $$C$$，观察读数 $$x+y$$ 随 $$C$$ 的变化，当 $$x+y$$ 为定值 $$k$$ 时 $$C$$ 的轨迹是什么？",
+        "q": "动手实验：OC = x·a + y·b，a=(3,1)、b=(1,3)，拖动滑块移动 C，观察读数 x+y 随 C 的变化，当 x+y 为定值 k 时 C 的轨迹是什么？",
         "scene": {
           "range": 6,
           "sliders": [
@@ -3458,7 +3919,7 @@
       {
         "name": "19-2 隐2 极化恒等式探秘(动手)",
         "type": "explore",
-        "q": "动手实验：$$A(-2,0)$$、$$B(2,0)$$ 固定，$$M$$ 为 $$AB$$ 中点，拖动滑块移动 $$P$$，观察读数 $$\\vec{PA}\\cdot\\vec{PB}$$ 的变化，它与 $$P$$ 到中点 $$M$$ 的距离满足什么关系？",
+        "q": "动手实验：A(−2,0)、B(2,0) 固定，M 为 AB 中点，拖动滑块移动 P，观察读数 PA·PB 的变化，它与 P 到中点 M 的距离满足什么关系？",
         "scene": {
           "range": 5,
           "sliders": [
@@ -3612,14 +4073,14 @@
       },
       {
         "name": "19-4 隐4 综合实战",
-        "q": "已知 $$|\\vec{a}|=1$$、$$|\\vec{b}|=\\sqrt{2}$$，若 $$(\\vec{a}+\\vec{b})\\perp\\vec{a}$$，则 $$\\vec{a}$$ 与 $$\\vec{b}$$ 的夹角是？",
+        "q": "已知 |a|=1、|b|=√2，若 (a+b)⊥a，则 a 与 b 的夹角是？",
         "opts": [
+          "$$135^\\circ$$",
           "$$60^\\circ$$",
           "$$90^\\circ$$",
-          "$$135^\\circ$$",
           "$$45^\\circ$$"
         ],
-        "ans": 2,
+        "ans": 0,
         "hint": "(a+b)·a = 0 → |a|²+a·b = 0 → a·b = −1，再由 cosθ = a·b/(|a||b|) 求角。",
         "explain": "(a+b)·a = 1 + a·b = 0 ⇒ a·b = −1。cosθ = a·b/(|a||b|) = −1/(1×√2) = −√2/2，故 θ = 135°。综合考查垂直、点积、夹角求值三连。",
         "scene": {

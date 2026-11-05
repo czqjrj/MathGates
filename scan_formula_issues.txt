@@ -1,0 +1,51 @@
+derivative_levels.json | .deriv_extrema.levels[0].scene.curves[0].label | UNICODE-MATH  | y=x²−2x+3
+functions_levels.json | .func_model.levels[0].scene.labels[0].text | UNICODE-MATH  |  y=x²
+param_master_all.json | .param_master_all.levels[0].scene.readouts[2].label | UNICODE-MATH  | a≈1
+param_master_all.json | .param_master_all.levels[0].scene.readouts[3].label | UNICODE-MATH  | b≈2
+param_master_all.json | .param_master_all.levels[1].goal | UNICODE-MATH  | f(x) = x³ + kx
+param_master_all.json | .param_master_all.levels[1].scene.readouts[2].label | UNICODE-MATH  | k≥0
+param_master_all.json | .param_master_all.levels[2].scene.readouts[2].label | UNICODE-MATH  | a≈2
+param_master_all.json | .param_master_all.levels[2].scene.readouts[3].label | UNICODE-MATH  | b≈3
+param_master_all.json | .param_master_all.levels[3].goal | UNICODE-MATH  | f(x) = x³ + kx
+param_master_all.json | .param_master_all.levels[3].scene.readouts[2].label | UNICODE-MATH  | k≥0
+param_master_all.json | .param_master_all.levels[4].scene.readouts[2].label | UNICODE-MATH  | a≈-1
+param_master_all.json | .param_master_all.levels[4].scene.readouts[3].label | UNICODE-MATH  | b≈2
+param_master_all.json | .param_master_all.levels[5].goal | UNICODE-MATH  | f(x) = x³ + kx
+param_master_all.json | .param_master_all.levels[5].scene.readouts[2].label | UNICODE-MATH  | k≥0
+param_master_all.json | .param_master_all.levels[7].goal | UNICODE-MATH  | (x-2)² + (y-1)² = r²
+param_master_all.json | .param_master_all.levels[10].goal | UNICODE-MATH  | (x-2)² + (y-1)² = r²
+param_master_all.json | .param_master_all.levels[13].scene.readouts[1].label | UNICODE-MATH  | a4=2q³
+param_master_all.json | .param_master_all.levels[15].scene.readouts[1].label | UNICODE-MATH  | a4=2q³
+param_master_function.json | .param_master_function.levels[0].scene.readouts[2].label | UNICODE-MATH  | a≈1
+param_master_function.json | .param_master_function.levels[0].scene.readouts[3].label | UNICODE-MATH  | b≈2
+param_master_function.json | .param_master_function.levels[1].goal | UNICODE-MATH  | f(x) = x³ + kx
+param_master_function.json | .param_master_function.levels[1].scene.readouts[2].label | UNICODE-MATH  | k≥0
+param_master_function.json | .param_master_function.levels[2].scene.readouts[2].label | UNICODE-MATH  | a≈2
+param_master_function.json | .param_master_function.levels[2].scene.readouts[3].label | UNICODE-MATH  | b≈3
+param_master_function.json | .param_master_function.levels[3].goal | UNICODE-MATH  | f(x) = x³ + kx
+param_master_function.json | .param_master_function.levels[3].scene.readouts[2].label | UNICODE-MATH  | k≥0
+param_master_function.json | .param_master_function.levels[4].scene.readouts[2].label | UNICODE-MATH  | a≈-1
+param_master_function.json | .param_master_function.levels[4].scene.readouts[3].label | UNICODE-MATH  | b≈2
+param_master_function.json | .param_master_function.levels[5].goal | UNICODE-MATH  | f(x) = x³ + kx
+param_master_function.json | .param_master_function.levels[5].scene.readouts[2].label | UNICODE-MATH  | k≥0
+param_master_geometry.json | .param_master_geometry.levels[1].goal | UNICODE-MATH  | (x-2)² + (y-1)² = r²
+param_master_geometry.json | .param_master_geometry.levels[4].goal | UNICODE-MATH  | (x-2)² + (y-1)² = r²
+param_master_sequence.json | .param_master_sequence.levels[1].scene.readouts[1].label | UNICODE-MATH  | a4=2q³
+param_master_sequence.json | .param_master_sequence.levels[3].scene.readouts[1].label | UNICODE-MATH  | a4=2q³
+space_levels.json | .space_2_1.levels[0].scene.readouts[0].label | UNICODE-MATH  | u·v
+space_levels.json | .space_2_1.levels[0].scene.readouts[1].label | UNICODE-MATH  | n·u
+space_levels.json | .space_2_1.levels[0].scene.readouts[2].label | UNICODE-MATH  | n·v
+space_levels.json | .space_2_2.levels[0].scene.readouts[0].label | UNICODE-MATH  | u·n
+trig_levels.json | .trig_sumdiff.levels[0].scene.sliders[0].label | UNICODE-MATH  | α°
+trig_levels.json | .trig_sumdiff.levels[0].scene.sliders[1].label | UNICODE-MATH  | β°
+trig_levels.json | .trig_sumdiff.levels[0].scene.readouts[0].label | UNICODE-MATH  | cosα·cosβ+sinα·sinβ
+trig_levels.json | .trig_sumdiff.levels[0].scene.readouts[1].label | UNICODE-MATH  | cos(α−β)
+trig_levels.json | .trig_double.levels[0].scene.sliders[0].label | UNICODE-MATH  | α°
+trig_levels.json | .trig_double.levels[0].scene.readouts[0].label | UNICODE-MATH  | 2·sinα·cosα
+trig_levels.json | .trig_double.levels[0].scene.readouts[1].label | UNICODE-MATH  | sin(2α)
+trig_levels.json | .trig_aux.levels[0].scene.sliders[2].label | UNICODE-MATH  | x°
+trig_levels.json | .trig_aux.levels[0].scene.readouts[0].label | UNICODE-MATH  | A·sinx+B·cosx
+trig_levels.json | .trig_aux.levels[0].scene.readouts[1].label | UNICODE-MATH  | √(A²+B²)
+trig_levels.json | .trig_aux.levels[0].scene.readouts[2].label | UNICODE-MATH  | ∈[−1,1]
+trig_levels.json | .trig_measure.levels[3].scene.arcs[1].label | UNICODE-MATH  | 15°
+vector_levels.json | .vector_4_3.levels[1].goal | UNICODE-MATH  | a·b(

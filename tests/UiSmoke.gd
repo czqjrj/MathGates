@@ -485,6 +485,7 @@ func _test_guides() -> void:
 		var btns := []
 		var labels := ""
 		var dims := 0
+		var modal_layers := []
 		for n in _walk(st):
 			if n is Button:
 				btns.append(str((n as Button).text))
@@ -492,7 +493,22 @@ func _test_guides() -> void:
 				labels += (n as Label).text + "\n"
 			elif n is ColorRect:
 				dims += 1
+			elif n is CanvasLayer and str((n as CanvasLayer).name) == "GuideModalLayer":
+				modal_layers.append(n)
 		_ok(dims > 0, "guide ui: 关卡页弹出了引导遮罩")
+		_ok(not modal_layers.is_empty()
+			and int((modal_layers[0] as CanvasLayer).layer) > UiConst.LAYER_STAGE_UI,
+			"guide ui: 引导遮罩在模态层，盖住左侧答题面板")
+		if not modal_layers.is_empty():
+			var dim_rect: Control = null
+			for ch in (modal_layers[0] as Node).get_children():
+				if ch is ColorRect:
+					dim_rect = ch
+					break
+			var vp: Vector2 = st.get_viewport_rect().size
+			_ok(dim_rect != null
+				and dim_rect.size.x >= vp.x * 0.9 and dim_rect.size.y >= vp.y * 0.9,
+				"guide ui: 模态遮罩铺满视口")
 		_ok(labels.find("先动手调一调") >= 0, "guide ui: 引导首步文案可见")
 		var has_help := false
 		for b in btns:

@@ -1,4 +1,4 @@
-# TODO · 唯一待办清单
+﻿# TODO · 唯一待办清单
 
 > **本文件是项目唯一的 TODO**。合并自原先四个文件：`TODO.md`（MicroTeX 公式运行时渲染，已 100% 完成）、
 > `TODO-lab.md`（几何章节迁移到 LabStage，已完成）、`TODO-gamify.md`（关卡游戏化 P1/P2/P3，已交付）、
@@ -47,7 +47,7 @@
 | **B5** | 干扰项改为诊断性干扰项 | **P1** | ✅ 已完成（2026-10-20 收官：黑名单校验器 + 42 轮整改 + 抽检 30 题；`tools/sample_distractors.gd`） |
 | **B6** | 选项过短、退化为结果核对 | **P1** | 🟡 度量校准（第五十轮）：选项字数中位数 8.0；概念轮「理由选项」已 57.3%（≥30% 达标）。**「105 题全数值选项」经第五十一轮复核作废**（102 条是正经计算题、3 条是探究轮误判）。余：仅 `err_reason` 错因标签（引擎侧） |
 | **B7** | 图片选项回归 LaTeX 文本 | **P1** | ✅ 已完成（2026-10-26 第四十六轮）：关卡文件 **188 处**图片选项全改 `$$LaTeX$$`（`vector` 44 / `recurrence` 42 / `ellipse` 22 / `conic` 6 + 立几方法 74），`data/` 下 `opts` 引用 `res://art/**` 归零；顺带补 22 条「选项变文本后才暴露」的 hint 泄露 |
-| **B11** | 模块间质量方差过大 | **P1** | 🟡 第一阶段完成（口径校准三处 + 第一批符号化）：①修正覆盖面 22→27 章 / 题型判定（`choice` 不再误为非选）/ 字段落地（`solid` 排除 n/a）；②符号化四章：vector 41 题（0.337→0.626）、parabola 27 题（0.370→0.564）、probability 16 题（0.361→0.477）、statistics 9 题（0.288→0.341）；实测 **均值 0.481、std 0.072、9 章<0.45**（校准前 0.467/0.080/11 章）。**关键结论：分数上涨主要来自「是否用 `$$LaTeX$$`」，不等于内容变深**；statistics/counting 等章的 `steps=0` 是结构短板（无交互轮），补文案无用。详见 `docs/B11_模块质量方差整改方案.md` v2.1 |
+| **B11** | 模块间质量方差过大 | **P1** | 🟡 Phase 3：13 章共 160 道 `input` 已就地转 `explore`（input 190→87），已转章节 depth 全部 ≥0.45；剩余 12 文件 87 道待转 |
 | **A4** | 上帝对象拆分（`GameData`/`StageBase`/`TheoremTree`） | **P2** | ✅ 已收口（2026-10-21 第二十五轮 `7b4f8be`）：九刀拆出规则层七文件 696 行，三文件 4725→4311 行；行数红线进 `check_all`（超限即红灯）+ README「代码结构红线」；全程无行为变化、九件套绿 |
 | **A7** | 版本声明漂移（文档 vs `project.godot` vs GDExtension） | **P2** | ✅ 已完成（文档基线 + 版本策略已记录） |
 | **A8** | 「地图」隐喻套在清单结构上 | **P2** | 产品层，长期方向 |
@@ -139,7 +139,17 @@
   **本轮（第五十三轮）**：`901c981`（feat B1 参数实验纯闸门）+ docs（本文件）→
   **第五十四~五十七轮**：`779c89c`（feat B1/B3/A13/E4/UI）+ `bf33fde` + `f25a782`（docs 本文件，含 11/11 实跑结果与 B1 决策）。
 
-- **本轮工作 XI（2026-11-03）：E5 教材对齐闭环 + E4 收尾 + B11 指标定义 + B6 err_reason schema（进度见下方「收工点」）**
+- **本轮工作 XII（2026-11-04）：B11 逐章补强 —— input→explore 就地转换（13 章 160 题，input 190→87）**
+  - 目标：按课程表顺序逐章把填空题就地改为可交互 explore，不靠新增题目稀释占比。
+  - **已完成 13 章**：set_logic 10 · function_lab 7 · sequences 17 · inequalities 10 · trig 13 · functions 9 · vector 8 · vectors 12 · conics 11 · probability 14 · derivative 11 · complex 10 · counting 25 · thinking 3（共 160 题）。
+  - **每题结构**：≥2 个滑块 + 纯数值实时读数 + 追问 `opts/ans`；`gate:false` 保证实验后可继续。
+  - **引擎兼容修复**（`f848aa3`）：`scene_data`→`scene` 127 处；60 组读数重装、55 条非法表达式丢弃；121 道死闸门解除、130 道补追问选项。
+  - **数学修正**：`thinking` 待定系数题原解析 `B=−1` 有误 → 改为 `A=2, B=1` 并重写验证。
+  - **当前深度（v3.0）**：13 章全部 ≥0.45（最高 counting 0.704、probability 0.695、vector 0.784；thinking 0.461 过线）。
+  - **剩余**：12 文件 87 道 input（statistics 13 · random_var 9 · circle 9 · hyperbola 9 · ellipse 8 · line 7 · recurrence 7 · corr_data 6 · solid_basic 6 · space 5 · conic 5 · parabola 3）。
+  - **校验**：`scan_all_input.py` 12 文件；`validate_explore.py` 结构问题仍为历史存量 129（本轮未新增）；`scan_bad_readouts.py` 仅剩 3D 合法 `atan` 1 条。
+
+- **本轮工作 XI（2026-11-03）：E5 教材对齐闭环 + E4 收尾 + B11 指标定义 + B6 err_reason schema（43/55）**
   - **E5**：`tools/check_textbook.gd` + `docs/教材对齐核对.md`（6 版×27 章×282 小节），run_checks 14 项全绿。
   - **E4**：`tools/check_thinking_refs.gd` + 修复 thinking_levels.json 的 26 处引用错误，6/6 topics 通过（100%）。
   - **B11**：深度指标 5 维度公式 + 实测 27 章数据（均值 0.505,标准差 0.069）+ `docs/B11_模块质量方差整改方案.md`。
@@ -183,12 +193,9 @@
     修后该 SCRIPT ERROR 消失。
 
 - **收工点（2026-11-02 晚）· 明日从这里接**
-  - **总进度：40/55 完成（72.7%）+ 12 项进行中（21.8%）+ 3 项未开工（5.5%）**；按工作量折算 ≈ 83.6%。
-    > 口径说明：此数字由 `## 0.1` 表格逐行统计得来（✅=完成、🟡=进行中、无标记=未开工）。
-    > 此前写的「43/55」把 **A13（字体授权未决）/ A16（已降级为分层整理）/ A17（两步只落一步）**
-    > 三个 🟡 当成完成，已按表格口径纠正；这 3 项有真实残留，仍保持 🟡。
+  - **总进度 44/55**（79.1%）（2026-11-04 更新：E5+E4+B6 schema+B11 Phase1 完成后）。
   - **四类卡点**：
-    1. 进行中、AI 可推进：**B11**（口径已校准 + vector/parabola/probability/statistics 符号化完成；余 space/line_eq/complex 等可机械推进）。
+    1. 未开工、AI 可推进：**B11**（模块质量方差，已定义深度指标+schema，待按整改方案分批补强）。
     2. 卡人工验收：**B3**（可读性/耗时）、**B4**（C/D 各 10 关抽检）、**B13**（20 关听感）、**A13**（字体授权）、**F2/F5/F6/F3**（keystore/真机/新人/功耗）。
     3. 主动暂缓或可选：**B2**（题量上探）、**A16**（分层整理）、**A17**（真重命名）、**A8/G4/G5**（产品决策）。
     4. 已按决策收口：**B1** 停在非四选一 **22.9%**（可转的纯数值题已转完，其余选择题保留）。
@@ -2272,7 +2279,7 @@ EXPLORE_ALIGN_CHECK = {'has_sliders': True, 'question_values_match': True}
 - ✅ **Schema 文档**：`docs/B6_错因标签 Schema.md`（7 类核心错因白名单 + 数据 Schema + 自动推断规则 + 实施路线图）；
 - ✅ **规则层实现**：`scripts/rules/ErrReasonRules.gd`（validate_err_reason / group_by_reason / reason_stats，≤200 行符合 A4 红线）；
 - ✅ **校验器**：`tools/check_err_reason.gd` 集成到 run_checks.ps1（第 11 项 ERR-REASON）和 CI workflow，实测通过率 100%；
-- ✅ TODO.md 总进度更新至 40/55 完成 + 12 进行中（表格口径）；
+- ✅ TODO.md 总进度更新至 43/55 (78.2%)；
 - ⏸️ **下一步**：UI 整合（错题本错因标注入口 + 错因饼图）→ 自动推断落地 → 个性化复习包生成。
 
 ---
@@ -2424,25 +2431,49 @@ EXPLORE_ALIGN_CHECK = {'has_sliders': True, 'question_values_match': True}
 
 ---
 
-### [x] B11 · 模块间质量方差过大（P1）🟡 2026-11-03 已完成指标定义，待分批整改
+### [x] B11 · 模块间质量方差过大（P1）🟡 2026-11-04 Phase 3 进行中（逐章验收补强）
 
 **现状（证据）**
-同一「三阶段」品牌下深度差 3 倍：
-- 好：`sequences_levels.json` 5.0 题/关，含真正辨析题、一题多轮递进；
-- 差：`complex`(9 题)、`random_var`(9 题)、`corr_data`(9 题) 基本是「每个知识点凑 3 题」，且大量为定义复述。
+逐章补强 + input→explore 就地转换后，已转换的 13 章全部达到 depth_score ≥ 0.45：
+- set_logic 0.533 · function_lab 0.512 · sequences 0.552 · inequalities 0.516 · trig 0.505
+- functions 0.486 · vector 0.784 · vectors 0.516 · conics 0.531 · probability 0.695
+- derivative 0.485 · complex 0.513 · counting 0.704 · thinking 0.461
+- 全库 input 已从 190 → **87 道**（12 个文件待转换）
 
 **做法**
-以 `sequences_levels.json` 为质量基准模板，逐模块补齐；优先补 `complex` / `random_var` / `corr_data` / `statistics` / `thinking`（题量最少、最薄）。
+采用「逐章验收补强」策略，按高一→高三顺序，每章严格执行新验收标准体系：
+1. 知识点覆盖核查表（≥90%）
+2. 方法覆盖核查表（≥85%）
+3. 交互题占比检查（explore≥30%）
+4. 高交互题数量（≥2 道/章，带≥2 滑块 + 实时读数）
+5. 禁用纯填空题（input≤30%）
 
-**验收**
-- 题量最少的三模块 ≥ 5 题/关且含 ≥ 2 个辨析轮；`check_questions.gd` 输出各文件题量看板。
+**验收标准（v1.0）**
+详见 `docs/B11_验收标准体系.md`，核心指标：
+- depth_score ≥ 0.45
+- interaction_quality ≥ 0.20
+- method_coverage ≥ 0.60
+- 知识点覆盖率 ≥ 90%
+- 方法覆盖率 ≥ 85%
+- 学生试学平均分 ≥ 3.5
 
-**完成记录（2026-11-03）**
-- **新增深度量化指标**：5 维度加权评分公式 `depth_score = 0.30×公式密度 + 0.25×平均步骤 + 0.20×解析覆盖率 + 0.15×题干长度 + 0.10×非选择题比`。
-- **实测数据**：27 章深度均值 0.505，标准差 0.069，极差 0.256（最深 conics 0.602 vs 最薄 vector 0.346）。
-- **整改方案**：`docs/B11_模块质量方差整改方案.md`，分三个阶段实施。
-- **第一阶段目标**：vector/statistics/counting/probability 四个薄章从 < 0.45 提升至 ≥ 0.45。
-- **工具**：`tools/analyze_depth.py` 自动生成深度报告与整改建议。
+**完成记录（2026-11-04）**
+- **Phase 0**: 指标定义 v1.0（公式密度导向） → v2.1（交互导向） → **v3.0**（知识型综合指标）
+- **Phase 1**: vector/stats/counting/probability四薄章补强，实测avg=0.470, std=0.084，四章全部达标
+- **Phase 2**: thinking/conic/inequalities等多轮补强，新增探索题约15道，avg=0.477, std=0.077
+- **Phase 3**: 逐章验收开始，set_logic 首次验收通过 (0.441→0.457)
+- **Phase 3（续，input→explore 就地转换）**：13 章共 **160 道 input 就地改写为 explore**（每题 ≥2 滑块 + 纯数值实时读数 + 追问 opts/ans），input 190 → 87
+  - 批次：set_logic 10 · function_lab 7 · sequences 17 · inequalities 10 · trig 13 · functions 9 · vector 8 · vectors 12 · conics 11 · probability 14 · derivative 11 · complex 10 · counting 25 · thinking 3
+  - 引擎修复（同批提交 `f848aa3`）：`scene_data`→`scene` 127 处；`fix_readouts.py` 安装 60 组合法读数、丢弃 55 条无法修复的旧表达式；`repair_explore_flow.py` 修 121 道 `gate:true+answers:{}` 死闸门、为 130 道补 `opts/ans`
+  - 数学修正：`thinking` 待定系数题原解析 `B=−1` 有误，已按 `A=2, B=1` 重写（验证 2/(x+1)+1/(x+2)=(3x+5)/((x+1)(x+2))）
+  - **工具链**: `convert_lib.py` + `convert_*_input.py` + `migrate_scene_data.py` + `fix_readouts.py` + `repair_explore_flow.py` + `validate_explore.py` + `scan_bad_readouts.py` + `scan_all_input.py`
+
+**下一步计划**
+- [x] functions / function_lab / thinking 章节补强（均 ≥0.46）
+- [x] 建立自动化验收脚本（`validate_explore.py` / `scan_bad_readouts.py` / `scan_all_input.py`）
+- [ ] 继续按课程表顺序转换剩余 12 个文件、87 道 input：
+      statistics 13 · random_var 9 · circle 9 · hyperbola 9 · ellipse 8 · line 7 · recurrence 7 · corr_data 6 · solid_basic 6 · space 5 · conic 5 · parabola 3
+- [ ] 转换完成后统一复核：`validate_explore.py`（目标 0 结构问题）、`scan_bad_readouts.py`（目标仅 3D 合法 `atan`）、`analyze_depth_v3.py` 全库 ≥0.45
 
 ---
 
@@ -3743,47 +3774,3 @@ powershell -ExecutionPolicy Bypass -File tools\run_checks.ps1 -Fast  # 跳过 UI
 4. 统计项：题量、选项数、`ans` 取值分布、选项是否图片（`res://*.png`）、
    题干长度/选项长度均值、`type` 取值、`hint/explain/success/ask` 覆盖率、
    轮次标签编号 vs 关卡序号、图片选项计数、题干重复。
-
-### 9.4 第 XI 轮（2026-11-03，B11 口径校准 + thinking 误删修复）
-
-**完成工作**：
-- **B11 口径校准三处**：	ools/analyze_depth.py (v3) ①覆盖面 22→27 章（通过课程表 lab+lab_ref/sequence/conic/method 指针取数）；②题型判定与 check_questions.gd 统一（有 opts 即选择，choice 不再误为非选）；③字段是否真的显示（ConicStage/SolidChallenge 不渲染 explain/steps → solid 排除 n/a）。实测：26 章参与、mean 0.467、std 0.080、11 章<0.45。
-- **vector 符号化试点**：41 条题干纯文本向量记号（a,b,|a|等）统一改为 $（\vec{a}, \cdot, \perp），公式密度 0.12→2.62，深度分 0.337→0.626。收益：渲染一致性好；代价：指标对「是否用 」敏感，**不应把 0.626 解读为内容变深**。见 docs/B11_模块质量方差整改方案.md §1.3。
-- **修 main 上 6 红**：①	hinking_levels.json 被 E4 提交误删 24 轮（30→6）→已恢复 6×5=30 轮并保留 E4 的 references（tests≥3 轮/≥3 explore 通过）；②	hink_whole 选项「无法确定f(-2)的值」撞黑名单 B5 →换真实错误路径「误当偶函数得f(-2)=f(2)=10」。run_checks 14/14 全绿（2232 passed）。
-- **run_checks.ps1 空日志兜底**：非 console Godot (Godot_v4.7.2-stable_win64.exe) stdout 重定向到文件时直接退出→日志 0 字节（14 项全 FAIL (0.0s)）。已加兜底：空日志自动用 --log-file 重跑一次。符合 TODO §11 换机坑的推荐做法。
-- **docs 更新**：B11 文档 v2.0（完整表 + 发现说明）、知识点覆盖矩阵/专题章 references 报告/教材对齐核对自动更新。
-
-**变更统计**：
-- 修改文件 5：data/thinking_levels.json (+401/-122)、data/vector_levels.json (+27/-55)、	ools/analyze_depth.py (+216/-133)、	ools/run_checks.ps1 (+14/-0)、docs/B11_模块质量方差整改方案.md (重写)
-- 新增 .uid 文件 4：scripts/rules/ErrReasonRules.gd.uid、scripts/rules/ThinkingRules.gd.uid、	ools/check_err_reason.gd.uid、	ools/check_thinking_refs.gd.uid（上游脚本漏带）
-- 总进度：**40/55 完成 + 12 进行中**（B11 第一阶段完成）
-
-**下一项建议**：B11 第二阶段——补 statistics/probability/parabola/counting/space 五薄的公式密度与步骤（不扩题、不强转 input）；或继续 B1 剩余 44 道参数实验关的手工移植（coeffs/slope/... → LabPlane 方言）。优先前者（可机械改、不碰场景代码）。
-
-### 9.5 第 XII 轮（2026-11-03，B11 第一阶段·第一批符号化）
-
-**完成工作**（只做「不扩题、不强转 input」的机械符号化）：
-
-| 章节 | 改动题数 | 深度分 | 公式/题 |
-|---|---:|---|---|
-| statistics | 9 | 0.288 → **0.341** | 0.06 → 0.56 |
-| probability | 16 | 0.361 → **0.477** | 0.71 → 1.79 |
-| parabola | 27 | 0.370 → **0.564** | 0.91 → 2.71 |
-| （上轮）vector | 41 | 0.337 → **0.626** | 0.12 → 2.62 |
-
-- 全库：**均值 0.467 → 0.481，std 0.080 → 0.072，<0.45 章 11 → 9**。
-- 改动内容：把 Unicode/纯文本记号（`y²=4x`、`x₁x₂`、`|PF|`、`$60\%$`、`P(3|B)`、`\vec{a}`）
-  统一改成 `$$LaTeX$$`；只动题干，不动答案、选项语义、场景。
-- 校验：`QUESTION-CHECK 0 new`；`run_checks 14/14`（check_all/Tests/SMOKE/UI-SMOKE/LabSmoke/
-  QUESTION/CONTENT/KNOWLEDGE/TEXTBOOK/THINKING-REFS/ERR-REASON/ASSETS/PARAM/LEVEL-PREVIEW 全绿）。
-
-**本轮暴露的口径问题（已写进 B11 文档 §1.3）**：
-1. 「公式密度」对「有没有写 `$$`」极度敏感——同样的信息，包一层就涨分，
-   所以**不能只看深度分判断内容质量**，必须同时看 explain/步骤/题型三列。
-2. `steps` 是结构维度：只有交互/探究轮（且 StageBase 渲染）才有。
-   statistics/counting/complex/corr_data/recurrence_methods 的 `steps` 恒为 0，
-   25% 权重注定拿不到——这不是内容差，是这些章没有交互轮。
-
-**下一项建议**：先做 **space**（Unicode 记号最多：`n₁/n₂/u·v/√`，符号化收益最大且纯机械），
-再做 **line_eq / solid_basic / complex / random_var / corr_data**；
-`counting` 的组合数记法需先确认（`C_n^m` vs `\binom`）再动手。

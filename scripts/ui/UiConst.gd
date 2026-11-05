@@ -7,6 +7,7 @@ const LAYER_STAGE_UI := 10     # 关卡常规 UI(题干、操作栏、反馈)
 const LAYER_PANEL := 50        # 全屏面板(世界地图/知识树弹层)
 const LAYER_PET := 90          # 萌宠悬浮层
 const LAYER_TOAST := 100       # 顶部提示
+const LAYER_MODAL := 200       # 模态弹窗(帮助/确认/输入)：必须盖住关卡 UI、萌宠与提示
 
 # ---- 布局 ----
 const CARD_W := 920.0          # 全宽内容卡片宽度(档案库 / 错题笔记等)
